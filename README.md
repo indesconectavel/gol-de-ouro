@@ -18,9 +18,9 @@ Este projeto contém toda a lógica de backend para o jogo online **Gol de Ouro*
 
 ## 📄 Documentação da API
 
-Toda a documentação dos endpoints públicos e administrativos está disponível no PDF abaixo:
+Toda a documentação dos endpoints públicos e administrativos estará disponível no PDF abaixo:
 
-👉 [Documentação da API Gol de Ouro](./docs/api-documentacao-goldeouro.pdf)
+👉 [Documentação da API Gol de Ouro](./docs/api-documentacao-goldeouro.pdf) *(em breve)*
 
 ---
 
@@ -58,33 +58,7 @@ Toda a documentação dos endpoints públicos e administrativos está disponíve
 ---
 
 ## 🔐 Segurança
-- As rotas administrativas requerem o header:
-  ```
-  x-admin-token: goldeouro123
-  ```
+As rotas administrativas requerem o header:
 
----
-
-## 🛠️ Como rodar o backend localmente
-
-```bash
-git clone https://github.com/seuusuario/goldeouro-backend.git
-cd goldeouro-backend
-npm install
-npm start
-```
-
-Crie um arquivo `.env` com:
-
-```env
-DATABASE_URL=postgres://postgres:Free10signer@localhost:5432/postgres
-PORT=3000
-```
-
----
-
-## 🧠 Desenvolvido por
-
-Fred S. Silva – Indesconectável | Marketing Digital  
-https://indesconectavel.com
-
+```http
+x-admin-token: goldeouro123
