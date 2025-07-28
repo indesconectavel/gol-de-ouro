@@ -83,7 +83,7 @@ exports.shootBall = async (req, res) => {
     const wasGoal = userId === winnerUserId;
 
     await pool.query(
-      'INSERT INTO shot_attempts (user_id, shot_choice, was_goal, shot_date) VALUES ($1, $2, $3, NOW())',
+      'INSERT INTO shot_attempts (user_id, shot_choice, was_goal, created_at) VALUES ($1, $2, $3, NOW())',
       [userId, shotChoice, wasGoal]
     );
 
@@ -119,7 +119,7 @@ exports.shootBall = async (req, res) => {
   }
 };
 
-// GET /fila/status
+// POST /fila/status
 exports.getStatus = async (req, res) => {
   const { userId } = req.body;
 
@@ -137,7 +137,7 @@ exports.getStatus = async (req, res) => {
     const totalNaFila = await contarJogadoresFila();
 
     const chute = await pool.query(
-      'SELECT * FROM shot_attempts WHERE user_id = $1 ORDER BY shot_date DESC LIMIT 1',
+      'SELECT * FROM shot_attempts WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1',
       [userId]
     );
 
@@ -149,7 +149,7 @@ exports.getStatus = async (req, res) => {
       totalNaFila,
     });
   } catch (error) {
-    console.error('❌ Erro interno ao inserir na fila:', error.message, error.stack);
-    res.status(500).json({ error: 'Erro interno ao inserir na fila', detalhe: error.message });
+    console.error('❌ Erro interno ao consultar status:', error.message, error.stack);
+    res.status(500).json({ error: 'Erro interno ao consultar status', detalhe: error.message });
   }
 };
