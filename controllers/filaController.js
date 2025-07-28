@@ -3,7 +3,7 @@ const pool = require('../db');
 // Função para calcular a posição do novo jogador
 async function calcularPosicao() {
   const result = await pool.query(
-    'SELECT COUNT(*) FROM fila_tabuleiro WHERE status = $1',
+    'SELECT COUNT(*) FROM queue_board WHERE status = $1',
     ['waiting']
   );
   return parseInt(result.rows[0].count) + 1;
@@ -12,7 +12,7 @@ async function calcularPosicao() {
 // Função para contar jogadores na fila
 async function contarJogadoresFila() {
   const result = await pool.query(
-    'SELECT COUNT(*) FROM fila_tabuleiro WHERE status = $1',
+    'SELECT COUNT(*) FROM queue_board WHERE status = $1',
     ['waiting']
   );
   return parseInt(result.rows[0].count);
@@ -26,7 +26,7 @@ exports.enterQueue = async (req, res) => {
     const position = await calcularPosicao();
 
     await pool.query(
-      'INSERT INTO fila_tabuleiro (user_id, position, status, entry_date) VALUES ($1, $2, $3, NOW())',
+      'INSERT INTO queue_board (user_id, position, status, entry_date) VALUES ($1, $2, $3, NOW())',
       [userId, position, 'waiting']
     );
 
@@ -46,7 +46,7 @@ exports.shootBall = async (req, res) => {
 
   try {
     const partida = await pool.query(
-      `SELECT * FROM fila_tabuleiro 
+      `SELECT * FROM queue_board 
        WHERE status IN ('waiting', 'in_game') 
        ORDER BY entry_date ASC 
        LIMIT 10`
@@ -75,7 +75,7 @@ exports.shootBall = async (req, res) => {
       winnerUserId = sorteado.user_id;
 
       await pool.query(
-        'UPDATE fila_tabuleiro SET is_winner = TRUE WHERE user_id = $1',
+        'UPDATE queue_board SET is_winner = TRUE WHERE user_id = $1',
         [winnerUserId]
       );
     }
@@ -95,14 +95,14 @@ exports.shootBall = async (req, res) => {
     }
 
     await pool.query(
-      'UPDATE fila_tabuleiro SET status = $1 WHERE user_id = $2',
+      'UPDATE queue_board SET status = $1 WHERE user_id = $2',
       ['finished', userId]
     );
 
     const finalizados = await pool.query(
-      `SELECT COUNT(*) FROM fila_tabuleiro 
+      `SELECT COUNT(*) FROM queue_board 
        WHERE status = 'finished' AND id IN (
-         SELECT id FROM fila_tabuleiro ORDER BY entry_date ASC LIMIT 10
+         SELECT id FROM queue_board ORDER BY entry_date ASC LIMIT 10
        )`
     );
 
@@ -125,7 +125,7 @@ exports.getStatus = async (req, res) => {
 
   try {
     const fila = await pool.query(
-      'SELECT * FROM fila_tabuleiro WHERE user_id = $1 ORDER BY entry_date DESC LIMIT 1',
+      'SELECT * FROM queue_board WHERE user_id = $1 ORDER BY entry_date DESC LIMIT 1',
       [userId]
     );
 
@@ -149,7 +149,7 @@ exports.getStatus = async (req, res) => {
       totalNaFila,
     });
   } catch (error) {
-    console.error('Erro ao obter status da fila:', error);
-    res.status(500).json({ error: 'Erro ao consultar status da fila' });
+    console.error('❌ Erro interno ao inserir na fila:', error.message, error.stack);
+    res.status(500).json({ error: 'Erro interno ao inserir na fila', detalhe: error.message });
   }
 };
