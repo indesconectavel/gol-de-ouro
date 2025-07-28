@@ -7,7 +7,7 @@ services:
     startCommand: node server.js
     envVars:
       - key: DATABASE_URL
-        value: postgres://postgres:Free10signer@localhost:5432/postgres
+        value: postgresql://postgres:Free10signer@db.uatszaqzdqcwnfbipoxg.supabase.co:5432/postgres
       - key: PORT
         value: 3000
     autoDeploy: true
