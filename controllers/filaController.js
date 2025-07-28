@@ -23,6 +23,20 @@ exports.enterQueue = async (req, res) => {
   const { userId } = req.body;
 
   try {
+    // Verifica se o usuário já está em uma fila em andamento
+    const jaNaFila = await pool.query(
+      `SELECT * FROM queue_board 
+       WHERE user_id = $1 AND status != 'finished' 
+       ORDER BY created_at DESC LIMIT 1`,
+      [userId]
+    );
+
+    if (jaNaFila.rowCount > 0) {
+      return res.status(400).json({
+        error: 'Usuário já está em uma fila em andamento. Aguarde finalizar o jogo atual.'
+      });
+    }
+
     const position = await calcularPosicao();
 
     await pool.query(
@@ -35,8 +49,8 @@ exports.enterQueue = async (req, res) => {
       message: `Usuário ${userId} entrou na fila com sucesso na posição ${position}`,
     });
   } catch (error) {
-    console.error('Erro ao inserir na fila:', error);
-    res.status(500).json({ error: 'Erro interno ao inserir na fila' });
+    console.error('Erro ao inserir na fila:', error.message, error.stack);
+    res.status(500).json({ error: 'Erro interno ao inserir na fila', detalhe: error.message });
   }
 };
 
@@ -114,8 +128,8 @@ exports.shootBall = async (req, res) => {
       message: wasGoal ? 'GOL! Você marcou e ganhou R$5,00.' : 'Errou o chute.',
     });
   } catch (error) {
-    console.error('Erro ao processar chute:', error);
-    res.status(500).json({ error: 'Erro interno ao chutar' });
+    console.error('Erro ao processar chute:', error.message, error.stack);
+    res.status(500).json({ error: 'Erro interno ao chutar', detalhe: error.message });
   }
 };
 
