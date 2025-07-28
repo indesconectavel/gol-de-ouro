@@ -8,7 +8,7 @@ router.post('/entrar', filaController.enterQueue);
 // Chutar ao gol
 router.post('/chutar', filaController.shootBall);
 
-// Consultar status na fila
-router.get('/status', filaController.getStatus);
+// Consultar status na fila (corrigido para POST)
+router.post('/status', filaController.getStatus);
 
 module.exports = router;
