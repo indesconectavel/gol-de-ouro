@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: goldeouro-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: DATABASE_URL
+        value: postgres://postgres:Free10signer@localhost:5432/postgres
+      - key: PORT
+        value: 3000
+    autoDeploy: true

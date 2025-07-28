@@ -1,0 +1,24 @@
+# Node.js
+node_modules/
+.env
+*.log
+npm-debug.log*
+
+# IDEs e editores
+.vscode/
+*.code-workspace
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Backups e dumps
+*.zip
+*.tar.gz
+*.sql
+*BACKUP*.txt
+*BACKUP*.sql
+
+# Outras pastas desnecessárias
+dist/
+coverage/
