@@ -26,7 +26,7 @@ exports.enterQueue = async (req, res) => {
     const position = await calcularPosicao();
 
     await pool.query(
-      'INSERT INTO queue_board (user_id, position, status, entry_date) VALUES ($1, $2, $3, NOW())',
+      'INSERT INTO queue_board (user_id, position, status, created_at) VALUES ($1, $2, $3, NOW())',
       [userId, position, 'waiting']
     );
 
@@ -48,7 +48,7 @@ exports.shootBall = async (req, res) => {
     const partida = await pool.query(
       `SELECT * FROM queue_board 
        WHERE status IN ('waiting', 'in_game') 
-       ORDER BY entry_date ASC 
+       ORDER BY created_at ASC 
        LIMIT 10`
     );
 
@@ -102,7 +102,7 @@ exports.shootBall = async (req, res) => {
     const finalizados = await pool.query(
       `SELECT COUNT(*) FROM queue_board 
        WHERE status = 'finished' AND id IN (
-         SELECT id FROM queue_board ORDER BY entry_date ASC LIMIT 10
+         SELECT id FROM queue_board ORDER BY created_at ASC LIMIT 10
        )`
     );
 
@@ -125,7 +125,7 @@ exports.getStatus = async (req, res) => {
 
   try {
     const fila = await pool.query(
-      'SELECT * FROM queue_board WHERE user_id = $1 ORDER BY entry_date DESC LIMIT 1',
+      'SELECT * FROM queue_board WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1',
       [userId]
     );
 
