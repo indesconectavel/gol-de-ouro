@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
 const exportController = require('../controllers/exportController');
-const authMiddleware = require('../middleware/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 // Relatórios e estatísticas
 router.post('/relatorio-semanal', authMiddleware, adminController.relatorioSemanal);
