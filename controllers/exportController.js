@@ -1,109 +1,119 @@
 const pool = require('../db');
 const { Parser } = require('json2csv');
 
-// Exportar usuários em CSV
-exports.exportarUsuariosCSV = async (req, res) => {
+// Export Users
+exports.exportUsersCSV = async (req, res) => {
   try {
-    const { rows: usuarios } = await pool.query('SELECT id, nome, email, saldo, data_criacao FROM usuarios');
-    if (usuarios.length === 0) return res.status(404).json({ message: 'Nenhum usuário encontrado para exportar.' });
+    const result = await pool.query(`
+      SELECT id, name, email, created_at, balance 
+      FROM users
+      ORDER BY id
+    `);
 
-    const campos = ['id', 'nome', 'email', 'saldo', 'data_criacao'];
-    const parser = new Parser({ fields: campos });
-    const csv = parser.parse(usuarios);
+    const fields = ['id', 'name', 'email', 'created_at', 'balance'];
+    const parser = new Parser({ fields });
+    const csv = parser.parse(result.rows);
 
     res.header('Content-Type', 'text/csv');
-    res.attachment('usuarios.csv');
-    res.send(csv);
+    res.attachment('users_export.csv');
+    return res.send(csv);
   } catch (error) {
-    console.error('Erro ao exportar CSV de usuários:', error);
-    res.status(500).json({ error: 'Erro interno ao exportar usuários.' });
+    console.error('Erro ao exportar usuários:', error);
+    res.status(500).json({ error: 'Erro ao exportar usuários' });
   }
 };
 
-// Exportar chutes em CSV
-exports.exportarChutesCSV = async (req, res) => {
+// Export Shot Attempts
+exports.exportShotsCSV = async (req, res) => {
   try {
-    const { rows: chutes } = await pool.query('SELECT id, id_usuario, id_partida, acertou, data_chute FROM tentativas_chute');
-    if (chutes.length === 0) return res.status(404).json({ message: 'Nenhum chute encontrado para exportar.' });
+    const result = await pool.query(`
+      SELECT id, user_id, was_goal, shot_choice, shot_date
+      FROM shot_attempts
+      ORDER BY shot_date DESC
+    `);
 
-    const campos = ['id', 'id_usuario', 'id_partida', 'acertou', 'data_chute'];
-    const parser = new Parser({ fields: campos });
-    const csv = parser.parse(chutes);
+    const fields = ['id', 'user_id', 'was_goal', 'shot_choice', 'shot_date'];
+    const parser = new Parser({ fields });
+    const csv = parser.parse(result.rows);
 
     res.header('Content-Type', 'text/csv');
-    res.attachment('chutes.csv');
-    res.send(csv);
+    res.attachment('shots_export.csv');
+    return res.send(csv);
   } catch (error) {
-    console.error('Erro ao exportar CSV de chutes:', error);
-    res.status(500).json({ error: 'Erro interno ao exportar chutes.' });
+    console.error('Erro ao exportar chutes:', error);
+    res.status(500).json({ error: 'Erro ao exportar chutes' });
   }
 };
 
-// Exportar transações em CSV
-exports.exportarTransacoesCSV = async (req, res) => {
+// Export Transactions
+exports.exportTransactionsCSV = async (req, res) => {
   try {
-    const { rows: transacoes } = await pool.query('SELECT id, id_usuario, tipo, valor, data_transacao FROM transacoes');
-    if (transacoes.length === 0) return res.status(404).json({ message: 'Nenhuma transação encontrada para exportar.' });
+    const result = await pool.query(`
+      SELECT id, user_id, amount, type, description, transaction_date 
+      FROM transactions
+      ORDER BY transaction_date DESC
+    `);
 
-    const campos = ['id', 'id_usuario', 'tipo', 'valor', 'data_transacao'];
-    const parser = new Parser({ fields: campos });
-    const csv = parser.parse(transacoes);
+    const fields = ['id', 'user_id', 'amount', 'type', 'description', 'transaction_date'];
+    const parser = new Parser({ fields });
+    const csv = parser.parse(result.rows);
 
     res.header('Content-Type', 'text/csv');
-    res.attachment('transacoes.csv');
-    res.send(csv);
+    res.attachment('transactions_export.csv');
+    return res.send(csv);
   } catch (error) {
-    console.error('Erro ao exportar CSV de transações:', error);
-    res.status(500).json({ error: 'Erro interno ao exportar transações.' });
+    console.error('Erro ao exportar transações:', error);
+    res.status(500).json({ error: 'Erro ao exportar transações' });
   }
 };
 
-// Exportar saques em CSV
-exports.exportarSaquesCSV = async (req, res) => {
+// Export Withdrawals
+exports.exportWithdrawalsCSV = async (req, res) => {
   try {
-    const { rows: saques } = await pool.query('SELECT id, user_id, amount, status, request_date FROM withdrawals');
-    if (saques.length === 0) return res.status(404).json({ message: 'Nenhum saque encontrado para exportar.' });
+    const result = await pool.query(`
+      SELECT id, user_id, amount, status, created_at
+      FROM withdrawals
+      ORDER BY created_at DESC
+    `);
 
-    const campos = ['id', 'user_id', 'amount', 'status', 'request_date'];
-    const parser = new Parser({ fields: campos });
-    const csv = parser.parse(saques);
+    const fields = ['id', 'user_id', 'amount', 'status', 'created_at'];
+    const parser = new Parser({ fields });
+    const csv = parser.parse(result.rows);
 
     res.header('Content-Type', 'text/csv');
-    res.attachment('saques.csv');
-    res.send(csv);
+    res.attachment('withdrawals_export.csv');
+    return res.send(csv);
   } catch (error) {
-    console.error('Erro ao exportar CSV de saques:', error);
-    res.status(500).json({ error: 'Erro interno ao exportar saques.' });
+    console.error('Erro ao exportar saques:', error);
+    res.status(500).json({ error: 'Erro ao exportar saques' });
   }
 };
 
-// Exportar relatório completo do sistema
-exports.exportarRelatorioCompletoCSV = async (req, res) => {
+// Export All Data
+exports.exportGeneralReportCSV = async (req, res) => {
   try {
-    const usuarios = await pool.query('SELECT id, nome, email, saldo, data_criacao FROM usuarios');
-    const transacoes = await pool.query('SELECT id, id_usuario, tipo, valor, data_transacao FROM transacoes');
-    const chutes = await pool.query('SELECT id, id_usuario, id_partida, acertou, data_chute FROM tentativas_chute');
-    const saques = await pool.query('SELECT id, user_id, amount, status, request_date FROM withdrawals');
+    const [
+      users,
+      transactions,
+      withdrawals,
+      shots
+    ] = await Promise.all([
+      pool.query(`SELECT id, name, email, created_at, balance FROM users`),
+      pool.query(`SELECT id, user_id, amount, type, description, transaction_date FROM transactions`),
+      pool.query(`SELECT id, user_id, amount, status, created_at FROM withdrawals`),
+      pool.query(`SELECT id, user_id, was_goal, shot_choice, shot_date FROM shot_attempts`)
+    ]);
 
-    const total = usuarios.rows.length + transacoes.rows.length + chutes.rows.length + saques.rows.length;
-    res.status(200).json({ total_linhas: total, mensagem: 'Relatório completo pronto para exportar.' });
-  } catch (error) {
-    console.error('Erro ao gerar relatório completo:', error);
-    res.status(500).json({ error: 'Erro interno ao gerar relatório completo.' });
-  }
-};
+    const data = {
+      users: users.rows,
+      transactions: transactions.rows,
+      withdrawals: withdrawals.rows,
+      shots: shots.rows
+    };
 
-// Status do backup
-exports.statusBackup = async (req, res) => {
-  try {
-    const agora = new Date();
-    res.status(200).json({
-      status: 'Backup lógico manual disponível via endpoints CSV',
-      gerado_em: agora.toISOString(),
-      instrucoes: 'Acesse todos os endpoints de exportação para gerar os dados e armazenar localmente.'
-    });
+    res.status(200).json(data);
   } catch (error) {
-    console.error('Erro ao verificar status do backup:', error);
-    res.status(500).json({ error: 'Erro ao verificar status do backup.' });
+    console.error('Erro ao exportar relatório geral:', error);
+    res.status(500).json({ error: 'Erro ao exportar relatório geral' });
   }
 };

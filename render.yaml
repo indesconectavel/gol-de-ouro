@@ -7,7 +7,8 @@ services:
     startCommand: node server.js
     envVars:
       - key: DATABASE_URL
-        value: postgresql://postgres:Free10signer@db.uatszaqzdqcwnfbipoxg.supabase.co:5432/postgres
+        value: postgresql://postgres.uatszaqzdqcwnfbipoxg:Free10signer@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
       - key: PORT
         value: 3000
-    autoDeploy: true
+      - key: ADMIN_TOKEN
+        value: goldeouro123
