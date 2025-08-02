@@ -220,8 +220,16 @@ exports.suspenderUsuario = async (req, res) => {
   const { reason } = req.body;
 
   try {
-    await pool.query(`INSERT INTO blocked_users (user_id, reason, blocked_at) VALUES ($1, $2, NOW())`, [userId, reason]);
-    await pool.query(`INSERT INTO admin_logs (action, details, created_at) VALUES ($1, $2, NOW())`, ['suspension', `Usuário ${userId} suspenso: ${reason}`]);
+    await pool.query(
+      'INSERT INTO blocked_users (user_id, reason, blocked_at) VALUES ($1, $2, NOW())',
+      [userId, reason]
+    );
+
+    await pool.query(
+      'INSERT INTO admin_logs (action, details, created_at) VALUES ($1, $2, NOW())',
+      ['suspension', `Usuário ${userId} suspenso: ${reason}`]
+    );
+
     res.status(200).json({ message: 'Usuário suspenso com sucesso.' });
   } catch (error) {
     console.error('Erro ao suspender usuário:', error);
