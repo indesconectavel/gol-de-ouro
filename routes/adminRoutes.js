@@ -12,7 +12,7 @@ router.post('/top-jogadores', authMiddleware, adminController.topJogadores);
 router.post('/transacoes-recentes', authMiddleware, adminController.transacoesRecentes);
 router.post('/chutes-recentes', authMiddleware, adminController.chutesRecentes);
 router.post('/relatorio-usuarios', authMiddleware, adminController.relatorioUsuarios);
-// ❌ Linha removida: router.post('/usuarios'...);
+router.post('/usuarios', authMiddleware, adminController.relatoriosUsuarios);
 router.post('/logs', authMiddleware, adminController.logsSistema);
 router.post('/usuarios-bloqueados', authMiddleware, adminController.usuariosBloqueados);
 router.post('/suspender/:id', authMiddleware, adminController.suspenderUsuario);
