@@ -1,7 +1,7 @@
 const pool = require('../db');
 
 // Weekly Report
-exports.relatorioSemanal = async (req, res) => {
+const relatorioSemanal = async (req, res) => {
   try {
     const today = new Date();
     const sevenDaysAgo = new Date();
@@ -41,7 +41,7 @@ exports.relatorioSemanal = async (req, res) => {
 };
 
 // Queue Control
-exports.controleFila = async (req, res) => {
+const controleFila = async (req, res) => {
   try {
     const [waiting, playing, activeGames, finishedGames] = await Promise.all([
       pool.query(`SELECT COUNT(*) FROM queue_board WHERE status = 'waiting'`),
@@ -63,7 +63,7 @@ exports.controleFila = async (req, res) => {
 };
 
 // General Stats
-exports.estatisticasGerais = async (req, res) => {
+const estatisticasGerais = async (req, res) => {
   try {
     const [
       totalUsers,
@@ -104,7 +104,7 @@ exports.estatisticasGerais = async (req, res) => {
 };
 
 // Top Players
-exports.topJogadores = async (req, res) => {
+const topJogadores = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
@@ -126,7 +126,7 @@ exports.topJogadores = async (req, res) => {
 };
 
 // Recent Transactions
-exports.transacoesRecentes = async (req, res) => {
+const transacoesRecentes = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT id, user_id, amount, type, description, transaction_date 
@@ -142,7 +142,7 @@ exports.transacoesRecentes = async (req, res) => {
 };
 
 // Recent Shots
-exports.chutesRecentes = async (req, res) => {
+const chutesRecentes = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT id, user_id, was_goal, shot_choice, shot_date 
@@ -158,7 +158,7 @@ exports.chutesRecentes = async (req, res) => {
 };
 
 // Users Report
-exports.relatorioUsuarios = async (req, res) => {
+const relatorioUsuarios = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
@@ -184,7 +184,7 @@ exports.relatorioUsuarios = async (req, res) => {
 };
 
 // System Logs
-exports.logsSistema = async (req, res) => {
+const logsSistema = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT id, action, details, created_at 
@@ -200,7 +200,7 @@ exports.logsSistema = async (req, res) => {
 };
 
 // Blocked Users
-exports.usuariosBloqueados = async (req, res) => {
+const usuariosBloqueados = async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT u.id, u.name, u.email, b.reason, b.blocked_at
@@ -215,7 +215,7 @@ exports.usuariosBloqueados = async (req, res) => {
 };
 
 // Suspend User
-exports.suspenderUsuario = async (req, res) => {
+const suspenderUsuario = async (req, res) => {
   const userId = req.params.id;
   const { reason } = req.body;
 
@@ -236,6 +236,8 @@ exports.suspenderUsuario = async (req, res) => {
     res.status(500).json({ error: 'Erro ao suspender usuário' });
   }
 };
+
+// Exportações
 module.exports = {
   relatorioSemanal,
   controleFila,
