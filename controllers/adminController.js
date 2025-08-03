@@ -236,3 +236,15 @@ exports.suspenderUsuario = async (req, res) => {
     res.status(500).json({ error: 'Erro ao suspender usuário' });
   }
 };
+module.exports = {
+  relatorioSemanal,
+  controleFila,
+  estatisticasGerais,
+  topJogadores,
+  transacoesRecentes,
+  chutesRecentes,
+  relatorioUsuarios,
+  logsSistema,
+  usuariosBloqueados,
+  suspenderUsuario
+};

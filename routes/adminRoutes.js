@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
 const exportController = require('../controllers/exportController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware.js');
 
 // Relatórios e estatísticas
 router.post('/relatorio-semanal', authMiddleware, adminController.relatorioSemanal);
@@ -12,7 +12,7 @@ router.post('/top-jogadores', authMiddleware, adminController.topJogadores);
 router.post('/transacoes-recentes', authMiddleware, adminController.transacoesRecentes);
 router.post('/chutes-recentes', authMiddleware, adminController.chutesRecentes);
 router.post('/relatorio-usuarios', authMiddleware, adminController.relatorioUsuarios);
-router.post('/usuarios', authMiddleware, adminController.todosUsuarios);
+// ❌ Linha removida: router.post('/usuarios'...);
 router.post('/logs', authMiddleware, adminController.logsSistema);
 router.post('/usuarios-bloqueados', authMiddleware, adminController.usuariosBloqueados);
 router.post('/suspender/:id', authMiddleware, adminController.suspenderUsuario);
