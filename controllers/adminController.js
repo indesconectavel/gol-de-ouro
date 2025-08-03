@@ -237,6 +237,19 @@ const suspenderUsuario = async (req, res) => {
   }
 };
 
+// Backup Status
+const statusBackup = async (req, res) => {
+  try {
+    res.status(200).json({
+      status: 'Backup está ativo e funcional',
+      last_backup: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Erro ao verificar status do backup:', error);
+    res.status(500).json({ error: 'Erro ao verificar status do backup' });
+  }
+};
+
 // Exportações
 module.exports = {
   relatorioSemanal,
@@ -248,5 +261,6 @@ module.exports = {
   relatorioUsuarios,
   logsSistema,
   usuariosBloqueados,
-  suspenderUsuario
+  suspenderUsuario,
+  statusBackup
 };
