@@ -1,67 +1,74 @@
-import User from "../models/User.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+const pool = require('../db');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-export const register = async (req, res) => {
+// POST /auth/register
+exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // verificar se já existe
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: "Usuário já cadastrado." });
+    // Verifica se já existe usuário
+    const existingUser = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ message: 'Usuário já cadastrado.' });
     }
 
-    // criptografar senha
+    // Criptografa a senha
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // criar usuário
-    const newUser = new User({
-      name,
-      email,
-      passwordHash,
-    });
+    // Cria novo usuário
+    const newUser = await pool.query(
+      'INSERT INTO users (name, email, password_hash, balance, created_at) VALUES ($1, $2, $3, 0, NOW()) RETURNING *',
+      [name, email, passwordHash]
+    );
 
-    await newUser.save();
-
-    res.status(201).json({ message: "Usuário cadastrado com sucesso." });
+    res.status(201).json({ message: 'Usuário cadastrado com sucesso.', user: newUser.rows[0] });
   } catch (err) {
-    res.status(500).json({ message: "Erro ao cadastrar.", error: err.message });
+    console.error('Erro ao cadastrar usuário:', err);
+    res.status(500).json({ message: 'Erro ao cadastrar.', error: err.message });
   }
 };
 
-export const login = async (req, res) => {
+// POST /auth/login
+exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+
     if (!user) {
-      return res.status(400).json({ message: "Usuário não encontrado." });
+      return res.status(400).json({ message: 'Usuário não encontrado.' });
     }
 
-    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
-      return res.status(400).json({ message: "Senha incorreta." });
+      return res.status(400).json({ message: 'Senha incorreta.' });
     }
 
-    // gerar token
+    // Gera token JWT
     const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { id: user.id },
+      process.env.JWT_SECRET || 'secret',
+      { expiresIn: '7d' }
     );
 
     res.status(200).json({
       token,
       user: {
-        id: user._id,
+        id: user.id,
         name: user.name,
         email: user.email,
         balance: user.balance,
-      },
+      }
     });
   } catch (err) {
-    res.status(500).json({ message: "Erro ao fazer login.", error: err.message });
+    console.error('Erro ao fazer login:', err);
+    res.status(500).json({ message: 'Erro ao fazer login.', error: err.message });
   }
 };
