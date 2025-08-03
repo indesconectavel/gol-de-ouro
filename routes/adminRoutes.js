@@ -1,18 +1,18 @@
 const express = require('express');
 const router = express.Router();
+
 const adminController = require('../controllers/adminController');
 const exportController = require('../controllers/exportController');
-const authMiddleware = require('../middlewares/authMiddleware.js');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 // Relatórios e estatísticas
 router.post('/relatorio-semanal', authMiddleware, adminController.relatorioSemanal);
 router.post('/controle-fila', authMiddleware, adminController.controleFila);
-router.post('/estatisticas', authMiddleware, adminController.estatisticasGerais);
+router.post('/estatisticas-gerais', authMiddleware, adminController.estatisticasGerais);
 router.post('/top-jogadores', authMiddleware, adminController.topJogadores);
 router.post('/transacoes-recentes', authMiddleware, adminController.transacoesRecentes);
 router.post('/chutes-recentes', authMiddleware, adminController.chutesRecentes);
-router.post('/relatorio-usuarios', authMiddleware, adminController.relatorioUsuarios);
-router.post('/usuarios', authMiddleware, adminController.relatoriosUsuarios);
+router.post('/relatorio-usuarios', authMiddleware, adminController.relatoriosUsuarios);
 router.post('/logs', authMiddleware, adminController.logsSistema);
 router.post('/usuarios-bloqueados', authMiddleware, adminController.usuariosBloqueados);
 router.post('/suspender/:id', authMiddleware, adminController.suspenderUsuario);
@@ -26,5 +26,6 @@ router.get('/exportar/chutes-csv', authMiddleware, exportController.exportarChut
 router.get('/exportar/transacoes-csv', authMiddleware, exportController.exportarTransacoesCSV);
 router.get('/exportar/saques-csv', authMiddleware, exportController.exportarSaquesCSV);
 router.get('/exportar/relatorio-completo-csv', authMiddleware, exportController.exportarRelatorioCompletoCSV);
+router.get('/exportar/relatorio-geral-csv', authMiddleware, exportController.exportarRelatorioGeralCSV);
 
 module.exports = router;
