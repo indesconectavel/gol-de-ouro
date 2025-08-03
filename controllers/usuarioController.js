@@ -20,7 +20,7 @@ exports.chutar = async (req, res) => {
   const { userId, shot_choice } = req.body;
   try {
     await pool.query(
-      `INSERT INTO shot_attempts (user_id, shot_choice, was_goal, shot_date) VALUES ($1, $2, false, NOW())`,
+      `INSERT INTO shot_attempts (user_id, shot_choice, was_goal, created_at) VALUES ($1, $2, false, NOW())`,
       [userId, shot_choice]
     );
     res.status(200).json({ message: 'Chute registrado com sucesso.' });
@@ -103,7 +103,7 @@ exports.gerarRelatorio = async (req, res) => {
   const { userId } = req.body;
   try {
     const [shots, transactions, withdrawals] = await Promise.all([
-      pool.query(`SELECT * FROM shot_attempts WHERE user_id = $1 ORDER BY shot_date DESC`, [userId]),
+      pool.query(`SELECT * FROM shot_attempts WHERE user_id = $1 ORDER BY created_at DESC`, [userId]),
       pool.query(`SELECT * FROM transactions WHERE user_id = $1 ORDER BY transaction_date DESC`, [userId]),
       pool.query(`SELECT * FROM withdrawals WHERE user_id = $1 ORDER BY created_at DESC`, [userId])
     ]);
