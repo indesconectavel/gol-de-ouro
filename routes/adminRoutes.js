@@ -6,19 +6,17 @@ const exportController = require('../controllers/exportController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
 // Relatórios e estatísticas
-router.post('/relatorio-semanal', authMiddleware, adminController.relatorioSemanal);
-router.post('/controle-fila', authMiddleware, adminController.controleFila);
-router.post('/estatisticas-gerais', authMiddleware, adminController.estatisticasGerais);
-router.post('/top-jogadores', authMiddleware, adminController.topJogadores);
-router.post('/transacoes-recentes', authMiddleware, adminController.transacoesRecentes);
-router.post('/chutes-recentes', authMiddleware, adminController.chutesRecentes);
-router.post('/relatorio-usuarios', authMiddleware, adminController.relatoriosUsuarios);
-router.post('/logs', authMiddleware, adminController.logsSistema);
-router.post('/usuarios-bloqueados', authMiddleware, adminController.usuariosBloqueados);
-router.post('/suspender/:id', authMiddleware, adminController.suspenderUsuario);
-
-// Status do backup
-router.post('/backup-status', authMiddleware, adminController.statusBackup);
+router.post('/relatorio-semanal', authMiddleware, (req, res) => adminController.relatorioSemanal(req, res));
+router.post('/controle-fila', authMiddleware, (req, res) => adminController.controleFila(req, res));
+router.post('/estatisticas-gerais', authMiddleware, (req, res) => adminController.estatisticasGerais(req, res));
+router.post('/top-jogadores', authMiddleware, (req, res) => adminController.topJogadores(req, res));
+router.post('/transacoes-recentes', authMiddleware, (req, res) => adminController.transacoesRecentes(req, res));
+router.post('/chutes-recentes', authMiddleware, (req, res) => adminController.chutesRecentes(req, res));
+router.post('/relatorio-usuarios', authMiddleware, (req, res) => adminController.relatorioUsuarios(req, res));
+router.post('/logs', authMiddleware, (req, res) => adminController.logsSistema(req, res));
+router.post('/usuarios-bloqueados', authMiddleware, (req, res) => adminController.usuariosBloqueados(req, res));
+router.post('/suspender/:id', authMiddleware, (req, res) => adminController.suspenderUsuario(req, res));
+router.post('/backup-status', authMiddleware, (req, res) => adminController.statusBackup(req, res));
 
 // Exportações em CSV
 router.get('/exportar/usuarios-csv', authMiddleware, exportController.exportarUsuariosCSV);
