@@ -237,6 +237,50 @@ const suspenderUsuario = async (req, res) => {
   }
 };
 
+// Lock User
+const bloquearUsuario = async (req, res) => {
+  const { userId, reason } = req.body;
+
+  try {
+    await pool.query(
+      'INSERT INTO blocked_users (user_id, reason, blocked_at) VALUES ($1, $2, NOW())',
+      [userId, reason || 'Bloqueio administrativo']
+    );
+
+    await pool.query(
+      'INSERT INTO admin_logs (action, details, created_at) VALUES ($1, $2, NOW())',
+      ['block', `Usuário ${userId} bloqueado: ${reason}`]
+    );
+
+    res.status(200).json({ message: 'Usuário bloqueado com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao bloquear usuário:', error);
+    res.status(500).json({ error: 'Erro ao bloquear usuário' });
+  }
+};
+
+// Unlock User
+const desbloquearUsuario = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    await pool.query(
+      'DELETE FROM blocked_users WHERE user_id = $1',
+      [userId]
+    );
+
+    await pool.query(
+      'INSERT INTO admin_logs (action, details, created_at) VALUES ($1, $2, NOW())',
+      ['unblock', `Usuário ${userId} desbloqueado.`]
+    );
+
+    res.status(200).json({ message: 'Usuário desbloqueado com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao desbloquear usuário:', error);
+    res.status(500).json({ error: 'Erro ao desbloquear usuário' });
+  }
+};
+
 // Backup Status
 const statusBackup = async (req, res) => {
   try {
@@ -247,6 +291,21 @@ const statusBackup = async (req, res) => {
   } catch (error) {
     console.error('Erro ao verificar status do backup:', error);
     res.status(500).json({ error: 'Erro ao verificar status do backup' });
+  }
+};
+
+// Lista de Usuários (GET /admin/lista-usuarios)
+const listaUsuarios = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, name, email, account_status, created_at
+      FROM users
+      ORDER BY created_at DESC
+    `);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Erro ao listar usuários:', error);
+    res.status(500).json({ error: 'Erro ao listar usuários' });
   }
 };
 
@@ -262,5 +321,8 @@ module.exports = {
   logsSistema,
   usuariosBloqueados,
   suspenderUsuario,
-  statusBackup
+  bloquearUsuario,
+  desbloquearUsuario,
+  statusBackup,
+  listaUsuarios // ✅ adicionada corretamente
 };

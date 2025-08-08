@@ -13,9 +13,12 @@ router.post('/top-jogadores', authMiddleware, (req, res) => adminController.topJ
 router.post('/transacoes-recentes', authMiddleware, (req, res) => adminController.transacoesRecentes(req, res));
 router.post('/chutes-recentes', authMiddleware, (req, res) => adminController.chutesRecentes(req, res));
 router.post('/relatorio-usuarios', authMiddleware, (req, res) => adminController.relatorioUsuarios(req, res));
+router.get('/lista-usuarios', authMiddleware, (req, res) => adminController.listaUsuarios(req, res)); // ✅ Novo endpoint GET
 router.post('/logs', authMiddleware, (req, res) => adminController.logsSistema(req, res));
 router.post('/usuarios-bloqueados', authMiddleware, (req, res) => adminController.usuariosBloqueados(req, res));
 router.post('/suspender/:id', authMiddleware, (req, res) => adminController.suspenderUsuario(req, res));
+router.post('/bloquear', authMiddleware, (req, res) => adminController.bloquearUsuario(req, res));
+router.post('/desbloquear', authMiddleware, (req, res) => adminController.desbloquearUsuario(req, res));
 router.post('/backup-status', authMiddleware, (req, res) => adminController.statusBackup(req, res));
 
 // Exportações em CSV
