@@ -183,7 +183,22 @@ const relatorioUsuarios = async (req, res) => {
   }
 };
 
-// System Logs
+// Lista de Usuários
+const listaUsuarios = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, name, email, account_status, created_at
+      FROM users
+      ORDER BY created_at DESC
+    `);
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error('Erro ao buscar lista de usuários:', error);
+    res.status(500).json({ error: 'Erro ao buscar lista de usuários' });
+  }
+};
+
+// Logs
 const logsSistema = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -237,7 +252,7 @@ const suspenderUsuario = async (req, res) => {
   }
 };
 
-// Lock User
+// Lock/Unlock
 const bloquearUsuario = async (req, res) => {
   const { userId, reason } = req.body;
 
@@ -259,15 +274,11 @@ const bloquearUsuario = async (req, res) => {
   }
 };
 
-// Unlock User
 const desbloquearUsuario = async (req, res) => {
   const { userId } = req.body;
 
   try {
-    await pool.query(
-      'DELETE FROM blocked_users WHERE user_id = $1',
-      [userId]
-    );
+    await pool.query('DELETE FROM blocked_users WHERE user_id = $1', [userId]);
 
     await pool.query(
       'INSERT INTO admin_logs (action, details, created_at) VALUES ($1, $2, NOW())',
@@ -281,7 +292,7 @@ const desbloquearUsuario = async (req, res) => {
   }
 };
 
-// Backup Status
+// Backup
 const statusBackup = async (req, res) => {
   try {
     res.status(200).json({
@@ -294,22 +305,7 @@ const statusBackup = async (req, res) => {
   }
 };
 
-// Lista de Usuários (GET /admin/lista-usuarios)
-const listaUsuarios = async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT id, name, email, account_status, created_at
-      FROM users
-      ORDER BY created_at DESC
-    `);
-    res.status(200).json(result.rows);
-  } catch (error) {
-    console.error('Erro ao listar usuários:', error);
-    res.status(500).json({ error: 'Erro ao listar usuários' });
-  }
-};
-
-// Exportações
+// Exports
 module.exports = {
   relatorioSemanal,
   controleFila,
@@ -324,5 +320,5 @@ module.exports = {
   bloquearUsuario,
   desbloquearUsuario,
   statusBackup,
-  listaUsuarios // ✅ adicionada corretamente
+  listaUsuarios
 };
