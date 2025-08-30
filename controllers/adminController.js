@@ -57,8 +57,8 @@ const controleFila = async (req, res) => {
       finished_games: parseInt(finishedGames.rows[0].count)
     });
   } catch (error) {
-    console.error('Erro ao consultar controle da fila:', error);
-    res.status(500).json({ error: 'Erro ao consultar controle da fila' });
+    console.error('Erro ao buscar logs do sistema:', error?.message, error?.stack);
+    res.status(500).json({ error: 'Erro ao buscar logs do sistema' });
   }
 };
 
@@ -141,13 +141,19 @@ const transacoesRecentes = async (req, res) => {
   }
 };
 
-// Recent Shots
+// Recent Shots (com aliases e join para facilitar o front)
 const chutesRecentes = async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT id, user_id, was_goal, shot_choice, shot_date 
-      FROM shot_attempts 
-      ORDER BY shot_date DESC 
+      SELECT 
+        sa.id,
+        u.name AS user_name,
+        sa.shot_choice AS direction,
+        sa.was_goal AS scored,
+        sa.shot_date AS created_at
+      FROM shot_attempts sa
+      JOIN users u ON u.id = sa.user_id
+      ORDER BY sa.shot_date DESC
       LIMIT 20
     `);
     res.status(200).json(result.rows);
@@ -231,18 +237,22 @@ const usuariosBloqueados = async (req, res) => {
 
 // Suspend User
 const suspenderUsuario = async (req, res) => {
-  const userId = req.params.id;
-  const { reason } = req.body;
+  const userId = parseInt(req.params.id, 10);
+  const { reason } = req.body || {};
+
+  if (!Number.isInteger(userId)) {
+    return res.status(400).json({ error: 'Parâmetro id inválido. Use número inteiro.' });
+  }
 
   try {
     await pool.query(
       'INSERT INTO blocked_users (user_id, reason, blocked_at) VALUES ($1, $2, NOW())',
-      [userId, reason]
+      [userId, reason || 'Suspensão administrativa']
     );
 
     await pool.query(
       'INSERT INTO admin_logs (action, details, created_at) VALUES ($1, $2, NOW())',
-      ['suspension', `Usuário ${userId} suspenso: ${reason}`]
+      ['suspension', `Usuário ${userId} suspenso: ${reason || 'Suspensão administrativa'}`]
     );
 
     res.status(200).json({ message: 'Usuário suspenso com sucesso.' });
@@ -252,19 +262,24 @@ const suspenderUsuario = async (req, res) => {
   }
 };
 
-// Lock/Unlock
+// Lock
 const bloquearUsuario = async (req, res) => {
-  const { userId, reason } = req.body;
+  const { userId, reason } = req.body || {};
+  const id = parseInt(userId, 10);
+
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: 'Campo userId inválido. Use número inteiro.' });
+  }
 
   try {
     await pool.query(
       'INSERT INTO blocked_users (user_id, reason, blocked_at) VALUES ($1, $2, NOW())',
-      [userId, reason || 'Bloqueio administrativo']
+      [id, reason || 'Bloqueio administrativo']
     );
 
     await pool.query(
       'INSERT INTO admin_logs (action, details, created_at) VALUES ($1, $2, NOW())',
-      ['block', `Usuário ${userId} bloqueado: ${reason}`]
+      ['block', `Usuário ${id} bloqueado: ${reason || 'Bloqueio administrativo'}`]
     );
 
     res.status(200).json({ message: 'Usuário bloqueado com sucesso.' });
@@ -274,15 +289,21 @@ const bloquearUsuario = async (req, res) => {
   }
 };
 
+// Unlock
 const desbloquearUsuario = async (req, res) => {
-  const { userId } = req.body;
+  const { userId } = req.body || {};
+  const id = parseInt(userId, 10);
+
+  if (!Number.isInteger(id)) {
+    return res.status(400).json({ error: 'Campo userId inválido. Use número inteiro.' });
+  }
 
   try {
-    await pool.query('DELETE FROM blocked_users WHERE user_id = $1', [userId]);
+    await pool.query('DELETE FROM blocked_users WHERE user_id = $1', [id]);
 
     await pool.query(
       'INSERT INTO admin_logs (action, details, created_at) VALUES ($1, $2, NOW())',
-      ['unblock', `Usuário ${userId} desbloqueado.`]
+      ['unblock', `Usuário ${id} desbloqueado.`]
     );
 
     res.status(200).json({ message: 'Usuário desbloqueado com sucesso.' });

@@ -6,9 +6,13 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ CORS para produção (Vercel)
+// ✅ CORS para produção e desenvolvimento local
 app.use(cors({
-  origin: ['https://goldeouro-admin.vercel.app'],
+  origin: [
+    'https://goldeouro-admin.vercel.app', // produção
+    'http://localhost:5173',              // dev vite padrão
+    'http://localhost:5174'               // porta alternativa do Vite
+  ],
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'x-admin-token']
 }));
