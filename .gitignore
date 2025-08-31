@@ -158,3 +158,4 @@ coverage/
 render.yaml
 railway.json
 vercel.json
+.vercel
