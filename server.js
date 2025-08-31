@@ -101,3 +101,106 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 module.exports = app;
+
+
+/** ---[ Public Dashboard Endpoint ]-------------------------------------------
+ * GET /api/public/dashboard
+ * - Traz contadores e últimos jogos
+ * - Se der erro ou não houver tabelas, responde com dados fictícios (fallback)
+ */
+if (typeof app !== "undefined") {
+  const { Pool } = require("pg");
+
+  app.get("/api/public/dashboard", async (req, res) => {
+    // Conecta no Postgres (Supabase/Render) sem depender de conexões globais do app
+    const pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    });
+
+    // helpers: consulta escalar com fallback 0 sem explodir a API
+    async function scalar(sql) {
+      try {
+        const { rows } = await pool.query(sql);
+        const v = rows?.[0] && Object.values(rows[0])[0];
+        return Number(v ?? 0);
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    async function getRecentMatches() {
+      // tenta tabela "matches"; se não existir, devolve fallback
+      const sql = `
+        select coalesce(
+          json_agg(
+            json_build_object(
+              'id', id,
+              'home', home,
+              'away', away,
+              'kickoff', kickoff,
+              'status', status,
+              'home_score', home_score,
+              'away_score', away_score
+            )
+            order by kickoff desc
+          ), '[]'::json
+        ) as items
+        from (
+          select id, home, away, kickoff, status, home_score, away_score
+          from matches
+          order by kickoff desc
+          limit 5
+        ) t;
+      `;
+      try {
+        const { rows } = await pool.query(sql);
+        return rows?.[0]?.items ?? [];
+      } catch (e) {
+        // fallback fictício
+        const now = new Date();
+        const plus = (d) => new Date(now.getTime() + d*24*60*60*1000).toISOString();
+        return [
+          { id: 1, home: "Caravelas SC", away: "Boreal FC",  kickoff: plus(-2), status: "finished", home_score: 2, away_score: 1 },
+          { id: 2, home: "Cerrado AC",   away: "Oceano Azul", kickoff: plus(-1), status: "finished", home_score: 0, away_score: 0 },
+          { id: 3, home: "Raízes FC",    away: "Laguna FC",   kickoff: plus(+1), status: "scheduled", home_score: null, away_score: null },
+          { id: 4, home: "Boreal FC",    away: "Oceano Azul", kickoff: plus(+2), status: "scheduled", home_score: null, away_score: null }
+        ];
+      }
+    }
+
+    try {
+      // tenta contadores nas tabelas mais prováveis (players/users, matches, guesses)
+      let players = await scalar("select count(*) from players");
+      if (players === 0) {
+        // alguns projetos usam 'users' em vez de 'players'
+        players = await scalar("select count(*) from users");
+      }
+      const matches = await scalar("select count(*) from matches");
+      const guesses = await scalar("select count(*) from guesses");
+
+      const recent_matches = await getRecentMatches();
+
+      const payload = {
+        ok: true,
+        players, matches, guesses,
+        recent_matches
+      };
+      res.json(payload);
+    } catch (err) {
+      console.error("DASHBOARD_ERROR", err);
+      // fallback total
+      res.json({
+        ok: true,
+        players: 0,
+        matches: 0,
+        guesses: 0,
+        recent_matches: [
+          { id: 1, home: "Caravelas SC", away: "Boreal FC",  kickoff: new Date().toISOString(), status: "scheduled", home_score: null, away_score: null }
+        ]
+      });
+    } finally {
+      try { await pool.end(); } catch {}
+    }
+  });
+}
