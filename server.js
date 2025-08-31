@@ -17,7 +17,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-token']
 }));
 
-// Suporte a JSON com limite de tamanho
+// Suporte a JSON
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -35,6 +35,30 @@ app.get('/', (req, res) => {
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Rota protegida de teste
+app.get('/admin/test', (req, res) => {
+  const token = req.headers['x-admin-token'];
+  
+  if (!token) {
+    return res.status(401).json({ 
+      error: 'Token não fornecido',
+      message: 'Header x-admin-token é obrigatório'
+    });
+  }
+  
+  if (token !== env.ADMIN_TOKEN) {
+    return res.status(403).json({ 
+      error: 'Token inválido',
+      message: 'Acesso negado'
+    });
+  }
+  
+  res.json({
+    message: '✅ Rota protegida acessada com sucesso',
     timestamp: new Date().toISOString()
   });
 });
