@@ -3,8 +3,8 @@ services:
     name: goldeouro-backend
     env: node
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: "npm ci"
+    startCommand: "node server.js"
     healthCheckPath: /health
     healthCheckTimeout: 300
     autoDeploy: true
@@ -18,7 +18,7 @@ services:
       - key: ADMIN_TOKEN
         sync: false
       - key: CORS_ORIGINS
-        sync: false
+        value: "http://localhost:5174,https://goldeouro-admin.vercel.app"
       - key: NODE_ENV
         value: production
     buildFilter:
@@ -32,3 +32,4 @@ services:
         - "models/**"
         - "db.js"
         - "server.js"
+        - "config/**"

@@ -114,6 +114,27 @@ npm run security:check
 
 ## 🚀 Deploy
 
+### 🚀 Deploy Rápido no Render (1-Click)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy/schema-new?template=https://github.com/seu-usuario/goldeouro-backend)
+
+**Passos para deploy rápido:**
+
+1. **Clique no botão acima** ou acesse: https://render.com/deploy/schema-new
+2. **Conecte seu GitHub** e selecione este repositório
+3. **Configure as variáveis obrigatórias:**
+   - `DATABASE_URL`: Sua URL do Supabase
+   - `JWT_SECRET`: Chave JWT (mínimo 32 caracteres)
+   - `ADMIN_TOKEN`: Token admin (mínimo 16 caracteres)
+4. **Clique em "Deploy"** - Render fará o resto automaticamente!
+
+**Variáveis pré-configuradas:**
+- ✅ `PORT`: 3000
+- ✅ `NODE_ENV`: production  
+- ✅ `CORS_ORIGINS`: http://localhost:5174,https://goldeouro-admin.vercel.app
+
+**URL gerada:** `https://goldeouro-backend-XXXX.onrender.com`
+
 ### Scripts Disponíveis
 
 ```bash
