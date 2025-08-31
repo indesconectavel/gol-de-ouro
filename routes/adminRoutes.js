@@ -3,30 +3,30 @@ const router = express.Router();
 
 const adminController = require('../controllers/adminController');
 const exportController = require('../controllers/exportController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { authAdminToken } = require('../middlewares/authMiddleware');
 
 // Relatórios e estatísticas
-router.post('/relatorio-semanal', authMiddleware, adminController.relatorioSemanal);
-router.post('/controle-fila', authMiddleware, adminController.controleFila);
-router.post('/estatisticas-gerais', authMiddleware, adminController.estatisticasGerais);
-router.post('/top-jogadores', authMiddleware, adminController.topJogadores);
-router.post('/transacoes-recentes', authMiddleware, adminController.transacoesRecentes);
-router.post('/chutes-recentes', authMiddleware, adminController.chutesRecentes);
-router.post('/relatorio-usuarios', authMiddleware, adminController.relatorioUsuarios);
-router.post('/logs', authMiddleware, adminController.logsSistema);
-router.post('/usuarios-bloqueados', authMiddleware, adminController.usuariosBloqueados);
-router.post('/suspender/:id', authMiddleware, adminController.suspenderUsuario);
-router.post('/bloquear', authMiddleware, adminController.bloquearUsuario);
-router.post('/desbloquear', authMiddleware, adminController.desbloquearUsuario);
-router.post('/backup-status', authMiddleware, adminController.statusBackup);
-router.get('/lista-usuarios', authMiddleware, adminController.listaUsuarios);
+router.post('/relatorio-semanal', authAdminToken, adminController.relatorioSemanal);
+router.post('/controle-fila', authAdminToken, adminController.controleFila);
+router.post('/estatisticas-gerais', authAdminToken, adminController.estatisticasGerais);
+router.post('/top-jogadores', authAdminToken, adminController.topJogadores);
+router.post('/transacoes-recentes', authAdminToken, adminController.transacoesRecentes);
+router.post('/chutes-recentes', authAdminToken, adminController.chutesRecentes);
+router.post('/relatorio-usuarios', authAdminToken, adminController.relatorioUsuarios);
+router.post('/logs', authAdminToken, adminController.logsSistema);
+router.post('/usuarios-bloqueados', authAdminToken, adminController.usuariosBloqueados);
+router.post('/suspender/:id', authAdminToken, adminController.suspenderUsuario);
+router.post('/bloquear', authAdminToken, adminController.bloquearUsuario);
+router.post('/desbloquear', authAdminToken, adminController.desbloquearUsuario);
+router.post('/backup-status', authAdminToken, adminController.statusBackup);
+router.get('/lista-usuarios', authAdminToken, adminController.listaUsuarios);
 
 // Exportações em CSV
-router.get('/exportar/usuarios-csv', authMiddleware, exportController.exportarUsuariosCSV);
-router.get('/exportar/chutes-csv', authMiddleware, exportController.exportarChutesCSV);
-router.get('/exportar/transacoes-csv', authMiddleware, exportController.exportarTransacoesCSV);
-router.get('/exportar/saques-csv', authMiddleware, exportController.exportarSaquesCSV);
-router.get('/exportar/relatorio-completo-csv', authMiddleware, exportController.exportarRelatorioCompletoCSV);
-router.get('/exportar/relatorio-geral-csv', authMiddleware, exportController.exportarRelatorioGeralCSV);
+router.get('/exportar/usuarios-csv', authAdminToken, exportController.exportarUsuariosCSV);
+router.get('/exportar/chutes-csv', authAdminToken, exportController.exportarChutesCSV);
+router.get('/exportar/transacoes-csv', authAdminToken, exportController.exportarTransacoesCSV);
+router.get('/exportar/saques-csv', authAdminToken, exportController.exportarSaquesCSV);
+router.get('/exportar/relatorio-completo-csv', authAdminToken, exportController.exportarRelatorioCompletoCSV);
+router.get('/exportar/relatorio-geral-csv', authAdminToken, exportController.exportarRelatorioGeralCSV);
 
 module.exports = router;

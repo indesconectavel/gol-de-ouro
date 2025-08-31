@@ -4,11 +4,31 @@ services:
     env: node
     plan: free
     buildCommand: npm install
-    startCommand: node server.js
+    startCommand: npm start
+    healthCheckPath: /health
+    healthCheckTimeout: 300
+    autoDeploy: true
     envVars:
       - key: DATABASE_URL
-        value: postgresql://postgres.uatszaqzdqcwnfbipoxg:Free10signer@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
+        sync: false
       - key: PORT
         value: 3000
+      - key: JWT_SECRET
+        sync: false
       - key: ADMIN_TOKEN
-        value: goldeouro123
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: NODE_ENV
+        value: production
+    buildFilter:
+      paths:
+        - "*.js"
+        - "*.json"
+        - "package*.json"
+        - "routes/**"
+        - "controllers/**"
+        - "middlewares/**"
+        - "models/**"
+        - "db.js"
+        - "server.js"
