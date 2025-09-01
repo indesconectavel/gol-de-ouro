@@ -1,258 +1,129 @@
-# 🚀 Gol de Ouro Backend
+# 🚀 Gol de Ouro - Backend + Admin
 
-Backend Node.js/Express para o jogo Gol de Ouro, com PostgreSQL e Supabase.
+Sistema completo de backend Node.js + admin React para o jogo Gol de Ouro.
 
 ## 🏗️ Arquitetura
 
-- **Framework**: Express.js
-- **Database**: PostgreSQL (Supabase)
-- **Autenticação**: JWT + Admin Token
-- **Segurança**: Helmet, Rate Limiting, CORS
-- **Validação**: Envalid para variáveis de ambiente
+- **Backend**: Node.js + Express + PostgreSQL (Render)
+- **Admin**: React + Vite + Tailwind CSS (Vercel)
+- **Banco**: PostgreSQL (Supabase/Render)
+- **Deploy**: Render (backend) + Vercel (admin)
 
 ## 🚀 Início Rápido
 
-### Pré-requisitos
-
-- Node.js >= 18.0.0
-- npm >= 8.0.0
-- PostgreSQL (ou Supabase)
-
-### Instalação
-
+### 1. Backend Local
 ```bash
-# Clone o repositório
-git clone <seu-repo>
 cd goldeouro-backend
-
-# Instale as dependências
 npm install
-
-# Configure as variáveis de ambiente
-cp .env.example .env
-# Edite .env com seus valores reais
-
-# Inicie o servidor
 npm start
 ```
+- ✅ Porta: 3000
+- ✅ Health: http://localhost:3000/health
+- ✅ API: http://localhost:3000/
 
-## 🔧 Variáveis de Ambiente
-
-### 📋 Tabela de Variáveis
-
-| Variável | Tipo | Obrigatória | Descrição | Exemplo |
-|----------|------|-------------|-----------|---------|
-| `DATABASE_URL` | string | ✅ | URL de conexão PostgreSQL | `postgresql://user:pass@host:5432/db?sslmode=require` |
-| `JWT_SECRET` | string | ✅ | Chave para assinatura JWT (min 32 chars) | `abc123def456...` |
-| `ADMIN_TOKEN` | string | ✅ | Token para rotas administrativas (min 16 chars) | `meu-token-admin-123` |
-| `PORT` | number | ❌ | Porta do servidor (padrão: 3000) | `3000` |
-| `CORS_ORIGINS` | string | ❌ | Origens permitidas para CORS | `http://localhost:5174,https://admin.vercel.app` |
-| `NODE_ENV` | string | ❌ | Ambiente (dev/staging/prod/test) | `development` |
-
-### 🔐 Configuração de Segurança
-
+### 2. Admin Local
 ```bash
-# Gere uma JWT_SECRET forte
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-
-# Gere um ADMIN_TOKEN único
-node -e "console.log(require('crypto').randomUUID())"
-```
-
-## 📁 Estrutura do Projeto
-
-```
-goldeouro-backend/
-├── config/
-│   └── env.js              # Validação de variáveis de ambiente
-├── controllers/             # Controladores da API
-├── middlewares/            # Middlewares (auth, validação)
-├── models/                 # Modelos de dados
-├── routes/                 # Rotas da API
-├── scripts/                # Scripts de deploy e teste
-├── .env.example           # Template de variáveis de ambiente
-├── .gitignore             # Arquivos ignorados pelo Git
-├── db.js                  # Conexão com banco de dados
-├── package.json           # Dependências e scripts
-├── README.md              # Este arquivo
-└── server.js              # Servidor principal
-```
-
-## 🛡️ Segurança
-
-### Middlewares Ativos
-
-- **Helmet**: Headers de segurança HTTP
-- **Rate Limiting**: 100 requests/15min por IP
-- **CORS**: Configuração dinâmica por ambiente
-- **Morgan**: Logs de acesso (exceto em testes)
-
-### Autenticação
-
-- **JWT**: Para usuários logados
-- **Admin Token**: Para rotas administrativas
-- **Validação**: Todas as variáveis são validadas na inicialização
-
-## 🧪 Testes
-
-### Smoke Test
-
-```bash
-# Teste rápido das rotas principais
-npm run smoke
-
-# Ou com token específico
-.\scripts\smoke.ps1 -AdminToken "seu_token_aqui"
-```
-
-### Verificação de Segurança
-
-```bash
-# Verifica configurações de segurança
-npm run security:check
-```
-
-## 🚀 Deploy
-
-### 🚀 Deploy Rápido no Render (1-Click)
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy/schema-new?template=https://github.com/seu-usuario/goldeouro-backend)
-
-**Passos para deploy rápido:**
-
-1. **Clique no botão acima** ou acesse: https://render.com/deploy/schema-new
-2. **Conecte seu GitHub** e selecione este repositório
-3. **Configure as variáveis obrigatórias:**
-   - `DATABASE_URL`: Sua URL do Supabase
-   - `JWT_SECRET`: Chave JWT (mínimo 32 caracteres)
-   - `ADMIN_TOKEN`: Token admin (mínimo 16 caracteres)
-4. **Clique em "Deploy"** - Render fará o resto automaticamente!
-
-**Variáveis pré-configuradas:**
-- ✅ `PORT`: 3000
-- ✅ `NODE_ENV`: production  
-- ✅ `CORS_ORIGINS`: http://localhost:5174,https://goldeouro-admin.vercel.app
-
-**URL gerada:** `https://goldeouro-backend-XXXX.onrender.com`
-
-### Scripts Disponíveis
-
-```bash
-# Deploy no Render (recomendado)
-npm run deploy:render
-
-# Deploy no Railway
-npm run deploy:railway
-
-# Deploy completo (backend + admin)
-npm run deploy:all
-
-# Verificação pós-deploy
-npm run verify
-```
-
-### Plataformas Suportadas
-
-- **Render** (gratuito, recomendado)
-- **Railway** (gratuito, alternativo)
-- **Vercel** (para admin frontend)
-
-## 📊 Monitoramento
-
-### Health Check
-
-```bash
-# Verificar status da API
-curl http://localhost:3000/health
-
-# Resposta esperada:
-{
-  "status": "healthy",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "database": "connected"
-}
-```
-
-### Logs
-
-```bash
-# Logs em desenvolvimento
-npm start
-
-# Logs em produção (Render)
-render logs goldeouro-backend
-
-# Logs em produção (Railway)
-railway logs
-```
-
-## 🔄 Desenvolvimento
-
-### Comandos Úteis
-
-```bash
-# Desenvolvimento com hot reload
+cd goldeouro-admin
+npm install
 npm run dev
+```
+- ✅ Porta: 5173 (ou 5174 se ocupada)
+- ✅ URL: http://localhost:5173
+- ✅ Fallback: http://localhost:5174
 
-# Teste de conexão com banco
-npm test
+## 🔧 Configuração
 
-# Verificar variáveis de ambiente
-npm run security:check
+### Backend (.env)
+```bash
+DATABASE_URL=postgresql://user:pass@host:port/db
+JWT_SECRET=sua_chave_jwt_super_secreta_aqui_minimo_32_chars
+ADMIN_TOKEN=seu_token_admin_unico_aqui
+PORT=3000
+NODE_ENV=development
 ```
 
-### Estrutura de Rotas
+### Admin (.env.local)
+```bash
+VITE_API_URL=http://localhost:3000
+VITE_ADMIN_TOKEN=seu_token_aqui
+```
 
+## 🧪 Smoke Tests
+
+### Local
+```bash
+.\scripts\smoke.local.ps1
+```
+
+### Produção
+```bash
+# 1. Configure scripts/prod.backend.url.txt
+# 2. Execute:
+.\scripts\smoke.prod.ps1
+```
+
+## 🚨 Emergência
+
+Se houver problemas de conexão:
+```bash
+.\scripts\emergency-startup.ps1
+```
+
+## 🌐 Deploy
+
+### Backend (Render)
+1. Configure variáveis de ambiente
+2. Deploy automático via Git
+3. URL: `https://seu-app.onrender.com`
+
+### Admin (Vercel)
+1. Configure `VITE_API_URL` no Vercel
+2. Deploy automático via Git
+3. URL: `https://goldeouro-admin.vercel.app`
+
+## 📚 Documentação
+
+- [Backend ENV](README-ENV-BACKEND.md)
+- [Admin ENV](goldeouro-admin/README-ENV-LOCAL.md)
+- [Deploy](DEPLOY.md)
+- [Deploy Rápido](DEPLOY-QUICK.md)
+
+## 🔒 Segurança
+
+- ✅ Helmet + CSP
+- ✅ Rate Limiting (200 req/min)
+- ✅ CORS configurado
+- ✅ Validação de ambiente
+- ✅ JWT + Admin Token
+
+## 🎯 Endpoints
+
+### Públicos
 - `GET /` - Status da API
 - `GET /health` - Health check
-- `POST /auth/register` - Registro de usuário
-- `POST /auth/login` - Login de usuário
-- `GET /admin/*` - Rotas administrativas (protegidas)
-- `GET /fila/*` - Rotas da fila de jogo
-- `GET /usuario/*` - Rotas de usuário
+- `GET /api/public/dashboard` - Dashboard público
 
-## 🚨 Troubleshooting
+### Protegidos
+- `GET /admin/test` - Rota de teste (requer x-admin-token)
 
-### Problemas Comuns
+## 🛠️ Tecnologias
 
-1. **Erro de conexão com banco**
-   - Verifique `DATABASE_URL` no `.env`
-   - Confirme se o Supabase está ativo
+- **Backend**: Express, PostgreSQL, Helmet, CORS
+- **Admin**: React 18, Vite, Tailwind CSS, Axios
+- **Deploy**: Render, Vercel
+- **Scripts**: PowerShell
 
-2. **Erro de autenticação**
-   - Verifique `JWT_SECRET` e `ADMIN_TOKEN`
-   - Confirme se os tokens têm o tamanho mínimo
-
-3. **Erro de CORS**
-   - Verifique `CORS_ORIGINS` no `.env`
-   - Inclua o domínio do frontend
-
-### Logs de Debug
+## 📝 Commits Sugeridos
 
 ```bash
-# Ver logs detalhados
-NODE_ENV=development npm start
-
-# Verificar variáveis carregadas
-npm run security:check
+fix(admin): router unificado, ErrorBoundary/Suspense e client de API padronizado
+chore(backend): health e CORS (localhost:5173/5174 + vercel app)
+docs: READMEs, .env.example e scripts de smoke (local/prod)
 ```
 
-## 📝 Contribuição
+## 🆘 Suporte
 
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
-
-## 🤝 Suporte
-
-Para suporte, abra uma issue no repositório ou entre em contato com a equipe de desenvolvimento.
-
----
-
-**⚠️ IMPORTANTE**: Nunca commite arquivos `.env` com valores reais. Use sempre `.env.example` como template.
+- **Local**: Execute smoke tests e verifique logs
+- **Produção**: Verifique variáveis de ambiente e conectividade
+- **Admin**: Confirme `VITE_API_URL` no Vercel
+- **Backend**: Valide DATABASE_URL e tokens no Render

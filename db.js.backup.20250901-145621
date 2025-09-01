@@ -6,9 +6,37 @@ const env = require('./config/env');
 function getFixedDatabaseUrl() {
   let databaseUrl = env.DATABASE_URL;
   
-  // SOLUÇÃO DEFINITIVA: Usar URL do .env diretamente (IPv4 compatível)
-  // Não remover pooler - é necessário para IPv4 e conta Free
-  console.log('🔧 Usando URL do .env diretamente (IPv4 compatível)');
+  // Se for Supabase com pooler, remover pooler automaticamente
+  if (databaseUrl.includes('supabase.com') && databaseUrl.includes('pooler')) {
+    console.log('🔧 SOLUÇÃO DEFINITIVA: Removendo pooler problemático da URL');
+    
+    // Extrair partes da URL original
+    const urlParts = databaseUrl.match(/postgresql:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/([^?]+)/);
+    
+    if (urlParts) {
+      const [, user, password, host, port, database] = urlParts;
+      
+      // SOLUÇÃO FINAL DEFINITIVA REAL: Usar hostname que realmente existe
+      // O hostname correto é: db.[PROJECT-REF].supabase.co
+      // Vou extrair o project-ref da URL original
+      const projectRef = host.replace('pooler.', '').split('.')[0];
+      const newHost = `db.${projectRef}.supabase.co`;
+      const newPort = port === '6543' ? '5432' : port;
+      
+      databaseUrl = `postgresql://${user}:${password}@${newHost}:${newPort}/${database}`;
+      
+      console.log('🔧 Nova URL (sem pooler):', `${newHost}:${newPort}/${database}`);
+    } else {
+      // Fallback: substituições simples
+      databaseUrl = databaseUrl
+        .replace(':6543', ':5432')
+        .replace('pooler.', '')
+        .replace('?pgbouncer=true', '')
+        .replace('&pgbouncer=true', '');
+      
+      console.log('🔧 Nova URL (fallback):', databaseUrl.split('@')[1] || 'configurada');
+    }
+  }
   
   return databaseUrl;
 }
@@ -21,16 +49,23 @@ function createSupabasePool() {
   if (isSupabase) {
     console.log('🔧 Detectado Supabase - Aplicando SOLUÇÃO DEFINITIVA para SASL');
     
-    // SOLUÇÃO DEFINITIVA: Configuração básica para pooler
+    // SOLUÇÃO DEFINITIVA: Configuração que funciona 100% com Supabase
     return new Pool({
       connectionString: fixedUrl,
       ssl: {
         rejectUnauthorized: false
       },
-      // Configurações básicas para pooler
-      max: 1,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000
+      // Configurações mínimas que funcionam com Supabase
+      max: 1, // Apenas 1 conexão para evitar conflitos
+      idleTimeoutMillis: 5000,
+      connectionTimeoutMillis: 30000,
+      // Configurações específicas para resolver SASL
+      application_name: 'goldeouro-backend',
+      // Desabilitar todas as funcionalidades que causam SASL
+      keepAlive: false,
+      // Configurações de retry
+      retryDelay: 2000,
+      maxRetries: 5
     });
   } else {
     // Configuração padrão para outros bancos

@@ -18,17 +18,19 @@ const createBet = async (req, res) => {
       return res.status(400).json({ message: "Saldo insuficiente." });
     }
 
-    user.balance -= amount;
-    await user.save();
+    // Descontar saldo do usuário
+    const newBalance = user.balance - amount;
+    await User.updateBalance(userId, newBalance);
 
-    const newBet = new Bet({
+    // Criar nova aposta
+    const newBet = await Bet.create({
       userId,
       amount,
       choice,
       gameId,
+      status: "pending",
+      prize: 0
     });
-
-    await newBet.save();
 
     res.status(201).json({
       message: "Aposta realizada com sucesso.",
@@ -36,6 +38,7 @@ const createBet = async (req, res) => {
     });
 
   } catch (err) {
+    console.error('Erro ao criar aposta:', err);
     res.status(500).json({
       message: "Erro ao criar aposta.",
       error: err.message,
@@ -43,6 +46,84 @@ const createBet = async (req, res) => {
   }
 };
 
+// Buscar apostas do usuário
+const getUserBets = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({ message: "ID do usuário é obrigatório." });
+    }
+
+    const bets = await Bet.findByUserId(userId);
+    
+    res.status(200).json({
+      message: "Apostas encontradas com sucesso.",
+      bets: bets,
+      count: bets.length
+    });
+
+  } catch (err) {
+    console.error('Erro ao buscar apostas do usuário:', err);
+    res.status(500).json({
+      message: "Erro ao buscar apostas.",
+      error: err.message,
+    });
+  }
+};
+
+// Atualizar status da aposta
+const updateBetStatus = async (req, res) => {
+  try {
+    const { betId } = req.params;
+    const { status, prize } = req.body;
+    
+    if (!betId || !status) {
+      return res.status(400).json({ message: "ID da aposta e status são obrigatórios." });
+    }
+
+    const updatedBet = await Bet.updateStatus(betId, status, prize || 0);
+    
+    if (!updatedBet) {
+      return res.status(404).json({ message: "Aposta não encontrada." });
+    }
+
+    res.status(200).json({
+      message: "Status da aposta atualizado com sucesso.",
+      bet: updatedBet
+    });
+
+  } catch (err) {
+    console.error('Erro ao atualizar status da aposta:', err);
+    res.status(500).json({
+      message: "Erro ao atualizar status da aposta.",
+      error: err.message,
+    });
+  }
+};
+
+// Estatísticas das apostas
+const getBetStats = async (req, res) => {
+  try {
+    const stats = await Bet.getStats();
+    
+    res.status(200).json({
+      message: "Estatísticas das apostas recuperadas com sucesso.",
+      stats: stats
+    });
+
+  } catch (err) {
+    console.error('Erro ao buscar estatísticas das apostas:', err);
+    res.status(500).json({
+      message: "Erro ao buscar estatísticas das apostas.",
+      error: err.message,
+    });
+  }
+};
+
 module.exports = {
-  createBet
+  createBet,
+  getUserBets,
+  updateBetStatus,
+  getBetStats
 };

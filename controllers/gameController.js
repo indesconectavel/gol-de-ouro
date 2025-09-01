@@ -29,16 +29,16 @@ const createBet = async (req, res) => {
     }
 
     // verificar se jogo está ativo
-    if (game.gameStatus !== "waiting" && game.gameStatus !== "active") {
+    if (game.game_status !== "waiting" && game.game_status !== "active") {
       return res.status(400).json({ message: "Jogo não está disponível para apostas." });
     }
 
     // descontar saldo do usuário
-    user.balance -= amount;
-    await user.save();
+    const newBalance = user.balance - amount;
+    await User.updateBalance(userId, newBalance);
 
     // registrar aposta
-    const newBet = new Bet({
+    const newBet = await Bet.create({
       userId,
       amount,
       choice,
@@ -46,17 +46,14 @@ const createBet = async (req, res) => {
       status: "pending",
       prize: 0
     });
-    await newBet.save();
 
     // adicionar jogador ao game se não estiver listado
-    if (!game.players.includes(userId)) {
-      game.players.push(userId);
-    }
+    await Game.addPlayer(gameId, userId);
 
     // marcar o jogo como ativo se for a primeira aposta
-    game.gameStatus = "active";
-
-    await game.save();
+    if (game.game_status === "waiting") {
+      await Game.update(gameId, { gameStatus: "active" });
+    }
 
     res.status(201).json({
       message: "Aposta realizada com sucesso.",
@@ -64,6 +61,7 @@ const createBet = async (req, res) => {
     });
 
   } catch (err) {
+    console.error('Erro ao criar aposta:', err);
     res.status(500).json({
       message: "Erro ao criar aposta.",
       error: err.message,
