@@ -28,7 +28,7 @@ function createSupabasePool() {
         rejectUnauthorized: false
       },
       // Configurações básicas para pooler
-      max: 1,
+      max: 5,
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 10000
     });

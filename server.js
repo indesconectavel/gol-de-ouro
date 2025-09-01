@@ -132,8 +132,9 @@ app.use('*', (req, res) => {
 });
 
 // Inicialização do servidor
-app.listen(env.PORT, () => {
-  console.log(`✅ Servidor rodando na porta ${env.PORT}`);
+const PORT = Number(process.env.PORT) || Number(env.PORT) || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Servidor rodando na porta ${PORT}`);
   console.log(`🌍 Ambiente: ${env.NODE_ENV}`);
   console.log(`🌐 CORS configurado para: ${corsOrigins.join(', ')}`);
   console.log(`🏥 Healthcheck disponível em: /health`);
