@@ -28,9 +28,11 @@ function createSupabasePool() {
         rejectUnauthorized: false
       },
       // Configurações básicas para pooler
-      max: 5,
-      idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 10000
+      max: 2,
+      min: 0,
+      idleTimeoutMillis: 10000,
+      connectionTimeoutMillis: 5000,
+      acquireTimeoutMillis: 5000
     });
   } else {
     // Configuração padrão para outros bancos
