@@ -80,6 +80,7 @@ const filaRoutes = require('./routes/filaRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const healthRoutes = require('./routes/health');
 const publicDashboard = require('./routes/publicDashboard');
+const testRoutes = require('./routes/test');
 
 // Registro de rotas
 app.use('/admin', adminRoutes);
@@ -91,6 +92,7 @@ app.use('/health', healthRoutes);
 // Registrar rota pública do dashboard
 const pool = require('./db');
 publicDashboard(app, pool);
+testRoutes(app, pool);
 
 // Rota de teste da API
 app.get('/', (req, res) => {
