@@ -1,0 +1,33 @@
+# 🎵 Placeholder para Arquivos de Som
+
+Este arquivo serve como placeholder para os arquivos de áudio.
+
+## 📋 Arquivos Necessários:
+
+### Sons de Resultado
+- goal.mp3
+- miss.mp3  
+- golden-goal.mp3
+
+### Sons de Interface
+- button-click.mp3
+- button-hover.mp3
+- notification.mp3
+
+### Sons de Jogo
+- queue-join.mp3
+- queue-leave.mp3
+- game-start.mp3
+- game-end.mp3
+
+### Sons de Animação
+- ball-kick.mp3
+- goalkeeper-save.mp3
+- crowd-cheer.mp3
+- crowd-disappoint.mp3
+
+## 🎯 Para Produção:
+
+Substitua este arquivo pelos arquivos de áudio reais em formato MP3.
+
+O sistema está configurado para carregar automaticamente os sons quando disponíveis.
