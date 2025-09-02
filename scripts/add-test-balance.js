@@ -13,8 +13,8 @@ async function addTestBalance() {
   try {
     console.log('💰 Adicionando saldo de teste para usuários...');
     
-    // Adicionar saldo para usuários 1-5
-    for (let userId = 1; userId <= 5; userId++) {
+    // Adicionar saldo para usuários 1-10
+    for (let userId = 1; userId <= 10; userId++) {
       await pool.query(
         'UPDATE users SET balance = balance + 10.00 WHERE id = $1',
         [userId]
