@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
 
 // Carregar e validar variáveis de ambiente
 const env = require('./config/env');
@@ -135,12 +137,90 @@ app.use('*', (req, res) => {
   });
 });
 
+// Criar servidor HTTP
+const httpServer = createServer(app);
+
+// Configurar Socket.io
+const io = new Server(httpServer, {
+  cors: {
+    origin: corsOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
+// Middleware de autenticação para Socket.io
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  if (!token) {
+    return next(new Error('Token de autenticação necessário'));
+  }
+  
+  try {
+    const jwt = require('jsonwebtoken');
+    const decoded = jwt.verify(token, env.JWT_SECRET);
+    socket.userId = decoded.userId;
+    socket.userEmail = decoded.email;
+    next();
+  } catch (err) {
+    next(new Error('Token inválido'));
+  }
+});
+
+// Eventos do Socket.io
+io.on('connection', (socket) => {
+  console.log(`🔌 Usuário conectado: ${socket.userEmail} (${socket.id})`);
+  
+  // Entrar na sala de fila
+  socket.on('join-queue', () => {
+    socket.join('queue');
+    console.log(`👥 ${socket.userEmail} entrou na fila`);
+    io.to('queue').emit('queue-updated', { message: 'Fila atualizada' });
+  });
+  
+  // Sair da sala de fila
+  socket.on('leave-queue', () => {
+    socket.leave('queue');
+    console.log(`👋 ${socket.userEmail} saiu da fila`);
+    io.to('queue').emit('queue-updated', { message: 'Fila atualizada' });
+  });
+  
+  // Entrar na sala de uma partida específica
+  socket.on('join-game', (gameId) => {
+    socket.join(`game-${gameId}`);
+    console.log(`🎮 ${socket.userEmail} entrou na partida ${gameId}`);
+  });
+  
+  // Sair da sala de uma partida
+  socket.on('leave-game', (gameId) => {
+    socket.leave(`game-${gameId}`);
+    console.log(`🚪 ${socket.userEmail} saiu da partida ${gameId}`);
+  });
+  
+  // Notificar chute realizado
+  socket.on('shot-taken', (data) => {
+    const { gameId, shotResult, isGoldenGoal } = data;
+    io.to(`game-${gameId}`).emit('shot-result', {
+      userId: socket.userId,
+      userEmail: socket.userEmail,
+      shotResult,
+      isGoldenGoal
+    });
+  });
+  
+  // Desconexão
+  socket.on('disconnect', () => {
+    console.log(`🔌 Usuário desconectado: ${socket.userEmail} (${socket.id})`);
+  });
+});
+
 // Inicialização do servidor
 const PORT = Number(process.env.PORT) || Number(env.PORT) || 3000;
-app.listen(PORT, '0.0.0.0', () => {
+httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Servidor rodando na porta ${PORT}`);
   console.log(`🌍 Ambiente: ${env.NODE_ENV}`);
   console.log(`🌐 CORS configurado para: ${corsOrigins.join(', ')}`);
   console.log(`🏥 Healthcheck disponível em: /health`);
   console.log(`🛡️ Segurança: Helmet + Rate Limit ativos`);
+  console.log(`🔌 Socket.io ativo para conexões em tempo real`);
 });

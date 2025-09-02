@@ -41,4 +41,24 @@ router.get('/ping', (req, res) => {
     });
 });
 
+// Endpoint temporário para gerar token de teste
+router.get('/test-token', (req, res) => {
+    const jwt = require('jsonwebtoken');
+    const env = require('../config/env');
+    
+    const testUser = {
+        id: 1,
+        email: 'teste@exemplo.com',
+        name: 'Usuário Teste'
+    };
+    
+    const token = jwt.sign(testUser, env.JWT_SECRET, { expiresIn: '1h' });
+    
+    res.json({
+        token: token,
+        user: testUser,
+        secret: env.JWT_SECRET.substring(0, 10) + '...'
+    });
+});
+
 module.exports = router;
