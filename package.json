@@ -7,6 +7,7 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "test": "node test-db.js",
+    "db:update": "node scripts/update-database.js",
     "smoke": "powershell -ExecutionPolicy Bypass -File .\\scripts\\smoke.ps1",
     "deploy:render": "powershell -ExecutionPolicy Bypass -File .\\scripts\\deploy-backend.ps1 -Platform render",
     "deploy:railway": "powershell -ExecutionPolicy Bypass -File .\\scripts\\deploy-backend.ps1 -Platform railway",
@@ -29,6 +30,7 @@
     "helmet": "^7.1.0",
     "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
+    "mercadopago": "^2.8.0",
     "morgan": "^1.10.0",
     "pg": "^8.16.3"
   },

@@ -78,6 +78,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const authRoutes = require('./routes/authRoutes');
 const filaRoutes = require('./routes/filaRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 const healthRoutes = require('./routes/health');
 const publicDashboard = require('./routes/publicDashboard');
 const testRoutes = require('./routes/test');
@@ -87,6 +88,7 @@ app.use('/admin', adminRoutes);
 app.use('/auth', authRoutes);
 app.use('/fila', filaRoutes);
 app.use('/usuario', usuarioRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/health', healthRoutes);
 
 // Registrar rota pública do dashboard
@@ -127,7 +129,7 @@ app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Rota não encontrada',
     message: `A rota ${req.originalUrl} não existe`,
-    availableRoutes: ['/', '/health', '/admin', '/auth', '/fila', '/usuario', '/api/public/dashboard']
+    availableRoutes: ['/', '/health', '/admin', '/auth', '/fila', '/usuario', '/api/payments', '/api/public/dashboard']
   });
 });
 

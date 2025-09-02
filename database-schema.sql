@@ -66,7 +66,33 @@ CREATE TABLE IF NOT EXISTS transactions (
     transaction_date TIMESTAMP DEFAULT NOW()
 );
 
--- Índices para performance
+-- Tabela de pagamentos PIX
+CREATE TABLE IF NOT EXISTS pix_payments (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    mercado_pago_id VARCHAR(255) UNIQUE NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    pix_code TEXT,
+    qr_code TEXT,
+    expires_at TIMESTAMP,
+    paid_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Tabela de webhooks do Mercado Pago
+CREATE TABLE IF NOT EXISTS mercado_pago_webhooks (
+    id SERIAL PRIMARY KEY,
+    webhook_id VARCHAR(255) UNIQUE NOT NULL,
+    event_type VARCHAR(100) NOT NULL,
+    payment_id VARCHAR(255),
+    processed BOOLEAN DEFAULT FALSE,
+    payload JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Índices para performance (criados após as tabelas)
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_bets_user_id ON bets(user_id);
 CREATE INDEX IF NOT EXISTS idx_bets_game_id ON bets(game_id);
@@ -75,6 +101,11 @@ CREATE INDEX IF NOT EXISTS idx_queue_user_id ON queue_board(user_id);
 CREATE INDEX IF NOT EXISTS idx_queue_status ON queue_board(status);
 CREATE INDEX IF NOT EXISTS idx_shot_user_id ON shot_attempts(user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_pix_payments_user_id ON pix_payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_pix_payments_status ON pix_payments(status);
+CREATE INDEX IF NOT EXISTS idx_pix_payments_mercado_pago_id ON pix_payments(mercado_pago_id);
+CREATE INDEX IF NOT EXISTS idx_webhooks_processed ON mercado_pago_webhooks(processed);
+CREATE INDEX IF NOT EXISTS idx_webhooks_payment_id ON mercado_pago_webhooks(payment_id);
 
 -- Função para atualizar updated_at automaticamente
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -93,6 +124,9 @@ CREATE TRIGGER update_games_updated_at BEFORE UPDATE ON games
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_bets_updated_at BEFORE UPDATE ON bets
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_pix_payments_updated_at BEFORE UPDATE ON pix_payments
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Inserir dados de exemplo (opcional)

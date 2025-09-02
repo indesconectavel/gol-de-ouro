@@ -65,7 +65,15 @@ const verifyJWT = (req, res, next) => {
   }
 };
 
+// Middleware de verificação de token (para compatibilidade)
+const verifyToken = verifyJWT;
+
+// Middleware de verificação de token admin
+const verifyAdminToken = authAdminToken;
+
 module.exports = {
   authAdminToken,
-  verifyJWT
+  verifyJWT,
+  verifyToken,
+  verifyAdminToken
 };

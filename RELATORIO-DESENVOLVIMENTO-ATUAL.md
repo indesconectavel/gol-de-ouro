@@ -50,6 +50,13 @@
 - ✅ `/health` - Healthcheck
 - ✅ CORS configurado
 
+### **Sistema de Pagamentos PIX**
+- ✅ `/api/payments/pix/criar` - Criar pagamento PIX
+- ✅ `/api/payments/pix/status/:id` - Consultar status
+- ✅ `/api/payments/pix/usuario/:id` - Listar pagamentos do usuário
+- ✅ `/api/payments/webhook` - Webhook Mercado Pago
+- ✅ `/api/payments/admin/todos` - Listar todos os pagamentos (admin)
+
 ### **Segurança**
 - ✅ Credenciais atualizadas
 - ✅ GitGuardian limpo
@@ -74,11 +81,13 @@
 
 ## 📱 PRÓXIMAS ETAPAS
 
-### **1. Sistema de Pagamento PIX (Mercado Pago)**
-- 🔄 Integração com API do Mercado Pago
-- 🔄 Webhook para confirmação de pagamentos
-- 🔄 Sistema de saldo de usuários
-- 🔄 Histórico de transações
+### **1. Sistema de Pagamento PIX (Mercado Pago)** ✅ CONCLUÍDO
+- ✅ Integração com API do Mercado Pago
+- ✅ Webhook para confirmação de pagamentos
+- ✅ Sistema de saldo de usuários
+- ✅ Histórico de transações
+- ✅ Endpoints completos para PIX
+- ✅ Documentação da API
 
 ### **2. Regras do Jogo**
 - 🔄 Sistema de fila de jogadores
@@ -109,6 +118,7 @@
 - JWT
 - Helmet
 - CORS
+- Mercado Pago SDK
 
 ### **Frontend**
 - React 18
@@ -149,11 +159,11 @@
 - Banco de dados
 - Deploy produção
 
-### **Fase 2: Pagamentos** 🔄 EM ANDAMENTO
-- Integração Mercado Pago
-- Sistema PIX
-- Webhooks
-- Saldo de usuários
+### **Fase 2: Pagamentos** ✅ CONCLUÍDA
+- ✅ Integração Mercado Pago
+- ✅ Sistema PIX
+- ✅ Webhooks
+- ✅ Saldo de usuários
 
 ### **Fase 3: Gameplay** ⏳ PENDENTE
 - Regras do jogo
@@ -177,12 +187,16 @@
 
 ## 🚀 CONCLUSÃO
 
-O sistema base está **100% funcional** e pronto para a próxima etapa. Todas as funcionalidades core foram implementadas com sucesso, incluindo:
+O sistema está **100% funcional** com pagamentos PIX implementados! Todas as funcionalidades core foram implementadas com sucesso, incluindo:
 
 - ✅ Backend robusto e seguro
 - ✅ Admin panel moderno
 - ✅ Banco de dados otimizado
 - ✅ Deploy em produção
 - ✅ Segurança validada
+- ✅ Sistema de pagamentos PIX completo
+- ✅ Integração com Mercado Pago
+- ✅ Webhooks automáticos
+- ✅ API documentada
 
-**Próximo passo:** Configurar sistema de pagamento PIX com Mercado Pago.
+**Próximo passo:** Implementar regras do jogo e mecânica de chutes.

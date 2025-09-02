@@ -32,6 +32,17 @@ const env = cleanEnv(process.env, {
     example: 'http://localhost:5174,https://seu-admin.vercel.app'
   }),
 
+  // Mercado Pago
+  MERCADOPAGO_ACCESS_TOKEN: str({
+    desc: 'Access Token do Mercado Pago',
+    example: 'APP_USR-1234567890abcdef-12345678-90abcdef1234567890abcdef12345678-12345678'
+  }),
+
+  MERCADOPAGO_WEBHOOK_SECRET: str({
+    desc: 'Secret para validação de webhooks do Mercado Pago',
+    example: 'seu_webhook_secret_aqui'
+  }),
+
   // Ambiente
   NODE_ENV: str({
     desc: 'Ambiente de execução',
