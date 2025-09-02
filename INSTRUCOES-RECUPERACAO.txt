@@ -1,0 +1,37 @@
+=== INSTRUÇÕES DE RECUPERAÇÃO ===
+
+Para restaurar o sistema a partir deste backup:
+
+1. RESTAURAR ARQUIVO .ENV:
+   Copy-Item "backup\.env" -Destination ".env"
+
+2. INSTALAR DEPENDÊNCIAS:
+   npm install
+
+3. INICIAR BACKEND:
+   node server.js
+
+4. TESTAR SISTEMA:
+   .\scripts\test-complete-system.ps1
+
+5. VERIFICAR PRODUÇÃO:
+   - Backend: https://goldeouro-backend.onrender.com
+   - Admin: https://goldeouro-admin.vercel.app
+
+=== COMANDOS DE EMERGÊNCIA ===
+- Parar processos Node: Get-Process node | Stop-Process -Force
+- Liberar porta 3000: netstat -ano | findstr :3000
+- Verificar logs: Get-Content "logs/app.log" -Tail 50
+- Testar conexão DB: .\scripts\test-db-connection.ps1
+
+=== SCRIPTS DISPONÍVEIS ===
+- .\scripts\create-env.ps1 - Criar arquivo .env
+- .\scripts\test-complete-system.ps1 - Testar sistema completo
+- .\scripts\security-audit.ps1 - Auditoria de segurança
+- .\scripts\create-recovery-point.ps1 - Criar ponto de recuperação
+
+=== CONTATOS DE EMERGÊNCIA ===
+- Supabase: https://supabase.com/dashboard
+- Render: https://dashboard.render.com
+- Vercel: https://vercel.com/dashboard
+- GitGuardian: https://dashboard.gitguardian.com

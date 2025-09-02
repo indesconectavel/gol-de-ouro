@@ -1,0 +1,16 @@
+[33mcommit 6752f01b7a9ee9dfe2da493454c948fd30c068dd[m
+Author: Fred S. Silva <indesconectavel@gmail.com>
+Date:   Tue Sep 2 03:18:26 2025 -0300
+
+    SECURITY FIX: Update database credentials after exposure - Updated DATABASE_URL with new secure password - Added emergency credential management scripts - Fixed PostgreSQL URI exposure vulnerability - Generated new secure password
+
+.env
+scripts/check-status.ps1
+scripts/commit-security-fix.ps1
+scripts/emergency-credentials-fix.ps1
+scripts/fix-credentials-simple.ps1
+scripts/generate-new-credentials.ps1
+scripts/new-database-url.txt
+scripts/restart-automatico.ps1
+scripts/restart-complete.ps1
+scripts/update-credentials.ps1

@@ -27,12 +27,15 @@ function createSupabasePool() {
       ssl: {
         rejectUnauthorized: false
       },
-      // Configurações básicas para pooler
-      max: 1,
+      // Configurações otimizadas para Supabase pooler
+      max: 2,
       min: 0,
-      idleTimeoutMillis: 5000,
-      connectionTimeoutMillis: 3000,
-      acquireTimeoutMillis: 3000
+      idleTimeoutMillis: 10000,
+      connectionTimeoutMillis: 5000,
+      acquireTimeoutMillis: 5000,
+      // Configurações específicas para resolver SASL
+      statement_timeout: 30000,
+      query_timeout: 30000
     });
   } else {
     // Configuração padrão para outros bancos
