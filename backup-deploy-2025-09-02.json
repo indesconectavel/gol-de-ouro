@@ -1,0 +1,45 @@
+{
+  "timestamp": "2025-09-02T22:51:54.773Z",
+  "version": "1.0.0",
+  "systems": {
+    "backend": {
+      "status": "error",
+      "url": "",
+      "files": [
+        "server.js",
+        "package.json",
+        ".env",
+        "db.js",
+        "render.yaml",
+        "Procfile"
+      ]
+    },
+    "admin": {
+      "status": "ready",
+      "url": "https://goldeouro-admin.vercel.app",
+      "files": [
+        "package.json",
+        "vite.config.js",
+        "vercel.json",
+        "src/",
+        "dist/"
+      ]
+    },
+    "player": {
+      "status": "ready",
+      "url": "https://goldeouro-player.vercel.app",
+      "files": [
+        "package.json",
+        "vite.config.js",
+        "vercel.json",
+        "src/",
+        "dist/"
+      ]
+    }
+  },
+  "deploy": {
+    "backend": "Render.com",
+    "admin": "Vercel",
+    "player": "Vercel"
+  }
+}

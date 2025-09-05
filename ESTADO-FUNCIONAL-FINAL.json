@@ -1,0 +1,243 @@
+{
+  "timestamp": "2025-09-02T21:15:14.609Z",
+  "versao": "1.0.0",
+  "status": "FUNCIONAL",
+  "resumo": {
+    "sucessos": 19,
+    "problemas": 0,
+    "taxaSucesso": "100.0%"
+  },
+  "componentes": {
+    "backend": "OK",
+    "frontend": "OK",
+    "endpoints": "5/5",
+    "dados": "CONGRUENTES"
+  },
+  "detalhes": {
+    "timestamp": "2025-09-02T21:15:13.759Z",
+    "backend": {
+      "health": {
+        "status": 200,
+        "data": {
+          "status": "healthy",
+          "timestamp": "2025-09-02T21:15:14.061Z",
+          "uptime": 5594.1986629,
+          "environment": "production",
+          "version": "1.0.0",
+          "database": "connected"
+        },
+        "funcionando": true
+      }
+    },
+    "frontend": {
+      "status": {
+        "funcionando": true,
+        "porta": 5173
+      }
+    },
+    "endpoints": {
+      "Dashboard Público": {
+        "status": 200,
+        "funcionando": true,
+        "dados": {
+          "ok": true,
+          "users": 33,
+          "games": {
+            "total": 1,
+            "waiting": 1,
+            "active": 0,
+            "finished": 0
+          },
+          "bets": 0,
+          "queue": 15,
+          "lastUpdated": "2025-09-02T21:15:14.505Z"
+        }
+      },
+      "Estatísticas de Jogos": {
+        "status": 200,
+        "funcionando": true,
+        "dados": {
+          "success": true,
+          "data": {
+            "totalGames": 100,
+            "activeGames": 8,
+            "completedGames": 92,
+            "averageGameDuration": 45,
+            "popularGameTypes": [
+              {
+                "name": "Chute ao Gol",
+                "count": 60
+              },
+              {
+                "name": "Penalty",
+                "count": 25
+              },
+              {
+                "name": "Falta",
+                "count": 15
+              }
+            ],
+            "gameCompletionRate": 92,
+            "goldenGoals": 12,
+            "nextGoldenGoal": 100,
+            "totalBets": 1000,
+            "totalPrizes": 500,
+            "goldenGoalPrize": 50
+          }
+        }
+      },
+      "Jogos Recentes": {
+        "status": 200,
+        "funcionando": true,
+        "dados": {
+          "success": true,
+          "data": [
+            {
+              "id": 1,
+              "player": "João Silva",
+              "gameType": "Chute ao Gol",
+              "result": "Gol",
+              "timestamp": "2025-09-02T21:10:14.518Z",
+              "bet": 10.5
+            },
+            {
+              "id": 2,
+              "player": "Maria Santos",
+              "gameType": "Penalty",
+              "result": "Defesa",
+              "timestamp": "2025-09-02T21:03:14.518Z",
+              "bet": 25
+            },
+            {
+              "id": 3,
+              "player": "Pedro Costa",
+              "gameType": "Falta",
+              "result": "Gol",
+              "timestamp": "2025-09-02T20:57:14.518Z",
+              "bet": 15.75
+            },
+            {
+              "id": 4,
+              "player": "Ana Oliveira",
+              "gameType": "Chute ao Gol",
+              "result": "Fora",
+              "timestamp": "2025-09-02T20:50:14.518Z",
+              "bet": 8
+            },
+            {
+              "id": 5,
+              "player": "Carlos Lima",
+              "gameType": "Penalty",
+              "result": "Gol",
+              "timestamp": "2025-09-02T20:43:14.518Z",
+              "bet": 30
+            }
+          ]
+        }
+      },
+      "Opções de Chute": {
+        "status": 200,
+        "funcionando": true,
+        "dados": {
+          "success": true,
+          "data": [
+            {
+              "id": 1,
+              "name": "Canto Superior Esquerdo",
+              "description": "Chute no canto superior esquerdo",
+              "position_x": "20.00",
+              "position_y": "20.00",
+              "difficulty_level": 2,
+              "created_at": "2025-09-02T13:37:47.852Z",
+              "updated_at": "2025-09-02T14:53:00.180Z"
+            },
+            {
+              "id": 2,
+              "name": "Canto Superior Direito",
+              "description": "Chute no canto superior direito",
+              "position_x": "80.00",
+              "position_y": "20.00",
+              "difficulty_level": 2,
+              "created_at": "2025-09-02T13:37:47.852Z",
+              "updated_at": "2025-09-02T14:53:00.180Z"
+            },
+            {
+              "id": 3,
+              "name": "Centro Superior",
+              "description": "Chute no centro superior",
+              "position_x": "50.00",
+              "position_y": "15.00",
+              "difficulty_level": 1,
+              "created_at": "2025-09-02T13:37:47.852Z",
+              "updated_at": "2025-09-02T14:53:00.180Z"
+            },
+            {
+              "id": 4,
+              "name": "Canto Inferior Esquerdo",
+              "description": "Chute no canto inferior esquerdo",
+              "position_x": "20.00",
+              "position_y": "80.00",
+              "difficulty_level": 3,
+              "created_at": "2025-09-02T13:37:47.852Z",
+              "updated_at": "2025-09-02T14:53:00.180Z"
+            },
+            {
+              "id": 5,
+              "name": "Canto Inferior Direito",
+              "description": "Chute no canto inferior direito",
+              "position_x": "80.00",
+              "position_y": "80.00",
+              "difficulty_level": 3,
+              "created_at": "2025-09-02T13:37:47.852Z",
+              "updated_at": "2025-09-02T14:53:00.180Z"
+            }
+          ]
+        }
+      },
+      "Endpoint de Teste": {
+        "status": 200,
+        "funcionando": true,
+        "dados": {
+          "ok": true,
+          "message": "Teste OK",
+          "timestamp": "2025-09-02T21:15:14.577Z"
+        }
+      }
+    },
+    "dados": {
+      "congruencia": {
+        "totalGames": true,
+        "totalBets": true,
+        "totalPrizes": true,
+        "nextGoldenGoal": true
+      }
+    },
+    "problemas": [],
+    "sucessos": [
+      "Backend funcionando (porta 3000)",
+      "Frontend rodando (porta 5173)",
+      "Dashboard Público funcionando",
+      "Estatísticas de Jogos funcionando",
+      "Jogos Recentes funcionando",
+      "Opções de Chute funcionando",
+      "Endpoint de Teste funcionando",
+      "Dados fictícios congruentes (100 chutes)",
+      "Arquivo goldeouro-admin/src/components/DashboardCards.jsx existe",
+      "Arquivo goldeouro-admin/src/components/QueueSystem.jsx existe",
+      "Arquivo goldeouro-admin/src/components/GameDashboard.jsx existe",
+      "Arquivo goldeouro-admin/src/components/AudioControls.jsx existe",
+      "Arquivo goldeouro-admin/src/hooks/useSound.js existe",
+      "Arquivo routes/gameRoutes.js existe",
+      "Arquivo server.js existe",
+      "Arquivo .env existe",
+      "Variável CORS_ORIGINS configurada",
+      "Variável MERCADOPAGO_ACCESS_TOKEN configurada",
+      "Variável NODE_ENV configurada"
+    ],
+    "configuracoes": {
+      "CORS_ORIGINS": true,
+      "MERCADOPAGO_ACCESS_TOKEN": true,
+      "NODE_ENV": true
+    }
+  }
+}

@@ -1,16 +1,37 @@
+// Configuração para garbage collection manual
+// Para ativar: node --expose-gc server.js
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
+const compression = require('compression');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
+
+// Importar sistemas de monitoramento
+const { requestLogger, errorLogger } = require('./src/utils/logger');
+const { httpMetricsMiddleware, startSystemMetricsCollection } = require('./src/utils/metrics');
+const analyticsCollector = require('./src/utils/analytics');
+const systemMonitor = require('./src/utils/monitoring');
 
 // Carregar e validar variáveis de ambiente
 const env = require('./config/env');
 
 const app = express();
+
+// Inicializar sistemas de monitoramento
+startSystemMetricsCollection();
+
+// Middleware de compressão
+app.use(compression());
+
+// Middleware de logging estruturado
+app.use(requestLogger);
+
+// Middleware de métricas HTTP
+app.use(httpMetricsMiddleware);
 
 // Configurações de segurança com Helmet
 app.use(helmet({
@@ -85,6 +106,9 @@ const gameRoutes = require('./routes/gameRoutes');
 const healthRoutes = require('./routes/health');
 const publicDashboard = require('./routes/publicDashboard');
 const testRoutes = require('./routes/test');
+const analyticsRoutes = require('./routes/analyticsRoutes');
+const monitoringDashboard = require('./routes/monitoringDashboard');
+const gamificationIntegration = require('./routes/gamification_integration');
 
 // Registro de rotas
 app.use('/admin', adminRoutes);
@@ -94,11 +118,14 @@ app.use('/usuario', usuarioRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/health', healthRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/gamification', gamificationIntegration);
 
 // Registrar rota pública do dashboard
 const pool = require('./db');
 publicDashboard(app, pool);
 testRoutes(app, pool);
+monitoringDashboard(app, pool);
 
 // Rota de teste da API
 app.get('/', (req, res) => {
@@ -111,8 +138,22 @@ app.get('/', (req, res) => {
 });
 
 // Middleware de tratamento de erros
+app.use(errorLogger);
 app.use((err, req, res, next) => {
-  console.error('Erro não tratado:', err);
+  // Registrar erro no sistema de monitoramento
+  analyticsCollector.trackSecurityEvent({
+    eventType: 'application_error',
+    severity: 'error',
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    userId: req.user?.id || null,
+    details: {
+      error: err.message,
+      stack: err.stack,
+      url: req.url,
+      method: req.method
+    }
+  });
   
   // Em produção, não expor detalhes do erro
   if (env.NODE_ENV === 'production') {
@@ -171,11 +212,30 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
   console.log(`🔌 Usuário conectado: ${socket.userEmail} (${socket.id})`);
   
+  // Registrar conexão no analytics
+  analyticsCollector.trackUserLogin({
+    id: socket.userId,
+    email: socket.userEmail,
+    method: 'websocket',
+    ip: socket.handshake.address
+  });
+  
+  // Atualizar métricas de WebSocket
+  systemMonitor.updateWebSocketConnections(io.engine.clientsCount);
+  
   // Entrar na sala de fila
   socket.on('join-queue', () => {
     socket.join('queue');
     console.log(`👥 ${socket.userEmail} entrou na fila`);
     io.to('queue').emit('queue-updated', { message: 'Fila atualizada' });
+    
+    // Registrar evento no analytics
+    analyticsCollector.trackGameJoined({
+      gameId: 'queue',
+      userId: socket.userId,
+      playerCount: io.sockets.adapter.rooms.get('queue')?.size || 0,
+      position: 0
+    });
   });
   
   // Sair da sala de fila
@@ -189,6 +249,14 @@ io.on('connection', (socket) => {
   socket.on('join-game', (gameId) => {
     socket.join(`game-${gameId}`);
     console.log(`🎮 ${socket.userEmail} entrou na partida ${gameId}`);
+    
+    // Registrar evento no analytics
+    analyticsCollector.trackGameJoined({
+      gameId,
+      userId: socket.userId,
+      playerCount: io.sockets.adapter.rooms.get(`game-${gameId}`)?.size || 0,
+      position: 0
+    });
   });
   
   // Sair da sala de uma partida
@@ -206,11 +274,30 @@ io.on('connection', (socket) => {
       shotResult,
       isGoldenGoal
     });
+    
+    // Registrar evento no analytics
+    analyticsCollector.trackBetPlaced({
+      id: `bet-${Date.now()}`,
+      userId: socket.userId,
+      gameId,
+      amount: 0, // Valor será definido pela lógica de negócio
+      type: 'shot',
+      prediction: shotResult
+    });
   });
   
   // Desconexão
   socket.on('disconnect', () => {
     console.log(`🔌 Usuário desconectado: ${socket.userEmail} (${socket.id})`);
+    
+    // Registrar desconexão no analytics
+    analyticsCollector.trackUserLogout({
+      id: socket.userId,
+      email: socket.userEmail
+    });
+    
+    // Atualizar métricas de WebSocket
+    systemMonitor.updateWebSocketConnections(io.engine.clientsCount);
   });
 });
 
@@ -223,4 +310,18 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`🏥 Healthcheck disponível em: /health`);
   console.log(`🛡️ Segurança: Helmet + Rate Limit ativos`);
   console.log(`🔌 Socket.io ativo para conexões em tempo real`);
+  console.log(`📊 Analytics e Monitoramento ativos`);
+  console.log(`📈 Dashboard de monitoramento: http://localhost:${PORT}/monitoring`);
+  console.log(`📋 Métricas Prometheus: http://localhost:${PORT}/api/analytics/metrics`);
+  
+  // Registrar inicialização do servidor
+  analyticsCollector.trackSecurityEvent({
+    eventType: 'server_startup',
+    severity: 'info',
+    details: {
+      port: PORT,
+      environment: env.NODE_ENV,
+      timestamp: new Date().toISOString()
+    }
+  });
 });

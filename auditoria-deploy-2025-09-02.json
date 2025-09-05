@@ -1,0 +1,66 @@
+{
+  "backend": {
+    "status": "ok",
+    "issues": [],
+    "files": [
+      "✅ server.js",
+      "✅ package.json",
+      "✅ .env",
+      "✅ db.js",
+      "✅ render.yaml",
+      "✅ Procfile",
+      "✅ routes/",
+      "✅ middlewares/",
+      "✅ src/",
+      "✅ public/",
+      "✅ Scripts de deploy configurados"
+    ]
+  },
+  "admin": {
+    "status": "ok",
+    "issues": [],
+    "files": [
+      "✅ package.json",
+      "✅ vite.config.js",
+      "✅ vercel.json",
+      "✅ index.html",
+      "✅ src/main.jsx",
+      "✅ src/App.jsx",
+      "✅ src/index.css",
+      "✅ Build de produção gerado"
+    ]
+  },
+  "player": {
+    "status": "ok",
+    "issues": [],
+    "files": [
+      "✅ package.json",
+      "✅ vite.config.js",
+      "✅ vercel.json",
+      "✅ index.html",
+      "✅ src/main.jsx",
+      "✅ src/App.jsx",
+      "✅ src/index.css",
+      "✅ src/pages/Login.jsx",
+      "✅ src/pages/Register.jsx",
+      "✅ src/pages/Dashboard.jsx",
+      "✅ src/pages/Game.jsx",
+      "✅ src/pages/Withdraw.jsx",
+      "✅ src/pages/Profile.jsx",
+      "✅ Build de produção gerado"
+    ]
+  },
+  "deploy": {
+    "status": "ok",
+    "issues": [],
+    "configs": [
+      "✅ render.yaml configurado",
+      "✅ Procfile configurado",
+      "✅ Admin vercel.json configurado",
+      "✅ Player vercel.json configurado",
+      "✅ DATABASE_URL configurado",
+      "✅ JWT_SECRET configurado",
+      "✅ MERCADOPAGO_ACCESS_TOKEN configurado"
+    ]
+  }
+}

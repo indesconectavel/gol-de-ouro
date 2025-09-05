@@ -17,7 +17,13 @@
     "verify": "powershell -ExecutionPolicy Bypass -File .\\scripts\\verify-deploy.ps1",
     "rollback": "powershell -ExecutionPolicy Bypass -File .\\scripts\\rollback-backend.ps1",
     "lint": "echo 'Linting não configurado ainda'",
-    "security:check": "node -e \"console.log('🔒 Verificando segurança...'); require('./config/env'); console.log('✅ Variáveis de ambiente validadas'); console.log('✅ Segredos não hardcoded'); console.log('✅ Middlewares de segurança ativos');\""
+    "security:check": "node -e \"console.log('🔒 Verificando segurança...'); require('./config/env'); console.log('✅ Variáveis de ambiente validadas'); console.log('✅ Segredos não hardcoded'); console.log('✅ Middlewares de segurança ativos');\"",
+    "start:optimized": "node --expose-gc start-optimized.js",
+    "monitor:memory": "node monitor-memory.js",
+    "dev:optimized": "nodemon --expose-gc start-optimized.js",
+    "check:production": "node check-production.js",
+    "fix:production": "node fix-production-issues.js",
+    "fix:render": "node fix-render-deploy.js"
   },
   "author": "Fred S. Silva",
   "license": "MIT",
@@ -37,7 +43,11 @@
     "morgan": "^1.10.0",
     "pg": "^8.16.3",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "winston": "^3.11.0",
+    "prom-client": "^15.1.0",
+    "node-cron": "^3.0.3",
+    "compression": "^1.7.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

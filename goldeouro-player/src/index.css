@@ -1,0 +1,248 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Efeitos 3D e animações otimizadas */
+@layer utilities {
+  .transform-gpu {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform;
+  }
+  
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .will-change-transform {
+    will-change: transform;
+  }
+
+  .will-change-opacity {
+    will-change: opacity;
+  }
+
+  .will-change-auto {
+    will-change: auto;
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 2s infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 0 30px rgba(251, 191, 36, 0.6);
+    }
+  }
+  
+  .slide-in-up {
+    animation: slideInUp 0.5s ease-out;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .bounce-in {
+    animation: bounceIn 0.6s ease-out;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale3d(0.3, 0.3, 1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale3d(1.05, 1.05, 1);
+    }
+    70% {
+      transform: scale3d(0.9, 0.9, 1);
+    }
+    100% {
+      opacity: 1;
+      transform: scale3d(1, 1, 1);
+    }
+  }
+  
+  .goal-celebration {
+    animation: goalCelebration 1s ease-out;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes goalCelebration {
+    0% {
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1) rotate(-10deg);
+    }
+    50% {
+      opacity: 1;
+      transform: scale3d(1.2, 1.2, 1) rotate(5deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale3d(1, 1, 1) rotate(0deg);
+    }
+  }
+  
+  .shimmer {
+    animation: shimmer 2s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  
+  .confetti {
+    animation: confetti 3s ease-out forwards;
+  }
+  
+  @keyframes confetti {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+  
+  .float {
+    animation: float 3s ease-in-out infinite;
+    will-change: transform;
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(0, -10px, 0);
+    }
+  }
+
+  /* Animações específicas do jogo */
+  .ball-kick {
+    animation: ballKick 0.8s ease-out;
+    will-change: transform;
+  }
+  
+  @keyframes ballKick {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    30% {
+      transform: translate3d(10px, -5px, 0) scale(1.1);
+    }
+    60% {
+      transform: translate3d(50px, 0, 0) scale(0.9);
+    }
+    100% {
+      transform: translate3d(100px, 0, 0) scale(1);
+    }
+  }
+
+  .goalkeeper-dive {
+    animation: goalkeeperDive 0.6s ease-out;
+    will-change: transform;
+  }
+  
+  @keyframes goalkeeperDive {
+    0% {
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate3d(-10px, 5px, 0) rotate(-15deg);
+    }
+    100% {
+      transform: translate3d(-15px, 10px, 0) rotate(-25deg);
+    }
+  }
+
+  .goal-effect {
+    animation: goalEffect 1.5s ease-out;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes goalEffect {
+    0% {
+      opacity: 0;
+      transform: scale3d(0.5, 0.5, 1) translate3d(0, 50px, 0);
+    }
+    30% {
+      opacity: 1;
+      transform: scale3d(1.2, 1.2, 1) translate3d(0, -10px, 0);
+    }
+    100% {
+      opacity: 1;
+      transform: scale3d(1, 1, 1) translate3d(0, 0, 0);
+    }
+  }
+
+  .zone-pulse {
+    animation: zonePulse 1s ease-in-out infinite;
+    will-change: transform, box-shadow;
+  }
+  
+  @keyframes zonePulse {
+    0%, 100% {
+      transform: scale3d(1, 1, 1);
+      box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+    }
+    50% {
+      transform: scale3d(1.1, 1.1, 1);
+      box-shadow: 0 0 0 10px rgba(251, 191, 36, 0);
+    }
+  }
+}
+
+/* Estilos para o jogo */
+.bg-stadium-dark {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #0f172a 100%);
+}
+
+/* Efeitos de profundidade */
+.depth-shadow {
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    0 8px 16px rgba(0, 0, 0, 0.2),
+    0 16px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Efeitos de brilho */
+.glow-effect {
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+/* Efeitos de partículas */
+.particle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+  .mobile-optimized {
+    transform: scale(0.9);
+  }
+}

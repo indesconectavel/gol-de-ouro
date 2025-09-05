@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build: ./goldeouro-backend
+    container_name: goldeouro-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - ./goldeouro-backend:/app
+      - /app/node_modules
+    networks:
+      - goldeouro-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Player
+  player:
+    build: ./goldeouro-player
+    container_name: goldeouro-player
+    ports:
+      - "5174:80"
+    depends_on:
+      - backend
+    networks:
+      - goldeouro-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Admin
+  admin:
+    build: ./goldeouro-admin
+    container_name: goldeouro-admin
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - goldeouro-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: goldeouro-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - backend
+      - player
+      - admin
+    networks:
+      - goldeouro-network
+    restart: unless-stopped
+
+  # Redis para cache e sessões
+  redis:
+    image: redis:7-alpine
+    container_name: goldeouro-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - goldeouro-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # PostgreSQL para banco de dados
+  postgres:
+    image: postgres:15-alpine
+    container_name: goldeouro-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=goldeouro
+      - POSTGRES_USER=goldeouro
+      - POSTGRES_PASSWORD=goldeouro123
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - goldeouro-network
+    restart: unless-stopped
+
+networks:
+  goldeouro-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:
