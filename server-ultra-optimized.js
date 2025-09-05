@@ -1,7 +1,8 @@
-// Servidor FINAL ULTRA-OTIMIZADO para Render Free Tier
+// Servidor ULTRA-OTIMIZADO para Render Free Tier
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { createServer } = require('http');
 
 // Carregar variáveis de ambiente
 const env = require('./config/env');
@@ -9,30 +10,27 @@ const env = require('./config/env');
 const app = express();
 
 // OTIMIZAÇÕES EXTREMAS DE MEMÓRIA
+// Limitar listeners
 process.setMaxListeners(0);
 
-// Limpeza AGRESSIVA de memória
+// Limpeza agressiva de memória
 const aggressiveCleanup = () => {
-  // Limpar cache do require (exceto módulos essenciais)
-  const essentialModules = ['express', 'cors', 'body-parser', 'pg', 'bcryptjs', 'jsonwebtoken', 'mercadopago', 'dotenv', 'envalid'];
-  
+  // Limpar cache do require
   Object.keys(require.cache).forEach(key => {
-    if (key.includes('node_modules') && !essentialModules.some(mod => key.includes(mod))) {
+    if (key.includes('node_modules') && !key.includes('express') && !key.includes('cors')) {
       delete require.cache[key];
     }
   });
   
-  // Forçar garbage collection se disponível
+  // Limpar variáveis globais desnecessárias
   if (global.gc) {
     global.gc();
   }
   
-  // Limpar buffers
+  // Forçar limpeza de buffers
   if (global.Buffer) {
     global.Buffer.poolSize = 0;
   }
-  
-  console.log('🧹 Limpeza agressiva executada');
 };
 
 // Monitor de memória ULTRA-AGGRESSIVO
@@ -45,19 +43,19 @@ const monitorMemory = () => {
   
   console.log(`📊 Memória: ${heapPercent.toFixed(2)}% | RSS: ${rssMB}MB | Heap: ${heapUsedMB}/${heapTotalMB}MB`);
   
-  if (heapPercent > 80) {
+  if (heapPercent > 85) {
     console.log(`🚨 LIMPEZA AGRESSIVA: ${heapPercent.toFixed(2)}%`);
     aggressiveCleanup();
   }
 };
 
-// Monitorar a cada 3 segundos (muito frequente)
-setInterval(monitorMemory, 3000);
+// Monitorar a cada 5 segundos (mais frequente)
+setInterval(monitorMemory, 5000);
 
-// Limpeza automática a cada 20 segundos
-setInterval(aggressiveCleanup, 20000);
+// Limpeza automática a cada 30 segundos
+setInterval(aggressiveCleanup, 30000);
 
-// CORS básico
+// Middleware básico (sem compressão para economizar memória)
 app.use(cors({
   origin: env.CORS_ORIGINS.split(',').map(origin => origin.trim()),
   credentials: true,
@@ -65,9 +63,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-token']
 }));
 
-// JSON com limite MÍNIMO
-app.use(bodyParser.json({ limit: '50kb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '50kb' }));
+// JSON com limite MUITO pequeno
+app.use(bodyParser.json({ limit: '100kb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '100kb' }));
 
 // Importar apenas rotas ESSENCIAIS
 const authRoutes = require('./routes/authRoutes');
@@ -99,7 +97,7 @@ app.get('/health', (req, res) => {
 // Rota principal ULTRA-SIMPLES
 app.get('/', (req, res) => {
   res.json({
-    message: '🚀 API Gol de Ouro FINAL-OTIMIZADA!',
+    message: '🚀 API Gol de Ouro ULTRA-OTIMIZADA!',
     version: '1.0.0',
     environment: env.NODE_ENV,
     timestamp: new Date().toISOString()
@@ -116,23 +114,26 @@ app.use((req, res) => {
 
 // Iniciar servidor
 const PORT = Number(process.env.PORT) || Number(env.PORT) || 3000;
+const httpServer = createServer(app);
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Servidor FINAL-OTIMIZADO rodando na porta ${PORT}`);
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Servidor ULTRA-OTIMIZADO rodando na porta ${PORT}`);
   console.log(`🌍 Ambiente: ${env.NODE_ENV}`);
-  console.log(`🧠 Limpeza agressiva a cada 20 segundos`);
-  console.log(`📊 Monitoramento a cada 3 segundos`);
-  console.log(`💾 Limite JSON: 50KB`);
-  console.log(`🔧 Sem Socket.io para economizar memória`);
+  console.log(`🧠 Limpeza agressiva a cada 30 segundos`);
+  console.log(`📊 Monitoramento a cada 5 segundos`);
 });
 
 // Limpeza ao sair
 process.on('SIGTERM', () => {
   console.log('🔄 Fechando servidor...');
-  process.exit(0);
+  httpServer.close(() => {
+    process.exit(0);
+  });
 });
 
 process.on('SIGINT', () => {
   console.log('🔄 Fechando servidor...');
-  process.exit(0);
+  httpServer.close(() => {
+    process.exit(0);
+  });
 });
