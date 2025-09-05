@@ -1,4 +1,4 @@
-// Servidor otimizado para Render sem --expose-gc
+// Servidor simples e robusto para resolver problema de memória
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -12,16 +12,13 @@ const { Server } = require('socket.io');
 // Carregar e validar variáveis de ambiente
 const env = require('./config/env');
 
-// Importar limpeza agressiva de memória
-const aggressiveCleanup = require('./utils/aggressiveMemoryCleanup');
-
 const app = express();
 
 // OTIMIZAÇÕES CRÍTICAS DE MEMÓRIA
 // Limitar tamanho do heap
 process.setMaxListeners(0);
 
-// Monitor de memória sem --expose-gc
+// Monitor de memória simples
 const monitorMemory = () => {
   const memUsage = process.memoryUsage();
   const heapPercent = (memUsage.heapUsed / memUsage.heapTotal) * 100;
@@ -33,59 +30,18 @@ const monitorMemory = () => {
   
   if (heapPercent > 90) {
     console.log(`🚨 CRÍTICO: Uso de memória crítico: ${heapPercent.toFixed(2)}%`);
-    
-    // Limpeza de emergência sem GC
-    clearCaches();
-    forceMemoryCleanup();
-  } else if (heapPercent > 80) {
-    console.log(`⚠️ ALERTA: Uso de memória alto: ${heapPercent.toFixed(2)}%`);
-    clearCaches();
-  }
-};
-
-// Limpeza de caches sem GC
-const clearCaches = () => {
-  // Limpar Buffer pool
-  if (Buffer.poolSize > 0) {
-    Buffer.poolSize = 0;
-  }
-  
-  // Limpar require cache (cuidado!)
-  const modulesToKeep = ['fs', 'path', 'os', 'util', 'crypto', 'events'];
-  Object.keys(require.cache).forEach(key => {
-    if (!modulesToKeep.some(module => key.includes(module))) {
-      try {
-        delete require.cache[key];
-      } catch (e) {
-        // Ignorar erros
-      }
-    }
-  });
-  
-  console.log('🧹 Caches limpos');
-};
-
-// Limpeza forçada de memória
-const forceMemoryCleanup = () => {
-  try {
-    // Forçar limpeza de objetos grandes
+    // Limpeza simples
     if (global.gc) {
       global.gc();
+      console.log('🧹 Garbage collection executado');
     }
-    
-    // Limpar variáveis globais desnecessárias
-    if (global.process) {
-      delete global.process.env.NODE_OPTIONS;
-    }
-    
-    console.log('🧹 Limpeza de emergência executada');
-  } catch (error) {
-    console.log('⚠️ Erro na limpeza:', error.message);
+  } else if (heapPercent > 80) {
+    console.log(`⚠️ ALERTA: Uso de memória alto: ${heapPercent.toFixed(2)}%`);
   }
 };
 
-// Monitorar memória a cada 5 segundos (mais frequente)
-setInterval(monitorMemory, 5000);
+// Monitorar memória a cada 10 segundos
+setInterval(monitorMemory, 10000);
 
 // Middleware de compressão
 app.use(compression());
@@ -110,7 +66,7 @@ app.use(helmet({
 // Rate limiting mais restritivo
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 50, // Reduzir de 100 para 50
+  max: 30, // Reduzir ainda mais
   message: {
     error: 'Muitas requisições',
     message: 'Tente novamente em alguns minutos'
@@ -145,8 +101,8 @@ app.use(cors({
 }));
 
 // Suporte a JSON com limite menor
-app.use(bodyParser.json({ limit: '1mb' })); // Reduzir de 10mb para 1mb
-app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
+app.use(bodyParser.json({ limit: '500kb' })); // Reduzir ainda mais
+app.use(bodyParser.urlencoded({ extended: true, limit: '500kb' }));
 
 // Importação de rotas (apenas as essenciais)
 const adminRoutes = require('./routes/adminRoutes');
@@ -215,7 +171,7 @@ const io = new Server(httpServer, {
     credentials: true
   },
   // Otimizações de memória
-  maxHttpBufferSize: 1e6, // 1MB
+  maxHttpBufferSize: 500000, // 500KB
   pingTimeout: 60000,
   pingInterval: 25000
 });
@@ -224,22 +180,24 @@ const io = new Server(httpServer, {
 const PORT = Number(process.env.PORT) || Number(env.PORT) || 3000;
 
 httpServer.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Servidor otimizado rodando na porta ${PORT}`);
+  console.log(`✅ Servidor simples rodando na porta ${PORT}`);
   console.log(`🌍 Ambiente: ${env.NODE_ENV}`);
   console.log(`🌐 CORS configurado para: ${corsOrigins.join(', ')}`);
   console.log(`🧠 Monitoramento de memória ativo`);
 });
 
-// Limpeza de emergência a cada 30 segundos
+// Limpeza de emergência a cada 60 segundos
 setInterval(() => {
   const memUsage = process.memoryUsage();
   const heapPercent = (memUsage.heapUsed / memUsage.heapTotal) * 100;
   
   if (heapPercent > 85) {
     console.log('🧹 Limpeza automática de memória');
-    clearCaches();
+    if (global.gc) {
+      global.gc();
+    }
   }
-}, 30000);
+}, 60000);
 
 // Limpeza ao sair
 process.on('SIGTERM', () => {
