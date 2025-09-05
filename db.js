@@ -27,15 +27,18 @@ function createSupabasePool() {
       ssl: {
         rejectUnauthorized: false
       },
-      // Configurações otimizadas para Supabase pooler
-      max: 2,
+      // OTIMIZAÇÕES DE MEMÓRIA: Reduzir conexões para economizar memória
+      max: 1, // Reduzir de 2 para 1
       min: 0,
-      idleTimeoutMillis: 10000,
-      connectionTimeoutMillis: 5000,
-      acquireTimeoutMillis: 5000,
+      idleTimeoutMillis: 5000, // Reduzir de 10000 para 5000
+      connectionTimeoutMillis: 3000, // Reduzir de 5000 para 3000
+      acquireTimeoutMillis: 3000, // Reduzir de 5000 para 3000
       // Configurações específicas para resolver SASL
-      statement_timeout: 30000,
-      query_timeout: 30000
+      statement_timeout: 15000, // Reduzir de 30000 para 15000
+      query_timeout: 15000, // Reduzir de 30000 para 15000
+      // OTIMIZAÇÕES ADICIONAIS DE MEMÓRIA
+      maxUses: 1000, // Reciclar conexões após 1000 usos
+      allowExitOnIdle: true // Permitir saída quando idle
     });
   } else {
     // Configuração padrão para outros bancos
@@ -69,6 +72,31 @@ pool.on('error', (err) => {
   if (env.NODE_ENV === 'production') {
     console.error('🔴 Erro de conexão com banco (detalhes ocultos)');
   }
+});
+
+// OTIMIZAÇÃO DE MEMÓRIA: Limpeza automática de conexões
+setInterval(() => {
+  // Forçar limpeza de conexões inativas
+  if (pool.totalCount > 0) {
+    pool.end().then(() => {
+      console.log('🧹 Pool de conexões limpo para economizar memória');
+    }).catch(err => {
+      console.log('⚠️ Erro ao limpar pool:', err.message);
+    });
+  }
+}, 300000); // A cada 5 minutos
+
+// Limpeza de emergência quando memória estiver alta
+process.on('SIGTERM', async () => {
+  console.log('🔄 Fechando conexões de banco...');
+  await pool.end();
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('🔄 Fechando conexões de banco...');
+  await pool.end();
+  process.exit(0);
 });
 
 // Função para testar conexão

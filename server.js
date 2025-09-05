@@ -1,6 +1,53 @@
 // Configuração para garbage collection manual
 // Para ativar: node --expose-gc server.js
 const express = require('express');
+const v8 = require('v8');
+
+// OTIMIZAÇÕES DE MEMÓRIA CRÍTICAS
+// Configurar limite de heap para evitar memory leaks
+v8.setFlagsFromString('--max-old-space-size=512');
+
+// Monitor de memória em tempo real
+const monitorMemory = () => {
+  const memUsage = process.memoryUsage();
+  const heapPercent = (memUsage.heapUsed / memUsage.heapTotal) * 100;
+  
+  if (heapPercent > 80) {
+    console.log(`⚠️ ALERTA: Uso de memória alto: ${heapPercent.toFixed(2)}%`);
+    
+    // Forçar garbage collection se disponível
+    if (global.gc) {
+      global.gc();
+      console.log('🧹 Garbage collection executado');
+    }
+  }
+  
+  if (heapPercent > 90) {
+    console.log(`🚨 CRÍTICO: Uso de memória crítico: ${heapPercent.toFixed(2)}%`);
+    
+    // Limpeza de emergência
+    if (global.gc) {
+      global.gc();
+      console.log('🧹 Limpeza de emergência - Memória:', heapPercent.toFixed(2) + '%');
+    }
+  }
+};
+
+// Monitorar memória a cada 10 segundos
+setInterval(monitorMemory, 10000);
+
+// Garbage collection automático a cada 30 segundos
+if (global.gc) {
+  setInterval(() => {
+    const memUsage = process.memoryUsage();
+    const heapPercent = (memUsage.heapUsed / memUsage.heapTotal) * 100;
+    
+    if (heapPercent > 70) {
+      global.gc();
+      console.log('🧹 Garbage collection automático executado');
+    }
+  }, 30000);
+}
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
@@ -15,6 +62,9 @@ const { requestLogger, errorLogger } = require('./src/utils/logger');
 const { httpMetricsMiddleware, startSystemMetricsCollection } = require('./src/utils/metrics');
 const analyticsCollector = require('./src/utils/analytics');
 const systemMonitor = require('./src/utils/monitoring');
+
+// Importar otimizador de memória
+const memoryOptimizer = require('./utils/memoryOptimizer');
 
 // Carregar e validar variáveis de ambiente
 const env = require('./config/env');
