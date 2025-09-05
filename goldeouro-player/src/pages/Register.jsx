@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
 
@@ -13,6 +13,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
   const navigate = useNavigate()
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -39,12 +40,13 @@ const Register = () => {
       {/* Overlay escuro para melhorar legibilidade */}
       <div className="absolute inset-0 bg-black/60"></div>
       
+
       {/* Formulário de Registro */}
       <div className="relative z-10 w-full max-w-md mx-4">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Logo size="xlarge" className="mx-auto mb-4" />
+            <Logo size="xlarge" className="mx-auto mb-4" animated={true} />
             <p className="text-white/70 text-lg">Crie sua conta</p>
           </div>
 

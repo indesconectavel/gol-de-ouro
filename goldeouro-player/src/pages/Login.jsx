@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
+import musicManager from '../utils/musicManager'
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,19 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const navigate = useNavigate()
+
+  // Iniciar música de fundo apenas na página de login
+  useEffect(() => {
+    // Verificar se já existe música tocando para evitar duplicação
+    if (!musicManager.isPlaying) {
+      musicManager.playPageMusic();
+    }
+    
+    // Cleanup: parar música ao sair do componente
+    return () => {
+      musicManager.stopMusic();
+    };
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -33,12 +47,13 @@ const Login = () => {
       {/* Overlay escuro para melhorar legibilidade */}
       <div className="absolute inset-0 bg-black/40"></div>
       
+
       {/* Formulário de Login */}
       <div className="relative z-10 w-full max-w-md mx-4">
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20 slide-in-up">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Logo size="xlarge" className="mx-auto mb-4" />
+            <Logo size="xlarge" className="mx-auto mb-4" animated={true} />
             <p className="text-white/70">Faça login para continuar</p>
           </div>
 

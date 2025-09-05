@@ -1,0 +1,3 @@
+[33m2b0fbca[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix: configuração de produção urgente - URLs, CORS, Mercado Pago e variáveis de ambiente
+[33mcb274c2[m Fix: Corrigido erro SyntaxError no analyticsRoutes.js - Sistema pronto para deploy
+[33ma4f5cbd[m ETAPA 4 - Relatório final, backup completo e documentação

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const Logo = ({ size = 'large', className = '' }) => {
+const Logo = ({ size = 'large', className = '', animated = false }) => {
   const [imageError, setImageError] = useState(false)
 
   const sizeClasses = {
@@ -20,10 +20,10 @@ const Logo = ({ size = 'large', className = '' }) => {
   const containerSize = size === 'xlarge' ? 'w-64 h-auto' : sizeClasses[size] || sizeClasses.large
 
   return (
-    <div className={`${containerSize} ${className}`}>
+    <div className={`${containerSize} ${className} ${animated ? 'animate-float' : ''}`}>
       {!imageError ? (
         <img
-          src="/images/logo-gol.png"
+          src="/images/Gol_de_Ouro_logo.png"
           alt="Gol de Ouro"
           className="w-full h-full object-contain"
           onError={() => setImageError(true)}

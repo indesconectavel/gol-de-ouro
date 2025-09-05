@@ -10,6 +10,7 @@ import GameShootTest from './pages/GameShootTest'
 import GameShootSimple from './pages/GameShootSimple'
 import Profile from './pages/Profile'
 import Withdraw from './pages/Withdraw'
+import Pagamentos from './pages/Pagamentos'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 
@@ -26,6 +27,7 @@ function App() {
             <Route path="/gameshoot" element={<GameShoot />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/withdraw" element={<Withdraw />} />
+            <Route path="/pagamentos" element={<Pagamentos />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
           </Routes>
