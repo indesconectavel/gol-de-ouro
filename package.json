@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server-optimized.js",
-    "start:original": "node server.js",
+    "start": "node server.js",
+    "start:backup": "node server-original-backup.js",
     "test": "node test-db.js",
     "db:update": "node scripts/update-database.js",
     "db:update-phase3": "node scripts/update-database-phase3.js",
