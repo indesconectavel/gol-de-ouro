@@ -14,7 +14,7 @@ const Chat = () => {
   // Conectar ao WebSocket
   useEffect(() => {
     const connectWebSocket = () => {
-      const ws = new WebSocket('ws://localhost:3000/chat')
+      const ws = new WebSocket(`${import.meta.env.VITE_WS_URL || 'wss://goldeouro-backend.onrender.com'}/chat`)
       wsRef.current = ws
 
       ws.onopen = () => {

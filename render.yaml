@@ -18,9 +18,21 @@ services:
       - key: ADMIN_TOKEN
         sync: false
       - key: CORS_ORIGINS
-        value: "http://localhost:5174,https://goldeouro-admin.vercel.app"
+        value: "https://goldeouro-admin.vercel.app,https://goldeouro-player.vercel.app,https://goldeouro-backend.onrender.com"
       - key: NODE_ENV
         value: production
+      - key: MERCADOPAGO_ACCESS_TOKEN
+        sync: false
+      - key: MERCADOPAGO_WEBHOOK_SECRET
+        sync: false
+      - key: WEBHOOK_URL
+        value: "https://goldeouro-backend.onrender.com/api/payments/webhook"
+      - key: FRONTEND_URL
+        value: "https://goldeouro-player.vercel.app"
+      - key: ADMIN_URL
+        value: "https://goldeouro-admin.vercel.app"
+      - key: BACKEND_URL
+        value: "https://goldeouro-backend.onrender.com"
     buildFilter:
       paths:
         - "*.js"

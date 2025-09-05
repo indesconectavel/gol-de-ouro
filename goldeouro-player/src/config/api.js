@@ -1,29 +1,25 @@
-const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-  ENDPOINTS: {
-    AUTH: {
-      LOGIN: '/api/auth/login',
-      REGISTER: '/api/auth/register',
-      LOGOUT: '/api/auth/logout'
-    },
-    GAME: {
-      JOIN_QUEUE: '/api/games/fila/entrar',
-      LEAVE_QUEUE: '/api/games/fila/sair',
-      QUEUE_STATUS: '/api/games/fila/status',
-      TAKE_SHOT: '/api/games/chutar',
-      GAME_STATUS: '/api/games/status'
-    },
-    USER: {
-      PROFILE: '/api/user/profile',
-      BALANCE: '/api/user/balance',
-      HISTORY: '/api/user/history'
-    },
-    PAYMENT: {
-      WITHDRAW: '/api/payment/withdraw',
-      DEPOSIT: '/api/payment/deposit',
-      HISTORY: '/api/payment/history'
-    }
-  }
-}
+// Configuração da API - Gol de Ouro Player
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com';
 
-export default API_CONFIG
+export const API_ENDPOINTS = {
+  // Autenticação
+  LOGIN: `${API_BASE_URL}/auth/login`,
+  REGISTER: `${API_BASE_URL}/auth/register`,
+  PROFILE: `${API_BASE_URL}/usuario/perfil`,
+  
+  // Pagamentos
+  PIX_CREATE: `${API_BASE_URL}/api/payments/pix/criar`,
+  PIX_STATUS: `${API_BASE_URL}/api/payments/pix/status`,
+  PIX_USER: `${API_BASE_URL}/api/payments/pix/usuario`,
+  
+  // Jogos
+  GAMES: `${API_BASE_URL}/api/games`,
+  
+  // Fila
+  QUEUE: `${API_BASE_URL}/fila`,
+  
+  // Health
+  HEALTH: `${API_BASE_URL}/health`
+};
+
+export default API_BASE_URL;

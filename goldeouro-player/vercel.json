@@ -4,5 +4,9 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "VITE_API_URL": "https://goldeouro-backend.onrender.com",
+    "VITE_WS_URL": "wss://goldeouro-backend.onrender.com"
+  }
 }

@@ -20,7 +20,7 @@ const AnalyticsDashboard = () => {
   // WebSocket para dados em tempo real
   useEffect(() => {
     if (isRealTime) {
-      const ws = new WebSocket('ws://localhost:3000/analytics')
+      const ws = new WebSocket(`${import.meta.env.VITE_WS_URL || 'wss://goldeouro-backend.onrender.com'}/analytics`)
       wsRef.current = ws
 
       ws.onopen = () => {

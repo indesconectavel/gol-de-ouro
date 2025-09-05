@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./game-shoot.css";
+import audioManager from "../utils/audioManager";
+import musicManager from "../utils/musicManager";
+import ParticleSystem from "../components/ParticleSystem";
 
 // Importar assets com fallback
 import bg from "../assets/bg_goal.jpg";
@@ -40,6 +44,7 @@ export default function GameShoot() {
   const [balance, setBalance] = useState(0);
   const [totalShots, setTotalShots] = useState(10);
   const [shotsTaken, setShotsTaken] = useState(0);
+  const [loadingBalance, setLoadingBalance] = useState(true);
   
   // Hook para manter proporção responsiva baseada no print de referência
   const [screenSize, setScreenSize] = useState({ width: 0, height: 0 });
@@ -55,8 +60,11 @@ export default function GameShoot() {
   const [showDefendeu, setShowDefendeu] = useState(false);
   const [showGanhou, setShowGanhou] = useState(false);
   const [error, setError] = useState("");
-  const [debug, setDebug] = useState(true); // liga/desliga overlay de debug
+  const [debug, setDebug] = useState(false); // liga/desliga overlay de debug - DESABILITADO PARA PRODUÇÃO
   const [loading, setLoading] = useState(true);
+
+  // Estados para partículas
+  const [particles, setParticles] = useState({ active: false, type: 'goal', position: { x: 50, y: 50 } });
 
   // Estados do sistema de apostas
   const [gameStatus, setGameStatus] = useState("playing"); // playing, waiting, full, connecting
@@ -81,6 +89,7 @@ export default function GameShoot() {
   const [showChat, setShowChat] = useState(false);
   const [theme, setTheme] = useState("night"); // night, day
   const [isAdmin, setIsAdmin] = useState(false); // Verificar se é administrador
+  const navigate = useNavigate();
 
   const goalieImg = useMemo(() => goalieSprite(goaliePose), [goaliePose]);
 
@@ -89,12 +98,52 @@ export default function GameShoot() {
     console.log("🎮 GameShoot carregando...");
     console.log("📸 Assets:", { bg, ballPng, gooolPng, gIdle, gTL, gTR, gBL, gBR, gMID });
     
+    // Iniciar música de fundo do gameplay em modo ativo
+    musicManager.playGameplayMusic();
+    
     // Simular carregamento
     setTimeout(() => {
       setLoading(false);
       console.log("✅ GameShoot carregado!");
     }, 100);
+
+    // Cleanup: parar música ao sair do componente
+    return () => {
+      musicManager.stopMusic();
+    };
   }, []);
+
+  // Carregar saldo do usuário
+  useEffect(() => {
+    const carregarSaldo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/');
+          return;
+        }
+
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/usuario/perfil`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setBalance(data.balance || 0);
+        } else {
+          console.error('Erro ao carregar saldo:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar saldo:', error);
+      } finally {
+        setLoadingBalance(false);
+      }
+    };
+
+    carregarSaldo();
+  }, [navigate]);
 
   function goalToStage({ x, y }) {
     const stage = document.querySelector(".gs-stage");
@@ -134,6 +183,9 @@ export default function GameShoot() {
     setShooting(true);
     setError("");
 
+    // Tocar som de chute
+    audioManager.playKickSound();
+
     const t = goalToStage(GOAL_ZONES[dir]);
     setTargetStage(t);
     requestAnimationFrame(() => setBallPos({ x: t.x, y: t.y }));
@@ -153,10 +205,17 @@ export default function GameShoot() {
       setShowDefendeu(!isGoal);
       setShotsTaken(s => s+1);
       
-      // Se marcou gol, mostrar imagem "ganhou.png" após o "goool.png" desaparecer
+      // Ativar partículas baseado no resultado
+      const particleType = isGoal ? 'goal' : 'save';
+      const particlePosition = isGoal ? { x: 50, y: 30 } : { x: 50, y: 40 };
+      setParticles({ active: true, type: particleType, position: particlePosition });
+      
+      // Tocar som baseado no resultado
       if (isGoal) {
+        audioManager.play('goal');
         setTimeout(() => {
           setShowGanhou(true);
+          audioManager.play('victory');
           // Reset após "ganhou" aparecer - 4.2s total (1.2s para aparecer + 3s para exibir)
           setTimeout(() => {
             setBallPos({ x: 50, y: 90 });
@@ -167,9 +226,11 @@ export default function GameShoot() {
             setGoaliePose("idle");
             setGoalieStagePos({ x: 50, y: 62, rot: 0 });
             setShooting(false);
-          }, 5000); // 5 segundos para exibir "ganhou"
+          }, 3000); // 3 segundos para exibir "ganhou"
         }, 1200); // Aparece após o "goool.png" desaparecer (1.2s = duração da animação gooolPop)
       } else {
+        audioManager.play('save');
+        musicManager.playDefenseSound(); // Som específico de defesa
         // Para defesa, usar timing normal
         resetAfter();
       }
@@ -251,14 +312,44 @@ export default function GameShoot() {
 
   // Funções das funcionalidades futuras
   function toggleAudio() { 
-    setAudioEnabled(!audioEnabled);
-    // Aplicar controle de áudio global
+    const newAudioState = !audioEnabled;
+    setAudioEnabled(newAudioState);
+    
+    console.log('🔊 Toggle Audio:', newAudioState ? 'ON' : 'OFF');
+    
+    // Controlar áudio do jogo
+    if (newAudioState) {
+      audioManager.enable(); // Ativar áudio
+      musicManager.resume(); // Resumir música de fundo
+    } else {
+      audioManager.disable(); // Desativar áudio
+      musicManager.stopMusic(); // Parar música de fundo
+    }
+    
+    // Aplicar controle de áudio global - MUTAR TODOS OS ÁUDIOS
     if (typeof window !== 'undefined') {
+      // Mutar todos os elementos de áudio e vídeo
       const audioElements = document.querySelectorAll('audio, video');
       audioElements.forEach(el => {
-        el.muted = !audioEnabled;
-        el.volume = audioEnabled ? 0.5 : 0; // Volume fixo em 50%
+        el.muted = !newAudioState;
+        if (newAudioState) {
+          el.volume = 0.5; // Volume padrão quando ativado
+        } else {
+          el.volume = 0; // Volume zero quando mutado
+        }
       });
+      
+      // Mutar contexto de áudio Web Audio API
+      if (audioManager.audioContext) {
+        const gainNode = audioManager.audioContext.createGain();
+        gainNode.gain.value = newAudioState ? 1 : 0;
+      }
+      
+      // Mutar música de fundo específica
+      if (musicManager.currentMusic) {
+        musicManager.currentMusic.muted = !newAudioState;
+        musicManager.currentMusic.volume = newAudioState ? musicManager.volume : 0;
+      }
     }
   }
   
@@ -275,8 +366,8 @@ export default function GameShoot() {
   // Verificar se é administrador (simulação - em produção viria do backend)
   useEffect(() => {
     const checkAdminStatus = () => {
-      // Simulando que você sempre é admin para ver o botão de debug
-      const isYou = true; // Altere para false se não quiser ver o botão
+      // DESABILITADO PARA PRODUÇÃO - Debug não deve aparecer
+      const isYou = false; // Sempre false em produção
       setIsAdmin(isYou);
     };
     checkAdminStatus();
@@ -382,7 +473,9 @@ export default function GameShoot() {
                 <div className="stat-icon">💰</div>
                 <div className="stat-content">
                   <span className="stat-label">Saldo</span>
-                  <strong className="stat-value">{balance.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</strong>
+                  <strong className="stat-value">
+                    {loadingBalance ? 'Carregando...' : balance.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+                  </strong>
                 </div>
               </div>
               <div className="stat-item">
@@ -457,15 +550,7 @@ export default function GameShoot() {
           </div>
         </div>
 
-        {/* HUD Lateral Esquerda - Debug (apenas para admin) */}
-        {isAdmin && (
-          <div className="hud-left-debug">
-            <button className="debug-btn" onClick={()=>setDebug(d=>!d)} title="Debug (Admin)">
-              <span className="btn-icon">{debug?"👁️":"👁️‍🗨️"}</span>
-              <span className="debug-text">{debug?"Ocultar":"Mostrar"} Debug</span>
-            </button>
-          </div>
-        )}
+        {/* HUD Lateral Esquerda - Debug REMOVIDO PARA PRODUÇÃO */}
 
         {/* HUD Inferior Direito - Controles Simplificados */}
         <div className="hud-bottom-right">
@@ -511,6 +596,17 @@ export default function GameShoot() {
           </div>
         </div>
 
+        {/* HUD Meio Direito - Link para Dashboard */}
+        <div className="hud-center-right">
+          <button 
+            className="dashboard-btn" 
+            onClick={() => navigate('/dashboard')}
+            title="Ir para Dashboard"
+          >
+            <span className="btn-icon">🏠</span>
+            <span className="btn-text">Dashboard</span>
+          </button>
+        </div>
 
         {/* Zonas */}
         {DIRS.map((k) => {
@@ -566,6 +662,14 @@ export default function GameShoot() {
             })}
           </div>
         )}
+
+        {/* Sistema de Partículas */}
+        <ParticleSystem
+          type={particles.type}
+          position={particles.position}
+          active={particles.active}
+          onComplete={() => setParticles({ active: false, type: 'goal', position: { x: 50, y: 50 } })}
+        />
       </div>
     </div>
   );

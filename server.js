@@ -109,6 +109,7 @@ const testRoutes = require('./routes/test');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const monitoringDashboard = require('./routes/monitoringDashboard');
 const gamificationIntegration = require('./routes/gamification_integration');
+// const blockchainRoutes = require('./routes/blockchainRoutes');
 
 // Registro de rotas
 app.use('/admin', adminRoutes);
@@ -120,6 +121,7 @@ app.use('/api/games', gameRoutes);
 app.use('/health', healthRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/gamification', gamificationIntegration);
+// app.use('/api/blockchain', blockchainRoutes);
 
 // Registrar rota pública do dashboard
 const pool = require('./db');
