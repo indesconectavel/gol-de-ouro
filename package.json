@@ -2,9 +2,9 @@
   "name": "goldeouro-backend",
   "version": "1.0.0",
   "description": "Backend do jogo Gol de Ouro - OTIMIZADO",
-  "main": "server.js",
+  "main": "server-render-fix.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server-render-fix.js",
     "dev": "nodemon server.js",
     "test": "node test-db.js",
     "fix:memory": "node fix-memory-issue.js",
