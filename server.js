@@ -1,8 +1,16 @@
 // Servidor OTIMIZADO para resolver problema de memória
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
+
+// Importar módulos
+const { initDatabase } = require('./database/connection');
+const { authenticateToken, authenticateAdmin, hashPassword, comparePassword, generateToken } = require('./middlewares/auth');
+const paymentController = require('./controllers/paymentController');
+const notificationController = require('./controllers/notificationController');
+const analyticsController = require('./controllers/analyticsController');
 
 // OTIMIZAÇÕES DE MEMÓRIA
 process.setMaxListeners(0);
@@ -37,17 +45,6 @@ app.use(cors());
 // JSON básico
 app.use(express.json({ limit: '50kb' }));
 
-// Dados em memória (simulando banco de dados)
-const users = new Map();
-const games = new Map();
-const payments = new Map();
-const queue = [];
-
-// Contador de IDs
-let userIdCounter = 1;
-let gameIdCounter = 1;
-let paymentIdCounter = 1;
-
 // Rota principal
 app.get('/', (req, res) => {
   res.json({
@@ -81,7 +78,7 @@ app.get('/health', (req, res) => {
 // ========================================
 
 // POST /auth/register - Registrar usuário
-app.post('/auth/register', (req, res) => {
+app.post('/auth/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
     
@@ -93,39 +90,35 @@ app.post('/auth/register', (req, res) => {
     }
     
     // Verificar se email já existe
-    for (let user of users.values()) {
-      if (user.email === email) {
-        return res.status(400).json({
-          success: false,
-          message: 'Email já cadastrado'
-        });
-      }
+    const { query } = require('./database/connection');
+    const existingUser = await query('SELECT id FROM users WHERE email = $1', [email]);
+    
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email já cadastrado'
+      });
     }
     
-    const userId = userIdCounter++;
-    const newUser = {
-      id: userId,
-      name,
-      email,
-      password, // Em produção, usar hash
-      balance: 0,
-      created_at: new Date().toISOString(),
-      account_status: 'active'
-    };
+    // Hash da senha
+    const passwordHash = await hashPassword(password);
     
-    users.set(userId, newUser);
+    // Criar usuário
+    const result = await query(`
+      INSERT INTO users (name, email, password_hash, balance, account_status)
+      VALUES ($1, $2, $3, 0, 'active')
+      RETURNING id, name, email, balance, created_at
+    `, [name, email, passwordHash]);
+    
+    const newUser = result.rows[0];
     
     res.json({
       success: true,
       message: 'Usuário registrado com sucesso',
-      data: {
-        id: userId,
-        name,
-        email,
-        balance: 0
-      }
+      data: newUser
     });
   } catch (error) {
+    console.error('Erro no registro:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor'
@@ -134,7 +127,7 @@ app.post('/auth/register', (req, res) => {
 });
 
 // POST /auth/login - Login do usuário
-app.post('/auth/login', (req, res) => {
+app.post('/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     
@@ -146,23 +139,40 @@ app.post('/auth/login', (req, res) => {
     }
     
     // Buscar usuário
-    let foundUser = null;
-    for (let user of users.values()) {
-      if (user.email === email && user.password === password) {
-        foundUser = user;
-        break;
-      }
-    }
+    const { query } = require('./database/connection');
+    const result = await query(`
+      SELECT id, name, email, password_hash, balance, account_status
+      FROM users WHERE email = $1
+    `, [email]);
     
-    if (!foundUser) {
+    if (result.rows.length === 0) {
       return res.status(401).json({
         success: false,
         message: 'Credenciais inválidas'
       });
     }
     
-    // Gerar token simples (em produção, usar JWT)
-    const token = `token_${foundUser.id}_${Date.now()}`;
+    const user = result.rows[0];
+    
+    // Verificar senha
+    const isValidPassword = await comparePassword(password, user.password_hash);
+    
+    if (!isValidPassword) {
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciais inválidas'
+      });
+    }
+    
+    if (user.account_status !== 'active') {
+      return res.status(401).json({
+        success: false,
+        message: 'Conta desativada'
+      });
+    }
+    
+    // Gerar token JWT
+    const token = generateToken(user.id);
     
     res.json({
       success: true,
@@ -170,14 +180,15 @@ app.post('/auth/login', (req, res) => {
       data: {
         token,
         user: {
-          id: foundUser.id,
-          name: foundUser.name,
-          email: foundUser.email,
-          balance: foundUser.balance
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          balance: user.balance
         }
       }
     });
   } catch (error) {
+    console.error('Erro no login:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor'
@@ -190,40 +201,14 @@ app.post('/auth/login', (req, res) => {
 // ========================================
 
 // GET /usuario/perfil - Perfil do usuário
-app.get('/usuario/perfil', (req, res) => {
+app.get('/usuario/perfil', authenticateToken, async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token de autenticação necessário'
-      });
-    }
-    
-    // Extrair ID do token (simples)
-    const userId = parseInt(token.split('_')[1]);
-    const user = users.get(userId);
-    
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token inválido'
-      });
-    }
-    
     res.json({
       success: true,
-      data: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        balance: user.balance,
-        created_at: user.created_at,
-        account_status: user.account_status
-      }
+      data: req.user
     });
   } catch (error) {
+    console.error('Erro ao buscar perfil:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor'
@@ -236,112 +221,16 @@ app.get('/usuario/perfil', (req, res) => {
 // ========================================
 
 // POST /api/payments/pix/criar - Criar pagamento PIX
-app.post('/api/payments/pix/criar', (req, res) => {
-  try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    const { user_id, amount, description } = req.body;
-    
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token de autenticação necessário'
-      });
-    }
-    
-    if (!user_id || !amount || amount < 1) {
-      return res.status(400).json({
-        success: false,
-        message: 'user_id e amount são obrigatórios (amount >= 1)'
-      });
-    }
-    
-    const paymentId = paymentIdCounter++;
-    const qrCode = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==`; // QR Code fake
-    
-    const payment = {
-      id: paymentId,
-      user_id: parseInt(user_id),
-      amount: parseFloat(amount),
-      description: description || `Recarga de saldo - R$ ${amount}`,
-      status: 'pending',
-      qr_code: qrCode,
-      pix_code: `00020126580014br.gov.bcb.pix0136${paymentId}${Date.now()}520400005303986540${amount}5802BR5913Gol de Ouro6009Sao Paulo62070503***6304${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
-      created_at: new Date().toISOString(),
-      expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutos
-    };
-    
-    payments.set(paymentId, payment);
-    
-    res.json({
-      success: true,
-      message: 'Pagamento PIX criado com sucesso',
-      data: payment
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor'
-    });
-  }
-});
+app.post('/api/payments/pix/criar', authenticateToken, paymentController.createPixPayment);
 
 // GET /api/payments/pix/status/:id - Status do pagamento
-app.get('/api/payments/pix/status/:id', (req, res) => {
-  try {
-    const paymentId = parseInt(req.params.id);
-    const payment = payments.get(paymentId);
-    
-    if (!payment) {
-      return res.status(404).json({
-        success: false,
-        message: 'Pagamento não encontrado'
-      });
-    }
-    
-    // Simular aprovação após 30 segundos
-    if (payment.status === 'pending' && Date.now() - new Date(payment.created_at).getTime() > 30000) {
-      payment.status = 'approved';
-      
-      // Atualizar saldo do usuário
-      const user = users.get(payment.user_id);
-      if (user) {
-        user.balance += payment.amount;
-      }
-    }
-    
-    res.json({
-      success: true,
-      data: payment
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor'
-    });
-  }
-});
+app.get('/api/payments/pix/status/:id', authenticateToken, paymentController.getPaymentStatus);
 
-// GET /api/payments/pix/usuario/:id - Pagamentos do usuário
-app.get('/api/payments/pix/usuario/:id', (req, res) => {
-  try {
-    const userId = parseInt(req.params.id);
-    const userPayments = Array.from(payments.values())
-      .filter(p => p.user_id === userId)
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    
-    res.json({
-      success: true,
-      data: {
-        payments: userPayments
-      }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor'
-    });
-  }
-});
+// GET /api/payments/pix/usuario - Pagamentos do usuário
+app.get('/api/payments/pix/usuario', authenticateToken, paymentController.getUserPayments);
+
+// POST /api/payments/webhook - Webhook do Mercado Pago
+app.post('/api/payments/webhook', paymentController.webhook);
 
 // ========================================
 // ROTAS DE JOGOS
@@ -547,57 +436,83 @@ app.post('/api/games/chutar', (req, res) => {
 // ========================================
 
 // GET /admin/lista-usuarios - Lista de usuários (Admin)
-app.get('/admin/lista-usuarios', (req, res) => {
+app.get('/admin/lista-usuarios', authenticateAdmin, async (req, res) => {
   try {
-    const adminToken = req.headers['x-admin-token'];
+    const { query } = require('./database/connection');
+    const result = await query(`
+      SELECT id, name, email, account_status, created_at, balance
+      FROM users 
+      ORDER BY created_at DESC
+    `);
     
-    if (!adminToken || adminToken !== process.env.ADMIN_TOKEN) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token de administrador inválido'
-      });
-    }
-    
-    const userList = Array.from(users.values()).map(user => ({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      account_status: user.account_status,
-      created_at: user.created_at,
-      balance: user.balance
-    }));
-    
-    res.json(userList);
+    res.json(result.rows);
   } catch (error) {
+    console.error('Erro ao listar usuários:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor'
     });
   }
 });
+
+// GET /admin/analytics - Analytics do admin
+app.get('/admin/analytics', authenticateAdmin, analyticsController.getAdminAnalytics);
 
 // ========================================
 // ROTAS DE FILA
 // ========================================
 
 // GET /fila - Status da fila
-app.get('/fila', (req, res) => {
+app.get('/fila', async (req, res) => {
   try {
+    const { query } = require('./database/connection');
+    const result = await query(`
+      SELECT COUNT(*) as total_games
+      FROM games 
+      WHERE status = 'active'
+    `);
+    
+    const totalGames = parseInt(result.rows[0].total_games);
+    
     res.json({
       success: true,
       data: {
-        position: queue.length,
-        total: queue.length,
-        estimatedWait: queue.length * 30 // 30 segundos por pessoa
+        position: totalGames,
+        total: totalGames,
+        estimatedWait: totalGames * 30 // 30 segundos por pessoa
       }
     });
   } catch (error) {
+    console.error('Erro ao consultar fila:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor'
     });
   }
 });
+
+// ========================================
+// ROTAS DE NOTIFICAÇÕES
+// ========================================
+
+// GET /notifications - Listar notificações
+app.get('/notifications', authenticateToken, notificationController.getUserNotifications);
+
+// PUT /notifications/:id/read - Marcar como lida
+app.put('/notifications/:id/read', authenticateToken, notificationController.markAsRead);
+
+// PUT /notifications/read-all - Marcar todas como lidas
+app.put('/notifications/read-all', authenticateToken, notificationController.markAllAsRead);
+
+// GET /notifications/unread-count - Contar não lidas
+app.get('/notifications/unread-count', authenticateToken, notificationController.getUnreadCount);
+
+// ========================================
+// ROTAS DE ANALYTICS
+// ========================================
+
+// GET /analytics/dashboard - Dashboard do usuário
+app.get('/analytics/dashboard', authenticateToken, analyticsController.getUserDashboard);
 
 // 404
 app.use((req, res) => {
@@ -610,11 +525,29 @@ app.use((req, res) => {
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Servidor OTIMIZADO rodando na porta ${PORT}`);
-  console.log(`🌐 Acesse: http://localhost:${PORT}`);
-  console.log(`📊 Monitoramento de memória ativo`);
-});
+const startServer = async () => {
+  try {
+    // Inicializar banco de dados
+    await initDatabase();
+    console.log('✅ Banco de dados inicializado');
+    
+    // Iniciar servidor
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✅ Servidor OTIMIZADO rodando na porta ${PORT}`);
+      console.log(`🌐 Acesse: http://localhost:${PORT}`);
+      console.log(`📊 Monitoramento de memória ativo`);
+      console.log(`🔐 JWT habilitado`);
+      console.log(`💳 Pagamentos PIX configurados`);
+      console.log(`📱 Notificações ativas`);
+      console.log(`📈 Analytics implementado`);
+    });
+  } catch (error) {
+    console.error('❌ Erro ao iniciar servidor:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 // Limpeza ao sair
 process.on('SIGTERM', () => {
