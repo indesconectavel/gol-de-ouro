@@ -90,6 +90,26 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
+// Rota de health para keep-alive (mais detalhada)
+app.get('/api/health', (req, res) => {
+  const memUsage = process.memoryUsage();
+  const uptime = process.uptime();
+  
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: Math.round(uptime),
+    memory: {
+      rss: Math.round(memUsage.rss / 1024 / 1024), // MB
+      heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024), // MB
+      heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024), // MB
+      heapPercent: Math.round((memUsage.heapUsed / memUsage.heapTotal) * 100)
+    },
+    version: '1.0.0',
+    environment: process.env.NODE_ENV || 'production'
+  });
+});
+
 // ROTAS DE AUTENTICAÇÃO
 app.post('/auth/register', (req, res) => {
   try {

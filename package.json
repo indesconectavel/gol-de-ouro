@@ -11,7 +11,13 @@
     "fix:database": "node fix-render-database.js",
     "server:original": "node server.js",
     "server:optimized": "node server-ultra-optimized.js",
-    "server:render": "node server-render-fix.js"
+    "server:render": "node server-render-fix.js",
+    "keep-alive": "node keep-alive.js",
+    "keep-alive:local": "NODE_ENV=local node keep-alive-advanced.js",
+    "keep-alive:prod": "NODE_ENV=production node keep-alive-advanced.js",
+    "keep-alive:test": "NODE_ENV=test node keep-alive-advanced.js",
+    "keep-alive:simple": "node keep-alive.js",
+    "keep-alive:advanced": "node keep-alive-advanced.js"
   },
   "author": "Fred S. Silva",
   "license": "MIT",
