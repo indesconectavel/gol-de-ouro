@@ -33,18 +33,15 @@ const Pagamentos = () => {
       }
 
       // Carregar histórico de pagamentos
-      const userId = localStorage.getItem('userId');
-      if (userId) {
-        const pagamentosResponse = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/api/payments/pix/usuario/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (pagamentosResponse.ok) {
-          const pagamentosData = await pagamentosResponse.json();
-          setPagamentos(pagamentosData.data.payments || []);
+      const pagamentosResponse = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/api/payments/pix/usuario`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
+      });
+
+      if (pagamentosResponse.ok) {
+        const pagamentosData = await pagamentosResponse.json();
+        setPagamentos(pagamentosData.data.payments || []);
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -60,7 +57,6 @@ const Pagamentos = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const userId = localStorage.getItem('userId');
 
       const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/api/payments/pix/criar`, {
         method: 'POST',
@@ -69,7 +65,6 @@ const Pagamentos = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          user_id: parseInt(userId),
           amount: valorRecarga,
           description: `Recarga de saldo - R$ ${valorRecarga.toFixed(2)}`
         })

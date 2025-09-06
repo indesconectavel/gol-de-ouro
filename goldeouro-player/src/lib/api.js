@@ -6,10 +6,24 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = import.meta.env.VITE_API_TOKEN || localStorage.getItem("auth_token");
+  const token = localStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
+
+// Interceptor de resposta para tratar tokens expirados
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expirado ou inválido
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      window.location.href = "/";
+    }
+    return Promise.reject(error);
+  }
+);
 
 /**
  * ENDPOINTS DO BACKEND GOL DE OURO:
@@ -37,12 +51,34 @@ export async function createMatch({ bet } = {}) {
   return data;
 }
 
-export async function getMatch(id) {
+export async function getMatch() {
   const { data } = await api.get("/api/games/status");
   return data;
 }
 
-export async function shoot({ matchId, zone }) {
+export async function shoot({ zone }) {
   const { data } = await api.post("/api/games/chutar", { zone });
+  return data;
+}
+
+// Funções para notificações
+export async function getNotifications() {
+  const { data } = await api.get("/notifications");
+  return data;
+}
+
+export async function markNotificationAsRead(id) {
+  const { data } = await api.put(`/notifications/${id}/read`);
+  return data;
+}
+
+export async function getUnreadCount() {
+  const { data } = await api.get("/notifications/unread-count");
+  return data;
+}
+
+// Funções para analytics
+export async function getDashboard() {
+  const { data } = await api.get("/analytics/dashboard");
   return data;
 }

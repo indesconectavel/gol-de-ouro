@@ -13,10 +13,20 @@ export const API_ENDPOINTS = {
   PIX_USER: `${API_BASE_URL}/api/payments/pix/usuario`,
   
   // Jogos
-  GAMES: `${API_BASE_URL}/api/games`,
+  GAMES_QUEUE_ENTRAR: `${API_BASE_URL}/api/games/fila/entrar`,
+  GAMES_STATUS: `${API_BASE_URL}/api/games/status`,
+  GAMES_CHUTAR: `${API_BASE_URL}/api/games/chutar`,
   
   // Fila
   QUEUE: `${API_BASE_URL}/fila`,
+  
+  // Notificações
+  NOTIFICATIONS: `${API_BASE_URL}/notifications`,
+  NOTIFICATIONS_READ: `${API_BASE_URL}/notifications`,
+  NOTIFICATIONS_UNREAD_COUNT: `${API_BASE_URL}/notifications/unread-count`,
+  
+  // Analytics
+  ANALYTICS_DASHBOARD: `${API_BASE_URL}/analytics/dashboard`,
   
   // Health
   HEALTH: `${API_BASE_URL}/health`
