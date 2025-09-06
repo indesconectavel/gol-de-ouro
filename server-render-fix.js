@@ -1,9 +1,13 @@
 // Servidor SIMPLIFICADO para Render - SEM BANCO DE DADOS
 // Resolve problema de conexão com PostgreSQL
+// CORRIGIDO: Router principal incluído
 
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+
+// Importar router principal (corrige erro "Cannot find module './router'")
+const mainRouter = require('./router');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,6 +54,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '50kb' }));
+
+// Usar router principal
+app.use('/', mainRouter);
 
 // Dados em memória (temporário)
 const users = new Map();
