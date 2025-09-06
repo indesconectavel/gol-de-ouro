@@ -1,11 +1,14 @@
-// Servidor OTIMIZADO para resolver problema de memória
+// Servidor MINIMAL para testar memória
 const express = require('express');
 const cors = require('cors');
 
 const app = express();
 
-// OTIMIZAÇÕES DE MEMÓRIA
-process.setMaxListeners(0);
+// CORS básico
+app.use(cors());
+
+// JSON básico
+app.use(express.json({ limit: '10kb' }));
 
 // Monitor de memória
 const monitorMemory = () => {
@@ -17,31 +20,18 @@ const monitorMemory = () => {
   
   console.log(`📊 Memória: ${heapPercent.toFixed(2)}% | RSS: ${rssMB}MB | Heap: ${heapUsedMB}/${heapTotalMB}MB`);
   
-  if (heapPercent > 85) {
+  if (heapPercent > 80) {
     console.log(`🚨 ALERTA: Uso de memória alto: ${heapPercent.toFixed(2)}%`);
-    
-    // Limpeza agressiva
-    if (global.gc) {
-      global.gc();
-      console.log('🧹 Garbage collection executado');
-    }
   }
 };
 
-// Monitorar a cada 10 segundos
-setInterval(monitorMemory, 10000);
-
-// CORS básico
-app.use(cors());
-
-// JSON básico
-app.use(express.json({ limit: '50kb' }));
+// Monitorar a cada 5 segundos
+setInterval(monitorMemory, 5000);
 
 // Rota principal
 app.get('/', (req, res) => {
   res.json({
-    message: '🚀 API Gol de Ouro OTIMIZADA!',
-    version: '1.0.0',
+    message: '🚀 Servidor MINIMAL funcionando!',
     timestamp: new Date().toISOString(),
     memory: process.memoryUsage()
   });
@@ -65,19 +55,11 @@ app.get('/health', (req, res) => {
   });
 });
 
-// 404
-app.use((req, res) => {
-  res.status(404).json({
-    error: 'Rota não encontrada',
-    message: `A rota ${req.path} não existe`
-  });
-});
-
 // Iniciar servidor
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`✅ Servidor OTIMIZADO rodando na porta ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`✅ Servidor MINIMAL rodando na porta ${PORT}`);
   console.log(`🌐 Acesse: http://localhost:${PORT}`);
   console.log(`📊 Monitoramento de memória ativo`);
 });
