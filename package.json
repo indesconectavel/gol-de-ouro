@@ -4,12 +4,14 @@
   "description": "Backend do jogo Gol de Ouro - OTIMIZADO",
   "main": "server.js",
   "scripts": {
-    "start": "node server-ultra-optimized.js",
-    "dev": "nodemon server-ultra-optimized.js",
+    "start": "node server-render-fix.js",
+    "dev": "nodemon server-render-fix.js",
     "test": "node test-db.js",
     "fix:memory": "node fix-memory-issue.js",
+    "fix:database": "node fix-render-database.js",
     "server:original": "node server.js",
-    "server:optimized": "node server-ultra-optimized.js"
+    "server:optimized": "node server-ultra-optimized.js",
+    "server:render": "node server-render-fix.js"
   },
   "author": "Fred S. Silva",
   "license": "MIT",

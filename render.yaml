@@ -4,7 +4,7 @@ services:
     env: node
     plan: free
     buildCommand: "npm ci"
-    startCommand: "node server-ultra-optimized.js"
+    startCommand: "node server-render-fix.js"
     healthCheckPath: /health
     healthCheckTimeout: 300
     autoDeploy: true
