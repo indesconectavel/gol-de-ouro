@@ -39,8 +39,23 @@ const monitorMemory = () => {
 // Monitorar a cada 10 segundos
 setInterval(monitorMemory, 10000);
 
-// CORS básico
-app.use(cors());
+// CORS configurado para arquitetura desacoplada
+const corsOptions = {
+  origin: [
+    'http://localhost:5173', // Player local
+    'http://localhost:5174', // Admin local
+    'https://goldeouro-player.vercel.app', // Player produção
+    'https://goldeouro-admin.vercel.app', // Admin produção
+    'https://app.goldeouro.lol', // Player domínio customizado
+    'https://admin.goldeouro.lol', // Admin domínio customizado
+    'https://goldeouro.lol' // Domínio principal
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+};
+
+app.use(cors(corsOptions));
 
 // JSON básico
 app.use(express.json({ limit: '50kb' }));
