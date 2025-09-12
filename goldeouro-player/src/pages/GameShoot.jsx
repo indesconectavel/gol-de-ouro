@@ -113,10 +113,17 @@ export default function GameShoot() {
     };
   }, []);
 
-  // Carregar saldo do usuário
+  // Carregar saldo do usuário (simulado em desenvolvimento)
   useEffect(() => {
     const carregarSaldo = async () => {
       try {
+        // Em desenvolvimento, usar saldo simulado
+        if (import.meta.env.MODE === 'development') {
+          setBalance(150); // Saldo simulado para desenvolvimento
+          setLoadingBalance(false);
+          return;
+        }
+
         const token = localStorage.getItem('token');
         if (!token) {
           navigate('/');

@@ -19,6 +19,21 @@ const Pagamentos = () => {
 
   const carregarDados = async () => {
     try {
+      // Em desenvolvimento, usar dados simulados
+      if (import.meta.env.MODE === 'development') {
+        setSaldo(150); // Saldo simulado para desenvolvimento
+        setPagamentos([
+          {
+            id: '1',
+            amount: 50,
+            status: 'completed',
+            createdAt: new Date().toISOString(),
+            description: 'Depósito simulado'
+          }
+        ]);
+        return;
+      }
+
       // Carregar saldo do usuário
       const token = localStorage.getItem('token');
       const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/usuario/perfil`, {

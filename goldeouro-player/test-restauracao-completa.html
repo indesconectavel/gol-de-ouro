@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Restauração Completa - Gol de Ouro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #444;
+        }
+        .test-link {
+            display: inline-block;
+            background: #4ade80;
+            color: #1a1a1a;
+            padding: 15px 30px;
+            margin: 10px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #22c55e;
+            transform: scale(1.05);
+        }
+        .status {
+            background: #10b981;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .info {
+            background: #3b82f6;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .success {
+            background: #10b981;
+        }
+        .warning {
+            background: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎯 TESTE RESTAURAÇÃO COMPLETA - GOL DE OURO</h1>
+        
+        <div class="status success">
+            ✅ Sistema Restaurado com Sucesso!
+        </div>
+
+        <div class="info">
+            <h3>📋 RESUMO DAS CORREÇÕES APLICADAS:</h3>
+            <ul>
+                <li>✅ <strong>Arquivos restaurados</strong> do commit estável ee33ad1</li>
+                <li>✅ <strong>CSP removido</strong> do Vite em desenvolvimento</li>
+                <li>✅ <strong>Dados simulados</strong> implementados (R$150 saldo)</li>
+                <li>✅ <strong>Verificação de token</strong> removida das páginas</li>
+                <li>✅ <strong>Frontend rodando</strong> na porta 5174</li>
+            </ul>
+        </div>
+
+        <h2>🔗 LINKS DE TESTE</h2>
+        
+        <a href="http://localhost:5174" class="test-link" target="_blank">
+            🏠 Página Inicial
+        </a>
+        
+        <a href="http://localhost:5174/dashboard" class="test-link" target="_blank">
+            📊 Dashboard Jogador
+        </a>
+        
+        <a href="http://localhost:5174/game" class="test-link" target="_blank">
+            ⚽ Página de Gameplay
+        </a>
+        
+        <a href="http://localhost:5174/pagamentos" class="test-link" target="_blank">
+            💳 Página de Pagamentos
+        </a>
+
+        <div class="info">
+            <h3>🧪 COMO TESTAR:</h3>
+            <ol>
+                <li><strong>Dashboard:</strong> Deve carregar sem redirecionamento para login</li>
+                <li><strong>Gameplay:</strong> Deve mostrar saldo simulado R$150</li>
+                <li><strong>Pagamentos:</strong> Deve mostrar histórico simulado</li>
+                <li><strong>Console:</strong> Não deve ter erros de CSP ou PostCSS</li>
+                <li><strong>Responsividade:</strong> Deve funcionar em mobile</li>
+            </ol>
+        </div>
+
+        <div class="info warning">
+            <h3>⚠️ AVISOS ESPERADOS (NÃO SÃO ERROS):</h3>
+            <ul>
+                <li>React Router v7 deprecation warnings (normais)</li>
+                <li>NotAllowedError: play() (som bloqueado até interação do usuário)</li>
+                <li>Alguns avisos de desenvolvimento (normais)</li>
+            </ul>
+        </div>
+
+        <div class="status success">
+            <h3>🎉 CRITÉRIOS DE SUCESSO:</h3>
+            <p>✅ Páginas carregam sem tela branca<br>
+            ✅ Sem erros de CSP no console<br>
+            ✅ Sem erro "Unknown word" do PostCSS<br>
+            ✅ Saldo simulado visível em desenvolvimento<br>
+            ✅ Navegação funciona normalmente</p>
+        </div>
+
+        <div class="info">
+            <h3>🔄 ROLLBACK (se necessário):</h3>
+            <p>Se algo não funcionar, execute:</p>
+            <code>git switch wip/backup-broken</code>
+        </div>
+    </div>
+</body>
+</html>
