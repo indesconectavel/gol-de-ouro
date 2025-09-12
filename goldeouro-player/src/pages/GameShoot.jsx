@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./game-shoot.css";
-import "./game-page.css"; // CSS escopado só da /game
+import "./game-locked.css"; // novo CSS escopado só da /game
 import audioManager from "../utils/audioManager";
 import musicManager from "../utils/musicManager";
 import ParticleSystem from "../components/ParticleSystem";
@@ -100,9 +100,7 @@ export default function GameShoot() {
     console.log("📸 Assets:", { bg, ballPng, gooolPng, gIdle, gTL, gTR, gBL, gBR, gMID });
     
     // Ativar escopo só nesta rota
-    document.body.classList.add('game-page-active');
-    
-    // correção de viewport em mobile (endereço do browser)
+    document.body.setAttribute('data-page', 'game');
     const setVh = () => document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
     setVh(); 
     window.addEventListener('resize', setVh);
@@ -119,7 +117,7 @@ export default function GameShoot() {
     // Cleanup: parar música ao sair do componente
     return () => {
       window.removeEventListener('resize', setVh);
-      document.body.classList.remove('game-page-active');
+      document.body.removeAttribute('data-page');
       musicManager.stopMusic();
     };
   }, []);
@@ -470,41 +468,33 @@ export default function GameShoot() {
 
   return (
     <div className="game-page">
-      {/* Overlay: bloqueia retrato só nesta página */}
-      <div className="game-rotate-overlay" aria-hidden="true">
-        <div className="rotate-card"><p>Gire o dispositivo para o modo horizontal para jogar</p></div>
+      {/* overlay: bloqueia retrato só nesta página */}
+      <div className="game-rotate" aria-hidden="true">
+        <div className="rotate-card">Gire o dispositivo para o modo horizontal para jogar</div>
       </div>
 
-      {/* Barra superior com logo e ações */}
-      <header className="game-topbar">
-        <div className="brand">
-          {/* Ajuste o src para o caminho REAL da sua logo */}
+      {/* TOPBAR: logo à esquerda, Partida Ativa à ESQ, Dashboard à DIR na mesma linha */}
+      <div className="game-topbar">
+        <div className="top-left">
+          {/* use a sua logo real */}
           <img className="brand-logo" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
-          {/* Textos mantidos no DOM mas ocultos via CSS só nesta página */}
-          <div className="brand-txt">
-            <h1 className="brand-title">Gol de Ouro</h1>
-            <span className="brand-sub">Futebol Virtual</span>
-          </div>
+          {/* títulos mantidos no DOM; ocultaremos via CSS apenas nesta página */}
+          <span className="brand-title">Gol de Ouro</span>
+          <span className="brand-sub">Futebol Virtual</span>
         </div>
         <div className="top-actions">
-          <div className="left">
-            {/* use o botão real de "Partida Ativa" aqui */}
-            <button className="btn-primary btn-partida">Partida Ativa</button>
-          </div>
-          <div className="right">
-            {/* use o botão real de "Dashboard" aqui */}
-            <button className="btn-secondary btn-dashboard" onClick={() => navigate('/dashboard')}>
-              <span className="btn-icon">🏠</span>
-              Dashboard
-            </button>
-          </div>
+          <button className="btn-partida">Partida Ativa</button>
+          <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>
+            <span className="btn-icon">🏠</span>
+            Dashboard
+          </button>
         </div>
-      </header>
+      </div>
 
-      {/* Área da cena 16:9 */}
+      {/* STAGE 16:9 — este é o ÚNICO container que dimensiona */}
       <main className="game-stage-wrap">
         <div className="game-stage">
-          <div className="stage-root">
+          <div id="stage-root" className="stage-root">
             <div className={`gs-wrapper ${getResponsiveClass()}`}>
               <div className="gs-stage">
                 <img src={bg} alt="Gol de Ouro - Estádio" className="gs-bg" />
