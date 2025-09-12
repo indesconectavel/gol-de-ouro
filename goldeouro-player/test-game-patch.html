@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Patch Página Game - Gol de Ouro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #444;
+        }
+        .test-link {
+            display: inline-block;
+            background: #4ade80;
+            color: #1a1a1a;
+            padding: 15px 30px;
+            margin: 10px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .test-link:hover {
+            background: #22c55e;
+            transform: translateY(-2px);
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .success {
+            background: rgba(74, 222, 128, 0.2);
+            border: 1px solid #4ade80;
+            color: #4ade80;
+        }
+        .info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #f59e0b;
+            color: #f59e0b;
+        }
+        .checklist {
+            text-align: left;
+            margin: 20px 0;
+        }
+        .checklist li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+        .checklist li.completed {
+            background: rgba(74, 222, 128, 0.1);
+            border-left: 4px solid #4ade80;
+        }
+        .checklist li.pending {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎮 Teste Patch Página Game</h1>
+        <p>Validação das modificações aplicadas na página de gameplay</p>
+        
+        <div class="status success">
+            ✅ Frontend rodando na porta 5174
+        </div>
+        
+        <div class="status info">
+            📱 Teste em diferentes dispositivos e orientações
+        </div>
+        
+        <h2>🔗 Links de Teste</h2>
+        <a href="http://localhost:5174/dashboard" class="test-link" target="_blank">
+            📊 Dashboard
+        </a>
+        <a href="http://localhost:5174/game" class="test-link" target="_blank">
+            🎮 Página Game (Patch Aplicado)
+        </a>
+        
+        <h2>✅ Checklist de Validação</h2>
+        <ul class="checklist">
+            <li class="pending">
+                <strong>1. Orientação Horizontal:</strong> Página /game deve mostrar overlay de rotação em retrato
+            </li>
+            <li class="pending">
+                <strong>2. Logo 100px:</strong> Logo deve ter largura de 100px (altura proporcional)
+            </li>
+            <li class="pending">
+                <strong>3. Textos Ocultos:</strong> "Gol de Ouro" e "Futebol Virtual" devem estar ocultos
+            </li>
+            <li class="pending">
+                <strong>4. Botões Alinhados:</strong> "Partida Ativa" (esquerda) e "Dashboard" (direita) na mesma altura
+            </li>
+            <li class="pending">
+                <strong>5. Viewport 100%:</strong> Área do jogo deve ocupar 100% da tela
+            </li>
+            <li class="pending">
+                <strong>6. Fundo Removido:</strong> Não deve haver fundo azul na página de jogo
+            </li>
+            <li class="pending">
+                <strong>7. Responsividade:</strong> Funcionar em diferentes resoluções
+            </li>
+            <li class="pending">
+                <strong>8. Outras Páginas:</strong> Dashboard e outras páginas não devem ser afetadas
+            </li>
+        </ul>
+        
+        <h2>🔧 Instruções de Teste</h2>
+        <div class="status warning">
+            <strong>Teste de Orientação:</strong><br>
+            1. Acesse /game em um dispositivo móvel ou redimensione a janela<br>
+            2. Em retrato: deve aparecer overlay "Gire o dispositivo"<br>
+            3. Em paisagem: overlay deve desaparecer e mostrar o jogo
+        </div>
+        
+        <div class="status info">
+            <strong>Teste de Layout:</strong><br>
+            1. Verifique se a logo tem 100px de largura<br>
+            2. Confirme que os textos "Gol de Ouro" e "Futebol Virtual" estão ocultos<br>
+            3. Verifique alinhamento dos botões na barra superior<br>
+            4. Teste responsividade redimensionando a janela
+        </div>
+        
+        <h2>📋 Status do Patch</h2>
+        <div class="status success">
+            <strong>✅ Arquivos Modificados:</strong><br>
+            • GameShoot.jsx - Estrutura e classes CSS<br>
+            • game-page.css - Estilos escopados<br>
+            • Branch: feat/game-landscape-safe
+        </div>
+        
+        <div class="status info">
+            <strong>🔄 Rollback Disponível:</strong><br>
+            git switch wip/backup-before-game-patch
+        </div>
+    </div>
+    
+    <script>
+        // Auto-refresh para verificar status
+        setTimeout(() => {
+            location.reload();
+        }, 30000);
+        
+        // Verificar se a página carregou
+        console.log('🎮 Teste Patch Página Game carregado');
+        console.log('📱 Teste em: http://localhost:5174/game');
+        console.log('📊 Dashboard: http://localhost:5174/dashboard');
+    </script>
+</body>
+</html>

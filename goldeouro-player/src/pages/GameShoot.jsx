@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./game-shoot.css";
+import "./game-page.css"; // novo CSS escopado só da página game
 import audioManager from "../utils/audioManager";
 import musicManager from "../utils/musicManager";
 import ParticleSystem from "../components/ParticleSystem";
@@ -98,6 +99,9 @@ export default function GameShoot() {
     console.log("🎮 GameShoot carregando...");
     console.log("📸 Assets:", { bg, ballPng, gooolPng, gIdle, gTL, gTR, gBL, gBR, gMID });
     
+    // Ativar escopo só nesta rota
+    document.body.classList.add('game-page-active');
+    
     // Iniciar música de fundo do gameplay em modo ativo
     musicManager.playGameplayMusic();
     
@@ -109,6 +113,7 @@ export default function GameShoot() {
 
     // Cleanup: parar música ao sair do componente
     return () => {
+      document.body.classList.remove('game-page-active');
       musicManager.stopMusic();
     };
   }, []);
@@ -458,18 +463,54 @@ export default function GameShoot() {
   };
 
   return (
-    <div className={`gs-wrapper ${getResponsiveClass()}`}>
-      <div className="gs-stage">
-        <img src={bg} alt="Gol de Ouro - Estádio" className="gs-bg" />
+    <div className="game-page">
+      {/* overlay exibido apenas em retrato */}
+      <div className="game-rotate-overlay" aria-hidden="true">
+        <div className="rotate-card">
+          <p>Gire o dispositivo para o modo horizontal para jogar</p>
+        </div>
+      </div>
+
+      {/* header da página de jogo */}
+      <header className="game-header">
+        <div className="brand">
+          {/* Ajuste o src para o caminho REAL da logo */}
+          <img className="brand-logo" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
+          {/* Textos mantidos no DOM mas ocultos via CSS só nesta página */}
+          <div className="brand-txt">
+            <h1 className="brand-title">Gol de Ouro</h1>
+            <span className="brand-sub">Futebol Virtual</span>
+          </div>
+        </div>
+        <div className="action-bar game-actions">
+          {/* Garanta que este é o botão real de Partida Ativa */}
+          <button className="btn-primary btn-partida game-partida-ativa">Partida Ativa</button>
+          <div className="filler" />
+          {/* Garanta que este é o botão real de Dashboard */}
+          <button className="btn-secondary btn-dashboard game-dashboard" onClick={() => navigate('/dashboard')}>
+            <span className="btn-icon">🏠</span>
+            Dashboard
+          </button>
+        </div>
+      </header>
+
+      {/* área do jogo */}
+      <main className="game-stage-wrap">
+        <div className="game-stage">
+          {/* IMPORTANTe: envolva a raiz da sua cena em uma classe estável */}
+          <div className="stage-root">
+            <div className={`gs-wrapper ${getResponsiveClass()}`}>
+              <div className="gs-stage">
+                <img src={bg} alt="Gol de Ouro - Estádio" className="gs-bg" />
 
         {/* HUD Principal - Design Glassmorphism */}
         <div className="gs-hud">
           <div className="hud-left">
             <div className="brand">
-              <img src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" className="brand-logo" />
+              <img src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" className="brand-logo game-logo" />
               <div className="brand-info">
-                <span className="brand-name">Gol de Ouro</span>
-                <span className="brand-subtitle">Futebol Virtual</span>
+                <span className="brand-name game-title">Gol de Ouro</span>
+                <span className="brand-subtitle game-subtitle">Futebol Virtual</span>
               </div>
             </div>
           </div>
@@ -677,6 +718,8 @@ export default function GameShoot() {
           active={particles.active}
           onComplete={() => setParticles({ active: false, type: 'goal', position: { x: 50, y: 50 } })}
         />
+          </div>
+        </div>
       </div>
     </div>
   );
