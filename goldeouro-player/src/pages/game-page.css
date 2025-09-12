@@ -1,273 +1,46 @@
-/* ========================================
-   CSS ESCOPADO PARA PÁGINA DE JOGO
-   Aplicado apenas quando .game-page-active está no body
-   ======================================== */
+/* escopo só quando a /game está montada */
+body.game-page-active { margin:0; overflow:hidden; background:transparent; }
 
-/* Forçar orientação horizontal apenas na página de jogo */
-body.game-page-active {
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
+/* wrapper raiz da página de jogo */
+.game-page { position:fixed; inset:0; display:flex; flex-direction:column; background:transparent; }
+
+/* bloquear retrato SOMENTE aqui */
+.game-rotate-overlay{ display:none; }
+@media (orientation: portrait){
+  .game-rotate-overlay{ position:fixed; inset:0; display:grid; place-items:center; z-index:9999;
+    background:#0b1e2a; color:#fff; padding:24px; text-align:center; }
+  .game-rotate-overlay .rotate-card{ border-radius:16px; padding:20px 24px; background:rgba(255,255,255,.06); backdrop-filter:blur(6px); }
+  .game-topbar, .game-stage-wrap{ display:none; }
 }
 
-/* Container principal da página de jogo */
-.game-page {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #000;
-  overflow: hidden;
-  z-index: 1000;
-}
+/* topbar: logo à esquerda, ações alinhadas nos extremos na MESMA ALTURA */
+.game-topbar{ position:relative; z-index:2; padding:10px 16px; display:grid; grid-template-columns:1fr; gap:8px; }
+.brand{ display:flex; align-items:center; gap:10px; }
+/* logo 200px largura (altura proporcional) */
+.brand-logo{ width:200px; height:auto; }
+/* esconder textos só na /game */
+.game-page .brand-title, .game-page .brand-sub{ display:none !important; }
+/* actions: esquerda = Partida Ativa ; direita = Dashboard */
+.top-actions{ display:grid; grid-template-columns:1fr 1fr; align-items:center; }
+.top-actions .left{ justify-self:start; }
+.top-actions .right{ justify-self:end; }
+.btn-primary, .btn-secondary{ line-height:1; padding:10px 16px; border-radius:999px; border:0; cursor:pointer; }
+.btn-primary{ background:#23c381; color:#fff; }
+.btn-secondary{ background:#3a4a5f; color:#fff; }
 
-/* Overlay para bloquear retrato */
-.game-rotate-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  transition: opacity 0.3s ease;
+/* cena ocupa o viewport mantendo 16:9 com letterboxing (sem esticar tudo!) */
+:root{ --vh: 1vh; } /* atualizado pelo hook no componente */
+.game-stage-wrap{ position:relative; z-index:1; flex:1; width:100vw; height:calc(var(--vh) * 100); }
+.game-stage{ position:absolute; inset:0; display:grid; place-items:center; }
+/* AQUI é o ÚNICO elemento que dimensiona: */
+.stage-root{
+  aspect-ratio:16/9;
+  width: min(100vw, calc((var(--vh) * 100) * 16 / 9));
+  height:min(calc(var(--vh) * 100), calc(100vw * 9 / 16));
 }
+/* se a sua cena usa um background <img> ou <canvas> dentro da stage-root, deixe-o ajustar */
+.stage-root > canvas,
+.stage-root > img.bg{ width:100%; height:100%; object-fit:cover; }
 
-/* Mostrar overlay apenas em retrato */
-@media (orientation: portrait) {
-  .game-rotate-overlay {
-    display: flex;
-  }
-}
-
-/* Esconder overlay em paisagem */
-@media (orientation: landscape) {
-  .game-rotate-overlay {
-    display: none;
-  }
-}
-
-/* Card de rotação */
-.rotate-card {
-  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-  border: 2px solid #4ade80;
-  border-radius: 20px;
-  padding: 40px;
-  text-align: center;
-  color: white;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  max-width: 300px;
-  margin: 20px;
-}
-
-.rotate-card p {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
-  color: #4ade80;
-}
-
-/* Header da página de jogo */
-.game-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  z-index: 100;
-}
-
-/* Logo da página de jogo */
-.game-logo {
-  width: 100px !important;
-  height: auto !important;
-  max-height: 60px;
-}
-
-/* Ocultar textos "Gol de Ouro" e "Futebol Virtual" */
-.game-title,
-.game-subtitle {
-  display: none !important;
-}
-
-/* Barra de ações da página de jogo */
-.game-actions {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  height: 100%;
-}
-
-/* Botão Partida Ativa (esquerda) */
-.game-partida-ativa {
-  order: 1;
-  height: 50px;
-  padding: 0 20px;
-  font-size: 16px;
-  font-weight: 600;
-  background: linear-gradient(135deg, #4ade80, #22c55e);
-  border: none;
-  border-radius: 25px;
-  color: #000;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
-}
-
-.game-partida-ativa:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
-}
-
-.game-partida-ativa:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Botão Dashboard (direita) */
-.game-dashboard {
-  order: 2;
-  height: 50px;
-  padding: 0 20px;
-  font-size: 16px;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 25px;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.game-dashboard:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.1);
-}
-
-/* Área principal do jogo */
-.game-stage-wrap {
-  position: fixed;
-  top: 80px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100vw;
-  height: calc(100vh - 80px);
-  background: #000;
-  overflow: hidden;
-}
-
-/* Garantir que o estádio ocupe 100% da área disponível */
-.game-stage {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Ajustar imagem de fundo para ocupar toda a área */
-.game-stage .gs-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-/* Ajustar HUD para não interferir com o layout */
-.game-stage .gs-hud {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 10;
-}
-
-.game-stage .gs-hud > * {
-  pointer-events: auto;
-}
-
-/* Responsividade para diferentes resoluções */
-@media (max-width: 768px) {
-  .game-header {
-    height: 60px;
-    padding: 0 15px;
-  }
-  
-  .game-logo {
-    width: 80px !important;
-    max-height: 45px;
-  }
-  
-  .game-actions {
-    gap: 10px;
-  }
-  
-  .game-partida-ativa,
-  .game-dashboard {
-    height: 40px;
-    padding: 0 15px;
-    font-size: 14px;
-  }
-  
-  .game-stage-wrap {
-    top: 60px;
-    height: calc(100vh - 60px);
-  }
-}
-
-@media (max-width: 480px) {
-  .game-header {
-    height: 50px;
-    padding: 0 10px;
-  }
-  
-  .game-logo {
-    width: 60px !important;
-    max-height: 35px;
-  }
-  
-  .game-partida-ativa,
-  .game-dashboard {
-    height: 35px;
-    padding: 0 12px;
-    font-size: 12px;
-  }
-  
-  .game-stage-wrap {
-    top: 50px;
-    height: calc(100vh - 50px);
-  }
-}
-
-/* Garantir que não há scroll horizontal */
-body.game-page-active * {
-  box-sizing: border-box;
-}
-
-/* Ocultar scrollbars */
-body.game-page-active {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-body.game-page-active::-webkit-scrollbar {
-  display: none;
-}
+/* (opcional) se algum container/card da cena injeta fundo azul, neutralize só aqui: */
+.game-page .card, .game-page .container, .game-page .app-bg{ background:transparent !important; }

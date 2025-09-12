@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./game-shoot.css";
-import "./game-page.css"; // novo CSS escopado só da página game
+import "./game-page.css"; // CSS escopado só da /game
 import audioManager from "../utils/audioManager";
 import musicManager from "../utils/musicManager";
 import ParticleSystem from "../components/ParticleSystem";
@@ -102,6 +102,11 @@ export default function GameShoot() {
     // Ativar escopo só nesta rota
     document.body.classList.add('game-page-active');
     
+    // correção de viewport em mobile (endereço do browser)
+    const setVh = () => document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    setVh(); 
+    window.addEventListener('resize', setVh);
+    
     // Iniciar música de fundo do gameplay em modo ativo
     musicManager.playGameplayMusic();
     
@@ -113,6 +118,7 @@ export default function GameShoot() {
 
     // Cleanup: parar música ao sair do componente
     return () => {
+      window.removeEventListener('resize', setVh);
       document.body.classList.remove('game-page-active');
       musicManager.stopMusic();
     };
@@ -464,17 +470,15 @@ export default function GameShoot() {
 
   return (
     <div className="game-page">
-      {/* overlay exibido apenas em retrato */}
+      {/* Overlay: bloqueia retrato só nesta página */}
       <div className="game-rotate-overlay" aria-hidden="true">
-        <div className="rotate-card">
-          <p>Gire o dispositivo para o modo horizontal para jogar</p>
-        </div>
+        <div className="rotate-card"><p>Gire o dispositivo para o modo horizontal para jogar</p></div>
       </div>
 
-      {/* header da página de jogo */}
-      <header className="game-header">
+      {/* Barra superior com logo e ações */}
+      <header className="game-topbar">
         <div className="brand">
-          {/* Ajuste o src para o caminho REAL da logo */}
+          {/* Ajuste o src para o caminho REAL da sua logo */}
           <img className="brand-logo" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
           {/* Textos mantidos no DOM mas ocultos via CSS só nesta página */}
           <div className="brand-txt">
@@ -482,22 +486,24 @@ export default function GameShoot() {
             <span className="brand-sub">Futebol Virtual</span>
           </div>
         </div>
-        <div className="action-bar game-actions">
-          {/* Garanta que este é o botão real de Partida Ativa */}
-          <button className="btn-primary btn-partida game-partida-ativa">Partida Ativa</button>
-          <div className="filler" />
-          {/* Garanta que este é o botão real de Dashboard */}
-          <button className="btn-secondary btn-dashboard game-dashboard" onClick={() => navigate('/dashboard')}>
-            <span className="btn-icon">🏠</span>
-            Dashboard
-          </button>
+        <div className="top-actions">
+          <div className="left">
+            {/* use o botão real de "Partida Ativa" aqui */}
+            <button className="btn-primary btn-partida">Partida Ativa</button>
+          </div>
+          <div className="right">
+            {/* use o botão real de "Dashboard" aqui */}
+            <button className="btn-secondary btn-dashboard" onClick={() => navigate('/dashboard')}>
+              <span className="btn-icon">🏠</span>
+              Dashboard
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* área do jogo */}
+      {/* Área da cena 16:9 */}
       <main className="game-stage-wrap">
         <div className="game-stage">
-          {/* IMPORTANTe: envolva a raiz da sua cena em uma classe estável */}
           <div className="stage-root">
             <div className={`gs-wrapper ${getResponsiveClass()}`}>
               <div className="gs-stage">
