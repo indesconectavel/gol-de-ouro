@@ -2,7 +2,7 @@
 body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .game-page { position:fixed; inset:0; display:flex; background:transparent; }
 
-/* bloquear retrato só aqui */
+/* bloquear retrato somente aqui */
 .game-rotate{ display:none; }
 @media (orientation: portrait){
   .game-rotate{ position:fixed; inset:0; display:grid; place-items:center; z-index:9999; background:#0b1e2a; color:#fff; padding:24px; text-align:center; }
@@ -10,7 +10,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   .game-stage-wrap{ display:none; }
 }
 
-/* ===== stage ocupa toda a viewport — sem fundo azul visível ===== */
+/* ===== stage ocupa toda a viewport (sem fundo azul exposto) ===== */
 :root{ --vh:1vh; --hdr-bottom: 0px; }
 .game-stage-wrap{ position:relative; flex:1; width:100vw; height:calc(var(--vh)*100); }
 .game-stage{ position:absolute; inset:0; }
@@ -24,10 +24,10 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   --pf-oy: calc((100vh - var(--pf-h)) / 2);
 }
 
-/* se houver bg/canvas: cobrir stage */
+/* BG/canvas cobre o stage */
 #stage-root .scene-bg, #stage-root > canvas{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 
-/* ===== HEADER da cena (card) ===== */
+/* ===== HEADER (card superior) ===== */
 .hud-header{
   position:absolute; z-index:4;
   left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
@@ -35,19 +35,16 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   top:   calc(var(--pf-oy) + var(--pf-h) * 0.035);
   pointer-events:auto;
 }
-/* logo 200px — cobre tanto <img> quanto <div> com bg */
+/* logo 200px */
 .hud-header .brand-logo{ width:200px; height:auto; display:block; }
-.hud-header .brand-logo img{ width:100%; height:auto; display:block; }
-/* esconder textos só aqui */
 .hud-header .brand-title, .hud-header .brand-sub{ display:none !important; }
 
-/* ===== BARRA DE AÇÕES — abaixo do card (usa --hdr-bottom) ===== */
+/* ===== AÇÕES — 50px abaixo do header ===== */
 .hud-actions{
   position:absolute; z-index:6; display:flex; align-items:center;
   left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
   right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
-  /* coloca logo abaixo do card, com respiro */
-  top:   calc(var(--hdr-bottom) + max(8px, var(--pf-h)*0.01));
+  top:   calc(var(--hdr-bottom) + 50px);
 }
 .hud-left{ display:flex; align-items:center; gap:12px; }
 .hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
@@ -55,7 +52,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .btn-partida{ background:#23c381; color:#fff; }
 .btn-dashboard{ background:#132840; color:#fff; }
 
-/* ===== RODAPÉ ===== */
+/* ===== RODAPÉ — Entrar na Fila (ESQ) e cluster (DIR) ===== */
 .hud-footer{ position:absolute; z-index:5; left:0; right:0; pointer-events:none; }
 .hud-bottom-left, .hud-bottom-right{ position:absolute; bottom:0; pointer-events:auto; }
 .hud-bottom-left{
@@ -66,32 +63,43 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
   bottom:calc(var(--pf-oy) + var(--pf-h) * 0.055);
 }
-.btn-queue{ display:inline-flex; }
-.hud-cluster{ display:inline-flex; gap:12px; }
+/* garantir que reapareçam mesmo se algo os tenha ocultado antes */
+.btn-queue, .hud-cluster{ display:inline-flex !important; opacity:1 !important; visibility:visible !important; }
 
-/* ===== GOLEIRO: escala por altura do playfield + descer 30px =====
-   ajuste fino do fator 0.00155 conforme o sprite (mantém proporção em telas grandes)
+/* ===== GOLEIRO — escala e posição calibradas =====
+   - escala dinâmica por altura do playfield (clamp para desktop/tablet)
+   - +30px para baixo
+   - troque .goalie/.gk/.keeper pelo seletor real do seu sprite
 */
-.goalie, .goalie-sprite, .gk{  /* troque pelos seletores reais do seu goleiro */
-  position:absolute;
-  left:50%; transform-origin:50% 100%;
-  /* escala dinâmica + deslocamento 30px para baixo */
-  transform: translate(-50%, 0) translateY(30px)
-             scale(clamp(0.9, calc(var(--pf-h) * 0.00155), 1.25));
+.gs-goalie {
+  position:absolute; left:50%; transform-origin:50% 100%;
+  transform:
+    translate(-50%, 0)
+    translateY(30px)
+    scale(clamp(1.00, calc(var(--pf-h) * 0.00170), 1.30));
   z-index:3;
 }
+/* leve reforço de escala em telas >= 1366x768 (opcional) */
+@media (min-width: 1280px){
+  .gs-goalie {
+    transform:
+      translate(-50%, 0)
+      translateY(30px)
+      scale(clamp(1.05, calc(var(--pf-h) * 0.00178), 1.35));
+  }
+}
 
-/* ===== BOLA: alinhar ao spot central =====
-   ajuste o coeficiente 0.86~0.89 para casar com seu gramado
+/* ===== BOLA — alinhada ao círculo central =====
+   ajuste fino do coeficiente 0.875 → 0.865~0.885 conforme seu gramado
 */
-.ball, .ball-sprite{ /* troque pelo seletor real */
+.gs-ball {
   position:absolute; left:50%;
-  top: calc(var(--pf-oy) + var(--pf-h) * 0.875); /* 87.5% da altura do playfield */
+  top: calc(var(--pf-oy) + var(--pf-h) * 0.875);
   transform: translate(-50%, -50%);
   z-index:2;
 }
 
-/* remover quaisquer topbars/strips externas deixadas por tentativas anteriores */
+/* remover resíduos de topbar/faixas externas */
 body[data-page="game"] .game-topbar,
 body[data-page="game"] header.game-topbar,
 body[data-page="game"] .hud-header-clip,

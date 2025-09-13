@@ -529,8 +529,8 @@ export default function GameShoot() {
               {/* Header REAL da cena: logo + métricas + apostas */}
               <div className="hud-header" ref={headerRef}>
                 {/* Logo 200px */}
-                <div className="brand-logo">
-                  <img src="/src/assets/logo.png" alt="Gol de Ouro" />
+                <div className="brand">
+                  <img className="brand-logo" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
                 </div>
                 
                 {/* HUD Principal - Design Glassmorphism */}
