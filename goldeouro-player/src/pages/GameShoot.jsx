@@ -500,121 +500,121 @@ export default function GameShoot() {
   };
 
     console.log("🎮 Renderizando página do jogo");
-    return (
-      <div className="game-page">
-        {/* overlay: bloqueia retrato só nesta página */}
-        <div className="game-rotate" aria-hidden="true">
-          <div className="rotate-card">Gire o dispositivo para o modo horizontal para jogar</div>
-        </div>
+  return (
+    <div className="game-page">
+      {/* overlay: bloqueia retrato só nesta página */}
+      <div className="game-rotate" aria-hidden="true">
+        <div className="rotate-card">Gire o dispositivo para o modo horizontal para jogar</div>
+      </div>
 
-        {/* ===== CENA ===== */}
-        <main className="game-stage-wrap">
-          <div className="game-stage">
-            <div id="stage-root" className="stage-root">
-              <div className="playfield">
-                <img src={bg} alt="Gol de Ouro - Estádio" className="scene-bg" />
+      {/* ===== CENA ===== */}
+      <main className="game-stage-wrap">
+        <div className="game-stage">
+          <div id="stage-root" className="stage-root">
+            <div className="playfield">
+              <img src={bg} alt="Gol de Ouro - Estádio" className="scene-bg" />
 
-                {/* Header REAL da cena: logo + métricas + apostas */}
-                <div className="hud-header">
-                  {/* HUD Principal - Design Glassmorphism */}
-                  <div className="gs-hud">
-                    <div className="hud-center">
-                      <div className="stats-grid">
-                        <div className="stat-item">
-                          <div className="stat-icon">💰</div>
-                          <div className="stat-content">
-                            <span className="stat-label">Saldo</span>
-                            <strong className="stat-value">
-                              {loadingBalance ? 'Carregando...' : balance.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
-                            </strong>
-                          </div>
-                        </div>
-                        <div className="stat-item">
-                          <div className="stat-icon">⚽</div>
-                          <div className="stat-content">
-                            <span className="stat-label">Chutes</span>
-                            <strong className="stat-value">{shotsTaken}/{totalShots}</strong>
-                          </div>
-                        </div>
-                        <div className="stat-item">
-                          <div className="stat-icon">🏆</div>
-                          <div className="stat-content">
-                            <span className="stat-label">Vitórias</span>
-                            <strong className="stat-value">{sessionWins}</strong>
-                          </div>
+              {/* Header REAL da cena: logo + métricas + apostas */}
+              <div className="hud-header">
+                {/* HUD Principal - Design Glassmorphism */}
+                <div className="gs-hud">
+                  <div className="hud-center">
+                    <div className="stats-grid">
+                      <div className="stat-item">
+                        <div className="stat-icon">💰</div>
+                        <div className="stat-content">
+                          <span className="stat-label">Saldo</span>
+                          <strong className="stat-value">
+                            {loadingBalance ? 'Carregando...' : balance.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+                          </strong>
                         </div>
                       </div>
-                    </div>
-                    
-                    <div className="hud-right">
-                      <div className="betting-section">
-                        <div className="bet-controls">
-                          <span className="bet-label">Aposta:</span>
-                          <div className="bet-buttons">
-                            {[1, 2, 5, 10].map(amount => (
-                              <button
-                                key={amount}
-                                className={`bet-btn ${currentBet === amount ? 'active' : ''} ${amount > balance ? 'disabled' : ''}`}
-                                onClick={() => handleBetChange(amount)}
-                                disabled={amount > balance}
-                              >
-                                R${amount}
-                              </button>
-                            ))}
-                          </div>
+                      <div className="stat-item">
+                        <div className="stat-icon">⚽</div>
+                        <div className="stat-content">
+                          <span className="stat-label">Chutes</span>
+                          <strong className="stat-value">{shotsTaken}/{totalShots}</strong>
+                        </div>
+                      </div>
+                      <div className="stat-item">
+                        <div className="stat-icon">🏆</div>
+                        <div className="stat-content">
+                          <span className="stat-label">Vitórias</span>
+                          <strong className="stat-value">{sessionWins}</strong>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Barra de ações dentro do stage (usa os botões REAIS) */}
-                <div className="hud-bar" role="toolbar">
-                  <div className="hud-left">
-                    <button className="btn-partida" onClick={handleJoinQueue}>Partida Ativa</button>
-                  </div>
+                  
                   <div className="hud-right">
-                    <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
-                  </div>
-                </div>
-
-                {/* Rodapé da cena (botões reais) */}
-                <div className="hud-footer">
-                  <div className="hud-bottom-left">
-                    {gameStatus === "playing" ? (
-                      <button 
-                        className="btn-queue hud-btn primary" 
-                        onClick={handleJoinQueue}
-                        disabled={shooting || balance < currentBet}
-                      >
-                        <span className="btn-icon">🎮</span>
-                        Entrar na Fila
-                      </button>
-                    ) : (
-                      <button 
-                        className="btn-queue hud-btn secondary" 
-                        onClick={handleLeaveQueue}
-                      >
-                        <span className="btn-icon">🚪</span>
-                        Sair da Fila
-                      </button>
-                    )}
-                  </div>
-                  <div className="hud-bottom-right">
-                    <div className="hud-cluster">
-                      <button className="control-btn" onClick={toggleAudio} title={audioEnabled ? "Desativar Áudio" : "Ativar Áudio"}>
-                        <span className="btn-icon">{audioEnabled ? "🔊" : "🔇"}</span>
-                      </button>
-                      <button className="control-btn" onClick={toggleChat} title="Chat">
-                        <span className="btn-icon">💬</span>
-                      </button>
-                      <div className="rank-display" title={`Rank: ${rank}`}>
-                        <span className="rank-icon">🏅</span>
-                        <span className="rank-text" style={{ color: getRankColor() }}>{rank}</span>
+                    <div className="betting-section">
+                      <div className="bet-controls">
+                        <span className="bet-label">Aposta:</span>
+                        <div className="bet-buttons">
+                          {[1, 2, 5, 10].map(amount => (
+                            <button
+                              key={amount}
+                              className={`bet-btn ${currentBet === amount ? 'active' : ''} ${amount > balance ? 'disabled' : ''}`}
+                              onClick={() => handleBetChange(amount)}
+                              disabled={amount > balance}
+                            >
+                              R${amount}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* BARRA DE AÇÕES SOBRE O CAMPO (mesma altura em ambos os lados) */}
+              <div className="hud-actions">
+                <div className="hud-left">
+                  <button className="btn-partida" onClick={handleJoinQueue}>Partida Ativa</button>
+                </div>
+                <div className="hud-right">
+                  <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
+                </div>
+              </div>
+
+              {/* RODAPÉ DA CENA */}
+              <div className="hud-footer">
+                <div className="hud-bottom-left">
+                  {gameStatus === "playing" ? (
+                    <button 
+                      className="btn-queue hud-btn primary" 
+                      onClick={handleJoinQueue}
+                      disabled={shooting || balance < currentBet}
+                    >
+                      <span className="btn-icon">🎮</span>
+                      Entrar na Fila
+                    </button>
+                  ) : (
+                    <button 
+                      className="btn-queue hud-btn secondary" 
+                      onClick={handleLeaveQueue}
+                    >
+                      <span className="btn-icon">🚪</span>
+                      Sair da Fila
+                    </button>
+                  )}
+                </div>
+                <div className="hud-bottom-right">
+                  <div className="hud-cluster">
+                    <button className="control-btn" onClick={toggleAudio} title={audioEnabled ? "Desativar Áudio" : "Ativar Áudio"}>
+                      <span className="btn-icon">{audioEnabled ? "🔊" : "🔇"}</span>
+                    </button>
+                    <button className="control-btn" onClick={toggleChat} title="Chat">
+                      <span className="btn-icon">💬</span>
+                    </button>
+                    <div className="rank-display" title={`Rank: ${rank}`}>
+                      <span className="rank-icon">🏅</span>
+                      <span className="rank-text" style={{ color: getRankColor() }}>{rank}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
                 {/* Chat */}
                 {showChat && (
