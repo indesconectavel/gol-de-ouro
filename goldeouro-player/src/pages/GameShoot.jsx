@@ -539,15 +539,6 @@ export default function GameShoot() {
           </div>
         </div>
 
-        {/* Status da Partida - Centralizado abaixo do cabeçalho */}
-        <div className="game-status-header">
-          <div className="status-card" style={{ backgroundColor: getStatusColor() }}>
-            <span className="status-message">{getStatusMessage()}</span>
-            {gameStatus === "waiting" && (
-              <span className="wait-time">⏱️ ~{estimatedWait}s</span>
-            )}
-          </div>
-        </div>
 
         {/* HUD Inferior Esquerdo - Controles de Partida */}
         <div className="hud-bottom-left">
