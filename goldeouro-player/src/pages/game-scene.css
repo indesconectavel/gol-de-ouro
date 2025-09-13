@@ -1,109 +1,80 @@
-/* ======== CSS PIXEL-PERFECT ESCOPO EXCLUSIVO DA PÁGINA /game ======== */
+/* ===== escopo /game ===== */
+body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
+.game-page { position:fixed; inset:0; display:flex; background:transparent; }
 
-/* Escopo só na /game */
-body[data-page="game"] { 
-  margin:0; 
-  overflow:hidden; 
-  background:transparent; 
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-/* Fallback para quando data-page não estiver definido */
-.game-page { 
-  position:fixed; 
-  inset:0; 
-  display:flex; 
-  background:transparent; 
-  margin:0;
-  overflow:hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-/* Bloquear retrato SOMENTE aqui */
+/* bloquear retrato só aqui */
 .game-rotate{ display:none; }
 @media (orientation: portrait){
-  .game-rotate{ position:fixed; inset:0; display:grid; place-items:center; z-index:9999;
-    background:#0b1e2a; color:#fff; padding:24px; text-align:center; }
+  .game-rotate{ position:fixed; inset:0; display:grid; place-items:center; z-index:9999; background:#0b1e2a; color:#fff; padding:24px; text-align:center; }
   .rotate-card{ border-radius:16px; padding:20px 24px; background:rgba(255,255,255,.06); backdrop-filter:blur(6px); }
   .game-stage-wrap{ display:none; }
 }
 
-/* ===== CENA EM TELA CHEIA (sem fundo azul externo visível) ===== */
+/* ===== stage ocupa toda a viewport; sem 'fundo azul' visível ===== */
 :root{ --vh:1vh; }
 .game-stage-wrap{ position:relative; flex:1; width:100vw; height:calc(var(--vh)*100); }
 .game-stage{ position:absolute; inset:0; }
+#stage-root{ position:absolute; inset:0; width:100vw; height:100vh; overflow:hidden; }
 
-/* O STAGE ocupa 100% da viewport; conteúdos internos respeitam 16:9 */
+/* ===== geometria do playfield 16:9 =====
+   - calculamos a área 16:9 (pf-w/pf-h) e as "margens pretas" (pf-ox/pf-oy)
+   - assim ancoramos HUD por porcentagens da área jogável real
+*/
 #stage-root{
-  position:absolute; inset:0;
-  width:100vw; height:100vh; overflow:hidden; /* remove "borda"/fundo azul */
-  background: #0b1e2a; /* fallback background */
+  --pf-w: min(100vw, calc((var(--vh)*100) * 16 / 9));
+  --pf-h: min(calc(var(--vh)*100), calc(100vw * 9 / 16));
+  --pf-ox: calc((100vw - var(--pf-w)) / 2); /* offset X do playfield dentro do stage */
+  --pf-oy: calc((100vh - var(--pf-h)) / 2); /* offset Y do playfield dentro do stage */
 }
 
-/* Fallback para garantir que a página seja visível */
-.game-page #stage-root {
-  background: #0b1e2a;
-  min-height: 100vh;
-  min-width: 100vw;
-}
+/* se usar bg/canvas, cobrir sempre */
+#stage-root .scene-bg, #stage-root > canvas{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 
-/* Loading screen */
-.game-page .stage-root {
-  background: #0b1e2a;
-  color: #fff;
-}
-
-/* Dentro do stage, a área jogável é 16:9 centralizada (letterboxing interno) */
-#stage-root .playfield{
-  position:absolute; inset:0; margin:auto;
-  aspect-ratio:16/9;
-  width:min(100vw, calc((var(--vh)*100)*16/9));
-  height:min(calc(var(--vh)*100), calc(100vw*9/16));
-  
-  /* Variáveis CSS para o sistema de coordenadas do gol */
-  --goal-left: 19.5;
-  --goal-top: 36.5;
-  --goal-width: 61;
-  --goal-height: 33;
-}
-
-/* Se há uma imagem/canvas de fundo, garanta cobertura */
-#stage-root .scene-bg, #stage-root > canvas{
-  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-}
-
-/* ===== HEADER DA CENA (card do topo) ===== */
+/* ===== header da cena (card do topo, com logo+metricas+apostas) ===== */
 .hud-header{
   position:absolute; z-index:4;
-  left:3%; right:3%; top:2.5%; /* porcentagens => consistência em qualquer tela */
+  left: calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  top:  calc(var(--pf-oy) + var(--pf-h) * 0.035);   /* ~3.5% da altura do playfield */
   pointer-events:auto;
 }
-/* Logo 200px e ocultar textos só aqui */
+/* logo 200px e esconder textos apenas aqui */
 .hud-header img.brand-logo{ width:200px; height:auto; }
 .hud-header .brand-title, .hud-header .brand-sub{ display:none !important; }
 
-/* ===== AÇÕES SOBRE O CAMPO (mesma altura, fora do card) ===== */
+/* ===== ações sobre o campo (mesma altura; fora do card) =====
+   alinhamos "partida" (ESQ) e "dashboard" (DIR) exatamente pela área 16:9
+*/
 .hud-actions{
-  position:absolute; z-index:6;
-  left:3%; right:3%; top:14%;   /* alinhe verticalmente como no mock; ajuste fino permitido */
-  display:flex; align-items:center;
+  position:absolute; z-index:6; display:flex; align-items:center;
+  left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  top:   calc(var(--pf-oy) + var(--pf-h) * 0.135);  /* ~13.5% do playfield — ajuste fino */
 }
 .hud-left{ display:flex; align-items:center; gap:12px; }
 .hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
-/* Apenas layout; estilo visual herdado dos botões reais */
+/* só layout; visual vem do estilo original dos botões */
 .btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1; padding:10px 16px; font-weight:600; cursor:pointer; }
 .btn-partida{ background:#23c381; color:#fff; }
 .btn-dashboard{ background:#132840; color:#fff; }
 
-/* ===== RODAPÉ DA CENA ===== */
-.hud-footer{ position:absolute; z-index:5; left:0; right:0; bottom:6%; pointer-events:none; }
+/* ===== rodapé do campo ===== */
+.hud-footer{ position:absolute; z-index:5; left:0; right:0; pointer-events:none; }
 .hud-bottom-left, .hud-bottom-right{ position:absolute; bottom:0; pointer-events:auto; }
-.hud-bottom-left{ left:3%; }      /* "Entrar na Fila" exatamente como no mock */
-.hud-bottom-right{ right:3%; }    /* cluster à direita como no mock */
-.btn-queue{ display:inline-flex; } /* reaproveita o estilo original */
+/* âncoras por porcentagem da área 16:9 */
+.hud-bottom-left{
+  left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  bottom:calc(var(--pf-oy) + var(--pf-h) * 0.055);  /* ~5.5% da altura do playfield */
+}
+.hud-bottom-right{
+  right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  bottom:calc(var(--pf-oy) + var(--pf-h) * 0.055);
+}
+/* manter estilos visuais originais */
+.btn-queue{ display:inline-flex; }
 .hud-cluster{ display:inline-flex; gap:12px; }
 
-/* Remover qualquer topbar ou faixa externa que sobrou */
+/* remover qualquer topbar/faixa externa que restou */
 body[data-page="game"] .game-topbar,
 body[data-page="game"] header.game-topbar,
 body[data-page="game"] .hud-header-clip,
