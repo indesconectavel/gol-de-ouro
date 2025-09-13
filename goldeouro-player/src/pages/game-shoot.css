@@ -116,7 +116,7 @@
 
 /* HUD Inferior Esquerdo - Controles de Partida */
 .hud-bottom-left{ 
-  position:absolute; bottom:20px; left:20px; z-index:10;
+  position:absolute; bottom:20px; left:10px; z-index:10;
   background:rgba(255,255,255,.1); backdrop-filter:blur(20px);
   border-radius:20px; padding:16px; border:1px solid rgba(255,255,255,.2);
   box-shadow:0 8px 32px rgba(0,0,0,.3);
@@ -320,7 +320,7 @@
   
   .hud-bottom-left {
     bottom: 10px;
-    left: 10px;
+    left: 5px;
     padding: 12px;
   }
   
