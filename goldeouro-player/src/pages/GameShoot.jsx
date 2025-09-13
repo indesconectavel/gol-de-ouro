@@ -473,22 +473,50 @@ export default function GameShoot() {
         <div className="rotate-card">Gire o dispositivo para o modo horizontal para jogar</div>
       </div>
 
-      {/* TOPBAR: logo à esquerda, Partida Ativa à ESQ, Dashboard à DIR na mesma linha */}
+      {/* HUD SUPERIOR - Layout exato da imagem */}
       <div className="game-topbar">
+        {/* Logo à esquerda */}
         <div className="top-left">
-          {/* use a sua logo real */}
           <img className="brand-logo" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
-          {/* títulos mantidos no DOM; ocultaremos via CSS apenas nesta página */}
-          <span className="brand-title">Gol de Ouro</span>
-          <span className="brand-sub">Futebol Virtual</span>
         </div>
+        
+        {/* Estatísticas no centro */}
+        <div className="game-stats">
+          <div className="stat-item">
+            <span>💰</span>
+            <div className="stat-value">R$ {balance.toFixed(2)}</div>
+            <span>SALDO</span>
+          </div>
+          <div className="stat-item">
+            <span>⚽</span>
+            <div className="stat-value">15/10</div>
+            <span>CHUTES</span>
+          </div>
+          <div className="stat-item">
+            <span>🏆</span>
+            <div className="stat-value">0</div>
+            <span>VITÓRIAS</span>
+          </div>
+        </div>
+        
+        {/* Botões de aposta à direita */}
         <div className="top-actions">
-          <button className="btn-partida">Partida Ativa</button>
+          <div className="bet-buttons">
+            <button className="bet-btn active">R$1</button>
+            <button className="bet-btn">R$2</button>
+            <button className="bet-btn">R$5</button>
+            <button className="bet-btn">R$10</button>
+          </div>
           <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>
-            <span className="btn-icon">🏠</span>
+            <span>🏠</span>
             Dashboard
           </button>
         </div>
+      </div>
+      
+      {/* Botão Partida Ativa centralizado */}
+      <div className="partida-ativa-container">
+        <button className="btn-partida">Partida Ativa</button>
       </div>
 
       {/* STAGE 16:9 — este é o ÚNICO container que dimensiona */}
@@ -714,6 +742,26 @@ export default function GameShoot() {
           active={particles.active}
           onComplete={() => setParticles({ active: false, type: 'goal', position: { x: 50, y: 50 } })}
         />
+        
+        {/* HUD Inferior - Controles de jogo */}
+        <div className="game-controls">
+          <button className="control-btn">
+            <span>🎮</span>
+            Entrar na Fila
+          </button>
+          <div style={{display: 'flex', gap: '8px'}}>
+            <button className="control-btn">
+              <span>🔊</span>
+            </button>
+            <button className="control-btn">
+              <span>💬</span>
+            </button>
+            <button className="control-btn">
+              <span>🏅</span>
+              NOVATO
+            </button>
+          </div>
+        </div>
               </div>
             </div>
           </div>
