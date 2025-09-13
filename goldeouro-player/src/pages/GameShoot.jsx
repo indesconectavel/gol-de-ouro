@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./game-pixel.css"; // CSS escopado só da /game
+import "./game-scene.css"; // CSS escopado só da /game
 import audioManager from "../utils/audioManager";
 import musicManager from "../utils/musicManager";
 import ParticleSystem from "../components/ParticleSystem";
@@ -465,201 +465,208 @@ export default function GameShoot() {
     return 'mobile-small';
   };
 
-  return (
-    <div className="game-page">
-      {/* overlay: bloqueia retrato só nesta página */}
-      <div className="game-rotate" aria-hidden="true">
-        <div className="rotate-card">Gire o dispositivo para o modo horizontal para jogar</div>
-      </div>
-
-      {/* STAGE 16:9 — este é o ÚNICO container que dimensiona */}
-      <main className="game-stage-wrap">
-        <div className="game-stage">
-          <div id="stage-root" className="stage-root">
-            <div className={`gs-wrapper ${getResponsiveClass()}`}>
-              <div className="gs-stage">
-                <img src={bg} alt="Gol de Ouro - Estádio" className="gs-bg" />
-
-            {/* HUD DE AÇÕES NO TOPO DA CENA (mesma altura) */}
-            <div className="hud-bar" role="toolbar" aria-label="Ações do jogo">
-              <div className="hud-left">
-                <button className="btn-partida" onClick={handleJoinQueue}>Partida Ativa</button>
-              </div>
-              <div className="hud-right">
-                <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
-              </div>
-            </div>
-
-            {/* AJUSTE DO HEADER VISUAL DA CENA (logo + métricas + apostas) */}
-            <div className="hud-header-clip">
-              {/* HUD Principal - Design Glassmorphism */}
-        <div className="gs-hud">
-          <div className="hud-center">
-            <div className="stats-grid">
-              <div className="stat-item">
-                <div className="stat-icon">💰</div>
-                <div className="stat-content">
-                  <span className="stat-label">Saldo</span>
-                  <strong className="stat-value">
-                    {loadingBalance ? 'Carregando...' : balance.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
-                  </strong>
-                </div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-icon">⚽</div>
-                <div className="stat-content">
-                  <span className="stat-label">Chutes</span>
-                  <strong className="stat-value">{shotsTaken}/{totalShots}</strong>
-                </div>
-              </div>
-              <div className="stat-item">
-                <div className="stat-icon">🏆</div>
-                <div className="stat-content">
-                  <span className="stat-label">Vitórias</span>
-                  <strong className="stat-value">{sessionWins}</strong>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="hud-right">
-            <div className="betting-section">
-              <div className="bet-controls">
-                <span className="bet-label">Aposta:</span>
-                <div className="bet-buttons">
-                  {[1, 2, 5, 10].map(amount => (
-                    <button
-                      key={amount}
-                      className={`bet-btn ${currentBet === amount ? 'active' : ''} ${amount > balance ? 'disabled' : ''}`}
-                      onClick={() => handleBetChange(amount)}
-                      disabled={amount > balance}
-                    >
-                      R${amount}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+    return (
+      <div className="game-page">
+        {/* overlay: bloqueia retrato só nesta página */}
+        <div className="game-rotate" aria-hidden="true">
+          <div className="rotate-card">Gire o dispositivo para o modo horizontal para jogar</div>
         </div>
-            </div>
 
+        {/* ===== CENA ===== */}
+        <main className="game-stage-wrap">
+          <div className="game-stage">
+            <div id="stage-root" className="stage-root">
+              <div className="playfield">
+                <img src={bg} alt="Gol de Ouro - Estádio" className="scene-bg" />
 
-        {/* HUD Lateral Esquerda - Debug REMOVIDO PARA PRODUÇÃO */}
-
-        {/* HUD Inferior Direito - Controles Simplificados */}
-        <div className="hud-bottom-right">
-          <div className="control-panel">
-            <div className="control-buttons">
-              <button className="control-btn" onClick={toggleAudio} title={audioEnabled ? "Desativar Áudio" : "Ativar Áudio"}>
-                <span className="btn-icon">{audioEnabled ? "🔊" : "🔇"}</span>
-              </button>
-              <button className="control-btn" onClick={toggleChat} title="Chat">
-                <span className="btn-icon">💬</span>
-              </button>
-              <div className="rank-display" title={`Rank: ${rank}`}>
-                <span className="rank-icon">🏅</span>
-                <span className="rank-text" style={{ color: getRankColor() }}>{rank}</span>
-              </div>
-              {/* Debug button - Desabilitado mas pronto para uso */}
-              {/* {isAdmin && (
-                <button className="control-btn" onClick={()=>setDebug(d=>!d)} title="Debug (Admin)">
-                  <span className="btn-icon">{debug?"👁️":"👁️‍🗨️"}</span>
-                </button>
-              )} */}
-            </div>
-            
-            {/* Chat */}
-            {showChat && (
-              <div className="chat-panel">
-                <div className="chat-header">
-                  <span>Chat do Jogo</span>
-                  <button className="chat-close" onClick={toggleChat}>×</button>
-                </div>
-                <div className="chat-messages">
-                  <div className="chat-message">
-                    <span className="chat-user">Sistema:</span>
-                    <span className="chat-text">Bem-vindo ao Gol de Ouro!</span>
+                {/* Header REAL da cena: logo + métricas + apostas */}
+                <div className="hud-header">
+                  {/* HUD Principal - Design Glassmorphism */}
+                  <div className="gs-hud">
+                    <div className="hud-center">
+                      <div className="stats-grid">
+                        <div className="stat-item">
+                          <div className="stat-icon">💰</div>
+                          <div className="stat-content">
+                            <span className="stat-label">Saldo</span>
+                            <strong className="stat-value">
+                              {loadingBalance ? 'Carregando...' : balance.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+                            </strong>
+                          </div>
+                        </div>
+                        <div className="stat-item">
+                          <div className="stat-icon">⚽</div>
+                          <div className="stat-content">
+                            <span className="stat-label">Chutes</span>
+                            <strong className="stat-value">{shotsTaken}/{totalShots}</strong>
+                          </div>
+                        </div>
+                        <div className="stat-item">
+                          <div className="stat-icon">🏆</div>
+                          <div className="stat-content">
+                            <span className="stat-label">Vitórias</span>
+                            <strong className="stat-value">{sessionWins}</strong>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="hud-right">
+                      <div className="betting-section">
+                        <div className="bet-controls">
+                          <span className="bet-label">Aposta:</span>
+                          <div className="bet-buttons">
+                            {[1, 2, 5, 10].map(amount => (
+                              <button
+                                key={amount}
+                                className={`bet-btn ${currentBet === amount ? 'active' : ''} ${amount > balance ? 'disabled' : ''}`}
+                                onClick={() => handleBetChange(amount)}
+                                disabled={amount > balance}
+                              >
+                                R${amount}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="chat-input">
-                  <input type="text" placeholder="Digite sua mensagem..." />
-                  <button className="chat-send">Enviar</button>
+
+                {/* Barra de ações dentro do stage (usa os botões REAIS) */}
+                <div className="hud-bar" role="toolbar">
+                  <div className="hud-left">
+                    <button className="btn-partida" onClick={handleJoinQueue}>Partida Ativa</button>
+                  </div>
+                  <div className="hud-right">
+                    <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
 
+                {/* Rodapé da cena (botões reais) */}
+                <div className="hud-footer">
+                  <div className="hud-bottom-left">
+                    {gameStatus === "playing" ? (
+                      <button 
+                        className="btn-queue hud-btn primary" 
+                        onClick={handleJoinQueue}
+                        disabled={shooting || balance < currentBet}
+                      >
+                        <span className="btn-icon">🎮</span>
+                        Entrar na Fila
+                      </button>
+                    ) : (
+                      <button 
+                        className="btn-queue hud-btn secondary" 
+                        onClick={handleLeaveQueue}
+                      >
+                        <span className="btn-icon">🚪</span>
+                        Sair da Fila
+                      </button>
+                    )}
+                  </div>
+                  <div className="hud-bottom-right">
+                    <div className="hud-cluster">
+                      <button className="control-btn" onClick={toggleAudio} title={audioEnabled ? "Desativar Áudio" : "Ativar Áudio"}>
+                        <span className="btn-icon">{audioEnabled ? "🔊" : "🔇"}</span>
+                      </button>
+                      <button className="control-btn" onClick={toggleChat} title="Chat">
+                        <span className="btn-icon">💬</span>
+                      </button>
+                      <div className="rank-display" title={`Rank: ${rank}`}>
+                        <span className="rank-icon">🏅</span>
+                        <span className="rank-text" style={{ color: getRankColor() }}>{rank}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-        {/* Zonas */}
-        {DIRS.map((k) => {
-          const s = goalToStage(GOAL_ZONES[k]);
-          return (
-            <button
-              key={k}
-              className={`gs-zone ${shooting ? "disabled" : ""}`}
-              style={{ left: `${s.x}%`, top: `${s.y}%` }}
-              onClick={() => handleShoot(k)}
-              title={`Chutar ${k}`}
-            />
-          );
-        })}
+                {/* Chat */}
+                {showChat && (
+                  <div className="chat-panel">
+                    <div className="chat-header">
+                      <span>Chat do Jogo</span>
+                      <button className="chat-close" onClick={toggleChat}>×</button>
+                    </div>
+                    <div className="chat-messages">
+                      <div className="chat-message">
+                        <span className="chat-user">Sistema:</span>
+                        <span className="chat-text">Bem-vindo ao Gol de Ouro!</span>
+                      </div>
+                    </div>
+                    <div className="chat-input">
+                      <input type="text" placeholder="Digite sua mensagem..." />
+                      <button className="chat-send">Enviar</button>
+                    </div>
+                  </div>
+                )}
 
-        {/* Goleiro */}
-        <img
-          src={goalieImg}
-          alt="Goleiro"
-          className="gs-goalie"
-          style={{
-            left: `${goalieStagePos.x}%`,
-            top: `${goalieStagePos.y}%`,
-            transform: `translate(-50%,-50%) rotate(${goalieStagePos.rot}deg)`,
-          }}
-        />
+                {/* Zonas */}
+                {DIRS.map((k) => {
+                  const s = goalToStage(GOAL_ZONES[k]);
+                  return (
+                    <button
+                      key={k}
+                      className={`gs-zone ${shooting ? "disabled" : ""}`}
+                      style={{ left: `${s.x}%`, top: `${s.y}%` }}
+                      onClick={() => handleShoot(k)}
+                      title={`Chutar ${k}`}
+                    />
+                  );
+                })}
 
-        {/* Bola */}
-        <img src={ballPng} alt="Bola"
-          className={`gs-ball ${targetStage ? "moving" : ""}`}
-          style={{ left: `${ballPos.x}%`, top: `${ballPos.y}%` }}
-        />
+                {/* Goleiro */}
+                <img
+                  src={goalieImg}
+                  alt="Goleiro"
+                  className="gs-goalie"
+                  style={{
+                    left: `${goalieStagePos.x}%`,
+                    top: `${goalieStagePos.y}%`,
+                    transform: `translate(-50%,-50%) rotate(${goalieStagePos.rot}deg)`,
+                  }}
+                />
 
-        {/* GOL overlay */}
-        {showGoool && <img src={gooolPng} alt="GOOOL!" className="gs-goool" />}
+                {/* Bola */}
+                <img src={ballPng} alt="Bola"
+                  className={`gs-ball ${targetStage ? "moving" : ""}`}
+                  style={{ left: `${ballPos.x}%`, top: `${ballPos.y}%` }}
+                />
 
-        {/* GANHOU overlay - aparece após o goool.png */}
-        {showGanhou && <img src={ganhouPng} alt="VOCÊ GANHOU!" className="gs-ganhou" />}
+                {/* GOL overlay */}
+                {showGoool && <img src={gooolPng} alt="GOOOL!" className="gs-goool" />}
 
-        {/* DEFENDEU overlay */}
-        {showDefendeu && <img src={defendeuPng} alt="DEFENDEU!" className="gs-defendeu" />}
+                {/* GANHOU overlay - aparece após o goool.png */}
+                {showGanhou && <img src={ganhouPng} alt="VOCÊ GANHOU!" className="gs-ganhou" />}
 
-        {/* Erro */}
-        {error && <div className="gs-error">⚠ {error}</div>}
+                {/* DEFENDEU overlay */}
+                {showDefendeu && <img src={defendeuPng} alt="DEFENDEU!" className="gs-defendeu" />}
 
-        {/* Debug overlay */}
-        {debug && (
-          <div className="gs-debug">
-            <div className="goal-box" />
-            {Object.entries(GOAL_ZONES).map(([k,pos])=>{
-              const s = goalToStage(pos);
-              return <div key={k} className="dbg-point" style={{ left:`${s.x}%`, top:`${s.y}%` }}>{k}</div>;
-            })}
-          </div>
-        )}
+                {/* Erro */}
+                {error && <div className="gs-error">⚠ {error}</div>}
 
-        {/* Sistema de Partículas */}
-        <ParticleSystem
-          type={particles.type}
-          position={particles.position}
-          active={particles.active}
-          onComplete={() => setParticles({ active: false, type: 'goal', position: { x: 50, y: 50 } })}
-        />
-        
+                {/* Debug overlay */}
+                {debug && (
+                  <div className="gs-debug">
+                    <div className="goal-box" />
+                    {Object.entries(GOAL_ZONES).map(([k,pos])=>{
+                      const s = goalToStage(pos);
+                      return <div key={k} className="dbg-point" style={{ left:`${s.x}%`, top:`${s.y}%` }}>{k}</div>;
+                    })}
+                  </div>
+                )}
+
+                {/* Sistema de Partículas */}
+                <ParticleSystem
+                  type={particles.type}
+                  position={particles.position}
+                  active={particles.active}
+                  onComplete={() => setParticles({ active: false, type: 'goal', position: { x: 50, y: 50 } })}
+                />
               </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
   );
 }
