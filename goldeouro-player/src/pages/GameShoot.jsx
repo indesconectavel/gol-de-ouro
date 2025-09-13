@@ -66,6 +66,9 @@ export default function GameShoot() {
   // Estados para partículas
   const [particles, setParticles] = useState({ active: false, type: 'goal', position: { x: 50, y: 50 } });
 
+  // Estados das zonas de chute
+  const [zonePositions, setZonePositions] = useState({});
+
   // Estados do sistema de apostas
   const [gameStatus, setGameStatus] = useState("playing"); // playing, waiting, full, connecting
   const [queuePosition, setQueuePosition] = useState(0);
@@ -161,12 +164,17 @@ export default function GameShoot() {
   }, [navigate]);
 
   function goalToStage({ x, y }) {
-    const stage = document.querySelector(".gs-stage");
+    // Usar o novo seletor da estrutura atualizada
+    const stage = document.querySelector("#stage-root .playfield");
+    if (!stage) {
+      // Fallback se o elemento não existir ainda
+      return { x: x, y: y };
+    }
     const cs = getComputedStyle(stage);
-    const gl = parseFloat(cs.getPropertyValue("--goal-left"));
-    const gt = parseFloat(cs.getPropertyValue("--goal-top"));
-    const gw = parseFloat(cs.getPropertyValue("--goal-width"));
-    const gh = parseFloat(cs.getPropertyValue("--goal-height"));
+    const gl = parseFloat(cs.getPropertyValue("--goal-left")) || 19.5;
+    const gt = parseFloat(cs.getPropertyValue("--goal-top")) || 36.5;
+    const gw = parseFloat(cs.getPropertyValue("--goal-width")) || 61;
+    const gh = parseFloat(cs.getPropertyValue("--goal-height")) || 33;
     return {
       x: gl + (x / 100) * gw,
       y: gt + (y / 100) * gh,
@@ -441,6 +449,17 @@ export default function GameShoot() {
     return () => window.removeEventListener('resize', updateScreenSize);
   }, []);
 
+  // Calcular posições das zonas de chute após o componente montar
+  useEffect(() => {
+    if (!loading) {
+      const positions = {};
+      DIRS.forEach(k => {
+        positions[k] = goalToStage(GOAL_ZONES[k]);
+      });
+      setZonePositions(positions);
+    }
+  }, [loading]);
+
   // Loading screen
   if (loading) {
     console.log("🔄 Loading screen ativo");
@@ -619,7 +638,7 @@ export default function GameShoot() {
 
                 {/* Zonas */}
                 {DIRS.map((k) => {
-                  const s = goalToStage(GOAL_ZONES[k]);
+                  const s = zonePositions[k] || { x: 50, y: 50 }; // Fallback se não calculado ainda
                   return (
                     <button
                       key={k}
@@ -666,7 +685,7 @@ export default function GameShoot() {
                   <div className="gs-debug">
                     <div className="goal-box" />
                     {Object.entries(GOAL_ZONES).map(([k,pos])=>{
-                      const s = goalToStage(pos);
+                      const s = zonePositions[k] || { x: 50, y: 50 };
                       return <div key={k} className="dbg-point" style={{ left:`${s.x}%`, top:`${s.y}%` }}>{k}</div>;
                     })}
                   </div>

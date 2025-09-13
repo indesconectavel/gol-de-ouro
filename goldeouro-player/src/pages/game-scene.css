@@ -87,6 +87,12 @@ body[data-page="game"] {
   aspect-ratio:16/9;
   width:min(100vw, calc((var(--vh)*100)*16/9));
   height:min(calc(var(--vh)*100), calc(100vw*9/16));
+  
+  /* Variáveis CSS para o sistema de coordenadas do gol */
+  --goal-left: 19.5;
+  --goal-top: 36.5;
+  --goal-width: 61;
+  --goal-height: 33;
 }
 
 /* Se há uma imagem/canvas de fundo, garanta cobertura */
