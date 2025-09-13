@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./game-scene.css"; // CSS escopado só da /game
 import audioManager from "../utils/audioManager";
@@ -41,6 +41,7 @@ function goalieSprite(pose) {
 }
 
 export default function GameShoot() {
+  const headerRef = useRef(null);
   const [balance, setBalance] = useState(0);
   const [totalShots, setTotalShots] = useState(10);
   const [shotsTaken, setShotsTaken] = useState(0);
@@ -107,6 +108,16 @@ export default function GameShoot() {
     setVh(); 
     window.addEventListener('resize', setVh);
     
+    // ResizeObserver para medir header e posicionar ações abaixo do card
+    const ro = new ResizeObserver(() => {
+      const hdr = headerRef.current;
+      if (!hdr) return;
+      const rect = hdr.getBoundingClientRect();
+      // bottom do header em px relativo à viewport
+      document.documentElement.style.setProperty('--hdr-bottom', `${rect.bottom}px`);
+    });
+    if (headerRef.current) ro.observe(headerRef.current);
+    
     // Iniciar música de fundo do gameplay em modo ativo
     musicManager.playGameplayMusic();
     
@@ -117,10 +128,11 @@ export default function GameShoot() {
     }, 100);
 
     // Cleanup: parar música ao sair do componente
-    return () => {
-      window.removeEventListener('resize', setVh);
-      document.body.removeAttribute('data-page');
-      musicManager.stopMusic();
+    return () => { 
+      ro.disconnect(); 
+      window.removeEventListener('resize', setVh); 
+      document.body.removeAttribute('data-page'); 
+      musicManager.stopMusic(); 
     };
   }, []);
 
@@ -515,7 +527,12 @@ export default function GameShoot() {
               <img src={bg} alt="Gol de Ouro - Estádio" className="scene-bg" />
 
               {/* Header REAL da cena: logo + métricas + apostas */}
-              <div className="hud-header">
+              <div className="hud-header" ref={headerRef}>
+                {/* Logo 200px */}
+                <div className="brand-logo">
+                  <img src="/src/assets/logo.png" alt="Gol de Ouro" />
+                </div>
+                
                 {/* HUD Principal - Design Glassmorphism */}
                 <div className="gs-hud">
                   <div className="hud-center">

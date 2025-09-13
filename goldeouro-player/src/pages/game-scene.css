@@ -10,71 +10,88 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   .game-stage-wrap{ display:none; }
 }
 
-/* ===== stage ocupa toda a viewport; sem 'fundo azul' visível ===== */
-:root{ --vh:1vh; }
+/* ===== stage ocupa toda a viewport — sem fundo azul visível ===== */
+:root{ --vh:1vh; --hdr-bottom: 0px; }
 .game-stage-wrap{ position:relative; flex:1; width:100vw; height:calc(var(--vh)*100); }
 .game-stage{ position:absolute; inset:0; }
 #stage-root{ position:absolute; inset:0; width:100vw; height:100vh; overflow:hidden; }
 
-/* ===== geometria do playfield 16:9 =====
-   - calculamos a área 16:9 (pf-w/pf-h) e as "margens pretas" (pf-ox/pf-oy)
-   - assim ancoramos HUD por porcentagens da área jogável real
-*/
+/* ===== geometria 16:9 do playfield ===== */
 #stage-root{
   --pf-w: min(100vw, calc((var(--vh)*100) * 16 / 9));
   --pf-h: min(calc(var(--vh)*100), calc(100vw * 9 / 16));
-  --pf-ox: calc((100vw - var(--pf-w)) / 2); /* offset X do playfield dentro do stage */
-  --pf-oy: calc((100vh - var(--pf-h)) / 2); /* offset Y do playfield dentro do stage */
+  --pf-ox: calc((100vw - var(--pf-w)) / 2);
+  --pf-oy: calc((100vh - var(--pf-h)) / 2);
 }
 
-/* se usar bg/canvas, cobrir sempre */
+/* se houver bg/canvas: cobrir stage */
 #stage-root .scene-bg, #stage-root > canvas{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 
-/* ===== header da cena (card do topo, com logo+metricas+apostas) ===== */
+/* ===== HEADER da cena (card) ===== */
 .hud-header{
   position:absolute; z-index:4;
-  left: calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
   right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
-  top:  calc(var(--pf-oy) + var(--pf-h) * 0.035);   /* ~3.5% da altura do playfield */
+  top:   calc(var(--pf-oy) + var(--pf-h) * 0.035);
   pointer-events:auto;
 }
-/* logo 200px e esconder textos apenas aqui */
-.hud-header img.brand-logo{ width:200px; height:auto; }
+/* logo 200px — cobre tanto <img> quanto <div> com bg */
+.hud-header .brand-logo{ width:200px; height:auto; display:block; }
+.hud-header .brand-logo img{ width:100%; height:auto; display:block; }
+/* esconder textos só aqui */
 .hud-header .brand-title, .hud-header .brand-sub{ display:none !important; }
 
-/* ===== ações sobre o campo (mesma altura; fora do card) =====
-   alinhamos "partida" (ESQ) e "dashboard" (DIR) exatamente pela área 16:9
-*/
+/* ===== BARRA DE AÇÕES — abaixo do card (usa --hdr-bottom) ===== */
 .hud-actions{
   position:absolute; z-index:6; display:flex; align-items:center;
   left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
   right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
-  top:   calc(var(--pf-oy) + var(--pf-h) * 0.135);  /* ~13.5% do playfield — ajuste fino */
+  /* coloca logo abaixo do card, com respiro */
+  top:   calc(var(--hdr-bottom) + max(8px, var(--pf-h)*0.01));
 }
 .hud-left{ display:flex; align-items:center; gap:12px; }
 .hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
-/* só layout; visual vem do estilo original dos botões */
 .btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1; padding:10px 16px; font-weight:600; cursor:pointer; }
 .btn-partida{ background:#23c381; color:#fff; }
 .btn-dashboard{ background:#132840; color:#fff; }
 
-/* ===== rodapé do campo ===== */
+/* ===== RODAPÉ ===== */
 .hud-footer{ position:absolute; z-index:5; left:0; right:0; pointer-events:none; }
 .hud-bottom-left, .hud-bottom-right{ position:absolute; bottom:0; pointer-events:auto; }
-/* âncoras por porcentagem da área 16:9 */
 .hud-bottom-left{
   left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
-  bottom:calc(var(--pf-oy) + var(--pf-h) * 0.055);  /* ~5.5% da altura do playfield */
+  bottom:calc(var(--pf-oy) + var(--pf-h) * 0.055);
 }
 .hud-bottom-right{
   right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
   bottom:calc(var(--pf-oy) + var(--pf-h) * 0.055);
 }
-/* manter estilos visuais originais */
 .btn-queue{ display:inline-flex; }
 .hud-cluster{ display:inline-flex; gap:12px; }
 
-/* remover qualquer topbar/faixa externa que restou */
+/* ===== GOLEIRO: escala por altura do playfield + descer 30px =====
+   ajuste fino do fator 0.00155 conforme o sprite (mantém proporção em telas grandes)
+*/
+.goalie, .goalie-sprite, .gk{  /* troque pelos seletores reais do seu goleiro */
+  position:absolute;
+  left:50%; transform-origin:50% 100%;
+  /* escala dinâmica + deslocamento 30px para baixo */
+  transform: translate(-50%, 0) translateY(30px)
+             scale(clamp(0.9, calc(var(--pf-h) * 0.00155), 1.25));
+  z-index:3;
+}
+
+/* ===== BOLA: alinhar ao spot central =====
+   ajuste o coeficiente 0.86~0.89 para casar com seu gramado
+*/
+.ball, .ball-sprite{ /* troque pelo seletor real */
+  position:absolute; left:50%;
+  top: calc(var(--pf-oy) + var(--pf-h) * 0.875); /* 87.5% da altura do playfield */
+  transform: translate(-50%, -50%);
+  z-index:2;
+}
+
+/* remover quaisquer topbars/strips externas deixadas por tentativas anteriores */
 body[data-page="game"] .game-topbar,
 body[data-page="game"] header.game-topbar,
 body[data-page="game"] .hud-header-clip,
