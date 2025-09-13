@@ -473,51 +473,6 @@ export default function GameShoot() {
         <div className="rotate-card">Gire o dispositivo para o modo horizontal para jogar</div>
       </div>
 
-      {/* HUD SUPERIOR - Layout exato da imagem */}
-      <div className="game-topbar">
-        {/* Logo à esquerda */}
-        <div className="top-left">
-          <img className="brand-logo" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
-        </div>
-        
-        {/* Estatísticas no centro */}
-        <div className="game-stats">
-          <div className="stat-item">
-            <span>💰</span>
-            <div className="stat-value">R$ {balance.toFixed(2)}</div>
-            <span>SALDO</span>
-          </div>
-          <div className="stat-item">
-            <span>⚽</span>
-            <div className="stat-value">15/10</div>
-            <span>CHUTES</span>
-          </div>
-          <div className="stat-item">
-            <span>🏆</span>
-            <div className="stat-value">0</div>
-            <span>VITÓRIAS</span>
-          </div>
-        </div>
-        
-        {/* Botões de aposta à direita */}
-        <div className="top-actions">
-          <div className="bet-buttons">
-            <button className="bet-btn active">R$1</button>
-            <button className="bet-btn">R$2</button>
-            <button className="bet-btn">R$5</button>
-            <button className="bet-btn">R$10</button>
-          </div>
-          <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>
-            <span>🏠</span>
-            Dashboard
-          </button>
-        </div>
-      </div>
-      
-      {/* Botão Partida Ativa centralizado */}
-      <div className="partida-ativa-container">
-        <button className="btn-partida">Partida Ativa</button>
-      </div>
 
       {/* STAGE 16:9 — este é o ÚNICO container que dimensiona */}
       <main className="game-stage-wrap">

@@ -35,112 +35,9 @@ body[data-page="game"] {
     background:rgba(255,255,255,.06); 
     backdrop-filter:blur(6px); 
   }
-  .game-topbar, .game-stage-wrap { display:none; }
+  .game-stage-wrap { display:none; }
 }
 
-/* HUD SUPERIOR - Layout exato da imagem */
-.game-topbar{
-  position:relative; 
-  z-index:10;
-  display:flex; 
-  align-items:center; 
-  justify-content:space-between;
-  padding:12px 20px;
-  background:rgba(0,0,0,0.3);
-  backdrop-filter:blur(10px);
-  border-bottom:1px solid rgba(255,255,255,0.1);
-}
-
-/* Logo à esquerda */
-.top-left{ 
-  display:flex; 
-  align-items:center; 
-  gap:12px; 
-}
-.brand-logo{ 
-  width:60px; 
-  height:60px; 
-  object-fit:contain;
-}
-.brand-title, .brand-sub{ 
-  display:none; 
-}
-
-/* Estatísticas no centro */
-.game-stats{
-  display:flex;
-  gap:24px;
-  align-items:center;
-}
-.stat-item{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:4px;
-  color:#fff;
-  font-size:12px;
-}
-.stat-value{
-  font-size:16px;
-  font-weight:600;
-  color:#ffd700;
-}
-
-/* Botões de aposta à direita */
-.top-actions{ 
-  display:flex; 
-  gap:8px; 
-  align-items:center; 
-}
-.bet-buttons{
-  display:flex;
-  gap:4px;
-}
-.bet-btn{
-  padding:6px 12px;
-  background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.2);
-  border-radius:6px;
-  color:#fff;
-  font-size:12px;
-  cursor:pointer;
-  transition:all 0.2s;
-}
-.bet-btn.active{
-  background:#23c381;
-  border-color:#23c381;
-}
-.btn-dashboard{
-  padding:8px 16px;
-  background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.2);
-  border-radius:8px;
-  color:#fff;
-  font-size:12px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-/* Botão Partida Ativa centralizado */
-.partida-ativa-container{
-  display:flex;
-  justify-content:center;
-  padding:12px 0;
-  background:rgba(0,0,0,0.2);
-}
-.btn-partida{
-  padding:12px 32px;
-  background:#23c381;
-  border:none;
-  border-radius:8px;
-  color:#fff;
-  font-size:16px;
-  font-weight:600;
-  cursor:pointer;
-  box-shadow:0 4px 12px rgba(35,195,129,0.3);
-}
 
 /* ======== STAGE 16:9 CENTRALIZADO ======== */
 :root{ --vh: 1vh; }
@@ -149,7 +46,7 @@ body[data-page="game"] {
   z-index:1; 
   flex:1; 
   width:100vw; 
-  height:calc(var(--vh) * 100); 
+  height:100vh; 
   display:flex;
   align-items:center;
   justify-content:center;
@@ -163,13 +60,13 @@ body[data-page="game"] {
   justify-content:center;
 }
 
-/* Container da cena 16:9 */
+/* Container da cena 16:9 - ocupa toda a tela */
 #stage-root{
   aspect-ratio:16/9;
   width:100%;
   height:100%;
   max-width:100vw;
-  max-height:calc(100vh - 120px); /* descontar HUDs */
+  max-height:100vh;
   position:relative;
   overflow:hidden;
   border-radius:8px;
