@@ -1,0 +1,705 @@
+/* ======== CSS PIXEL-PERFECT ESCOPO EXCLUSIVO DA PÁGINA /game ======== */
+
+/* Escopo só na /game */
+body[data-page="game"] { 
+  margin:0; 
+  overflow:hidden; 
+  background:transparent; 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.game-page { 
+  position:fixed; 
+  inset:0; 
+  display:flex; 
+  background:transparent; 
+}
+
+/* Bloquear retrato somente aqui */
+.game-rotate{ display:none; }
+@media (orientation: portrait){
+  .game-rotate{ 
+    position:fixed; 
+    inset:0; 
+    display:grid; 
+    place-items:center; 
+    z-index:9999;
+    background:#0b1e2a; 
+    color:#fff; 
+    padding:24px; 
+    text-align:center; 
+  }
+  .rotate-card{ 
+    border-radius:16px; 
+    padding:20px 24px; 
+    background:rgba(255,255,255,.06); 
+    backdrop-filter:blur(6px); 
+  }
+  .game-stage-wrap{ display:none; }
+}
+
+/* ======= CENA 16:9 CENTRALIZADA ======= */
+:root{ --vh:1vh; }
+.game-stage-wrap{ 
+  position:relative; 
+  flex:1; 
+  width:100vw; 
+  height:calc(var(--vh)*100); 
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.game-stage{ 
+  position:absolute; 
+  inset:0; 
+  display:grid; 
+  place-items:center; 
+}
+
+/* Só o root dimensiona – 16:9 com letterboxing */
+#stage-root{
+  position:relative;
+  aspect-ratio:16/9;
+  width: min(100vw, calc((var(--vh)*100) * 16 / 9));
+  height:min(calc(var(--vh)*100), calc(100vw * 9 / 16));
+  overflow:hidden; /* corta excedentes do header/efeitos */
+  border-radius:8px;
+}
+
+/* ======= HUD: BARRA DE AÇÕES ALINHADA NA MESMA ALTURA DENTRO DA CENA ======= */
+.hud-bar{
+  position:absolute; 
+  z-index:6;
+  top:16px; 
+  left:16px; 
+  right:16px;
+  display:flex; 
+  align-items:center;
+  background:rgba(0,0,0,0.3);
+  backdrop-filter:blur(10px);
+  border-radius:12px;
+  padding:8px 16px;
+  border:1px solid rgba(255,255,255,0.2);
+}
+
+.hud-left{ 
+  display:flex; 
+  align-items:center; 
+  gap:12px; 
+}
+
+.hud-right{ 
+  margin-left:auto; 
+  display:flex; 
+  align-items:center; 
+  gap:12px; 
+}
+
+/* Botões herdando seu estilo original; mantenha apenas layout aqui */
+.btn-partida, 
+.btn-dashboard{ 
+  border:0; 
+  border-radius:999px; 
+  line-height:1; 
+  padding:10px 16px; 
+  font-weight:600; 
+  cursor:pointer; 
+  transition:all 0.2s ease;
+  font-size:14px;
+}
+
+.btn-partida{ 
+  background:#23c381; 
+  color:#fff; 
+  border:1px solid rgba(35,195,129,.3);
+  box-shadow:0 2px 8px rgba(35,195,129,.3);
+}
+
+.btn-partida:hover{ 
+  background:#1ea76d; 
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(35,195,129,.4);
+}
+
+.btn-dashboard{ 
+  background:#3a4a5f; 
+  color:#fff; 
+  border:1px solid rgba(58,74,95,.3);
+  box-shadow:0 2px 8px rgba(58,74,95,.3);
+}
+
+.btn-dashboard:hover{ 
+  background:#2d3748; 
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(58,74,95,.4);
+}
+
+/* ======= CLIP DO HEADER VISUAL DA CENA (logo + métricas + apostas) ======= */
+.hud-header-clip{
+  position:absolute; 
+  z-index:5;
+  top:64px; 
+  left:16px; 
+  right:16px;
+  pointer-events:none; /* conteúdo interno continua clicável se o próprio header habilitar */
+}
+
+/* ======= LOGO 200px E ESCONDER TÍTULOS SÓ AQUI ======= */
+/* Se a sua logo no header tem .brand-logo ou <img> dentro do header, use seletores tolerantes */
+#stage-root .brand-logo, 
+#stage-root img.logo, 
+#stage-root .logo img{ 
+  width:200px; 
+  height:auto; 
+  object-fit:contain;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.3));
+}
+
+#stage-root .brand-title, 
+#stage-root .brand-sub{ 
+  display:none !important; 
+}
+
+/* ======= ELEMENTOS DO JOGO ======= */
+.gs-wrapper{
+  width:100%; 
+  height:100%;
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  background:transparent; 
+  overflow:hidden;
+}
+
+.gs-stage{
+  position:relative;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  border-radius:8px;
+  background:#0b3a1d;
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
+}
+
+.gs-bg{ 
+  position:absolute; 
+  inset:0; 
+  width:100%; 
+  height:100%; 
+  object-fit:cover; 
+  border-radius:8px;
+}
+
+/* HUD Principal - Design Glassmorphism */
+.gs-hud{ 
+  position:absolute; 
+  left:20px; 
+  right:20px; 
+  top:20px;
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  gap:24px; 
+  z-index:10;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  backdrop-filter: blur(20px); 
+  color:#fff;
+  padding:20px 28px; 
+  border-radius:20px; 
+  min-height:90px;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+  pointer-events:auto; /* Reabilita cliques dentro do HUD */
+}
+
+.hud-center{ 
+  display:flex; 
+  flex-direction:column; 
+  align-items:center; 
+  gap:12px; 
+}
+
+.stats-grid{ 
+  display:flex; 
+  align-items:center; 
+  gap:24px; 
+}
+
+.stat-item{ 
+  display:flex; 
+  align-items:center; 
+  gap:12px; 
+}
+
+.stat-icon{ 
+  font-size:24px; 
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.3)); 
+}
+
+.stat-content{ 
+  display:flex; 
+  flex-direction:column; 
+  gap:4px; 
+}
+
+.stat-label{ 
+  font-size:11px; 
+  opacity:.8; 
+  text-transform:uppercase; 
+  letter-spacing:.5px; 
+  color:#a0a0a0; 
+}
+
+.stat-value{ 
+  font-size:16px; 
+  font-weight:700; 
+  color:#fff; 
+  text-shadow:0 2px 4px rgba(0,0,0,.5); 
+}
+
+.hud-right{ 
+  display:flex; 
+  align-items:center; 
+}
+
+.betting-section{ 
+  display:flex; 
+  flex-direction:column; 
+  gap:12px; 
+  align-items:flex-end; 
+}
+
+.bet-controls{ 
+  display:flex; 
+  flex-direction:column; 
+  gap:8px; 
+  align-items:center; 
+}
+
+.bet-label{ 
+  font-size:12px; 
+  color:#a0a0a0; 
+  font-weight:600; 
+}
+
+.bet-buttons{ 
+  display:flex; 
+  gap:6px; 
+}
+
+.bet-btn{ 
+  padding:8px 16px; 
+  border:none; 
+  border-radius:10px; 
+  font-size:12px; 
+  font-weight:600; 
+  cursor:pointer; 
+  transition:all .2s ease; 
+  background:rgba(255,255,255,.1);
+  color:#fff; 
+  border:1px solid rgba(255,255,255,.2);
+}
+
+.bet-btn:hover:not(:disabled){ 
+  background:rgba(255,255,255,.2); 
+  transform:translateY(-1px);
+  border:1px solid rgba(255,255,255,.3);
+}
+
+.bet-btn.active{ 
+  background:linear-gradient(135deg,#10b981,#059669); 
+  color:#fff; 
+  font-weight:700; 
+  border:1px solid rgba(16,185,129,.3);
+  box-shadow:0 2px 8px rgba(16,185,129,.3);
+}
+
+.bet-btn.disabled{ 
+  opacity:.4; 
+  cursor:not-allowed; 
+}
+
+/* HUD Inferior Esquerdo - Controles de Partida */
+.hud-bottom-left{ 
+  position:absolute; 
+  bottom:20px; 
+  left:10px; 
+  z-index:10;
+  background:rgba(255,255,255,.1); 
+  backdrop-filter:blur(20px);
+  border-radius:20px; 
+  padding:16px; 
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+
+.game-actions{ 
+  display:flex; 
+  gap:8px; 
+}
+
+.hud-btn{ 
+  display:flex; 
+  align-items:center; 
+  gap:8px; 
+  padding:12px 20px; 
+  border:none; 
+  border-radius:12px;
+  font-size:14px; 
+  font-weight:600; 
+  cursor:pointer; 
+  transition:all .3s ease;
+  border:1px solid rgba(255,255,255,.2); 
+  position:relative; 
+  overflow:hidden;
+  background:rgba(255,255,255,.1); 
+  color:#fff;
+}
+
+.hud-btn.primary{ 
+  background:linear-gradient(135deg,#10b981,#059669); 
+  color:#fff; 
+  font-weight:700;
+  box-shadow:0 4px 12px rgba(16,185,129,.3); 
+  border:1px solid rgba(16,185,129,.3);
+}
+
+.hud-btn.primary:hover:not(:disabled){ 
+  transform:translateY(-2px); 
+  box-shadow:0 6px 16px rgba(16,185,129,.4);
+  background:linear-gradient(135deg,#059669,#047857);
+}
+
+.hud-btn.primary:disabled{ 
+  opacity:.6; 
+  cursor:not-allowed; 
+}
+
+.hud-btn.secondary{ 
+  background:rgba(255,255,255,.1); 
+  color:#fff; 
+  border:1px solid rgba(255,255,255,.2);
+}
+
+.hud-btn.secondary:hover{ 
+  background:rgba(255,255,255,.2); 
+  transform:translateY(-1px);
+  border:1px solid rgba(255,255,255,.3);
+}
+
+.btn-icon{ 
+  font-size:16px; 
+}
+
+/* HUD Inferior Direito - Controles e Chat */
+.hud-bottom-right{ 
+  position:absolute; 
+  bottom:20px; 
+  right:20px; 
+  z-index:10;
+  background:rgba(255,255,255,.1); 
+  backdrop-filter:blur(20px);
+  border-radius:20px; 
+  padding:16px; 
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+
+.control-panel{ 
+  display:flex; 
+  flex-direction:column; 
+  gap:12px; 
+}
+
+.control-buttons{ 
+  display:flex; 
+  gap:8px; 
+}
+
+.control-btn{ 
+  width:44px; 
+  height:44px; 
+  border:none; 
+  border-radius:12px;
+  background:rgba(255,255,255,.1); 
+  color:#fff; 
+  cursor:pointer;
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  transition:all .2s ease; 
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+
+.control-btn:hover{ 
+  background:rgba(255,255,255,.2); 
+  transform:translateY(-2px);
+  border:1px solid rgba(255,255,255,.3);
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+
+.control-btn .btn-icon{ 
+  font-size:16px; 
+}
+
+.control-btn .btn-text{ 
+  font-size:8px; 
+  font-weight:500; 
+}
+
+/* Zonas de chute */
+.gs-zone{ 
+  position:absolute; 
+  width:40px; 
+  height:40px; 
+  border-radius:50%; 
+  background:rgba(255,255,255,0.2);
+  border:2px solid rgba(255,255,255,0.4);
+  cursor:pointer; 
+  transition:all 0.2s; 
+  z-index:5;
+  transform:translate(-50%,-50%);
+}
+
+.gs-zone:hover{ 
+  background:rgba(255,255,255,0.3); 
+  border-color:rgba(255,255,255,0.6);
+}
+
+.gs-zone.disabled{ 
+  pointer-events:none; 
+  opacity:.5; 
+}
+
+/* Goleiro */
+.gs-goalie{ 
+  position:absolute; 
+  z-index:3; 
+  transition:all 0.3s ease;
+  transform:translate(-50%,-50%);
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,.5));
+}
+
+/* Bola */
+.gs-ball{ 
+  position:absolute; 
+  z-index:4; 
+  transition:all 0.5s ease;
+  transform:translate(-50%,-50%);
+  filter:drop-shadow(0 6px 12px rgba(0,0,0,.5));
+}
+
+/* Overlays de resultado */
+.gs-goool, 
+.gs-ganhou, 
+.gs-defendeu{ 
+  position:absolute; 
+  top:50%; 
+  left:50%; 
+  transform:translate(-50%, -50%); 
+  z-index:20; 
+  animation:popIn 0.5s ease-out;
+  pointer-events:none;
+}
+
+.gs-goool{ 
+  width:min(49%,504px); 
+}
+
+.gs-defendeu, 
+.gs-ganhou{ 
+  width:200px; 
+  height:200px; 
+}
+
+@keyframes popIn{ 
+  0%{ transform:translate(-50%, -50%) scale(0); opacity:0; } 
+  50%{ transform:translate(-50%, -50%) scale(1.1); opacity:1; } 
+  100%{ transform:translate(-50%, -50%) scale(1); opacity:1; } 
+}
+
+/* Erro */
+.gs-error{ 
+  position:absolute; 
+  right:14px; 
+  bottom:14px; 
+  z-index:10;
+  background:rgba(255,63,63,.15); 
+  border:1px solid rgba(255,63,63,.45);
+  padding:.55rem .8rem; 
+  color:#ffe; 
+  border-radius:10px; 
+  backdrop-filter: blur(6px); 
+}
+
+/* Garantir que elementos internos preencham o root sem esticar fora da proporção */
+#stage-root > canvas,
+#stage-root > img,
+#stage-root .scene-bg { 
+  width:100%; 
+  height:100%; 
+  object-fit:cover; 
+}
+
+/* Z-index previsível da cena */
+#stage-root .hud, 
+#stage-root .ui, 
+#stage-root .panel { 
+  position:relative; 
+  z-index:3; 
+}
+
+/* ======= RESPONSIVIDADE ======= */
+@media (max-width: 768px){
+  .hud-bar{ 
+    top:12px; 
+    left:12px; 
+    right:12px;
+    padding:6px 12px;
+  }
+  
+  .btn-partida, 
+  .btn-dashboard{ 
+    padding:8px 12px; 
+    font-size:12px;
+  }
+  
+  .hud-header-clip{ 
+    top:56px; 
+    left:12px; 
+    right:12px;
+  }
+  
+  .gs-hud{ 
+    padding:16px 20px; 
+    min-height:70px;
+  }
+  
+  .stats-grid{ 
+    gap:16px; 
+  }
+  
+  .stat-item{ 
+    gap:8px; 
+  }
+  
+  .stat-icon{ 
+    font-size:20px; 
+  }
+  
+  .stat-value{ 
+    font-size:14px; 
+  }
+  
+  .stat-label{ 
+    font-size:9px; 
+  }
+  
+  .bet-btn{ 
+    padding:6px 10px; 
+    font-size:10px; 
+  }
+  
+  .hud-bottom-left{ 
+    bottom:10px; 
+    left:5px; 
+    padding:12px; 
+  }
+  
+  .hud-bottom-right{ 
+    bottom:10px; 
+    right:10px; 
+    padding:12px; 
+  }
+  
+  .control-btn{ 
+    width:36px; 
+    height:36px; 
+  }
+  
+  .control-btn .btn-icon{ 
+    font-size:14px; 
+  }
+}
+
+@media (max-width: 480px){
+  .hud-bar{ 
+    top:8px; 
+    left:8px; 
+    right:8px;
+    padding:4px 8px;
+    flex-direction:column;
+    gap:8px;
+  }
+  
+  .hud-left, 
+  .hud-right{ 
+    width:100%; 
+    justify-content:center;
+  }
+  
+  .btn-partida, 
+  .btn-dashboard{ 
+    padding:6px 10px; 
+    font-size:11px;
+    flex:1;
+  }
+  
+  .hud-header-clip{ 
+    top:80px; 
+    left:8px; 
+    right:8px;
+  }
+  
+  .gs-hud{ 
+    padding:12px 16px; 
+    min-height:60px;
+    flex-direction:column;
+    align-items:stretch;
+  }
+  
+  .hud-center{ 
+    order:1; 
+  }
+  
+  .hud-right{ 
+    order:2; 
+  }
+  
+  .stats-grid{ 
+    gap:12px; 
+    justify-content:center;
+  }
+  
+  .stat-item{ 
+    gap:6px; 
+  }
+  
+  .stat-icon{ 
+    font-size:18px; 
+  }
+  
+  .stat-value{ 
+    font-size:12px; 
+  }
+  
+  .stat-label{ 
+    font-size:8px; 
+  }
+  
+  .bet-btn{ 
+    padding:4px 8px; 
+    font-size:9px; 
+  }
+  
+  .control-btn{ 
+    width:32px; 
+    height:32px; 
+  }
+  
+  .control-btn .btn-icon{ 
+    font-size:12px; 
+  }
+}

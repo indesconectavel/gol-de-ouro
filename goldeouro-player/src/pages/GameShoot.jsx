@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./game-locked.css"; // CSS escopado só da /game
+import "./game-pixel.css"; // CSS escopado só da /game
 import audioManager from "../utils/audioManager";
 import musicManager from "../utils/musicManager";
 import ParticleSystem from "../components/ParticleSystem";
@@ -472,19 +472,6 @@ export default function GameShoot() {
         <div className="rotate-card">Gire o dispositivo para o modo horizontal para jogar</div>
       </div>
 
-      {/* TOPBAR */}
-      <div className="game-topbar">
-        <div className="top-left">
-          <img className="brand-logo" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
-          <span className="brand-title">Gol de Ouro</span>
-          <span className="brand-sub">FUTEBOL VIRTUAL</span>
-        </div>
-        <div className="top-actions">
-          <button className="btn-partida" onClick={handleJoinQueue}>Partida Ativa</button>
-          <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
-        </div>
-      </div>
-
       {/* STAGE 16:9 — este é o ÚNICO container que dimensiona */}
       <main className="game-stage-wrap">
         <div className="game-stage">
@@ -493,7 +480,19 @@ export default function GameShoot() {
               <div className="gs-stage">
                 <img src={bg} alt="Gol de Ouro - Estádio" className="gs-bg" />
 
-        {/* HUD Principal - Design Glassmorphism */}
+            {/* HUD DE AÇÕES NO TOPO DA CENA (mesma altura) */}
+            <div className="hud-bar" role="toolbar" aria-label="Ações do jogo">
+              <div className="hud-left">
+                <button className="btn-partida" onClick={handleJoinQueue}>Partida Ativa</button>
+              </div>
+              <div className="hud-right">
+                <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
+              </div>
+            </div>
+
+            {/* AJUSTE DO HEADER VISUAL DA CENA (logo + métricas + apostas) */}
+            <div className="hud-header-clip">
+              {/* HUD Principal - Design Glassmorphism */}
         <div className="gs-hud">
           <div className="hud-center">
             <div className="stats-grid">
@@ -543,31 +542,8 @@ export default function GameShoot() {
             </div>
           </div>
         </div>
+            </div>
 
-
-        {/* HUD Inferior Esquerdo - Controles de Partida */}
-        <div className="hud-bottom-left">
-          <div className="game-actions">
-            {gameStatus === "playing" ? (
-              <button 
-                className="hud-btn primary" 
-                onClick={handleJoinQueue}
-                disabled={shooting || balance < currentBet}
-              >
-                <span className="btn-icon">🎮</span>
-                Entrar na Fila
-              </button>
-            ) : (
-              <button 
-                className="hud-btn secondary" 
-                onClick={handleLeaveQueue}
-              >
-                <span className="btn-icon">🚪</span>
-                Sair da Fila
-              </button>
-            )}
-          </div>
-        </div>
 
         {/* HUD Lateral Esquerda - Debug REMOVIDO PARA PRODUÇÃO */}
 
