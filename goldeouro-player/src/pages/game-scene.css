@@ -8,11 +8,15 @@ body[data-page="game"] {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Fallback para quando data-page não estiver definido */
 .game-page { 
   position:fixed; 
   inset:0; 
   display:flex; 
   background:transparent; 
+  margin:0;
+  overflow:hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Bloquear retrato SOMENTE aqui */
@@ -59,6 +63,20 @@ body[data-page="game"] {
   width:100vw; 
   height:100vh; 
   overflow:hidden; /* remove "borda"/fundo azul */
+  background: #0b1e2a; /* fallback background */
+}
+
+/* Fallback para garantir que a página seja visível */
+.game-page #stage-root {
+  background: #0b1e2a;
+  min-height: 100vh;
+  min-width: 100vw;
+}
+
+/* Loading screen */
+.game-page .stage-root {
+  background: #0b1e2a;
+  color: #fff;
 }
 
 /* Dentro do stage, a área jogável é 16:9 centralizada (letterboxing interno) */

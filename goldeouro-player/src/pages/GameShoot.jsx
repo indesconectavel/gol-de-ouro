@@ -443,12 +443,27 @@ export default function GameShoot() {
 
   // Loading screen
   if (loading) {
+    console.log("🔄 Loading screen ativo");
     return (
-      <div className="gs-wrapper">
-        <div className="gs-stage" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '20px' }}>
-          <div style={{ fontSize: '2em' }}>⚽</div>
-          <div style={{ fontSize: '1.5em', color: '#eaf6ff' }}>Carregando Gol de Ouro...</div>
-          <div style={{ fontSize: '0.9em', color: '#a0a0a0' }}>Preparando o jogo...</div>
+      <div className="game-page">
+        <div className="game-stage-wrap">
+          <div className="game-stage">
+            <div id="stage-root" className="stage-root">
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                flexDirection: 'column', 
+                gap: '20px',
+                height: '100%',
+                color: '#fff'
+              }}>
+                <div style={{ fontSize: '2em' }}>⚽</div>
+                <div style={{ fontSize: '1.5em', color: '#eaf6ff' }}>Carregando Gol de Ouro...</div>
+                <div style={{ fontSize: '0.9em', color: '#a0a0a0' }}>Preparando o jogo...</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -465,6 +480,7 @@ export default function GameShoot() {
     return 'mobile-small';
   };
 
+    console.log("🎮 Renderizando página do jogo");
     return (
       <div className="game-page">
         {/* overlay: bloqueia retrato só nesta página */}
