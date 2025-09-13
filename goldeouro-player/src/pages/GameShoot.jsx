@@ -714,9 +714,11 @@ export default function GameShoot() {
           active={particles.active}
           onComplete={() => setParticles({ active: false, type: 'goal', position: { x: 50, y: 50 } })}
         />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
