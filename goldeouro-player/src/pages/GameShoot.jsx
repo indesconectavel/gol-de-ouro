@@ -487,10 +487,6 @@ export default function GameShoot() {
           <div className="hud-left">
             <div className="brand">
               <img src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" className="brand-logo game-logo" />
-              <div className="brand-info">
-                <span className="brand-name game-title">Gol de Ouro</span>
-                <span className="brand-subtitle game-subtitle">Futebol Virtual</span>
-              </div>
             </div>
           </div>
           
@@ -698,25 +694,6 @@ export default function GameShoot() {
           onComplete={() => setParticles({ active: false, type: 'goal', position: { x: 50, y: 50 } })}
         />
         
-        {/* HUD Inferior - Controles de jogo */}
-        <div className="game-controls">
-          <button className="control-btn">
-            <span>🎮</span>
-            Entrar na Fila
-          </button>
-          <div style={{display: 'flex', gap: '8px'}}>
-            <button className="control-btn">
-              <span>🔊</span>
-            </button>
-            <button className="control-btn">
-              <span>💬</span>
-            </button>
-            <button className="control-btn">
-              <span>🏅</span>
-              NOVATO
-            </button>
-          </div>
-        </div>
               </div>
             </div>
           </div>
