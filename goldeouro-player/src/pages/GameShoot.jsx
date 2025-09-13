@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./game-shoot.css";
-import "./game-locked.css"; // novo CSS escopado só da /game
+import "./game-locked.css"; // CSS escopado só da /game
 import audioManager from "../utils/audioManager";
 import musicManager from "../utils/musicManager";
 import ParticleSystem from "../components/ParticleSystem";
@@ -473,6 +472,18 @@ export default function GameShoot() {
         <div className="rotate-card">Gire o dispositivo para o modo horizontal para jogar</div>
       </div>
 
+      {/* TOPBAR */}
+      <div className="game-topbar">
+        <div className="top-left">
+          <img className="brand-logo" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
+          <span className="brand-title">Gol de Ouro</span>
+          <span className="brand-sub">FUTEBOL VIRTUAL</span>
+        </div>
+        <div className="top-actions">
+          <button className="btn-partida" onClick={handleJoinQueue}>Partida Ativa</button>
+          <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
+        </div>
+      </div>
 
       {/* STAGE 16:9 — este é o ÚNICO container que dimensiona */}
       <main className="game-stage-wrap">
@@ -484,12 +495,6 @@ export default function GameShoot() {
 
         {/* HUD Principal - Design Glassmorphism */}
         <div className="gs-hud">
-          <div className="hud-left">
-            <div className="brand">
-              <img src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" className="brand-logo game-logo" />
-            </div>
-          </div>
-          
           <div className="hud-center">
             <div className="stats-grid">
               <div className="stat-item">
@@ -610,17 +615,6 @@ export default function GameShoot() {
           </div>
         </div>
 
-        {/* HUD Meio Direito - Link para Dashboard */}
-        <div className="hud-center-right">
-          <button 
-            className="dashboard-btn" 
-            onClick={() => navigate('/dashboard')}
-            title="Ir para Dashboard"
-          >
-            <span className="btn-icon">🏠</span>
-            <span className="btn-text">Dashboard</span>
-          </button>
-        </div>
 
         {/* Zonas */}
         {DIRS.map((k) => {
