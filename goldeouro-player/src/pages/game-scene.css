@@ -57,11 +57,11 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .hud-bottom-left, .hud-bottom-right{ position:absolute; bottom:0; pointer-events:auto; }
 .hud-bottom-left{
   left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
-  bottom:calc(var(--pf-oy) + var(--pf-h) * 0.055);
+  bottom:calc(var(--pf-oy) + var(--pf-h) * 0.06); /* 6% - mais próximo da borda */
 }
 .hud-bottom-right{
   right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
-  bottom:calc(var(--pf-oy) + var(--pf-h) * 0.055);
+  bottom:calc(var(--pf-oy) + var(--pf-h) * 0.06); /* 6% - mais próximo da borda */
 }
 /* garantir que reapareçam mesmo se algo os tenha ocultado antes */
 .btn-queue, .hud-cluster{ display:inline-flex !important; opacity:1 !important; visibility:visible !important; }
@@ -79,13 +79,13 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
     scale(clamp(1.00, calc(var(--pf-h) * 0.00170), 1.30));
   z-index:3;
 }
-/* leve reforço de escala em telas >= 1366x768 (opcional) */
-@media (min-width: 1280px){
+/* Aumento 30% + 30px adicional para tablet/desktop */
+@media (min-width: 768px){
   .gs-goalie {
     transform:
       translate(-50%, 0)
-      translateY(30px)
-      scale(clamp(1.05, calc(var(--pf-h) * 0.00178), 1.35));
+      translateY(60px) /* 30px original + 30px adicional */
+      scale(clamp(1.30, calc(var(--pf-h) * 0.00170 * 1.3), 1.69)); /* 30% maior */
   }
 }
 
@@ -97,6 +97,83 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   top: calc(var(--pf-oy) + var(--pf-h) * 0.875);
   transform: translate(-50%, -50%);
   z-index:2;
+}
+
+/* Diminuir bola 20% no mobile */
+@media (max-width: 767px) {
+  .gs-ball {
+    transform: translate(-50%, -50%) scale(0.8); /* -20% de tamanho */
+  }
+}
+
+/* ===== CHAT RESPONSIVO ===== */
+body[data-page="game"] .chat-panel {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  width: min(350px, calc(100vw - 40px)) !important;
+  max-height: 400px !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: 2px solid #23c381 !important;
+  border-radius: 12px !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+body[data-page="game"] .chat-header {
+  background: #23c381 !important;
+  color: white !important;
+  padding: 12px 16px !important;
+  border-radius: 10px 10px 0 0 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-weight: 600 !important;
+}
+
+body[data-page="game"] .chat-close {
+  background: none !important;
+  border: none !important;
+  color: white !important;
+  font-size: 20px !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body[data-page="game"] .chat-messages {
+  flex: 1 !important;
+  padding: 12px !important;
+  overflow-y: auto !important;
+  max-height: 300px !important;
+}
+
+body[data-page="game"] .chat-message {
+  margin-bottom: 8px !important;
+  color: #e5e7eb !important;
+  font-size: 14px !important;
+}
+
+body[data-page="game"] .chat-user {
+  color: #23c381 !important;
+  font-weight: 600 !important;
+  margin-right: 8px !important;
+}
+
+/* Mobile: chat menor */
+@media (max-width: 767px) {
+  body[data-page="game"] .chat-panel {
+    width: calc(100vw - 20px) !important;
+    bottom: 10px !important;
+    right: 10px !important;
+    max-height: 300px !important;
+  }
 }
 
 /* remover resíduos de topbar/faixas externas */
