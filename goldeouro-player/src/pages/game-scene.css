@@ -110,13 +110,15 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   align-items: center !important;
   gap: 8px !important;
   transition: all 0.2s ease !important;
-  z-index: 10 !important;
+  z-index: 20 !important;
   pointer-events: auto !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 .hud-btn:hover {
   background: #1ea76a !important;
   transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 }
 
 .hud-btn.secondary {
@@ -140,13 +142,15 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   width: 40px !important;
   height: 40px !important;
   transition: all 0.2s ease !important;
-  z-index: 10 !important;
+  z-index: 20 !important;
   pointer-events: auto !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 .control-btn:hover {
   background: rgba(255, 255, 255, 0.2) !important;
   border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 .rank-display {
@@ -159,8 +163,9 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   color: white !important;
   font-size: 14px !important;
   font-weight: 600 !important;
-  z-index: 10 !important;
+  z-index: 20 !important;
   pointer-events: auto !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
 /* ===== GOLEIRO — escala e posição calibradas =====
@@ -279,25 +284,4 @@ body[data-page="game"] header.game-topbar,
 body[data-page="game"] .hud-header-clip,
 body[data-page="game"] .glass-strip { display:none !important; }
 
-/* Debug: destacar botões inferiores para verificação */
-body[data-page="game"] .hud-footer {
-  border: 2px solid red !important; /* Debug: destacar área do rodapé */
-}
-
-body[data-page="game"] .hud-bottom-left {
-  border: 2px solid blue !important; /* Debug: destacar área esquerda */
-}
-
-body[data-page="game"] .hud-bottom-right {
-  border: 2px solid green !important; /* Debug: destacar área direita */
-}
-
-body[data-page="game"] .btn-queue {
-  border: 2px solid yellow !important; /* Debug: destacar botão de fila */
-  background: #ff0000 !important; /* Debug: cor vermelha para destacar */
-}
-
-body[data-page="game"] .hud-cluster {
-  border: 2px solid orange !important; /* Debug: destacar cluster de controles */
-  background: #00ff00 !important; /* Debug: cor verde para destacar */
-}
+/* Estilos finais limpos - sem debug */
