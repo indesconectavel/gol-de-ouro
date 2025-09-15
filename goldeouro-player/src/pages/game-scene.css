@@ -53,23 +53,48 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .btn-dashboard{ background:#132840; color:#fff; }
 
 /* ===== RODAPÉ — Entrar na Fila (ESQ) e cluster (DIR) ===== */
-.hud-footer{ position:absolute; z-index:5; left:0; right:0; pointer-events:none; }
-.hud-bottom-left, .hud-bottom-right{ position:absolute; bottom:0; pointer-events:auto; }
+.hud-footer{ 
+  position:absolute; 
+  z-index:15; 
+  left:0; 
+  right:0; 
+  bottom:0;
+  pointer-events:none; 
+  height: 80px; /* Altura fixa para o rodapé */
+}
+.hud-bottom-left, .hud-bottom-right{ 
+  position:absolute; 
+  bottom:30px; /* 30px acima da borda inferior */
+  pointer-events:auto; 
+  z-index:16;
+}
 .hud-bottom-left{
   left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
-  bottom: 30px; /* 30px acima da borda inferior */
 }
 .hud-bottom-right{
   right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
-  bottom: 30px; /* 30px acima da borda inferior */
 }
 /* garantir que reapareçam mesmo se algo os tenha ocultado antes */
 .btn-queue, .hud-cluster{ 
   display:inline-flex !important; 
   opacity:1 !important; 
   visibility:visible !important; 
-  z-index:10 !important;
+  z-index:20 !important;
   pointer-events:auto !important;
+  position: relative !important;
+}
+
+/* Estilos específicos para garantir visibilidade dos botões inferiores */
+.hud-bottom-left .btn-queue,
+.hud-bottom-right .hud-cluster {
+  display: inline-flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  min-width: auto !important;
+  min-height: auto !important;
 }
 
 /* Estilos específicos para botões inferiores */
@@ -253,3 +278,26 @@ body[data-page="game"] .game-topbar,
 body[data-page="game"] header.game-topbar,
 body[data-page="game"] .hud-header-clip,
 body[data-page="game"] .glass-strip { display:none !important; }
+
+/* Debug: destacar botões inferiores para verificação */
+body[data-page="game"] .hud-footer {
+  border: 2px solid red !important; /* Debug: destacar área do rodapé */
+}
+
+body[data-page="game"] .hud-bottom-left {
+  border: 2px solid blue !important; /* Debug: destacar área esquerda */
+}
+
+body[data-page="game"] .hud-bottom-right {
+  border: 2px solid green !important; /* Debug: destacar área direita */
+}
+
+body[data-page="game"] .btn-queue {
+  border: 2px solid yellow !important; /* Debug: destacar botão de fila */
+  background: #ff0000 !important; /* Debug: cor vermelha para destacar */
+}
+
+body[data-page="game"] .hud-cluster {
+  border: 2px solid orange !important; /* Debug: destacar cluster de controles */
+  background: #00ff00 !important; /* Debug: cor verde para destacar */
+}
