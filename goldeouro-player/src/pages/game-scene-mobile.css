@@ -1,0 +1,61 @@
+/* ===== GAME SCENE - MOBILE (max-width: 767px) ===== */
+/* Configurações específicas para dispositivos móveis */
+
+/* Goleiro - Mobile */
+.gs-goalie {
+  position: absolute;
+  left: 50%;
+  transform-origin: 50% 100%;
+  transform:
+    translate(-50%, 0)
+    translateY(30px)
+    scale(clamp(1.20, calc(var(--pf-h) * 0.00250), 2.00));
+  z-index: 3;
+}
+
+/* Bola - Mobile (20% menor) */
+.gs-ball {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform:
+    translate(-50%, -50%)
+    scale(0.8); /* 20% menor no mobile */
+  z-index: 4;
+}
+
+/* Botões - Mobile */
+.hud-actions {
+  position: absolute;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  left: calc(var(--pf-ox) + var(--pf-w) * 0.02);
+  right: calc(var(--pf-ox) + var(--pf-w) * 0.02);
+  bottom: 100px; /* 70px de separação dos botões inferiores */
+}
+
+.hud-bottom-left, .hud-bottom-right {
+  position: absolute;
+  bottom: 30px;
+  pointer-events: auto;
+  z-index: 16;
+}
+
+/* Chat - Mobile */
+.chat-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  height: 200px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #333;
+  border-radius: 8px;
+  z-index: 1000;
+  display: none;
+}
+
+.chat-panel.open {
+  display: block;
+}

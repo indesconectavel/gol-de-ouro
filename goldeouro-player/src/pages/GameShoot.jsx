@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "./game-scene.css"; // CSS escopado só da /game
+import "./game-scene.css"; // CSS base escopado só da /game
+import { useResponsiveGameScene } from "../hooks/useResponsiveGameScene"; // Hook responsivo
 import audioManager from "../utils/audioManager";
 import musicManager from "../utils/musicManager";
 import ParticleSystem from "../components/ParticleSystem";
@@ -49,6 +50,9 @@ export default function GameShoot() {
   
   // Hook para manter proporção responsiva baseada no print de referência
   const [screenSize, setScreenSize] = useState({ width: 0, height: 0 });
+  
+  // Hook responsivo para carregar CSS específico por resolução
+  const { currentResolution, isLoading: cssLoading, currentConfig, isMobile, isTablet, isDesktop } = useResponsiveGameScene();
 
   const [shooting, setShooting] = useState(false);
   const [ballPos, setBallPos] = useState({ x: 50, y: 90 });
@@ -594,6 +598,27 @@ export default function GameShoot() {
                   <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
                 </div>
               </div>
+
+              {/* Indicador de resolução para debug */}
+              {debug && (
+                <div style={{
+                  position: 'absolute',
+                  top: '10px',
+                  left: '10px',
+                  background: 'rgba(0,0,0,0.8)',
+                  color: 'white',
+                  padding: '8px 12px',
+                  borderRadius: '4px',
+                  fontSize: '11px',
+                  zIndex: 9999,
+                  fontFamily: 'monospace'
+                }}>
+                  <div>Resolução: {currentResolution}</div>
+                  <div>CSS: {cssLoading ? 'Carregando...' : 'Carregado'}</div>
+                  <div>Goleiro: scale({currentConfig.goalie.scale})</div>
+                  <div>Bola: scale({currentConfig.ball.scale})</div>
+                </div>
+              )}
 
               {/* RODAPÉ DA CENA */}
               <div className="hud-footer">

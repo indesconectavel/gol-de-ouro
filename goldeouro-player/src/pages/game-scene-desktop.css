@@ -1,0 +1,61 @@
+/* ===== GAME SCENE - DESKTOP (min-width: 1024px) ===== */
+/* Configurações específicas para desktop */
+
+/* Goleiro - Desktop (50% maior + 30px adicional) */
+.gs-goalie {
+  position: absolute;
+  left: 50%;
+  transform-origin: 50% 100%;
+  transform:
+    translate(-50%, 0)
+    translateY(60px) /* 30px original + 30px adicional */
+    scale(clamp(1.80, calc(var(--pf-h) * 0.00250 * 1.5), 3.00)); /* 50% maior */
+  z-index: 3;
+}
+
+/* Bola - Desktop (tamanho normal) */
+.gs-ball {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform:
+    translate(-50%, -50%)
+    scale(1.0); /* Tamanho normal no desktop */
+  z-index: 4;
+}
+
+/* Botões - Desktop */
+.hud-actions {
+  position: absolute;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  left: calc(var(--pf-ox) + var(--pf-w) * 0.02);
+  right: calc(var(--pf-ox) + var(--pf-w) * 0.02);
+  bottom: 100px; /* 70px de separação dos botões inferiores */
+}
+
+.hud-bottom-left, .hud-bottom-right {
+  position: absolute;
+  bottom: 30px;
+  pointer-events: auto;
+  z-index: 16;
+}
+
+/* Chat - Desktop */
+.chat-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 400px;
+  height: 300px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #333;
+  border-radius: 8px;
+  z-index: 1000;
+  display: none;
+}
+
+.chat-panel.open {
+  display: block;
+}
