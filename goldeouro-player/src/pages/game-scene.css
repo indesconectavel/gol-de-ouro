@@ -39,12 +39,12 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .hud-header .brand-logo{ display:none !important; }
 .hud-header .brand-title, .hud-header .brand-sub{ display:none !important; }
 
-/* ===== AÇÕES — 100px de separação dos botões inferiores, próximos das bordas laterais ===== */
+/* ===== AÇÕES — 80px de separação dos botões inferiores, próximos das bordas laterais ===== */
 .hud-actions{
   position:absolute; z-index:6; display:flex; align-items:center;
   left:  calc(var(--pf-ox) + var(--pf-w) * 0.02); /* Mais próximo da borda esquerda */
   right: calc(var(--pf-ox) + var(--pf-w) * 0.02); /* Mais próximo da borda direita */
-  bottom: 110px; /* 100px de separação dos botões inferiores (10px + 100px) */
+  bottom: 80px; /* 100px de separação dos botões inferiores (10px + 100px) */
 }
 .hud-left{ display:flex; align-items:center; gap:12px; }
 .hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
@@ -64,7 +64,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 }
 .hud-bottom-left, .hud-bottom-right{ 
   position:absolute; 
-  bottom:10px; /* 10px acima da borda inferior */
+  bottom:30px; /* 30px acima da borda inferior */
   pointer-events:auto; 
   z-index:16;
 }
