@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Background Desktop - 20% Redução</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0b1e2a;
+            color: white;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .test-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #0b1e2a 0%, #1a2f3a 100%);
+        }
+        
+        .stage-root {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .scene-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: linear-gradient(45deg, #1a2f3a, #2a4f5a, #3a6f7a);
+            border: 2px solid #23c381;
+        }
+        
+        /* Regra específica para Desktop */
+        @media (min-width: 1024px) {
+            .scene-bg {
+                width: 80%; /* 20% menor */
+                height: 80%; /* 20% menor */
+                left: 50%; /* Centralizar horizontalmente */
+                top: 50%; /* Centralizar verticalmente */
+                transform: translate(-50%, -50%); /* Centralizar perfeitamente */
+            }
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 100;
+            border: 2px solid #23c381;
+        }
+        
+        .measurement-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+        
+        .measurement-line {
+            position: absolute;
+            background: rgba(255, 0, 0, 0.5);
+        }
+        
+        .measurement-line.horizontal {
+            width: 100%;
+            height: 1px;
+        }
+        
+        .measurement-line.vertical {
+            height: 100%;
+            width: 1px;
+        }
+        
+        .measurement-line.center-h {
+            top: 50%;
+        }
+        
+        .measurement-line.center-v {
+            left: 50%;
+        }
+        
+        .measurement-line.edge-20 {
+            top: 20%;
+        }
+        
+        .measurement-line.edge-80 {
+            top: 80%;
+        }
+        
+        .measurement-line.edge-20-v {
+            left: 20%;
+        }
+        
+        .measurement-line.edge-80-v {
+            left: 80%;
+        }
+        
+        .measurement-text {
+            position: absolute;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .measurement-text.center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .measurement-text.edge-20 {
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .measurement-text.edge-80 {
+            top: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .measurement-text.edge-20-v {
+            top: 50%;
+            left: 20%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .measurement-text.edge-80-v {
+            top: 50%;
+            left: 80%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .resolution-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            z-index: 100;
+            border: 2px solid #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="info-panel">
+            <h3>🖼️ Teste Background Desktop</h3>
+            <p><strong>Redução:</strong> 20% apenas em Desktop (min-width: 1024px)</p>
+            <p><strong>Centralização:</strong> Perfeita com transform</p>
+            <p><strong>Linhas Vermelhas:</strong> Marcam 20% e 80% para visualizar a redução</p>
+        </div>
+        
+        <div class="resolution-info">
+            <div id="resolution">Resolução: <span id="width">0</span> x <span id="height">0</span></div>
+            <div id="breakpoint">Breakpoint: <span id="current-bp">Mobile</span></div>
+            <div id="background-size">Background: <span id="bg-size">100%</span></div>
+        </div>
+        
+        <div class="measurement-overlay">
+            <!-- Linhas de medição para 20% e 80% -->
+            <div class="measurement-line horizontal edge-20"></div>
+            <div class="measurement-line horizontal edge-80"></div>
+            <div class="measurement-line vertical edge-20-v"></div>
+            <div class="measurement-line vertical edge-80-v"></div>
+            <div class="measurement-line horizontal center-h"></div>
+            <div class="measurement-line vertical center-v"></div>
+            
+            <!-- Textos de medição -->
+            <div class="measurement-text center">CENTRO</div>
+            <div class="measurement-text edge-20">20%</div>
+            <div class="measurement-text edge-80">80%</div>
+            <div class="measurement-text edge-20-v">20%</div>
+            <div class="measurement-text edge-80-v">80%</div>
+        </div>
+        
+        <div class="stage-root">
+            <div class="scene-bg"></div>
+        </div>
+    </div>
+    
+    <script>
+        function updateResolutionInfo() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const isDesktop = width >= 1024;
+            
+            document.getElementById('width').textContent = width;
+            document.getElementById('height').textContent = height;
+            document.getElementById('current-bp').textContent = isDesktop ? 'Desktop' : 'Mobile/Tablet';
+            document.getElementById('bg-size').textContent = isDesktop ? '80% (20% menor)' : '100% (normal)';
+        }
+        
+        // Atualizar informações de resolução
+        updateResolutionInfo();
+        window.addEventListener('resize', updateResolutionInfo);
+    </script>
+</body>
+</html>
