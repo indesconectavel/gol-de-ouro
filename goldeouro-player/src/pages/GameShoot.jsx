@@ -588,7 +588,7 @@ export default function GameShoot() {
               {/* BARRA DE AÇÕES SOBRE O CAMPO (mesma altura em ambos os lados) */}
               <div className="hud-actions">
                 <div className="hud-left">
-                  <button className="btn-partida" onClick={handleJoinQueue}>Partida Ativa</button>
+                  <button className="btn-partida" onClick={handleJoinQueue}>Em Jogo</button>
                 </div>
                 <div className="hud-right">
                   <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
