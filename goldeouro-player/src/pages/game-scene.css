@@ -182,8 +182,8 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
     scale(clamp(1.20, calc(var(--pf-h) * 0.00250), 2.00)); /* Escala maior e mais responsiva */
   z-index:3;
 }
-/* Aumento 50% + 30px adicional para tablet/desktop */
-@media (min-width: 768px){
+/* Aumento 50% + 30px adicional APENAS para Desktop */
+@media (min-width: 1024px){
   .gs-goalie {
     transform:
       translate(-50%, 0)
