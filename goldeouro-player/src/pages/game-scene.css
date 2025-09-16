@@ -27,6 +27,17 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 /* BG/canvas cobre o stage */
 #stage-root .scene-bg, #stage-root > canvas{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 
+/* ===== BACKGROUND IMAGE - REDUÇÃO 20% APENAS DESKTOP ===== */
+@media (min-width: 1024px){
+  #stage-root .scene-bg {
+    width: 80%; /* 20% menor */
+    height: 80%; /* 20% menor */
+    left: 50%; /* Centralizar horizontalmente */
+    top: 50%; /* Centralizar verticalmente */
+    transform: translate(-50%, -50%); /* Centralizar perfeitamente */
+  }
+}
+
 /* ===== HEADER (card superior) ===== */
 .hud-header{
   position:absolute; z-index:4;
