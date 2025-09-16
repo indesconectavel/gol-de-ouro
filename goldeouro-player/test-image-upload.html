@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste ImageUpload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .image-upload {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #ccc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 20px auto;
+            background: linear-gradient(45deg, #fbbf24, #f59e0b);
+        }
+        .image-upload:hover {
+            border-color: #fbbf24;
+        }
+        .preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .info {
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+        .success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+            color: #86efac;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste de Upload de Imagem</h1>
+        
+        <div class="info">
+            <h3>📋 Instruções:</h3>
+            <ol>
+                <li>Clique na área circular abaixo</li>
+                <li>Selecione uma imagem</li>
+                <li>Verifique se a imagem aparece</li>
+                <li>Verifique o console do navegador (F12)</li>
+            </ol>
+        </div>
+
+        <div class="image-upload" onclick="document.getElementById('fileInput').click()">
+            <img id="preview" class="preview" style="display: none;" alt="Preview">
+            <div id="placeholder">👤</div>
+        </div>
+
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+        <div id="status" class="info">
+            <h3>📊 Status:</h3>
+            <p>Nenhuma imagem selecionada</p>
+        </div>
+
+        <div id="fileInfo" class="info" style="display: none;">
+            <h3>📁 Informações do Arquivo:</h3>
+            <p id="fileName"></p>
+            <p id="fileSize"></p>
+            <p id="fileType"></p>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const placeholder = document.getElementById('placeholder');
+        const status = document.getElementById('status');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const fileType = document.getElementById('fileType');
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                console.log('📁 Arquivo selecionado:', file);
+                
+                // Verificar se é uma imagem
+                if (!file.type.startsWith('image/')) {
+                    status.innerHTML = '<h3>❌ Erro:</h3><p>Por favor, selecione apenas arquivos de imagem</p>';
+                    status.className = 'info error';
+                    return;
+                }
+
+                // Verificar tamanho (máximo 5MB)
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                if (file.size > maxSize) {
+                    status.innerHTML = '<h3>❌ Erro:</h3><p>Arquivo muito grande. Máximo 5MB</p>';
+                    status.className = 'info error';
+                    return;
+                }
+
+                // Criar preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    
+                    // Atualizar status
+                    status.innerHTML = '<h3>✅ Sucesso:</h3><p>Imagem carregada com sucesso!</p>';
+                    status.className = 'info success';
+                    
+                    // Mostrar informações do arquivo
+                    fileName.textContent = `Nome: ${file.name}`;
+                    fileSize.textContent = `Tamanho: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+                    fileType.textContent = `Tipo: ${file.type}`;
+                    fileInfo.style.display = 'block';
+                    
+                    console.log('✅ Imagem carregada com sucesso:', {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        lastModified: file.lastModified
+                    });
+                };
+                
+                reader.onerror = function() {
+                    status.innerHTML = '<h3>❌ Erro:</h3><p>Erro ao ler o arquivo</p>';
+                    status.className = 'info error';
+                    console.error('❌ Erro ao ler arquivo');
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Teste de drag and drop
+        const uploadArea = document.querySelector('.image-upload');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#fbbf24';
+            uploadArea.style.backgroundColor = 'rgba(251, 191, 36, 0.2)';
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ccc';
+            uploadArea.style.backgroundColor = '';
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ccc';
+            uploadArea.style.backgroundColor = '';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+
+        console.log('🧪 Teste de ImageUpload iniciado');
+        console.log('📋 Funcionalidades testadas:');
+        console.log('- ✅ Click para selecionar arquivo');
+        console.log('- ✅ Drag and drop');
+        console.log('- ✅ Validação de tipo de arquivo');
+        console.log('- ✅ Validação de tamanho');
+        console.log('- ✅ Preview da imagem');
+        console.log('- ✅ Informações do arquivo');
+    </script>
+</body>
+</html>

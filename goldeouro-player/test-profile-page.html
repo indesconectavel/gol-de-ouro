@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Página Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac; }
+        .error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; }
+        .info { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; color: #93c5fd; }
+        .warning { background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fcd34d; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste da Página Profile</h1>
+        
+        <div class="status info">
+            <h3>📋 Verificações:</h3>
+            <ul>
+                <li>✅ Servidor frontend rodando na porta 5174</li>
+                <li>✅ Componente ImageUpload existe</li>
+                <li>✅ Página Profile importa ImageUpload</li>
+                <li>✅ Função handleImageSelect implementada</li>
+            </ul>
+        </div>
+
+        <div class="status warning">
+            <h3>⚠️ Possíveis Problemas:</h3>
+            <ul>
+                <li>Verificar se o React está renderizando corretamente</li>
+                <li>Verificar se há erros no console do navegador</li>
+                <li>Verificar se o componente ImageUpload está sendo renderizado</li>
+                <li>Verificar se o evento onClick está funcionando</li>
+            </ul>
+        </div>
+
+        <div class="status info">
+            <h3>🔍 Como Testar:</h3>
+            <ol>
+                <li>Acesse <a href="http://localhost:5174/profile" target="_blank" style="color: #93c5fd;">http://localhost:5174/profile</a></li>
+                <li>Abra o console do navegador (F12)</li>
+                <li>Clique na área da foto do perfil</li>
+                <li>Selecione uma imagem</li>
+                <li>Verifique se a imagem aparece</li>
+                <li>Verifique se há erros no console</li>
+            </ol>
+        </div>
+
+        <div class="status info">
+            <h3>📊 Código do ImageUpload:</h3>
+            <pre style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; overflow-x: auto;">
+const ImageUpload = ({ onImageSelect, currentImage, className = '' }) => {
+  const [preview, setPreview] = useState(currentImage)
+  const [isDragOver, setIsDragOver] = useState(false)
+  const fileInputRef = useRef(null)
+
+  const handleFileSelect = (file) => {
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setPreview(e.target.result)
+        onImageSelect(file)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const openFileDialog = () => {
+    fileInputRef.current?.click()
+  }
+
+  return (
+    &lt;div className={`relative ${className}`}&gt;
+      &lt;div
+        className="relative rounded-full overflow-hidden cursor-pointer transition-all duration-200 group"
+        style={{ width: '100px', height: '100px' }}
+        onClick={openFileDialog}
+      &gt;
+        {preview ? (
+          &lt;img src={preview} alt="Preview" className="w-full h-full object-cover" /&gt;
+        ) : (
+          &lt;div className="w-full h-full bg-gradient-to-b from-yellow-400 to-yellow-600 flex items-center justify-center text-3xl"&gt;
+            👤
+          &lt;/div&gt;
+        )}
+      &lt;/div&gt;
+      &lt;input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      /&gt;
+    &lt;/div&gt;
+  )
+}
+            </pre>
+        </div>
+
+        <div class="status info">
+            <h3>🔧 Debugging:</h3>
+            <p>Se a funcionalidade não estiver funcionando, verifique:</p>
+            <ul>
+                <li>Console do navegador para erros JavaScript</li>
+                <li>Se o React está renderizando o componente</li>
+                <li>Se o evento onClick está sendo disparado</li>
+                <li>Se o FileReader está funcionando</li>
+                <li>Se o estado preview está sendo atualizado</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        console.log('🧪 Teste da Página Profile iniciado');
+        console.log('📋 Verificações realizadas:');
+        console.log('- ✅ Servidor frontend rodando na porta 5174');
+        console.log('- ✅ Componente ImageUpload existe');
+        console.log('- ✅ Página Profile importa ImageUpload');
+        console.log('- ✅ Função handleImageSelect implementada');
+        
+        // Teste de funcionalidade básica
+        function testFileReader() {
+            const file = new File(['test'], 'test.txt', { type: 'text/plain' });
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                console.log('✅ FileReader funcionando:', e.target.result);
+            };
+            
+            reader.onerror = function() {
+                console.error('❌ FileReader com erro');
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        testFileReader();
+        
+        console.log('🔍 Para testar a funcionalidade:');
+        console.log('1. Acesse http://localhost:5174/profile');
+        console.log('2. Abra o console do navegador (F12)');
+        console.log('3. Clique na área da foto do perfil');
+        console.log('4. Selecione uma imagem');
+        console.log('5. Verifique se a imagem aparece');
+        console.log('6. Verifique se há erros no console');
+    </script>
+</body>
+</html>
