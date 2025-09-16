@@ -1,12 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useSidebar } from '../contexts/SidebarContext'
 
 const Navigation = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { isCollapsed } = useSidebar()
 
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '🏠' },
@@ -27,22 +24,9 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Botão mobile */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="text-white bg-yellow-500 p-2 rounded shadow"
-        >
-          {isMenuOpen ? '✕' : '☰'}
-        </button>
-      </div>
-
-      {/* Sidebar - sempre retraída */}
+      {/* Sidebar - sempre visível */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-[#111827] shadow-lg z-40 transform transition-all duration-300 ease-in-out
-          ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
-          md:translate-x-0 
-          w-16`}
+        className="fixed top-0 left-0 h-screen bg-[#111827] shadow-lg z-40 w-16"
       >
         {/* Cabeçalho removido */}
 
@@ -50,10 +34,7 @@ const Navigation = () => {
           {menuItems.map((item) => (
             <button
               key={item.path}
-              onClick={() => {
-                navigate(item.path)
-                setIsMenuOpen(false)
-              }}
+              onClick={() => navigate(item.path)}
               className={`${linkClasses(item.path)} justify-center`}
               title={item.label}
             >
