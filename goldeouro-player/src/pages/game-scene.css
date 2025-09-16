@@ -187,7 +187,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
     transform:
       translate(-50%, 0)
       translateY(60px) /* 30px original + 30px adicional */
-      scale(clamp(1.80, calc(var(--pf-h) * 0.00250 * 1.5), 3.00)) !important; /* 50% maior e escala mais responsiva */
+      scale(clamp(1.80, calc(var(--pf-h) * 0.00250 * 1.5), 3.00)); /* 50% maior e escala mais responsiva */
   }
 }
 
