@@ -65,7 +65,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 }
 .hud-bottom-left, .hud-bottom-right{ 
   position:absolute; 
-  bottom:5px; /* 5px acima da borda inferior */
+  bottom:5px !important; /* 5px acima da borda inferior - ATUALIZADO */
   pointer-events:auto; 
   z-index:16;
 }

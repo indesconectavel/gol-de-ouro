@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste CSS - Botões Inferiores</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0b1e2a;
+            color: white;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .test-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #0b1e2a 0%, #1a2f3a 100%);
+        }
+        
+        .hud-bottom-left, .hud-bottom-right {
+            position: absolute;
+            bottom: 5px; /* 5px acima da borda inferior */
+            pointer-events: auto;
+            z-index: 16;
+        }
+        
+        .hud-bottom-left {
+            left: 20px;
+        }
+        
+        .hud-bottom-right {
+            right: 20px;
+        }
+        
+        .test-button {
+            background: #23c381;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .test-button:hover {
+            background: #1ea76a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="info-panel">
+            <h3>Teste de Posicionamento</h3>
+            <p><strong>Botões Inferiores:</strong> 5px da borda inferior</p>
+            <p><strong>Status:</strong> Testando se as alterações CSS estão funcionando</p>
+        </div>
+        
+        <div class="hud-bottom-left">
+            <button class="test-button">
+                <span>🎮</span>
+                Entrar na Fila
+            </button>
+        </div>
+        
+        <div class="hud-bottom-right">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="test-button" style="background: #6b7280;">
+                    <span>🔊</span>
+                </button>
+                <button class="test-button" style="background: #6b7280;">
+                    <span>💬</span>
+                </button>
+                <div style="background: rgba(0, 0, 0, 0.3); padding: 8px 12px; border-radius: 6px; color: white; font-size: 14px; font-weight: 600;">
+                    <span>🏅</span>
+                    Novato
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
