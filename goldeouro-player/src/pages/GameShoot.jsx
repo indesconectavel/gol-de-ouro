@@ -595,7 +595,7 @@ export default function GameShoot() {
                   <button className="btn-partida" onClick={handleJoinQueue}>Em Jogo</button>
                 </div>
                 <div className="hud-right">
-                  <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
+                  <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Jogador</button>
                 </div>
               </div>
 
