@@ -11,15 +11,12 @@ export const useSidebar = () => {
 }
 
 export const SidebarProvider = ({ children }) => {
-  const [isCollapsed, setIsCollapsed] = useState(true)
-
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed)
-  }
+  // Sidebar sempre retraída - sem opção de expandir
+  const isCollapsed = true
 
   const value = {
     isCollapsed,
-    toggleSidebar
+    toggleSidebar: () => {} // Função vazia para manter compatibilidade
   }
 
   return (
