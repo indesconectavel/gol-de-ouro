@@ -39,12 +39,12 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .hud-header .brand-logo{ display:none !important; }
 .hud-header .brand-title, .hud-header .brand-sub{ display:none !important; }
 
-/* ===== AÇÕES — 80px acima dos botões inferiores, próximos das bordas laterais ===== */
+/* ===== AÇÕES — próximos dos botões inferiores, próximos das bordas laterais ===== */
 .hud-actions{
   position:absolute; z-index:6; display:flex; align-items:center;
   left:  calc(var(--pf-ox) + var(--pf-w) * 0.02); /* Mais próximo da borda esquerda */
   right: calc(var(--pf-ox) + var(--pf-w) * 0.02); /* Mais próximo da borda direita */
-  bottom: 110px; /* 80px acima dos botões inferiores (30px + 80px) */
+  bottom: 50px; /* Mais próximo dos botões inferiores (30px + 20px de separação) */
 }
 .hud-left{ display:flex; align-items:center; gap:12px; }
 .hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
@@ -276,6 +276,21 @@ body[data-page="game"] .chat-user {
     right: 10px !important;
     max-height: 300px !important;
   }
+}
+
+/* ===== CORES DOS TEXTOS - BRANCO 100% ===== */
+body[data-page="game"] .hud-header .text-sm,
+body[data-page="game"] .hud-header .text-xs,
+body[data-page="game"] .hud-header span,
+body[data-page="game"] .hud-header div {
+  color: #ffffff !important; /* Branco 100% */
+}
+
+/* Específico para textos de estatísticas */
+body[data-page="game"] .hud-header .text-gray-300,
+body[data-page="game"] .hud-header .text-gray-400,
+body[data-page="game"] .hud-header .text-gray-500 {
+  color: #ffffff !important; /* Branco 100% */
 }
 
 /* remover resíduos de topbar/faixas externas */
