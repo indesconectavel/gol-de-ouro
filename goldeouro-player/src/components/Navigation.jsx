@@ -44,14 +44,9 @@ const Navigation = () => {
           md:translate-x-0 
           w-16`}
       >
-        {/* Cabeçalho simplificado - apenas ícone */}
-        <div className="mb-8 text-center p-6 px-2">
-          <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center mx-auto">
-            <span className="text-black font-bold text-lg">⚽</span>
-          </div>
-        </div>
+        {/* Cabeçalho removido */}
 
-        <nav className="flex flex-col gap-2 text-sm text-white px-2">
+        <nav className="flex flex-col gap-2 text-sm text-white px-2 pt-6">
           {menuItems.map((item) => (
             <button
               key={item.path}
