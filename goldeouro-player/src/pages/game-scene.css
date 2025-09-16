@@ -51,7 +51,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
 .btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1; padding:10px 16px; font-weight:600; cursor:pointer; }
 .btn-partida{ background:#23c381; color:#fff; }
-.btn-dashboard{ background:#132840; color:#fff; }
+.btn-dashboard{ background:#eab308; color:#fff; }
 
 /* ===== RODAPÉ — Entrar na Fila (ESQ) e cluster (DIR) ===== */
 .hud-footer{ 
