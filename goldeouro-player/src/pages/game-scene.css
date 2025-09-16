@@ -39,12 +39,12 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .hud-header .brand-logo{ display:none !important; }
 .hud-header .brand-title, .hud-header .brand-sub{ display:none !important; }
 
-/* ===== AÇÕES — 90px de separação dos botões inferiores, próximos das bordas laterais ===== */
+/* ===== AÇÕES — 70px de separação dos botões inferiores, próximos das bordas laterais ===== */
 .hud-actions{
   position:absolute; z-index:6; display:flex; align-items:center;
   left:  calc(var(--pf-ox) + var(--pf-w) * 0.02); /* Mais próximo da borda esquerda */
   right: calc(var(--pf-ox) + var(--pf-w) * 0.02); /* Mais próximo da borda direita */
-  bottom: 120px; /* 90px de separação dos botões inferiores (30px + 90px) */
+  bottom: 100px; /* 70px de separação dos botões inferiores (30px + 70px) */
 }
 .hud-left{ display:flex; align-items:center; gap:12px; }
 .hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
