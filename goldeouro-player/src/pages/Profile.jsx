@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import ImageUpload from '../components/ImageUpload'
@@ -7,7 +8,8 @@ import { useSidebar } from '../contexts/SidebarContext'
 
 const Profile = () => {
   const { isCollapsed } = useSidebar()
-  const [user] = useState({
+  const { user: authUser, updateProfile } = useAuth()
+  const [user, setUser] = useState({
     name: 'João Silva',
     email: 'joao.silva@email.com',
     balance: 150.00,

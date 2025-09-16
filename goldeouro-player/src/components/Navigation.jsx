@@ -1,9 +1,11 @@
 import React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 const Navigation = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user, logout } = useAuth()
 
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '🏠' },
@@ -51,17 +53,17 @@ const Navigation = () => {
             </div>
           </div>
           
-          {/* Botão de Logout */}
-          <button
-            onClick={() => {
-              // Implementar logout
-              alert('Funcionalidade de logout será implementada em breve!')
-            }}
-            className="flex items-center justify-center w-full py-3 text-white hover:bg-red-600 rounded-lg transition-colors font-medium px-2"
-            title="Sair"
-          >
-            <span className="text-xl">🚪</span>
-          </button>
+              {/* Botão de Logout */}
+              <button
+                onClick={() => {
+                  logout()
+                  navigate('/')
+                }}
+                className="flex items-center justify-center w-full py-3 text-white hover:bg-red-600 rounded-lg transition-colors font-medium px-2"
+                title="Sair"
+              >
+                <span className="text-xl">🚪</span>
+              </button>
         </div>
       </aside>
     </>

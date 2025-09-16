@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
 import { SidebarProvider } from './contexts/SidebarContext'
+import ProtectedRoute from './components/ProtectedRoute'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -16,24 +18,29 @@ import Privacy from './pages/Privacy'
 
 function App() {
   return (
-    <SidebarProvider>
-      <Router>
-        <div className="min-h-screen bg-slate-900">
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/game" element={<GameShoot />} />
-            <Route path="/gameshoot" element={<GameShoot />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/withdraw" element={<Withdraw />} />
-            <Route path="/pagamentos" element={<Pagamentos />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-          </Routes>
-        </div>
-      </Router>
-    </SidebarProvider>
+    <AuthProvider>
+      <SidebarProvider>
+        <Router>
+          <div className="min-h-screen bg-slate-900">
+            <Routes>
+              {/* Rotas públicas */}
+              <Route path="/" element={<ProtectedRoute requireAuth={false}><Login /></ProtectedRoute>} />
+              <Route path="/register" element={<ProtectedRoute requireAuth={false}><Register /></ProtectedRoute>} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              
+              {/* Rotas protegidas */}
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/game" element={<ProtectedRoute><GameShoot /></ProtectedRoute>} />
+              <Route path="/gameshoot" element={<ProtectedRoute><GameShoot /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/withdraw" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
+              <Route path="/pagamentos" element={<ProtectedRoute><Pagamentos /></ProtectedRoute>} />
+            </Routes>
+          </div>
+        </Router>
+      </SidebarProvider>
+    </AuthProvider>
   )
 }
 

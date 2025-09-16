@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import Logo from '../components/Logo'
 
 const Register = () => {
@@ -12,21 +13,48 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const { register } = useAuth()
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
+    
     if (formData.password !== formData.confirmPassword) {
-      alert('As senhas não coincidem!')
+      setError('As senhas não coincidem!')
       return
     }
     if (!acceptTerms) {
-      alert('Você deve aceitar os termos de uso!')
+      setError('Você deve aceitar os termos de uso!')
       return
     }
-    // Simular registro
-    navigate('/dashboard')
+    if (formData.password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres!')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const result = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      })
+      
+      if (result.success) {
+        navigate('/dashboard')
+      } else {
+        setError(result.error)
+      }
+    } catch (error) {
+      setError('Erro interno do servidor')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -51,6 +79,13 @@ const Register = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Exibir erro */}
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             {/* Nome */}
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
@@ -181,9 +216,19 @@ const Register = () => {
             {/* Botão de Registro */}
             <button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
+              disabled={isLoading}
+              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:hover:scale-100"
             >
-              ⚽ Criar Conta
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white inline-block mr-2"></div>
+                  Criando conta...
+                </>
+              ) : (
+                <>
+                  ⚽ Criar Conta
+                </>
+              )}
             </button>
           </form>
 

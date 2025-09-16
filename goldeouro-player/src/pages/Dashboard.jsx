@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import { useSidebar } from '../contexts/SidebarContext'
 
 const Dashboard = () => {
   const { isCollapsed } = useSidebar()
+  const { user } = useAuth()
   const [balance] = useState(150.00)
   const navigate = useNavigate()
 

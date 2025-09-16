@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import Logo from '../components/Logo'
 import musicManager from '../utils/musicManager'
 
@@ -10,7 +11,14 @@ const Login = () => {
   })
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+  const { login } = useAuth()
+
+  // Redirecionar se já estiver autenticado
+  const from = location.state?.from?.pathname || '/dashboard'
 
   // Iniciar música de fundo apenas na página de login
   useEffect(() => {
@@ -25,10 +33,24 @@ const Login = () => {
     };
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Simular login
-    navigate('/dashboard')
+    setError('')
+    setIsLoading(true)
+
+    try {
+      const result = await login(formData.email, formData.password)
+      
+      if (result.success) {
+        navigate(from, { replace: true })
+      } else {
+        setError(result.error)
+      }
+    } catch (error) {
+      setError('Erro interno do servidor')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -58,6 +80,13 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Exibir erro */}
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
             {/* Email */}
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
@@ -126,10 +155,20 @@ const Login = () => {
             {/* Botão de Login */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 group"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 group disabled:hover:scale-100 disabled:hover:shadow-none"
             >
-              <span className="group-hover:animate-bounce inline-block mr-2">⚽</span>
-              Entrar
+              {isLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white inline-block mr-2"></div>
+                  Entrando...
+                </>
+              ) : (
+                <>
+                  <span className="group-hover:animate-bounce inline-block mr-2">⚽</span>
+                  Entrar
+                </>
+              )}
             </button>
           </form>
 
