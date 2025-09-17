@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import NotificationCenter from './NotificationCenter'
 
 const Navigation = () => {
   const navigate = useNavigate()
@@ -45,14 +46,19 @@ const Navigation = () => {
           ))}
         </nav>
 
-        {/* Informações do Usuário - simplificado */}
-        <div className="mt-auto pt-6 border-t border-gray-700 px-2">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
-              <span className="text-black font-bold text-lg">J</span>
-            </div>
-          </div>
-          
+            {/* Informações do Usuário - simplificado */}
+            <div className="mt-auto pt-6 border-t border-gray-700 px-2">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
+                  <span className="text-black font-bold text-lg">J</span>
+                </div>
+              </div>
+
+              {/* Centro de Notificações */}
+              <div className="flex justify-center mb-4">
+                <NotificationCenter />
+              </div>
+              
               {/* Botão de Logout */}
               <button
                 onClick={() => {
@@ -64,7 +70,7 @@ const Navigation = () => {
               >
                 <span className="text-xl">🚪</span>
               </button>
-        </div>
+            </div>
       </aside>
     </>
   )

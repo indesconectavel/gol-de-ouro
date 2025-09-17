@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import gameService from '../services/gameService'
+import { useAuth } from '../contexts/AuthContext'
 
 const useGame = () => {
+  const { user } = useAuth()
   const [gameStatus, setGameStatus] = useState('waiting') // waiting, playing, finished
   const [playerQueue, setPlayerQueue] = useState([])
   const [currentGame, setCurrentGame] = useState(null)
@@ -10,62 +13,131 @@ const useGame = () => {
     winRate: 0,
     balance: 150.00
   })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  // Simular dados de fila
+  // Carregar dados iniciais
   useEffect(() => {
-    const mockQueue = [
-      { id: 1, name: 'João Silva', position: 1 },
-      { id: 2, name: 'Maria Santos', position: 2 },
-      { id: 3, name: 'Pedro Costa', position: 3 },
-    ]
-    setPlayerQueue(mockQueue)
+    loadGameData()
   }, [])
 
-  const joinQueue = () => {
-    // Simular entrada na fila
-    const newPlayer = {
-      id: Date.now(),
-      name: 'Você',
-      position: playerQueue.length + 1
-    }
-    setPlayerQueue([...playerQueue, newPlayer])
-    return true
-  }
+  const loadGameData = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
 
-  const leaveQueue = () => {
-    // Simular saída da fila
-    setPlayerQueue(playerQueue.filter(player => player.name !== 'Você'))
-    return true
-  }
-
-  const makeShot = (zone, betAmount) => {
-    // Simular chute
-    setGameStatus('playing')
-    
-    // Simular resultado após 2 segundos
-    setTimeout(() => {
-      const isGoal = Math.random() > 0.3 // 70% de chance de gol
-      const result = {
-        zone,
-        isGoal,
-        betAmount,
-        prize: isGoal ? betAmount * 1.5 : 0
+      // Carregar estatísticas do jogador
+      const statsResult = await gameService.getPlayerStats()
+      if (statsResult.success) {
+        setPlayerStats(statsResult.stats)
       }
-      
-      setCurrentGame(result)
-      setGameStatus('finished')
-      
-      // Atualizar estatísticas
-      setPlayerStats(prev => ({
-        ...prev,
-        totalBets: prev.totalBets + 1,
-        totalWins: prev.totalWins + (isGoal ? 1 : 0),
-        winRate: ((prev.totalWins + (isGoal ? 1 : 0)) / (prev.totalBets + 1)) * 100,
-        balance: prev.balance + (isGoal ? result.prize - betAmount : -betAmount)
-      }))
-    }, 2000)
-    
-    return true
+
+      // Carregar status do jogo atual
+      const statusResult = await gameService.getGameStatus()
+      if (statusResult.success) {
+        setGameStatus(statusResult.status)
+        setCurrentGame(statusResult.game)
+      }
+    } catch (err) {
+      console.error('Erro ao carregar dados do jogo:', err)
+      setError('Erro ao carregar dados do jogo')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const joinQueue = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      const result = await gameService.joinQueue()
+      if (result.success) {
+        setGameStatus('in_queue')
+        setCurrentGame(result.game)
+        return true
+      } else {
+        setError(result.error)
+        return false
+      }
+    } catch (err) {
+      console.error('Erro ao entrar na fila:', err)
+      setError('Erro ao entrar na fila')
+      return false
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const leaveQueue = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      const result = await gameService.leaveQueue()
+      if (result.success) {
+        setGameStatus('waiting')
+        setCurrentGame(null)
+        return true
+      } else {
+        setError(result.error)
+        return false
+      }
+    } catch (err) {
+      console.error('Erro ao sair da fila:', err)
+      setError('Erro ao sair da fila')
+      return false
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const makeShot = async (zone, betAmount) => {
+    try {
+      setIsLoading(true)
+      setError(null)
+
+      // Validar zona e valor da aposta
+      if (!gameService.validateShotZone(zone)) {
+        setError('Zona de chute inválida')
+        return false
+      }
+
+      if (!gameService.validateBetAmount(betAmount)) {
+        setError('Valor da aposta inválido')
+        return false
+      }
+
+      setGameStatus('playing')
+
+      const result = await gameService.makeShot(zone, betAmount)
+      if (result.success) {
+        setCurrentGame(result.result)
+        setGameStatus('finished')
+        
+        // Atualizar estatísticas
+        setPlayerStats(prev => ({
+          ...prev,
+          totalBets: prev.totalBets + 1,
+          totalWins: prev.totalWins + (result.goal ? 1 : 0),
+          winRate: prev.totalBets > 0 ? ((prev.totalWins + (result.goal ? 1 : 0)) / (prev.totalBets + 1)) * 100 : 0,
+          balance: prev.balance + (result.prize - betAmount)
+        }))
+
+        return true
+      } else {
+        setError(result.error)
+        setGameStatus('waiting')
+        return false
+      }
+    } catch (err) {
+      console.error('Erro ao fazer chute:', err)
+      setError('Erro ao fazer chute')
+      setGameStatus('waiting')
+      return false
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const resetGame = () => {
@@ -78,10 +150,13 @@ const useGame = () => {
     playerQueue,
     currentGame,
     playerStats,
+    isLoading,
+    error,
     joinQueue,
     leaveQueue,
     makeShot,
-    resetGame
+    resetGame,
+    loadGameData
   }
 }
 

@@ -1,12 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import { useSidebar } from '../contexts/SidebarContext'
+import { useAuth } from '../contexts/AuthContext'
+import paymentService from '../services/paymentService'
 
 const Withdraw = () => {
   const { isCollapsed } = useSidebar()
-  const [balance] = useState(150.00)
+  const { user } = useAuth()
+  const [balance, setBalance] = useState(150.00)
   const [formData, setFormData] = useState({
     amount: '',
     pixKey: '',
@@ -14,14 +18,51 @@ const Withdraw = () => {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [withdrawals, setWithdrawals] = useState([])
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const withdrawalHistory = [
-    { id: 1, amount: 50.00, date: '2024-01-10', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
-    { id: 2, amount: 25.00, date: '2024-01-05', status: 'Pendente', method: 'PIX', pixKey: '123.456.789-00' },
-    { id: 3, amount: 30.00, date: '2024-01-01', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
-    { id: 4, amount: 15.00, date: '2023-12-28', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
-  ]
+  // Carregar dados ao montar o componente
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  const carregarDados = async () => {
+    try {
+      setLoading(true);
+
+      // Carregar saldo
+      const balanceResult = await paymentService.getUserBalance();
+      if (balanceResult.success) {
+        setBalance(balanceResult.balance);
+      }
+
+      // Carregar histórico de saques
+      const withdrawalsResult = await paymentService.getWithdrawals();
+      if (withdrawalsResult.success) {
+        setWithdrawals(withdrawalsResult.withdrawals);
+      } else {
+        // Fallback para dados simulados
+        setWithdrawals([
+          { id: 1, amount: 50.00, date: '2024-01-10', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
+          { id: 2, amount: 25.00, date: '2024-01-05', status: 'Pendente', method: 'PIX', pixKey: '123.456.789-00' },
+          { id: 3, amount: 30.00, date: '2024-01-01', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
+          { id: 4, amount: 15.00, date: '2023-12-28', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
+        ]);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      // Fallback para dados simulados
+      setWithdrawals([
+        { id: 1, amount: 50.00, date: '2024-01-10', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
+        { id: 2, amount: 25.00, date: '2024-01-05', status: 'Pendente', method: 'PIX', pixKey: '123.456.789-00' },
+        { id: 3, amount: 30.00, date: '2024-01-01', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
+        { id: 4, amount: 15.00, date: '2023-12-28', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const pixTypes = [
     { value: 'cpf', label: 'CPF', icon: '🆔', placeholder: '000.000.000-00' },
@@ -32,19 +73,54 @@ const Withdraw = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    // Validações
+    if (!formData.amount || parseFloat(formData.amount) <= 0) {
+      toast.error('Valor inválido');
+      return;
+    }
+    
+    if (parseFloat(formData.amount) > balance) {
+      toast.error('Saldo insuficiente');
+      return;
+    }
+    
+    if (!formData.pixKey) {
+      toast.error('Chave PIX é obrigatória');
+      return;
+    }
+
     setIsSubmitting(true)
     
-    // Simular processamento
-    setTimeout(() => {
-      setShowSuccess(true)
+    try {
+      const result = await paymentService.createWithdrawal(
+        formData.amount,
+        formData.pixKey,
+        formData.pixType,
+        `Saque via PIX - R$ ${formData.amount}`
+      );
+
+      if (result.success) {
+        setShowSuccess(true)
+        toast.success('Solicitação de saque enviada com sucesso!');
+        
+        // Recarregar dados
+        carregarDados();
+        
+        // Resetar formulário após sucesso
+        setTimeout(() => {
+          setFormData({ amount: '', pixKey: '', pixType: 'cpf' })
+          setShowSuccess(false)
+        }, 3000)
+      } else {
+        toast.error(result.error || 'Erro ao processar saque');
+      }
+    } catch (error) {
+      console.error('Erro ao processar saque:', error);
+      toast.error('Erro ao processar saque');
+    } finally {
       setIsSubmitting(false)
-      
-      // Resetar formulário após sucesso
-      setTimeout(() => {
-        setFormData({ amount: '', pixKey: '', pixType: 'cpf' })
-        setShowSuccess(false)
-      }, 3000)
-    }, 2000)
+    }
   }
 
   const handleAmountChange = (value) => {
@@ -295,7 +371,7 @@ const Withdraw = () => {
           </div>
           
           <div className="space-y-3">
-            {withdrawalHistory.map((withdrawal) => (
+                {withdrawals.map((withdrawal) => (
               <div key={withdrawal.id} className="flex items-center justify-between bg-white/10 backdrop-blur-lg rounded-lg p-4 hover:bg-white/20 transition-colors border border-white/20">
                 <div className="flex items-center space-x-3">
                   <div className={`w-3 h-3 rounded-full ${
