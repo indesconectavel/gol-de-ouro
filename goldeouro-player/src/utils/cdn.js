@@ -1,8 +1,8 @@
 // Configuração de CDN para assets estáticos
 const CDN_CONFIG = {
-  baseUrl: process.env.REACT_APP_CDN_URL || 'https://cdn.goldeouro.lol',
-  fallbackUrl: process.env.PUBLIC_URL || '',
-  version: process.env.REACT_APP_VERSION || '1.0.0'
+  baseUrl: import.meta.env.VITE_CDN_URL || 'https://cdn.goldeouro.lol',
+  fallbackUrl: import.meta.env.BASE_URL || '',
+  version: import.meta.env.VITE_APP_VERSION || '1.0.0'
 }
 
 // Função para gerar URL do CDN
