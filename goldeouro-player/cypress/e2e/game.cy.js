@@ -116,3 +116,4 @@ describe('Fluxo do Jogo', () => {
     cy.get('[data-testid="user-balance"]', { timeout: 10000 }).should('contain', 'R$ 160,00')
   })
 })
+

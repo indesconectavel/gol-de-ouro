@@ -63,3 +63,4 @@ describe('Fluxo do Dashboard', () => {
     cy.url().should('include', '/withdraw')
   })
 })
+

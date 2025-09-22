@@ -151,3 +151,4 @@ describe('Fluxo de Saque', () => {
     cy.get('[data-testid="empty-history"]').should('be.visible')
   })
 })
+

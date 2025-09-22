@@ -24,3 +24,4 @@ const ErrorMessage = ({ message, onRetry, className = '' }) => {
 };
 
 export default ErrorMessage;
+

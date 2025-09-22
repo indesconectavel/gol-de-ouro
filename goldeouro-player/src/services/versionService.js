@@ -137,3 +137,4 @@ class VersionService {
 // Exportar instância única
 const versionService = new VersionService();
 export default versionService;
+

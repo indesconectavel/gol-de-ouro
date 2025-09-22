@@ -37,3 +37,4 @@ const validateEnvironment = () => {
 
 export { getCurrentEnvironment, validateEnvironment };
 export default getCurrentEnvironment();
+
