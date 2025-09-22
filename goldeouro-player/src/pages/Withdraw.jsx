@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import { useSidebar } from '../contexts/SidebarContext'
+import paymentService from '../services/paymentService'
+import LoadingSpinner from '../components/LoadingSpinner'
+import ErrorMessage from '../components/ErrorMessage'
+import EmptyState from '../components/EmptyState'
 
 const Withdraw = () => {
   const { isCollapsed } = useSidebar()
-  const [balance] = useState(150.00)
+  const [balance, setBalance] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [formData, setFormData] = useState({
     amount: '',
     pixKey: '',
@@ -14,14 +20,60 @@ const Withdraw = () => {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [withdrawalHistory, setWithdrawalHistory] = useState([])
+  const [historyLoading, setHistoryLoading] = useState(true)
+  const [historyError, setHistoryError] = useState(null)
   const navigate = useNavigate()
 
-  const withdrawalHistory = [
-    { id: 1, amount: 50.00, date: '2024-01-10', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
-    { id: 2, amount: 25.00, date: '2024-01-05', status: 'Pendente', method: 'PIX', pixKey: '123.456.789-00' },
-    { id: 3, amount: 30.00, date: '2024-01-01', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
-    { id: 4, amount: 15.00, date: '2023-12-28', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
-  ]
+  // Carregar dados iniciais
+  useEffect(() => {
+    loadUserData()
+    loadWithdrawalHistory()
+  }, [])
+
+  const loadUserData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      // Simular carregamento do saldo do usuário
+      // Em produção, isso viria da API
+      const userBalance = 150.00
+      setBalance(userBalance)
+      
+    } catch (err) {
+      console.error('Erro ao carregar dados do usuário:', err)
+      setError('Erro ao carregar dados do usuário')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadWithdrawalHistory = async () => {
+    try {
+      setHistoryLoading(true)
+      setHistoryError(null)
+      
+      const result = await paymentService.getUserPix()
+      
+      if (result.success) {
+        setWithdrawalHistory(Array.isArray(result.data) ? result.data : [])
+      } else {
+        setHistoryError(result.error)
+        // Fallback para dados mock em caso de erro
+        setWithdrawalHistory([
+          { id: 1, amount: 50.00, date: '2024-01-10', status: 'Processado', method: 'PIX', pixKey: '123.456.789-00' },
+          { id: 2, amount: 25.00, date: '2024-01-05', status: 'Pendente', method: 'PIX', pixKey: '123.456.789-00' },
+        ])
+      }
+      
+    } catch (err) {
+      console.error('Erro ao carregar histórico de saques:', err)
+      setHistoryError('Erro ao carregar histórico de saques')
+    } finally {
+      setHistoryLoading(false)
+    }
+  }
 
   const pixTypes = [
     { value: 'cpf', label: 'CPF', icon: '🆔', placeholder: '000.000.000-00' },
@@ -33,18 +85,54 @@ const Withdraw = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError(null)
     
-    // Simular processamento
-    setTimeout(() => {
-      setShowSuccess(true)
-      setIsSubmitting(false)
+    try {
+      // Validar formulário
+      if (!formData.amount || !formData.pixKey) {
+        throw new Error('Todos os campos são obrigatórios')
+      }
+
+      const amount = parseFloat(formData.amount)
+      if (amount <= 0) {
+        throw new Error('Valor deve ser maior que zero')
+      }
+
+      if (amount > balance) {
+        throw new Error('Saldo insuficiente')
+      }
+
+      // Criar PIX usando o serviço
+      const result = await paymentService.createPix(
+        amount,
+        formData.pixKey,
+        `Saque Gol de Ouro - ${formData.pixType}`
+      )
+
+      if (result.success) {
+        setShowSuccess(true)
+        
+        // Atualizar saldo local
+        setBalance(prev => prev - amount)
+        
+        // Recarregar histórico
+        await loadWithdrawalHistory()
+        
+        // Resetar formulário após sucesso
+        setTimeout(() => {
+          setFormData({ amount: '', pixKey: '', pixType: 'cpf' })
+          setShowSuccess(false)
+        }, 3000)
+      } else {
+        throw new Error(result.error || 'Erro ao processar saque')
+      }
       
-      // Resetar formulário após sucesso
-      setTimeout(() => {
-        setFormData({ amount: '', pixKey: '', pixType: 'cpf' })
-        setShowSuccess(false)
-      }, 3000)
-    }, 2000)
+    } catch (err) {
+      console.error('Erro ao processar saque:', err)
+      setError(err.message || 'Erro ao processar saque')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleAmountChange = (value) => {
@@ -72,6 +160,34 @@ const Withdraw = () => {
       case 'Cancelado': return '❌'
       default: return '❓'
     }
+  }
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex">
+        <Navigation />
+        <div className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}>
+          <div className="flex items-center justify-center h-96">
+            <LoadingSpinner />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex">
+        <Navigation />
+        <div className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}>
+          <div className="max-w-4xl mx-auto">
+            <ErrorMessage message={error} onRetry={loadUserData} />
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -117,7 +233,10 @@ const Withdraw = () => {
               <h2 className="text-white/80 text-lg font-medium">Saldo Disponível</h2>
             </div>
             <p className="text-4xl font-bold text-yellow-400 mb-2">R$ {balance.toFixed(2)}</p>
-            <p className="text-white/70 text-sm">Valor mínimo para saque: R$ 10,00</p>
+            <p className="text-white/70 text-sm">Valor mínimo para saque: R$ {paymentService.getConfig().minAmount.toFixed(2)}</p>
+            {paymentService.isSandboxMode() && (
+              <p className="text-yellow-400 text-sm mt-2">🔧 Modo Sandbox Ativo</p>
+            )}
           </div>
         </div>
 
@@ -129,6 +248,16 @@ const Withdraw = () => {
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Exibir erro se houver */}
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4">
+                <div className="flex items-center space-x-2">
+                  <span className="text-red-400">❌</span>
+                  <p className="text-red-300">{error}</p>
+                </div>
+              </div>
+            )}
+
             {/* Valor */}
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
