@@ -1,29 +1,8 @@
-import axios from "axios";
+// Usar o cliente API centralizado
+import apiClient from '../services/apiClient';
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com',
-  timeout: 15000,
-});
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-// Interceptor de resposta para tratar tokens expirados
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Token expirado ou inválido
-      localStorage.removeItem("token");
-      localStorage.removeItem("userId");
-      window.location.href = "/";
-    }
-    return Promise.reject(error);
-  }
-);
+// Manter compatibilidade com código existente
+export const api = apiClient;
 
 /**
  * ENDPOINTS DO BACKEND GOL DE OURO:

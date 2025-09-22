@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import apiClient from '../services/apiClient';
 
 const Pagamentos = () => {
   const navigate = useNavigate();
@@ -35,29 +36,12 @@ const Pagamentos = () => {
       }
 
       // Carregar saldo do usuário
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/usuario/perfil`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSaldo(data.balance || 0);
-      }
+      const response = await apiClient.get('/usuario/perfil');
+      setSaldo(response.data.balance || 0);
 
       // Carregar histórico de pagamentos
-      const pagamentosResponse = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/api/payments/pix/usuario`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (pagamentosResponse.ok) {
-        const pagamentosData = await pagamentosResponse.json();
-        setPagamentos(pagamentosData.data.payments || []);
-      }
+      const pagamentosResponse = await apiClient.get('/api/payments/pix/usuario');
+      setPagamentos(pagamentosResponse.data.data.payments || []);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     }
@@ -73,26 +57,17 @@ const Pagamentos = () => {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/api/payments/pix/criar`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          amount: valorRecarga,
-          description: `Recarga de saldo - R$ ${valorRecarga.toFixed(2)}`
-        })
+      const response = await apiClient.post('/api/payments/pix/criar', {
+        amount: valorRecarga,
+        description: `Recarga de saldo - R$ ${valorRecarga.toFixed(2)}`
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setPagamentoAtual(data.data);
+      if (response.data) {
+        setPagamentoAtual(response.data.data);
         toast.success('Pagamento PIX criado com sucesso!');
         carregarDados(); // Recarregar dados
       } else {
-        toast.error(data.message || 'Erro ao criar pagamento PIX');
+        toast.error(response.data.message || 'Erro ao criar pagamento PIX');
       }
     } catch (error) {
       console.error('Erro ao criar pagamento:', error);
@@ -105,19 +80,14 @@ const Pagamentos = () => {
   const consultarStatusPagamento = async (paymentId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/api/payments/pix/status/${paymentId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await apiClient.get(`/api/payments/pix/status/${paymentId}`);
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.data.status === 'approved') {
+      if (response.data) {
+        if (response.data.data.status === 'approved') {
           toast.success('Pagamento aprovado! Saldo atualizado.');
           carregarDados();
         }
-        return data.data;
+        return response.data.data;
       }
     } catch (error) {
       console.error('Erro ao consultar status:', error);
