@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Console - Gol de Ouro Player</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            background: #0f172a;
+            color: #10b981;
+            min-height: 100vh;
+        }
+        .console {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .error { color: #ef4444; }
+        .warning { color: #fbbf24; }
+        .success { color: #10b981; }
+        .info { color: #3b82f6; }
+        .test-button {
+            background: #334155;
+            color: white;
+            border: 1px solid #475569;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .test-button:hover {
+            background: #475569;
+            border-color: #fbbf24;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #334155;
+            padding-left: 10px;
+        }
+        .log-entry.error { border-left-color: #ef4444; }
+        .log-entry.warning { border-left-color: #fbbf24; }
+        .log-entry.success { border-left-color: #10b981; }
+        .log-entry.info { border-left-color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug Console - Gol de Ouro Player</h1>
+    
+    <div class="console">
+        <h3>📋 Testes de Diagnóstico</h3>
+        <button class="test-button" onclick="testBasicFunctionality()">Testar Funcionalidade Básica</button>
+        <button class="test-button" onclick="testReactApp()">Testar React App</button>
+        <button class="test-button" onclick="testAPI()">Testar API</button>
+        <button class="test-button" onclick="testConsoleErrors()">Verificar Erros Console</button>
+        <button class="test-button" onclick="clearLogs()">Limpar Logs</button>
+    </div>
+
+    <div class="console">
+        <h3>📊 Logs de Diagnóstico</h3>
+        <div id="log-container">
+            <div class="log-entry info">Console de debug iniciado...</div>
+        </div>
+    </div>
+
+    <div class="console">
+        <h3>🔗 Links de Teste</h3>
+        <p><a href="http://localhost:5174" target="_blank" style="color: #3b82f6;">Abrir App Principal</a></p>
+        <p><a href="http://localhost:5174/test-pages.html" target="_blank" style="color: #3b82f6;">Abrir Teste de Páginas</a></p>
+    </div>
+
+    <script>
+        const logContainer = document.getElementById('log-container');
+        
+        function log(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLogs() {
+            logContainer.innerHTML = '<div class="log-entry info">Console de debug iniciado...</div>';
+        }
+
+        function testBasicFunctionality() {
+            log('Iniciando teste de funcionalidade básica...', 'info');
+            
+            // Testar se o React está carregado
+            if (typeof React !== 'undefined') {
+                log('✅ React detectado', 'success');
+            } else {
+                log('❌ React não detectado', 'error');
+            }
+            
+            // Testar se o Vite está funcionando
+            if (typeof import !== 'undefined') {
+                log('✅ ES Modules suportado', 'success');
+            } else {
+                log('❌ ES Modules não suportado', 'error');
+            }
+            
+            // Testar localStorage
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                log('✅ localStorage funcionando', 'success');
+            } catch (e) {
+                log('❌ localStorage com problema: ' + e.message, 'error');
+            }
+            
+            // Testar fetch
+            if (typeof fetch !== 'undefined') {
+                log('✅ Fetch API disponível', 'success');
+            } else {
+                log('❌ Fetch API não disponível', 'error');
+            }
+        }
+
+        function testReactApp() {
+            log('Testando React App...', 'info');
+            
+            // Tentar acessar a aplicação
+            fetch('http://localhost:5174')
+                .then(response => {
+                    if (response.ok) {
+                        log('✅ Servidor respondendo', 'success');
+                        return response.text();
+                    } else {
+                        log('❌ Servidor com erro: ' + response.status, 'error');
+                        throw new Error('Server error');
+                    }
+                })
+                .then(html => {
+                    if (html.includes('root')) {
+                        log('✅ HTML contém elemento root', 'success');
+                    } else {
+                        log('❌ HTML não contém elemento root', 'error');
+                    }
+                    
+                    if (html.includes('main.jsx')) {
+                        log('✅ Script main.jsx encontrado', 'success');
+                    } else {
+                        log('❌ Script main.jsx não encontrado', 'error');
+                    }
+                })
+                .catch(error => {
+                    log('❌ Erro ao testar React App: ' + error.message, 'error');
+                });
+        }
+
+        function testAPI() {
+            log('Testando API...', 'info');
+            
+            // Testar se o backend está acessível
+            fetch('https://goldeouro-backend.onrender.com/health')
+                .then(response => {
+                    if (response.ok) {
+                        log('✅ Backend acessível', 'success');
+                    } else {
+                        log('⚠️ Backend com problema: ' + response.status, 'warning');
+                    }
+                })
+                .catch(error => {
+                    log('❌ Backend inacessível: ' + error.message, 'error');
+                });
+        }
+
+        function testConsoleErrors() {
+            log('Verificando erros no console...', 'info');
+            
+            // Interceptar erros do console
+            const originalError = console.error;
+            const originalWarn = console.warn;
+            
+            console.error = function(...args) {
+                log('❌ Console Error: ' + args.join(' '), 'error');
+                originalError.apply(console, args);
+            };
+            
+            console.warn = function(...args) {
+                log('⚠️ Console Warning: ' + args.join(' '), 'warning');
+                originalWarn.apply(console, args);
+            };
+            
+            // Verificar se há erros de JavaScript
+            window.addEventListener('error', function(e) {
+                log('❌ JavaScript Error: ' + e.message + ' em ' + e.filename + ':' + e.lineno, 'error');
+            });
+            
+            log('✅ Interceptação de erros ativada', 'success');
+        }
+
+        // Executar testes automáticos ao carregar
+        window.addEventListener('load', function() {
+            log('Página carregada, executando testes automáticos...', 'info');
+            setTimeout(() => {
+                testBasicFunctionality();
+                testReactApp();
+                testAPI();
+                testConsoleErrors();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

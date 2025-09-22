@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Completo - Gol de Ouro Player</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            background: #0f172a;
+            color: #10b981;
+            min-height: 100vh;
+        }
+        .console {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .error { color: #ef4444; }
+        .warning { color: #fbbf24; }
+        .success { color: #10b981; }
+        .info { color: #3b82f6; }
+        .test-button {
+            background: #334155;
+            color: white;
+            border: 1px solid #475569;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .test-button:hover {
+            background: #475569;
+            border-color: #fbbf24;
+        }
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid #334155;
+            padding-left: 10px;
+        }
+        .log-entry.error { border-left-color: #ef4444; }
+        .log-entry.warning { border-left-color: #fbbf24; }
+        .log-entry.success { border-left-color: #10b981; }
+        .log-entry.info { border-left-color: #3b82f6; }
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Diagnóstico Completo - Gol de Ouro Player</h1>
+    
+    <div class="console">
+        <h3>📋 Testes Automáticos</h3>
+        <button class="test-button" onclick="testarAplicacao()">Testar Aplicação Principal</button>
+        <button class="test-button" onclick="verificarErros()">Verificar Erros Console</button>
+        <button class="test-button" onclick="testarComponentes()">Testar Componentes</button>
+        <button class="test-button" onclick="limparLogs()">Limpar Logs</button>
+    </div>
+
+    <div class="console">
+        <h3>📊 Logs de Diagnóstico</h3>
+        <div id="log-container">
+            <div class="log-entry info">Sistema de diagnóstico iniciado...</div>
+        </div>
+    </div>
+
+    <div class="console">
+        <h3>🌐 Preview da Aplicação</h3>
+        <div class="iframe-container">
+            <iframe id="app-iframe" src="http://localhost:5174" title="Gol de Ouro Player"></iframe>
+        </div>
+    </div>
+
+    <div class="console">
+        <h3>🔗 Links de Teste</h3>
+        <p><a href="http://localhost:5174" target="_blank" style="color: #3b82f6;">Abrir App Principal</a></p>
+        <p><a href="http://localhost:5174/test-pages.html" target="_blank" style="color: #3b82f6;">Abrir Teste de Páginas</a></p>
+        <p><a href="http://localhost:5174/debug-console.html" target="_blank" style="color: #3b82f6;">Abrir Debug Console</a></p>
+    </div>
+
+    <script>
+        const logContainer = document.getElementById('log-container');
+        
+        function log(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function limparLogs() {
+            logContainer.innerHTML = '<div class="log-entry info">Sistema de diagnóstico iniciado...</div>';
+        }
+
+        function testarAplicacao() {
+            log('Iniciando teste da aplicação principal...', 'info');
+            
+            // Testar se a aplicação carrega
+            fetch('http://localhost:5174')
+                .then(response => {
+                    if (response.ok) {
+                        log('✅ Servidor respondendo corretamente', 'success');
+                        return response.text();
+                    } else {
+                        log('❌ Erro no servidor: ' + response.status, 'error');
+                        throw new Error('Server error');
+                    }
+                })
+                .then(html => {
+                    // Verificar elementos críticos
+                    if (html.includes('root')) {
+                        log('✅ Elemento root encontrado', 'success');
+                    } else {
+                        log('❌ Elemento root não encontrado', 'error');
+                    }
+                    
+                    if (html.includes('main.jsx')) {
+                        log('✅ Script main.jsx encontrado', 'success');
+                    } else {
+                        log('❌ Script main.jsx não encontrado', 'error');
+                    }
+                    
+                    if (html.includes('tailwind')) {
+                        log('✅ Tailwind CSS detectado', 'success');
+                    } else {
+                        log('⚠️ Tailwind CSS não detectado', 'warning');
+                    }
+                    
+                    // Verificar se há erros de JavaScript
+                    if (html.includes('error') || html.includes('Error')) {
+                        log('⚠️ Possíveis erros detectados no HTML', 'warning');
+                    }
+                })
+                .catch(error => {
+                    log('❌ Erro ao testar aplicação: ' + error.message, 'error');
+                });
+        }
+
+        function verificarErros() {
+            log('Verificando erros no console...', 'info');
+            
+            // Interceptar erros do console
+            const originalError = console.error;
+            const originalWarn = console.warn;
+            
+            console.error = function(...args) {
+                log('❌ Console Error: ' + args.join(' '), 'error');
+                originalError.apply(console, args);
+            };
+            
+            console.warn = function(...args) {
+                log('⚠️ Console Warning: ' + args.join(' '), 'warning');
+                originalWarn.apply(console, args);
+            };
+            
+            // Verificar se há erros de JavaScript
+            window.addEventListener('error', function(e) {
+                log('❌ JavaScript Error: ' + e.message + ' em ' + e.filename + ':' + e.lineno, 'error');
+            });
+            
+            // Verificar se há erros de recursos
+            window.addEventListener('error', function(e) {
+                if (e.target !== window) {
+                    log('❌ Resource Error: ' + e.target.src || e.target.href, 'error');
+                }
+            }, true);
+            
+            log('✅ Interceptação de erros ativada', 'success');
+        }
+
+        function testarComponentes() {
+            log('Testando componentes React...', 'info');
+            
+            // Verificar se React está carregado
+            setTimeout(() => {
+                const iframe = document.getElementById('app-iframe');
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    if (iframeDoc.querySelector('#root')) {
+                        log('✅ Elemento root encontrado no iframe', 'success');
+                        
+                        // Verificar se há conteúdo renderizado
+                        const rootContent = iframeDoc.querySelector('#root').innerHTML;
+                        if (rootContent.trim()) {
+                            log('✅ Conteúdo renderizado encontrado', 'success');
+                        } else {
+                            log('❌ Elemento root vazio - possível tela branca', 'error');
+                        }
+                    } else {
+                        log('❌ Elemento root não encontrado no iframe', 'error');
+                    }
+                } catch (e) {
+                    log('⚠️ Não foi possível acessar o iframe (CORS): ' + e.message, 'warning');
+                }
+            }, 2000);
+        }
+
+        // Executar testes automáticos ao carregar
+        window.addEventListener('load', function() {
+            log('Página carregada, executando testes automáticos...', 'info');
+            setTimeout(() => {
+                testarAplicacao();
+                verificarErros();
+                testarComponentes();
+            }, 1000);
+        });
+
+        // Atualizar iframe a cada 5 segundos
+        setInterval(() => {
+            const iframe = document.getElementById('app-iframe');
+            iframe.src = iframe.src;
+        }, 5000);
+    </script>
+</body>
+</html>

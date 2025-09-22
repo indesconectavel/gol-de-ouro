@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Páginas - Gol de Ouro Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1e293b;
+            color: white;
+        }
+        .page-link {
+            display: block;
+            padding: 15px;
+            margin: 10px 0;
+            background: #334155;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 2px solid #475569;
+            transition: all 0.3s;
+        }
+        .page-link:hover {
+            background: #475569;
+            border-color: #fbbf24;
+        }
+        .status {
+            float: right;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status.loading {
+            background: #fbbf24;
+            color: black;
+        }
+        .status.success {
+            background: #10b981;
+            color: white;
+        }
+        .status.error {
+            background: #ef4444;
+            color: white;
+        }
+        h1 {
+            color: #fbbf24;
+            text-align: center;
+        }
+        .info {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Teste de Páginas - Gol de Ouro Player</h1>
+    
+    <div class="info">
+        <h3>📋 Instruções:</h3>
+        <p>1. Clique em cada link para testar as páginas</p>
+        <p>2. Verifique se a página carrega corretamente</p>
+        <p>3. Teste a responsividade redimensionando a janela</p>
+        <p>4. Verifique se não há erros no console (F12)</p>
+        <p><strong>URL Base:</strong> http://localhost:5174</p>
+    </div>
+
+    <h2>🔗 Páginas para Testar:</h2>
+    
+    <a href="http://localhost:5174/" class="page-link" target="_blank">
+        🏠 Login (Página Principal)
+        <span class="status loading">Testar</span>
+    </a>
+    
+    <a href="http://localhost:5174/register" class="page-link" target="_blank">
+        📝 Registro
+        <span class="status loading">Testar</span>
+    </a>
+    
+    <a href="http://localhost:5174/dashboard" class="page-link" target="_blank">
+        📊 Dashboard (Requer Login)
+        <span class="status loading">Testar</span>
+    </a>
+    
+    <a href="http://localhost:5174/game" class="page-link" target="_blank">
+        ⚽ Jogo (Requer Login)
+        <span class="status loading">Testar</span>
+    </a>
+    
+    <a href="http://localhost:5174/profile" class="page-link" target="_blank">
+        👤 Perfil (Requer Login)
+        <span class="status loading">Testar</span>
+    </a>
+    
+    <a href="http://localhost:5174/withdraw" class="page-link" target="_blank">
+        💸 Saque (Requer Login)
+        <span class="status loading">Testar</span>
+    </a>
+    
+    <a href="http://localhost:5174/pagamentos" class="page-link" target="_blank">
+        💳 Pagamentos (Requer Login)
+        <span class="status loading">Testar</span>
+    </a>
+    
+    <a href="http://localhost:5174/terms" class="page-link" target="_blank">
+        📄 Termos de Uso
+        <span class="status loading">Testar</span>
+    </a>
+    
+    <a href="http://localhost:5174/privacy" class="page-link" target="_blank">
+        🔒 Política de Privacidade
+        <span class="status loading">Testar</span>
+    </a>
+
+    <h2>🧪 Testes de Responsividade:</h2>
+    
+    <div class="info">
+        <h3>📱 Resoluções para Testar:</h3>
+        <ul>
+            <li><strong>Mobile:</strong> 375x667 (iPhone SE)</li>
+            <li><strong>Tablet:</strong> 768x1024 (iPad)</li>
+            <li><strong>Desktop:</strong> 1920x1080 (Full HD)</li>
+            <li><strong>Ultra-wide:</strong> 2560x1440 (2K)</li>
+        </ul>
+    </div>
+
+    <h2>🔍 Checklist de Validação:</h2>
+    
+    <div class="info">
+        <h3>✅ Para cada página, verificar:</h3>
+        <ul>
+            <li>Página carrega sem tela branca</li>
+            <li>Elementos visuais aparecem corretamente</li>
+            <li>Não há erros no console (F12)</li>
+            <li>Responsividade funciona em diferentes resoluções</li>
+            <li>Animações funcionam suavemente</li>
+            <li>Links de navegação funcionam</li>
+            <li>Formulários validam corretamente</li>
+            <li>Imagens carregam sem problemas</li>
+        </ul>
+    </div>
+
+    <script>
+        // Adicionar funcionalidade de teste automático
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('.page-link');
+            
+            links.forEach(link => {
+                link.addEventListener('click', function() {
+                    const status = this.querySelector('.status');
+                    status.textContent = 'Testando...';
+                    status.className = 'status loading';
+                    
+                    // Simular teste (em um cenário real, você faria uma requisição)
+                    setTimeout(() => {
+                        status.textContent = 'Abrir';
+                        status.className = 'status success';
+                    }, 1000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
