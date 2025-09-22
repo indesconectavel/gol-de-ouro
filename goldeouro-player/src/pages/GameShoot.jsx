@@ -5,6 +5,7 @@ import { useResponsiveGameScene } from "../hooks/useResponsiveGameScene"; // Hoo
 import audioManager from "../utils/audioManager";
 import musicManager from "../utils/musicManager";
 import ParticleSystem from "../components/ParticleSystem";
+import apiClient from "../services/apiClient";
 
 // Importar assets com fallback
 import bg from "../assets/bg_goal.jpg";
@@ -157,16 +158,10 @@ export default function GameShoot() {
           return;
         }
 
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com'}/usuario/perfil`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setBalance(data.balance || 0);
-        } else {
+        try {
+          const response = await apiClient.get('/usuario/perfil');
+          setBalance(response.data.balance || 0);
+        } catch (error) {
           console.error('Erro ao carregar saldo:', response.statusText);
         }
       } catch (error) {

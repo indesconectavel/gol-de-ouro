@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import Logo from '../components/Logo'
 import musicManager from '../utils/musicManager'
 
@@ -11,6 +12,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const navigate = useNavigate()
+  const { login, loading, error } = useAuth()
 
   // Iniciar música de fundo apenas na página de login
   useEffect(() => {
@@ -25,10 +27,13 @@ const Login = () => {
     };
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Simular login
-    navigate('/dashboard')
+    
+    const result = await login(formData.email, formData.password)
+    if (result.success) {
+      navigate('/dashboard')
+    }
   }
 
   return (
