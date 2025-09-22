@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { SidebarProvider } from './contexts/SidebarContext'
 import ErrorBoundary from './components/ErrorBoundary'
+import VersionWarning from './components/VersionWarning'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -23,6 +24,7 @@ function App() {
         <SidebarProvider>
           <Router>
             <div className="min-h-screen bg-slate-900">
+              <VersionWarning />
               <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
