@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { getShareUrl } from '../config/social'
 
 const ReferralSystem = () => {
   const [referralCode, setReferralCode] = useState('')
@@ -56,24 +57,7 @@ const ReferralSystem = () => {
     const shareUrl = `${window.location.origin}/register?ref=${referralCode}`
     const shareText = `Junte-se ao Gol de Ouro e ganhe R$ 10,00 de bônus! Use o código: ${referralCode}`
 
-    let shareLink = ''
-    switch (platform) {
-      case 'whatsapp':
-        shareLink = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`
-        break
-      case 'telegram':
-        shareLink = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`
-        break
-      case 'facebook':
-        shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`
-        break
-      case 'twitter':
-        shareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`
-        break
-      default:
-        shareLink = shareUrl
-    }
-
+    const shareLink = getShareUrl(platform, shareText, shareUrl)
     window.open(shareLink, '_blank')
   }
 

@@ -63,6 +63,13 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Exibir erro se houver */}
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-red-200 text-sm">
+                {error}
+              </div>
+            )}
+            
             {/* Email */}
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
@@ -131,10 +138,11 @@ const Login = () => {
             {/* Botão de Login */}
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 group"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <span className="group-hover:animate-bounce inline-block mr-2">⚽</span>
-              Entrar
+              {loading ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
 
