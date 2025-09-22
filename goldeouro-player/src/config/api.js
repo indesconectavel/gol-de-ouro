@@ -1,5 +1,8 @@
 // Configuração da API - Gol de Ouro Player
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://goldeouro-backend.onrender.com';
+import { validateEnvironment } from './environments.js';
+
+const env = validateEnvironment();
+const API_BASE_URL = env.API_BASE_URL;
 
 export const API_ENDPOINTS = {
   // Autenticação
