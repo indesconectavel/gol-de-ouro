@@ -20,6 +20,16 @@ router.get('/health', (req, res) => {
   });
 });
 
+// Rota de readiness check
+router.get('/readiness', (req, res) => {
+  res.status(200).json({
+    status: 'ready',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
+});
+
 // Rota principal
 router.get('/', (req, res) => {
   res.json({

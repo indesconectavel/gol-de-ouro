@@ -4,6 +4,8 @@
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 // Importar router principal (corrige erro "Cannot find module './router'")
@@ -53,6 +55,47 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+// Configurações de segurança por ambiente
+const ENABLE_HELMET = process.env.NODE_ENV === 'production' || process.env.ENABLE_HELMET !== 'false';
+const ENABLE_RATE_LIMIT = process.env.NODE_ENV === 'production' || process.env.ENABLE_RATE_LIMIT === 'true';
+
+if (ENABLE_HELMET) {
+  app.use(helmet({ 
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+        connectSrc: ["'self'", "http://localhost:3000", "https://api.goldeouro.lol", "https://api.staging.goldeouro.lol"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+    referrerPolicy: { policy: 'no-referrer' },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+    noSniff: true,
+    xssFilter: true,
+    hidePoweredBy: true,
+  }));
+}
+
+if (ENABLE_RATE_LIMIT) {
+  const windowMs = Number(process.env.RATE_LIMIT_WINDOW_MS || 15*60*1000);
+  const max = Number(process.env.RATE_LIMIT_MAX || (process.env.NODE_ENV === 'production' ? 300 : 1000));
+  app.use(rateLimit({ 
+    windowMs, 
+    max, 
+    standardHeaders: true, 
+    legacyHeaders: false,
+    message: 'Muitas requisições a partir deste IP, por favor, tente novamente após 15 minutos.'
+  }));
+}
+
 app.use(express.json({ limit: '50kb' }));
 
 // Usar router principal
