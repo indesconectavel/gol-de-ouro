@@ -76,3 +76,6 @@ test-results/
 .npm/
 .yarn/
 .pnpm-store/
+# Arquivos de backup grandes
+*.bundle
+artifacts/backup-*.bundle
