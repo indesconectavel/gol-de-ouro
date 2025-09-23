@@ -1,48 +1,44 @@
 // Network Smoke Test - Gol de Ouro Player
-import { performHealthChecks } from '../src/utils/healthCheck.js';
+const baseUrl = process.env.VITE_API_URL || 'http://localhost:3000';
 
 const runNetworkSmoke = async () => {
   console.log('🚀 Iniciando Network Smoke Test...');
   console.log('⏰', new Date().toISOString());
+  console.log(`🌐 Backend URL: ${baseUrl}`);
   
   try {
-    const results = await performHealthChecks();
+    console.log('🔍 Testando conectividade com o backend...');
     
-    console.log('\n📊 Resultados dos Health Checks:');
-    console.log('================================');
+    // Test health endpoint
+    console.log(`📡 Testando ${baseUrl}/health...`);
+    const healthResponse = await fetch(`${baseUrl}/health`);
+    console.log(`   Status: ${healthResponse.status} ${healthResponse.ok ? '✅' : '❌'}`);
     
-    // Health Check
-    console.log(`🏥 Health: ${results.health.status}`);
-    if (results.health.data) {
-      console.log(`   📈 Dados:`, results.health.data);
-    }
-    if (results.health.error) {
-      console.log(`   ❌ Erro:`, results.health.error);
-    }
+    // Test readiness endpoint
+    console.log(`📡 Testando ${baseUrl}/readiness...`);
+    const readinessResponse = await fetch(`${baseUrl}/readiness`);
+    console.log(`   Status: ${readinessResponse.status} ${readinessResponse.ok ? '✅' : '❌'}`);
     
-    // Readiness Check
-    console.log(`✅ Readiness: ${results.readiness.status}`);
-    if (results.readiness.data) {
-      console.log(`   📈 Dados:`, results.readiness.data);
-    }
-    if (results.readiness.error) {
-      console.log(`   ❌ Erro:`, results.readiness.error);
-    }
+    // Test version endpoint
+    console.log(`📡 Testando ${baseUrl}/health/version...`);
+    const versionResponse = await fetch(`${baseUrl}/health/version`);
+    console.log(`   Status: ${versionResponse.status} ${versionResponse.ok ? '✅' : '❌'}`);
     
-    // Status geral
-    const allHealthy = results.health.status === 'healthy' && results.readiness.status === 'ready';
-    console.log(`\n🎯 Status Geral: ${allHealthy ? '✅ SAUDÁVEL' : '❌ PROBLEMAS'}`);
+    // Test game endpoints
+    console.log(`📡 Testando ${baseUrl}/api/games/status...`);
+    const gamesResponse = await fetch(`${baseUrl}/api/games/status`);
+    console.log(`   Status: ${gamesResponse.status} ${gamesResponse.ok ? '✅' : '❌'}`);
     
-    if (allHealthy) {
-      console.log('🎉 Todos os health checks passaram!');
+    if (healthResponse.ok && readinessResponse.ok) {
+      console.log('✅ Todos os endpoints críticos estão respondendo!');
+      console.log('🎉 Network smoke test passou!');
       process.exit(0);
     } else {
-      console.log('⚠️ Alguns health checks falharam!');
+      console.log('❌ Alguns endpoints críticos não estão respondendo!');
       process.exit(1);
     }
-    
   } catch (error) {
-    console.error('💥 Erro crítico no network smoke test:', error);
+    console.error('💥 Erro durante network smoke test:', error);
     process.exit(1);
   }
 };

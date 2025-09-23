@@ -20,6 +20,29 @@ Cypress.on('window:before:load', (win) => {
   win.innerHeight = 720
 })
 
+// Criar usuário de teste antes de todos os testes
+before(() => {
+  // Criar usuário de teste via API (ignorar erro 409 se já existir)
+  cy.request({
+    method: 'POST',
+    url: 'http://localhost:3000/auth/register',
+    body: {
+      email: 'test@example.com',
+      password: 'password123',
+      name: 'Test User'
+    },
+    failOnStatusCode: false
+  }).then((response) => {
+    if (response.status === 201) {
+      console.log('✅ Usuário de teste criado')
+    } else if (response.status === 409) {
+      console.log('ℹ️ Usuário de teste já existe')
+    } else {
+      console.log(`⚠️ Erro ao criar usuário: ${response.status}`)
+    }
+  })
+})
+
 // Interceptar requisições de API por padrão
 beforeEach(() => {
   // Interceptar requisições de health check

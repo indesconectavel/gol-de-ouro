@@ -12,6 +12,7 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "cypress run",
     "test:e2e:open": "cypress open",
+    "test:e2e:ci": "node scripts/e2e-orchestrator.cjs",
     "test:all": "npm run test && npm run test:e2e",
     "health:check": "node scripts/network-smoke.js"
   },

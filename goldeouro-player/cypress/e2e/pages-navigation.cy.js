@@ -1,6 +1,8 @@
 describe('Gol de Ouro - Navegação entre Páginas', () => {
   beforeEach(() => {
-    cy.visit('/')
+    // Fazer login via API antes de cada teste
+    cy.loginApi('test@example.com', 'password123')
+    cy.visitAuthed('/')
   })
 
   it('deve navegar para Dashboard', () => {

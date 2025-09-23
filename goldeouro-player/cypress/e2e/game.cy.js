@@ -1,9 +1,9 @@
 // Teste de fluxo do jogo
 describe('Fluxo do Jogo', () => {
   beforeEach(() => {
-    // Fazer login antes de cada teste
-    cy.login('test@example.com', 'password123')
-    cy.visit('/game')
+    // Fazer login via API antes de cada teste
+    cy.loginApi('test@example.com', 'password123')
+    cy.visitAuthed('/game')
   })
 
   it('deve exibir a tela do jogo', () => {

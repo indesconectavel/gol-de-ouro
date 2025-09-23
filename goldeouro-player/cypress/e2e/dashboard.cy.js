@@ -1,9 +1,9 @@
 // Teste de fluxo do dashboard
 describe('Fluxo do Dashboard', () => {
   beforeEach(() => {
-    // Fazer login antes de cada teste
-    cy.login('test@example.com', 'password123')
-    cy.visit('/dashboard')
+    // Fazer login via API antes de cada teste
+    cy.loginApi('test@example.com', 'password123')
+    cy.visitAuthed('/dashboard')
   })
 
   it('deve exibir o dashboard após login', () => {

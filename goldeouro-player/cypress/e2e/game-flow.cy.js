@@ -1,6 +1,8 @@
 describe('Gol de Ouro - Fluxo Completo do Jogo', () => {
   beforeEach(() => {
-    cy.visit('/')
+    // Fazer login via API antes de cada teste
+    cy.loginApi('test@example.com', 'password123')
+    cy.visitAuthed('/')
   })
 
   it('deve carregar a página inicial corretamente', () => {

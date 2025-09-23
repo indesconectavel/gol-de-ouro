@@ -1,9 +1,9 @@
 // Teste de fluxo de saque
 describe('Fluxo de Saque', () => {
   beforeEach(() => {
-    // Fazer login antes de cada teste
-    cy.login('test@example.com', 'password123')
-    cy.visit('/withdraw')
+    // Fazer login via API antes de cada teste
+    cy.loginApi('test@example.com', 'password123')
+    cy.visitAuthed('/withdraw')
   })
 
   it('deve exibir a tela de saque', () => {

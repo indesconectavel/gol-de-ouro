@@ -1,12 +1,41 @@
 // Comandos customizados do Cypress
 
-// Comando para fazer login
+// Comando para fazer login via API
+Cypress.Commands.add('loginApi', (email, password) => {
+  cy.session([email, password], () => {
+    cy.request({
+      method: 'POST',
+      url: 'http://localhost:3000/auth/login',
+      body: { email, password },
+      failOnStatusCode: false
+    }).then((response) => {
+      if (response.status === 200 && response.body.token) {
+        window.localStorage.setItem('authToken', response.body.token)
+        window.localStorage.setItem('user', JSON.stringify(response.body.user))
+      } else {
+        throw new Error(`Login failed: ${response.status} - ${response.body.message || 'Unknown error'}`)
+      }
+    })
+  })
+})
+
+// Comando para visitar página autenticada
+Cypress.Commands.add('visitAuthed', (path = '/') => {
+  cy.visit(path)
+  // Verificar se o token está presente
+  cy.window().its('localStorage.authToken').should('exist')
+})
+
+// Comando para fazer login (mantido para compatibilidade)
 Cypress.Commands.add('login', (email, password) => {
   cy.session([email, password], () => {
     cy.visit('/')
-    cy.get('input[name="email"]').type(email)
-    cy.get('input[name="password"]').type(password)
-    cy.get('button[type="submit"]').click()
+    // Aguardar a página carregar completamente
+    cy.get('body').should('be.visible')
+    // Usar seletores mais robustos baseados no tipo e placeholder
+    cy.get('input[type="email"]').should('be.visible').type(email)
+    cy.get('input[type="password"]').should('be.visible').type(password)
+    cy.get('button[type="submit"]').should('be.visible').click()
     cy.url().should('include', '/dashboard')
   })
 })
