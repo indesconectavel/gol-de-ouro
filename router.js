@@ -1,4 +1,4 @@
-// ROUTER PRINCIPAL - Gol de Ouro Backend
+﻿// ROUTER PRINCIPAL - Gol de Ouro Backend
 // Arquivo criado para resolver erro "Cannot find module './router'" no Render
 
 const express = require('express');
@@ -30,34 +30,26 @@ router.get('/readiness', (req, res) => {
   });
 });
 
-// Rota principal
+// Rota raiz
 router.get('/', (req, res) => {
-  res.json({
-    message: '🚀 API Gol de Ouro - Router Principal',
-    version: '1.0.0',
-    status: 'online',
-    timestamp: new Date().toISOString()
+  res.status(200).json({
+    message: 'Gol de Ouro Backend API',
+    version: '1.1.1',
+    timestamp: new Date().toISOString(),
+    status: 'running'
   });
 });
 
-// Rota de status do sistema
+// Rota de status
 router.get('/status', (req, res) => {
-  res.json({
-    server: 'online',
-    database: 'connected',
-    memory: process.memoryUsage(),
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    timestamp: new Date().toISOString()
+    memory: process.memoryUsage(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
-// Middleware de tratamento de erro
-router.use((err, req, res, next) => {
-  console.error('❌ Erro no router:', err);
-  res.status(500).json({
-    error: 'Erro interno do servidor',
-    message: err.message
-  });
-});
-
+// Exportar o router
 module.exports = router;
