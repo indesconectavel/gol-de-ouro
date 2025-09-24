@@ -30,11 +30,280 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 /* ===== HEADER (card superior) ===== */
 .hud-header{
   position:absolute; z-index:4;
-  left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
-  right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  left: 10px;
+  right: 10px;
   top:   10px; /* 10px abaixo da borda superior */
   pointer-events:auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
 }
+
+/* ===== LOGO PEQUENA - LADO ESQUERDO ===== */
+.brand-small {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.brand-logo-small {
+  width: 60px;
+  height: auto;
+  max-height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* ===== CONTEÚDO DO HEADER ===== */
+.hud-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  gap: 20px;
+}
+
+/* ===== SISTEMA DE DESIGN RESPONSIVO HARMONIZADO ===== */
+
+/* Variáveis CSS para proporções harmonizadas */
+:root {
+  /* Tamanhos base (mobile-first) */
+  --stat-gap-mobile: 0.625rem;     /* 10px */
+  --stat-gap-tablet: 0.75rem;      /* 12px */
+  --stat-gap-desktop: 0.875rem;    /* 14px */
+  
+  /* Ícones proporcionais */
+  --stat-icon-mobile: 1.25rem;     /* 20px */
+  --stat-icon-tablet: 1.5rem;      /* 24px */
+  --stat-icon-desktop: 1.75rem;    /* 28px */
+  
+  /* Labels proporcionais */
+  --stat-label-mobile: 0.6875rem;  /* 11px */
+  --stat-label-tablet: 0.75rem;    /* 12px */
+  --stat-label-desktop: 0.875rem;  /* 14px */
+  
+  /* Valores proporcionais */
+  --stat-value-mobile: 0.875rem;   /* 14px */
+  --stat-value-tablet: 1rem;       /* 16px */
+  --stat-value-desktop: 1.125rem;  /* 18px */
+  
+  /* Gaps internos proporcionais */
+  --stat-inner-gap-mobile: 0.5rem; /* 8px */
+  --stat-inner-gap-tablet: 0.625rem; /* 10px */
+  --stat-inner-gap-desktop: 0.75rem; /* 12px */
+  
+  /* Padding do header proporcional */
+  --header-padding-mobile: 0.625rem 1rem; /* 10px 16px */
+  --header-padding-tablet: 0.75rem 1.25rem; /* 12px 20px */
+  --header-padding-desktop: 1rem 1.5rem; /* 16px 24px */
+  
+  /* Elementos de apostas proporcionais */
+  --bet-gap-mobile: 0.5rem; /* 8px */
+  --bet-gap-tablet: 0.625rem; /* 10px */
+  --bet-gap-desktop: 0.75rem; /* 12px */
+  
+  --bet-btn-padding-mobile: 0.375rem 0.75rem; /* 6px 12px */
+  --bet-btn-padding-tablet: 0.5rem 1rem; /* 8px 16px */
+  --bet-btn-padding-desktop: 0.625rem 1.25rem; /* 10px 20px */
+  
+  --bet-btn-font-mobile: 0.75rem; /* 12px */
+  --bet-btn-font-tablet: 0.875rem; /* 14px */
+  --bet-btn-font-desktop: 1rem; /* 16px */
+}
+
+.hud-stats {
+  display: flex;
+  gap: var(--stat-gap-mobile);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: var(--stat-inner-gap-mobile);
+  min-width: calc(25% - var(--stat-gap-mobile) * 0.75);
+  flex: 1;
+  color: white;
+}
+
+.stat-icon {
+  font-size: var(--stat-icon-mobile);
+  opacity: 0.8;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem; /* 2px fixo para todos os tamanhos */
+}
+
+.stat-label {
+  font-size: var(--stat-label-mobile);
+  opacity: 0.7;
+  font-weight: 500;
+  white-space: nowrap; /* Evita quebra de linha em todos os labels */
+}
+
+.stat-value {
+  font-size: var(--stat-value-mobile);
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+/* ===== BREAKPOINTS RESPONSIVOS ===== */
+
+/* Tablet: 768px - 1024px */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hud-stats {
+    gap: var(--stat-gap-tablet);
+  }
+  
+  .stat-item {
+    gap: var(--stat-inner-gap-tablet);
+    min-width: calc(25% - var(--stat-gap-tablet) * 0.75);
+  }
+  
+  .stat-icon {
+    font-size: var(--stat-icon-tablet);
+  }
+  
+  .stat-label {
+    font-size: var(--stat-label-tablet);
+  }
+  
+  .stat-value {
+    font-size: var(--stat-value-tablet);
+  }
+  
+  .hud-header {
+    padding: var(--header-padding-tablet);
+  }
+  
+  .hud-betting {
+    gap: var(--bet-gap-tablet);
+  }
+  
+  .bet-btn {
+    padding: var(--bet-btn-padding-tablet);
+    font-size: var(--bet-btn-font-tablet);
+  }
+}
+
+/* Desktop: 1024px+ */
+@media (min-width: 1024px) {
+  .hud-stats {
+    gap: var(--stat-gap-desktop);
+  }
+  
+  .stat-item {
+    gap: var(--stat-inner-gap-desktop);
+    min-width: calc(25% - var(--stat-gap-desktop) * 0.75);
+  }
+  
+  .stat-icon {
+    font-size: var(--stat-icon-desktop);
+  }
+  
+  .stat-label {
+    font-size: var(--stat-label-desktop);
+  }
+  
+  .stat-value {
+    font-size: var(--stat-value-desktop);
+  }
+  
+  .hud-header {
+    padding: var(--header-padding-desktop);
+  }
+  
+  .hud-betting {
+    gap: var(--bet-gap-desktop);
+  }
+  
+  .bet-btn {
+    padding: var(--bet-btn-padding-desktop);
+    font-size: var(--bet-btn-font-desktop);
+  }
+}
+
+.hud-betting {
+  display: flex;
+  align-items: center;
+  gap: var(--bet-gap-mobile);
+}
+
+/* Regras movidas para o sistema harmonizado acima */
+
+/* Estilo especial para Gols de Ouro */
+.stat-item.golden-goal .stat-value {
+  color: #ffd700; /* Dourado mais brilhante */
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.stat-item.golden-goal .stat-label {
+  color: #ffd700; /* Dourado mais brilhante */
+  white-space: nowrap; /* Evita quebra de linha */
+}
+
+/* ===== SEÇÃO DE APOSTAS ===== */
+.betting-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bet-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bet-label {
+  font-size: 14px;
+  color: white;
+  font-weight: 600;
+}
+
+.bet-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.bet-btn {
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bet-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.bet-btn.active {
+  background: #fbbf24;
+  color: #1e3a8a;
+  border-color: #fbbf24;
+}
+
+.bet-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Remover logo da página /game */
 .hud-header .brand-logo{ display:none !important; }
 .hud-header .brand-title, .hud-header .brand-sub{ display:none !important; }
@@ -48,10 +317,79 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   transform: translateY(-50%); /* Centralizar verticalmente */
 }
 .hud-left{ display:flex; align-items:center; gap:12px; }
+
+/* ===== BARRA DE PROGRESSO REMOVIDA - SISTEMA OCULTO ===== */
+
+/* ===== ANIMAÇÕES GOL DE OURO ===== */
+.gs-golden-goal {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  max-width: 80%;
+  height: auto;
+  animation: goldenGoalPop 1.5s ease-out;
+}
+
+.gs-golden-victory {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  max-width: 80%;
+  height: auto;
+  animation: goldenVictoryPop 2s ease-out;
+}
+
+@keyframes goldenGoalPop {
+  0% {
+    transform: translateX(-50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes goldenVictoryPop {
+  0% {
+    transform: translateX(-50%) scale(0.3);
+    opacity: 0;
+  }
+  30% {
+    transform: translateX(-50%) scale(1.3);
+    opacity: 1;
+  }
+  60% {
+    transform: translateX(-50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
 .hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
 .btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1; padding:10px 16px; font-weight:600; cursor:pointer; }
 .btn-partida{ background:#23c381; color:#fff; }
-.btn-dashboard{ background:#132840; color:#fff; }
+.btn-dashboard{ 
+  background:#fbbf24; /* Amarelo do jogo */
+  color:#000000; /* Preto */
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+.btn-dashboard:hover {
+  background:#f59e0b; /* Amarelo mais escuro no hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
 
 /* ===== RODAPÉ — Entrar na Fila (ESQ) e cluster (DIR) ===== */
 .hud-footer{ 
@@ -179,16 +517,30 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   transform:
     translate(-50%, 0)
     translateY(30px)
-    scale(clamp(1.20, calc(var(--pf-h) * 0.00250), 2.00)); /* Escala maior e mais responsiva */
+    scale(clamp(1.20, calc(var(--pf-h) * 0.00250), 2.00)); /* Tamanho original */
   z-index:3;
 }
-/* Aumento 50% + 30px adicional para tablet/desktop */
-@media (min-width: 768px){
+
+/* ===== CORREÇÃO DE PROPORÇÃO PARA TABLET/DESKTOP =====
+   - Mantém a proporção do mobile
+   - Ajusta apenas para telas maiores
+   - Escala baseada na largura do playfield para melhor proporção
+*/
+@media (min-width: 768px) and (max-width: 1024px) {
   .gs-goalie {
     transform:
       translate(-50%, 0)
-      translateY(60px) /* 30px original + 30px adicional */
-      scale(clamp(1.80, calc(var(--pf-h) * 0.00250 * 1.5), 3.00)); /* 50% maior e escala mais responsiva */
+      translateY(45px) /* Ajuste intermediário */
+      scale(clamp(1.50, calc(var(--pf-w) * 0.00180), 2.50)); /* Tamanho original Tablet */
+  }
+}
+
+@media (min-width: 1024px) {
+  .gs-goalie {
+    transform:
+      translate(-50%, 0)
+      translateY(60px) /* Ajuste para desktop */
+      scale(clamp(1.80, calc(var(--pf-w) * 0.00150), 3.00)); /* Tamanho original Desktop */
   }
 }
 

@@ -6,6 +6,7 @@ import audioManager from "../utils/audioManager";
 import musicManager from "../utils/musicManager";
 import ParticleSystem from "../components/ParticleSystem";
 import apiClient from "../services/apiClient";
+import gameService from "../services/gameService";
 
 // Importar assets com fallback
 import bg from "../assets/bg_goal.jpg";
@@ -13,6 +14,8 @@ import ballPng from "../assets/ball.png";
 import gooolPng from "../assets/goool.png";
 import defendeuPng from "../assets/defendeu.png";
 import ganhouPng from "../assets/ganhou.png";
+import goldenGoalPng from "../assets/golden-goal.png";
+import goldenVictoryPng from "../assets/golden-victory.png";
 
 import gIdle from "../assets/goalie_idle.png";
 import gTL from "../assets/goalie_dive_tl.png";
@@ -65,6 +68,8 @@ export default function GameShoot() {
   const [showGoool, setShowGoool] = useState(false);
   const [showDefendeu, setShowDefendeu] = useState(false);
   const [showGanhou, setShowGanhou] = useState(false);
+  const [showGoldenGoal, setShowGoldenGoal] = useState(false);
+  const [showGoldenVictory, setShowGoldenVictory] = useState(false);
   const [error, setError] = useState("");
   const [debug, setDebug] = useState(false); // liga/desliga overlay de debug - DESABILITADO PARA PRODUÇÃO
   const [loading, setLoading] = useState(true);
@@ -75,20 +80,22 @@ export default function GameShoot() {
   // Estados das zonas de chute
   const [zonePositions, setZonePositions] = useState({});
 
-  // Estados do sistema de apostas
-  const [gameStatus, setGameStatus] = useState("playing"); // playing, waiting, full, connecting
-  const [queuePosition, setQueuePosition] = useState(0);
-  const [queueTotal, setQueueTotal] = useState(10);
+  // Estados do sistema dinâmico de apostas
+  const [gameStatus, setGameStatus] = useState("playing"); // playing, processing
   const [currentBet, setCurrentBet] = useState(1);
   const [sessionWins, setSessionWins] = useState(0);
   const [sessionLosses, setSessionLosses] = useState(0);
-  const [multiplier, setMultiplier] = useState(1.0);
-  const [estimatedWait, setEstimatedWait] = useState(0);
+  const [totalWins, setTotalWins] = useState(0); // Total de gols do jogador
+  const [totalGoldenGoals, setTotalGoldenGoals] = useState(0); // Total de Gols de Ouro do jogador
+  const [multiplier, setMultiplier] = useState(0.5); // 50% da aposta como prêmio
+  const [batchProgress, setBatchProgress] = useState({ current: 0, total: 10, remaining: 10 });
+  const [currentBatchId, setCurrentBatchId] = useState(null);
+  const [isBatchComplete, setIsBatchComplete] = useState(false);
+  const [isGoldenGoal, setIsGoldenGoal] = useState(false);
 
   // Estados das funcionalidades futuras
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [gameTime, setGameTime] = useState(0);
-  const [accuracy, setAccuracy] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [totalGames, setTotalGames] = useState(0);
@@ -213,7 +220,7 @@ export default function GameShoot() {
   }
 
   async function handleShoot(dir) {
-    if (shooting) return;
+    if (shooting || balance < currentBet) return;
     setShooting(true);
     setError("");
 
@@ -224,44 +231,110 @@ export default function GameShoot() {
     setTargetStage(t);
     requestAnimationFrame(() => setBallPos({ x: t.x, y: t.y }));
 
-    // Simulação (trocar pelo backend depois)
-    const isGoal = Math.random() < 0.5;
-    const goalieDirection = isGoal
-      ? (DIRS.filter(k=>k!==dir))[Math.floor(Math.random()*4)]
-      : dir;
-    const gTarget = goalieTargetFor(goalieDirection);
+    // Adicionar chute ao sistema dinâmico
+    const shotData = {
+      playerId: 'current_user', // Em produção, virá do contexto de auth
+      playerName: 'Jogador', // Em produção, virá do perfil
+      bet: currentBet,
+      direction: dir
+    };
 
+    const result = gameService.addShot(shotData);
+    const isGoal = result.shot.isWinner;
+    const prize = result.shot.prize; // Premiação (R$5 normal ou R$100 Gol de Ouro)
+    const isGoldenGoalShot = result.isGoldenGoal;
+
+    // Atualizar estado do jogo
+    setIsGoldenGoal(isGoldenGoalShot);
+
+    // Animação do goleiro baseada no resultado
+    let goalieDirection;
+    if (isGoal) {
+      // Gol: Goleiro pula em direção diferente da bola
+      const otherDirections = DIRS.filter(d => d !== dir);
+      goalieDirection = otherDirections[Math.floor(Math.random() * otherDirections.length)];
+    } else {
+      // Defesa: Goleiro pula na mesma direção da bola
+      goalieDirection = dir;
+    }
+    
+    const gTarget = goalieTargetFor(goalieDirection);
     setGoaliePose(goalieDirection);
     requestAnimationFrame(() => setGoalieStagePos(gTarget));
 
     setTimeout(() => {
-      setShowGoool(isGoal);
-      setShowDefendeu(!isGoal);
+      // Mostrar animações baseadas no tipo de gol
+      if (isGoal) {
+        if (isGoldenGoalShot) {
+          setShowGoldenGoal(true);
+        } else {
+          setShowGoool(true);
+        }
+      } else {
+        setShowDefendeu(true);
+      }
+      
       setShotsTaken(s => s+1);
       
       // Ativar partículas baseado no resultado
-      const particleType = isGoal ? 'goal' : 'save';
+      const particleType = isGoal ? (isGoldenGoalShot ? 'golden-goal' : 'goal') : 'save';
       const particlePosition = isGoal ? { x: 50, y: 30 } : { x: 50, y: 40 };
       setParticles({ active: true, type: particleType, position: particlePosition });
       
+            // Atualizar estatísticas
+            if (isGoal) {
+              setSessionWins(s => s + 1);
+              setTotalWins(s => s + 1); // Incrementar gols totais
+              setBalance(prev => prev + prize);
+              setCurrentStreak(s => s + 1);
+              if (currentStreak + 1 > bestStreak) {
+                setBestStreak(currentStreak + 1);
+              }
+              
+              // Incrementar contador de Gols de Ouro se for o caso
+              if (isGoldenGoalShot) {
+                setTotalGoldenGoals(s => s + 1);
+              }
+            } else {
+              setSessionLosses(s => s + 1);
+              setCurrentStreak(0);
+            }
+
+
+      // Descontar aposta do saldo
+      setBalance(prev => prev - currentBet);
+      
       // Tocar som baseado no resultado
       if (isGoal) {
+        if (isGoldenGoalShot) {
+          audioManager.play('golden-goal'); // Som especial para Gol de Ouro
+        } else {
         audioManager.play('goal');
+        }
+        
         setTimeout(() => {
+          if (isGoldenGoalShot) {
+            setShowGoldenVictory(true);
+            audioManager.play('golden-victory'); // Som especial para vitória do Gol de Ouro
+          } else {
           setShowGanhou(true);
           audioManager.play('victory');
-          // Reset após "ganhou" aparecer - 4.2s total (1.2s para aparecer + 3s para exibir)
+          }
+          
+          // Reset após animação - 4.2s total (1.2s para aparecer + 3s para exibir)
           setTimeout(() => {
             setBallPos({ x: 50, y: 90 });
             setTargetStage(null);
             setShowGoool(false);
             setShowDefendeu(false);
             setShowGanhou(false);
+            setShowGoldenGoal(false);
+            setShowGoldenVictory(false);
             setGoaliePose("idle");
             setGoalieStagePos({ x: 50, y: 62, rot: 0 });
             setShooting(false);
-          }, 3000); // 3 segundos para exibir "ganhou"
-        }, 1200); // Aparece após o "goool.png" desaparecer (1.2s = duração da animação gooolPop)
+          }, 3000); // 3 segundos para exibir animação
+        }, 1200); // Aparece após a animação de gol desaparecer (1.2s = duração da animação)
       } else {
         audioManager.play('save');
         musicManager.playDefenseSound(); // Som específico de defesa
@@ -292,48 +365,18 @@ export default function GameShoot() {
     }
   }
 
-  function handleJoinQueue() {
-    if (balance >= currentBet && gameStatus === "playing") {
-      setGameStatus("waiting");
-      setQueuePosition(Math.floor(Math.random() * 8) + 1); // Simular posição na fila
-      setEstimatedWait(Math.floor(Math.random() * 30) + 10); // 10-40 segundos
-    }
-  }
-
-  function handleLeaveQueue() {
-    setGameStatus("playing");
-    setQueuePosition(0);
-    setEstimatedWait(0);
-  }
-
-  function simulateQueueUpdate() {
-    if (gameStatus === "waiting") {
-      const newPosition = Math.max(0, queuePosition - Math.floor(Math.random() * 2));
-      setQueuePosition(newPosition);
-      
-      if (newPosition === 0) {
-        setGameStatus("playing");
-        setShotsTaken(0);
-        setBalance(prev => prev - currentBet);
-        setMultiplier(1.0);
-      }
-    }
-  }
-
-  // Simular atualizações da fila
+  // Inicializar sistema dinâmico
   useEffect(() => {
-    const interval = setInterval(simulateQueueUpdate, 2000);
-    return () => clearInterval(interval);
-  }, [gameStatus, queuePosition]);
+    const batchInfo = gameService.startNewBatch();
+    setCurrentBatchId(batchInfo.batchId);
+    setBatchProgress({
+      current: batchInfo.currentPosition,
+      total: batchInfo.batchSize,
+      remaining: batchInfo.batchSize - batchInfo.currentPosition
+    });
+  }, []);
 
-  function getStatusMessage() {
-    switch (gameStatus) {
-      case "waiting": return `Aguardando Jogadores... (${queuePosition}/${queueTotal})`;
-      case "full": return "Partida Cheia - Tente novamente";
-      case "connecting": return "Conectando ao servidor...";
-      default: return "Partida Ativa";
-    }
-  }
+  // Função removida - sistema oculto
 
   function getStatusColor() {
     switch (gameStatus) {
@@ -433,13 +476,7 @@ export default function GameShoot() {
     return () => clearInterval(timer);
   }, []);
 
-  // Simular atualização de precisão
-  useEffect(() => {
-    if (shotsTaken > 0) {
-      const newAccuracy = Math.round((shotsTaken - Math.random() * shotsTaken * 0.3) / shotsTaken * 100);
-      setAccuracy(newAccuracy);
-    }
-  }, [shotsTaken]);
+
 
   // Monitorar tamanho da tela para manter proporção responsiva
   useEffect(() => {
@@ -525,23 +562,22 @@ export default function GameShoot() {
             <div className="playfield">
               <img src={bg} alt="Gol de Ouro - Estádio" className="scene-bg" />
 
-              {/* Header REAL da cena: logo + métricas + apostas */}
+              {/* Header da cena: logo + métricas + apostas */}
               <div className="hud-header" ref={headerRef}>
-                {/* Logo 200px */}
-                <div className="brand">
-                  <img className="brand-logo" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
+                {/* Logo 50px - Lado esquerdo */}
+                <div className="brand-small">
+                  <img className="brand-logo-small" src="/images/Gol_de_Ouro_logo.png" alt="Gol de Ouro" />
                 </div>
                 
-                {/* HUD Principal - Design Glassmorphism */}
-                <div className="gs-hud">
-                  <div className="hud-center">
-                    <div className="stats-grid">
+                {/* Métricas e Apostas */}
+                <div className="hud-content">
+                  <div className="hud-stats">
                       <div className="stat-item">
                         <div className="stat-icon">💰</div>
                         <div className="stat-content">
                           <span className="stat-label">Saldo</span>
                           <strong className="stat-value">
-                            {loadingBalance ? 'Carregando...' : balance.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+                          {loadingBalance ? 'Carregando...' : `R$ ${Math.floor(balance)}`}
                           </strong>
                         </div>
                       </div>
@@ -549,21 +585,26 @@ export default function GameShoot() {
                         <div className="stat-icon">⚽</div>
                         <div className="stat-content">
                           <span className="stat-label">Chutes</span>
-                          <strong className="stat-value">{shotsTaken}/{totalShots}</strong>
+                        <strong className="stat-value">{shotsTaken}</strong>
                         </div>
                       </div>
                       <div className="stat-item">
+                      <div className="stat-icon">🥅</div>
+                      <div className="stat-content">
+                        <span className="stat-label">Gols</span>
+                        <strong className="stat-value">{totalWins}</strong>
+                      </div>
+                    </div>
+                    <div className="stat-item golden-goal">
                         <div className="stat-icon">🏆</div>
                         <div className="stat-content">
-                          <span className="stat-label">Vitórias</span>
-                          <strong className="stat-value">{sessionWins}</strong>
-                        </div>
+                        <span className="stat-label">Gols de Ouro</span>
+                        <strong className="stat-value">{totalGoldenGoals}</strong>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="hud-right">
-                    <div className="betting-section">
+                  <div className="hud-betting">
                       <div className="bet-controls">
                         <span className="bet-label">Aposta:</span>
                         <div className="bet-buttons">
@@ -577,20 +618,19 @@ export default function GameShoot() {
                               R${amount}
                             </button>
                           ))}
-                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* BARRA DE AÇÕES SOBRE O CAMPO (mesma altura em ambos os lados) */}
+              {/* BARRA DE AÇÕES SOBRE O CAMPO */}
               <div className="hud-actions">
                 <div className="hud-left">
-                  <button className="btn-partida" onClick={handleJoinQueue}>Em Jogo</button>
+                  {/* Botão removido - sistema automático */}
                 </div>
                 <div className="hud-right">
-                  <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Jogador</button>
+                  {/* Botão removido - movido para canto inferior direito */}
                 </div>
               </div>
 
@@ -618,24 +658,7 @@ export default function GameShoot() {
               {/* RODAPÉ DA CENA */}
               <div className="hud-footer">
                 <div className="hud-bottom-left">
-                  {gameStatus === "playing" ? (
-                    <button 
-                      className="btn-queue hud-btn primary" 
-                      onClick={handleJoinQueue}
-                      disabled={shooting || balance < currentBet}
-                    >
-                      <span className="btn-icon">🎮</span>
-                      Entrar na Fila
-                    </button>
-                  ) : (
-                    <button 
-                      className="btn-queue hud-btn secondary" 
-                      onClick={handleLeaveQueue}
-                    >
-                      <span className="btn-icon">🚪</span>
-                      Sair da Fila
-                    </button>
-                  )}
+                  <button className="btn-dashboard" onClick={() => navigate('/dashboard')}>Dashboard</button>
                 </div>
                 <div className="hud-bottom-right">
                   <div className="hud-cluster">
@@ -708,8 +731,14 @@ export default function GameShoot() {
                 {/* GOL overlay */}
                 {showGoool && <img src={gooolPng} alt="GOOOL!" className="gs-goool" />}
 
+                {/* GOL DE OURO overlay */}
+                {showGoldenGoal && <img src={goldenGoalPng} alt="GOL DE OURO!" className="gs-golden-goal" />}
+
                 {/* GANHOU overlay - aparece após o goool.png */}
                 {showGanhou && <img src={ganhouPng} alt="VOCÊ GANHOU!" className="gs-ganhou" />}
+
+                {/* VITÓRIA GOL DE OURO overlay - aparece após o golden-goal.png */}
+                {showGoldenVictory && <img src={goldenVictoryPng} alt="VOCÊ GANHOU R$100!" className="gs-golden-victory" />}
 
                 {/* DEFENDEU overlay */}
                 {showDefendeu && <img src={defendeuPng} alt="DEFENDEU!" className="gs-defendeu" />}
