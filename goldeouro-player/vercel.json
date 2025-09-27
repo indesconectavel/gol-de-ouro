@@ -2,13 +2,30 @@
   "domains": ["goldeouro.lol", "app.goldeouro.lol"],
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://goldeouro-backend-v2.fly.dev/api/$1"
+    },
+    {
+      "source": "/health",
+      "destination": "https://goldeouro-backend-v2.fly.dev/health"
+    },
+    {
+      "source": "/version",
+      "destination": "https://goldeouro-backend-v2.fly.dev/version"
+    },
+    {
+      "source": "/readiness",
+      "destination": "https://goldeouro-backend-v2.fly.dev/readiness"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
   "env": {
-    "VITE_API_URL": "https://goldeouro-backend.onrender.com",
-    "VITE_WS_URL": "wss://goldeouro-backend.onrender.com"
+    "VITE_API_URL": "https://goldeouro.lol",
+    "VITE_WS_URL": "wss://goldeouro.lol",
+    "VITE_APP_ENV": "production"
   },
   "headers": [
     {
@@ -36,7 +53,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://goldeouro-backend.onrender.com wss://goldeouro-backend.onrender.com; media-src 'self' data: blob:;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://goldeouro.lol wss://goldeouro.lol https://goldeouro-backend-v2.fly.dev wss://goldeouro-backend-v2.fly.dev; media-src 'self' data: blob:;"
         }
       ]
     },
