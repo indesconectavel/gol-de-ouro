@@ -1,0 +1,18 @@
+# Arquivos de áudio grandes
+dist/music.mp3
+dist/torcida_2.mp3
+dist/torcida.mp3
+dist/gol.mp3
+
+# Arquivos de backup
+backups/
+*.backup
+*.log
+
+# Arquivos de desenvolvimento
+node_modules/
+src/
+cypress/
+scripts/
+*.md
+*.json

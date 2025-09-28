@@ -1,5 +1,4 @@
 {
-  "domains": ["goldeouro.lol", "app.goldeouro.lol"],
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -23,8 +22,8 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://goldeouro.lol",
-    "VITE_WS_URL": "wss://goldeouro.lol",
+    "VITE_API_URL": "https://goldeouro-backend-v2.fly.dev",
+    "VITE_WS_URL": "wss://goldeouro-backend-v2.fly.dev",
     "VITE_APP_ENV": "production"
   },
   "headers": [
@@ -71,7 +70,7 @@
       ]
     },
     {
-      "source": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|mp3|wav|ogg))",
+      "source": "/assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
