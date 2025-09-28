@@ -10,8 +10,15 @@ COPY package*.json ./
 # Instalar dependências
 RUN npm ci --only=production
 
-# Copiar código fonte
-COPY . .
+# Copiar apenas arquivos essenciais
+COPY server-fly.js ./
+COPY db.js ./
+COPY controllers ./controllers
+COPY routes ./routes
+COPY services ./services
+COPY middlewares ./middlewares
+COPY utils ./utils
+COPY config ./config
 
 # Criar usuário não-root para segurança
 RUN addgroup -g 1001 -S nodejs

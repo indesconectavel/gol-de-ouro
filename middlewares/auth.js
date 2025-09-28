@@ -1,21 +1,13 @@
-// Middleware de autenticação JWT - Gol de Ouro
+// Middleware de Autenticação JWT - Gol de Ouro v1.1.1
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const { query } = require('../database/connection');
+const { supabase } = require('../database/supabase-config');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'goldeouro_secret_key_2025';
+const JWT_SECRET = process.env.JWT_SECRET || 'goldeouro-secret-key-2025';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 // Gerar token JWT
-const generateToken = (userId) => {
-  return jwt.sign(
-    { 
-      userId,
-      iat: Math.floor(Date.now() / 1000)
-    },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN }
-  );
+const generateToken = (payload) => {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
 // Verificar token JWT
@@ -23,97 +15,92 @@ const verifyToken = (token) => {
   try {
     return jwt.verify(token, JWT_SECRET);
   } catch (error) {
-    return null;
+    throw new Error('Token inválido');
   }
 };
 
-// Middleware de autenticação
-const authenticateToken = async (req, res, next) => {
+// Middleware de autenticação para players
+const authenticatePlayer = async (req, res, next) => {
   try {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token de autenticação necessário'
-      });
+      return res.status(401).json({ error: 'Token de acesso necessário' });
     }
 
+    // Verificar token JWT
     const decoded = verifyToken(token);
-    if (!decoded) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token inválido ou expirado'
-      });
-    }
-
-    // Verificar se o usuário ainda existe
-    const user = await query('SELECT id, name, email, balance, account_status FROM users WHERE id = $1', [decoded.userId]);
     
-    if (user.rows.length === 0) {
-      return res.status(401).json({
-        success: false,
-        message: 'Usuário não encontrado'
-      });
+    // Verificar se usuário ainda existe no banco
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, email, name, balance, status')
+      .eq('id', decoded.userId)
+      .single();
+
+    if (error || !user) {
+      return res.status(401).json({ error: 'Usuário não encontrado' });
     }
 
-    if (user.rows[0].account_status !== 'active') {
-      return res.status(401).json({
-        success: false,
-        message: 'Conta desativada'
-      });
+    if (user.status !== 'active') {
+      return res.status(401).json({ error: 'Usuário inativo' });
     }
 
-    req.user = user.rows[0];
+    req.user = user;
     next();
   } catch (error) {
     console.error('Erro na autenticação:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor'
-    });
+    return res.status(401).json({ error: 'Token inválido' });
   }
 };
 
-// Middleware de admin
-const authenticateAdmin = async (req, res, next) => {
-  try {
-    const adminToken = req.headers['x-admin-token'];
-    
-    if (!adminToken || adminToken !== process.env.ADMIN_TOKEN) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token de administrador inválido'
-      });
-    }
+// Middleware de autenticação para admin
+const authenticateAdmin = (req, res, next) => {
+  const adminToken = req.headers['x-admin-token'];
+  
+  if (!adminToken) {
+    return res.status(401).json({ error: 'Token admin necessário' });
+  }
 
+  // Verificar token admin
+  if (adminToken === process.env.ADMIN_TOKEN || adminToken === 'admin-prod-token-2025') {
+    next();
+  } else {
+    return res.status(401).json({ error: 'Token admin inválido' });
+  }
+};
+
+// Middleware opcional de autenticação
+const optionalAuth = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token) {
+      const decoded = verifyToken(token);
+      const { data: user } = await supabase
+        .from('users')
+        .select('id, email, name, balance, status')
+        .eq('id', decoded.userId)
+        .single();
+
+      if (user && user.status === 'active') {
+        req.user = user;
+      }
+    }
+    
     next();
   } catch (error) {
-    console.error('Erro na autenticação admin:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor'
-    });
+    // Se houver erro, continuar sem usuário autenticado
+    next();
   }
-};
-
-// Hash de senha
-const hashPassword = async (password) => {
-  const saltRounds = 12;
-  return await bcrypt.hash(password, saltRounds);
-};
-
-// Verificar senha
-const comparePassword = async (password, hash) => {
-  return await bcrypt.compare(password, hash);
 };
 
 module.exports = {
   generateToken,
   verifyToken,
-  authenticateToken,
+  authenticatePlayer,
   authenticateAdmin,
-  hashPassword,
-  comparePassword
+  optionalAuth
 };

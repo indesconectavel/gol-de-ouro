@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { SidebarProvider } from './contexts/SidebarContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import VersionWarning from './components/VersionWarning'
+import PwaSwUpdater from './pwa-sw-updater'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -25,6 +26,7 @@ function App() {
           <Router>
             <div className="min-h-screen bg-slate-900">
               <VersionWarning />
+              <PwaSwUpdater />
               <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
