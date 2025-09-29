@@ -1,8 +1,16 @@
 # Arquivos de áudio grandes
-dist/music.mp3
-dist/torcida_2.mp3
-dist/torcida.mp3
-dist/gol.mp3
+dist/sounds/music.mp3
+dist/sounds/torcida_2.mp3
+dist/sounds/torcida.mp3
+dist/sounds/gol.mp3
+public/sounds/music.mp3
+public/sounds/torcida_2.mp3
+public/sounds/torcida.mp3
+public/sounds/gol.mp3
+
+# Pastas desnecessárias
+android/
+temp-deploy/
 
 # Arquivos de backup
 backups/
