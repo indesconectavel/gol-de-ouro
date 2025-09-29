@@ -5,18 +5,6 @@
       "destination": "https://goldeouro-backend-v2.fly.dev/api/$1"
     },
     {
-      "source": "/health",
-      "destination": "https://goldeouro-backend-v2.fly.dev/health"
-    },
-    {
-      "source": "/version",
-      "destination": "https://goldeouro-backend-v2.fly.dev/version"
-    },
-    {
-      "source": "/readiness",
-      "destination": "https://goldeouro-backend-v2.fly.dev/readiness"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
