@@ -1,0 +1,6 @@
+﻿CORS Preflight Headers:
+Status: 204
+Allow-Origin: https://goldeouro.lol
+Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+Allow-Headers: Content-Type,Authorization,X-Requested-With
+

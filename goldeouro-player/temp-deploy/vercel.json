@@ -1,0 +1,88 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://goldeouro-backend-v2.fly.dev/api/$1"
+    },
+    {
+      "source": "/health",
+      "destination": "https://goldeouro-backend-v2.fly.dev/health"
+    },
+    {
+      "source": "/version",
+      "destination": "https://goldeouro-backend-v2.fly.dev/version"
+    },
+    {
+      "source": "/readiness",
+      "destination": "https://goldeouro-backend-v2.fly.dev/readiness"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "/api",
+    "VITE_WS_URL": "wss://goldeouro-backend-v2.fly.dev",
+    "VITE_APP_ENV": "production",
+    "VITE_USE_MOCKS": "false",
+    "VITE_USE_SANDBOX": "false"
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://goldeouro.lol wss://goldeouro.lol https://goldeouro-backend-v2.fly.dev wss://goldeouro-backend-v2.fly.dev; media-src 'self' data: blob:;"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "public, max-age=31536000"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "public, max-age=31536000"
+        }
+      ]
+    }
+  ]
+}

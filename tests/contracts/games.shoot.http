@@ -1,0 +1,32 @@
+### Teste de Contrato - /api/games/shoot
+### Caso 1: 401 sem token
+POST https://goldeouro-backend-v2.fly.dev/api/games/shoot
+Content-Type: application/json
+
+{
+  "amount": 10,
+  "direction": "left"
+}
+
+### Caso 2: 403 token inválido
+POST https://goldeouro-backend-v2.fly.dev/api/games/shoot
+Content-Type: application/json
+Authorization: Bearer token-invalido
+
+{
+  "amount": 10,
+  "direction": "left"
+}
+
+### Caso 3: 200 com token válido
+POST https://goldeouro-backend-v2.fly.dev/api/games/shoot
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "amount": 10,
+  "direction": "left"
+}
+
+### Variáveis
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0ZXN0ZUB0ZXN0LmNvbSIsImlhdCI6MTczNzkzMjAwMCwiZXhwIjoxNzM4MDE4NDAwfQ.example

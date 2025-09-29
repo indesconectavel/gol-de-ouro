@@ -1,0 +1,33 @@
+# fly.toml para Gol de Ouro Backend v1.1.1
+app = "goldeouro-backend"
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+  ignorefile = ".dockerignore"
+
+[env]
+  NODE_ENV = "production"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 3000
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [services.concurrency]
+    type = "requests"
+    soft_limit = 100
+    hard_limit = 200
+
+  [[services.http_checks]]
+    path = "/health"
+    interval = "15s"
+    timeout = "5s"
+    method = "get"

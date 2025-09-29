@@ -1,0 +1,107 @@
+# auditoria-hardcodes.txt
+## URLs Hardcoded Encontradas no Modo Jogador
+
+**Data:** 22/09/2025 - 12:15  
+**Ferramenta:** PowerShell Select-String  
+**Padrão:** https?:// (excluindo env.)
+
+---
+
+## 📊 RESUMO
+- **Total de URLs:** 8
+- **URLs críticas:** 0 (todas parametrizadas)
+- **URLs aceitáveis:** 8 (redes sociais + testes)
+
+---
+
+## 🔍 DETALHAMENTO
+
+### 1. REDES SOCIAIS (ReferralSystem.jsx)
+```
+E:\Chute de Ouro\goldeouro-backend\goldeouro-player\src\components\ReferralSystem.jsx:62: 
+shareLink = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`
+
+E:\Chute de Ouro\goldeouro-backend\goldeouro-player\src\components\ReferralSystem.jsx:65: 
+shareLink = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`
+
+E:\Chute de Ouro\goldeouro-backend\goldeouro-player\src\components\ReferralSystem.jsx:68: 
+shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`
+
+E:\Chute de Ouro\goldeouro-backend\goldeouro-player\src\components\ReferralSystem.jsx:71: 
+shareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`
+```
+
+**Status:** ✅ **ACEITÁVEL** - URLs de redes sociais são estáticas por natureza
+
+### 2. CONFIGURAÇÃO DE AMBIENTES (environments.js)
+```
+E:\Chute de Ouro\goldeouro-backend\goldeouro-player\src\config\environments.js:4: 
+API_BASE_URL: 'http://192.168.1.100:3000', // IP local do desenvolvedor
+
+E:\Chute de Ouro\goldeouro-backend\goldeouro-player\src\config\environments.js:10: 
+API_BASE_URL: 'https://api.staging.goldeouro.lol',
+
+E:\Chute de Ouro\goldeouro-backend\goldeouro-player\src\config\environments.js:16: 
+API_BASE_URL: 'https://api.goldeouro.lol',
+```
+
+**Status:** ✅ **CORRETO** - URLs de API configuradas por ambiente
+
+### 3. TESTES (api.test.js)
+```
+E:\Chute de Ouro\goldeouro-backend\goldeouro-player\src\__tests__\api.test.js:27: 
+'http://localhost:3000/api/game/create',
+
+E:\Chute de Ouro\goldeouro-backend\goldeouro-player\src\__tests__\api.test.js:67: 
+expect(fetch).toHaveBeenCalledWith('http://localhost:3000/api/game/match-123')
+```
+
+**Status:** ✅ **ACEITÁVEL** - URLs de teste são estáticas por design
+
+---
+
+## 🎯 ANÁLISE
+
+### ✅ **PONTOS POSITIVOS**
+1. **Zero URLs críticas hardcoded** - Todas as APIs usam configuração dinâmica
+2. **Configuração centralizada** - URLs de API em `environments.js`
+3. **Uso correto de variáveis** - `import.meta.env` em vez de `process.env`
+
+### ⚠️ **OPORTUNIDADES DE MELHORIA**
+1. **Parametrizar URLs de redes sociais** - Para flexibilidade entre ambientes
+2. **Usar constantes para URLs de teste** - Para facilitar manutenção
+
+---
+
+## 📋 RECOMENDAÇÕES
+
+### 1. **BAIXA PRIORIDADE** - Parametrizar redes sociais
+```javascript
+// Em vez de hardcoded, usar configuração
+const SOCIAL_URLS = {
+  whatsapp: import.meta.env.VITE_WHATSAPP_SHARE_URL || 'https://wa.me/',
+  telegram: import.meta.env.VITE_TELEGRAM_SHARE_URL || 'https://t.me/share/url',
+  facebook: import.meta.env.VITE_FACEBOOK_SHARE_URL || 'https://www.facebook.com/sharer/sharer.php',
+  twitter: import.meta.env.VITE_TWITTER_SHARE_URL || 'https://twitter.com/intent/tweet'
+};
+```
+
+### 2. **MUITO BAIXA PRIORIDADE** - Constantes para testes
+```javascript
+// Em vez de hardcoded, usar constantes
+const TEST_URLS = {
+  API_BASE: 'http://localhost:3000',
+  GAME_CREATE: '/api/game/create',
+  GAME_MATCH: '/api/game/match-123'
+};
+```
+
+---
+
+## ✅ CONCLUSÃO
+
+**Status geral:** ✅ **EXCELENTE**
+
+As URLs hardcoded encontradas são **aceitáveis** e não representam riscos para o sistema. A arquitetura está bem estruturada com configuração centralizada para URLs críticas.
+
+**Recomendação:** Manter como está, com melhorias opcionais de baixa prioridade.

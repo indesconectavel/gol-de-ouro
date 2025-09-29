@@ -1,0 +1,22 @@
+# .dockerignore - Gol de Ouro v1.1.1 (Modo Whitelist)
+# Incluir APENAS os arquivos necessários para produção
+
+# Ignorar tudo por padrão
+**
+
+# Incluir apenas arquivos essenciais
+!package.json
+!package-lock.json
+!server-fly.js
+!server.js
+!db.js
+!database/**
+!controllers/**
+!routes/**
+!services/**
+!middlewares/**
+!utils/**
+!config/**
+!src/**
+!prisma/**
+!migrations/**
