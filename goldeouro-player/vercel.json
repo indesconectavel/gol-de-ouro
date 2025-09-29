@@ -22,9 +22,11 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "https://goldeouro-backend-v2.fly.dev",
+    "VITE_API_URL": "/api",
     "VITE_WS_URL": "wss://goldeouro-backend-v2.fly.dev",
-    "VITE_APP_ENV": "production"
+    "VITE_APP_ENV": "production",
+    "VITE_USE_MOCKS": "false",
+    "VITE_USE_SANDBOX": "false"
   },
   "headers": [
     {
