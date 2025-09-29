@@ -1,13 +1,8 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "https://goldeouro-backend-v2.fly.dev/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "https://goldeouro-backend-v2.fly.dev/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ],
   "env": {
     "VITE_API_URL": "/api",
