@@ -4,6 +4,21 @@
     { "src": "/api/(.*)", "dest": "https://goldeouro-backend-v2.fly.dev/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
+  "headers": [
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [
+        { "key": "Content-Type", "value": "application/manifest+json" },
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    }
+  ],
   "env": {
     "VITE_API_URL": "/api",
     "VITE_WS_URL": "wss://goldeouro-backend-v2.fly.dev",
