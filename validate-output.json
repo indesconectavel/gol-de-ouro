@@ -1,0 +1,60 @@
+{
+  "timestamp": "20250930-014958",
+  "player": {
+    "vercel": {
+      "rewrites": "PASS",
+      "csp": "PASS", 
+      "pwaHeaders": "PASS",
+      "extraSecurityHeadersSuggestions": [
+        "Referrer-Policy: no-referrer",
+        "X-Content-Type-Options: nosniff",
+        "Permissions-Policy: geolocation=(), camera=()",
+        "Strict-Transport-Security: max-age=63072000; includeSubDomains; preload"
+      ]
+    },
+    "pwa": {
+      "manifest": "PASS",
+      "sw": "PASS"
+    },
+    "api": {
+      "health_get": 200,
+      "shoot_post": 401
+    },
+    "csp_runtime": "PASS"
+  },
+  "admin": {
+    "vercel": {
+      "rewrites": "PASS",
+      "csp": "PASS",
+      "pwaHeaders": "PASS",
+      "extraSecurityHeadersSuggestions": [
+        "Referrer-Policy: no-referrer",
+        "X-Content-Type-Options: nosniff", 
+        "Permissions-Policy: geolocation=(), camera=()",
+        "Strict-Transport-Security: max-age=63072000; includeSubDomains; preload"
+      ]
+    },
+    "pwa": {
+      "manifest": "PASS",
+      "sw": "PASS"
+    },
+    "api": {
+      "health_get": 200,
+      "shoot_post": "N/A"
+    },
+    "csp_runtime": "PASS"
+  },
+  "backup": {
+    "archive": "BACKUP-20250930-014958.zip",
+    "size": "8,192 bytes",
+    "files": [
+      ".env",
+      ".env.example", 
+      ".env.local",
+      ".env.production",
+      "index.html",
+      "validate-output.json",
+      "vercel.json"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+# Esta pasta contém os arquivos de áudio do jogo
+# 
+# Adicione os seguintes arquivos aqui:
+# - kick.mp3 (som de chute)
+# - goal.mp3 (som de gol)
+# - miss.mp3 (som de erro)
+# - hover.mp3 (som de hover)
+# - click.mp3 (som de clique)
+# - celebration.mp3 (som de celebração)
+#
+# Veja README-AUDIO.md para instruções detalhadas

@@ -1,0 +1,124 @@
+{
+  "frontendRoots": [
+    {
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player",
+      "framework": "vite",
+      "language": "js"
+    }
+  ],
+  "build": {
+    "packageManager": "npm",
+    "command": "vite build",
+    "outDir": "dist",
+    "node": ">=18.0.0"
+  },
+  "router": {
+    "type": "react-router",
+    "needsSpaFallback": true
+  },
+  "vercel": {
+    "fileFound": true,
+    "path": "E:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\vercel.json",
+    "raw": {
+      "rewrites": [
+        { "source": "/api/(.*)", "destination": "https://goldeouro-backend-v2.fly.dev/$1" },
+        { "source": "/(.*)", "destination": "/index.html" }
+      ],
+      "headers": [
+        {
+          "source": "/manifest.webmanifest",
+          "headers": [
+            { "key": "Content-Type", "value": "application/manifest+json" },
+            { "key": "Cache-Control", "value": "no-cache" }
+          ]
+        },
+        {
+          "source": "/sw.js",
+          "headers": [
+            { "key": "Cache-Control", "value": "no-cache" }
+          ]
+        }
+      ]
+    },
+    "problems": [],
+    "suggestion": null
+  },
+  "csp": {
+    "found": true,
+    "location": "index.html:7",
+    "raw": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' data: blob: https://goldeouro-backend-v2.fly.dev; media-src 'self' data: blob:; object-src 'none'.",
+    "problems": [],
+    "suggestion": null
+  },
+  "pwa": {
+    "usesVitePluginPwa": true,
+    "manifestPath": "dist/manifest.webmanifest (gerado pelo vite-plugin-pwa)",
+    "icons": [
+      "public/icons/icon-192.png",
+      "public/icons/icon-512.png",
+      "public/icons/maskable-192.png",
+      "public/icons/maskable-512.png"
+    ],
+    "allIconsExist": true,
+    "serviceWorkers": [
+      "public/sw.js",
+      "dist/sw.js (gerado pelo Workbox)"
+    ],
+    "registerFiles": [
+      "src/pwa-sw-updater.jsx ou similar"
+    ]
+  },
+  "env": {
+    "varsFound": [
+      "VITE_APP_ENV",
+      "VITE_API_URL (via environments.js)"
+    ],
+    "filesChecked": [
+      "src/config/environments.js",
+      "src/services/apiClient.js"
+    ],
+    "apiBaseLogic": {
+      "file": "src/config/environments.js",
+      "development": "http://192.168.1.100:3000",
+      "staging": "https://api.staging.goldeouro.lol",
+      "production": "https://goldeouro-backend-v2.fly.dev"
+    }
+  },
+  "endpoints": [
+    "/api/health",
+    "/api/games/shoot",
+    "/api/payments/create",
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/users/profile",
+    "/api/payments/withdraw"
+  ],
+  "rewrites": {
+    "hasApiRewrite": true,
+    "hasSpaFallback": true,
+    "details": [
+      "✅ /api/(.*) -> https://goldeouro-backend-v2.fly.dev/$1 (proxy correto)",
+      "✅ /(.*) -> /index.html (SPA fallback presente)"
+    ]
+  },
+  "headers": {
+    "swNoCache": true,
+    "manifestContentType": true,
+    "details": [
+      "✅ /sw.js tem Cache-Control: no-cache",
+      "✅ /manifest.webmanifest tem Content-Type: application/manifest+json + Cache-Control: no-cache"
+    ]
+  },
+  "notes": [
+    "✅ Configuração Vercel está correta com rewrites e headers adequados",
+    "✅ CSP permite conexões ao backend https://goldeouro-backend-v2.fly.dev",
+    "✅ React Router está configurado (App.jsx usa BrowserRouter)",
+    "✅ PWA configurado com vite-plugin-pwa e autoUpdate",
+    "✅ Service Worker tem headers corretos para evitar cache agressivo",
+    "✅ Manifest tem headers corretos (Content-Type + no-cache)",
+    "✅ Todos os ícones PWA existem (192, 512, maskable)",
+    "✅ API Client usa interceptors para autenticação (Bearer token)",
+    "✅ Ambiente de produção configurado corretamente (sem mocks)",
+    "⚠️ OBSERVAÇÃO: O domínio www.goldeouro.lol precisa ser configurado no Vercel Dashboard para apontar para este projeto"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "goldeouro-player-dist",
+  "version": "1.0.0",
+  "description": "Gol de Ouro Player - Build de Produção",
+  "type": "module",
+  "scripts": {
+    "smoke:prod": "node scripts/prod-smoke.mjs"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

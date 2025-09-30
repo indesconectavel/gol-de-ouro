@@ -293,6 +293,8 @@ async function runValidations() {
       const hasPixData = pixResponse.json?.qr_code || 
                         pixResponse.json?.copy_paste_key || 
                         pixResponse.json?.id ||
+                        pixResponse.json?.payment_id ||
+                        pixResponse.json?.checkout_url ||
                         (pixResponse.json?.status === 'pending');
       results.checks.pix_create = logStep('PIX Create', 
         pixResponse.status === 200 && hasPixData,

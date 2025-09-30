@@ -1,9 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/api/auth/(.*)", "destination": "https://goldeouro-backend-v2.fly.dev/auth/$1" },
-    { "source": "/api/(.*)", "destination": "https://goldeouro-backend-v2.fly.dev/api/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -27,5 +22,9 @@
         { "key": "Cache-Control", "value": "no-cache" }
       ]
     }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://goldeouro-backend-v2.fly.dev/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

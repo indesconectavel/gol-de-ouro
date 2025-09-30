@@ -1,0 +1,58 @@
+{
+  "vercel": {
+    "hasSpaFallback": true,
+    "hasApiRewrite": true,
+    "apiDestination": "https://goldeouro-backend-v2.fly.dev/api/$1"
+  },
+  "suggestedPrimary": "goldeouro.lol",
+  "redirectPlan": [
+    "www.goldeouro.lol -> https://goldeouro.lol (308)",
+    "goldeouro.lol -> stays (200)"
+  ],
+  "notes": [
+    "Domínio www.goldeouro.lol está servido pelo projeto player-dist-deploy (não goldeouro-player)",
+    "Proxy /api funciona apenas no domínio apex (goldeouro.lol)",
+    "Manifest.webmanifest está funcionando corretamente com headers apropriados",
+    "SPA fallback está funcionando para rotas React Router",
+    "Necessário configurar redirect 308 de www para apex no Vercel Dashboard"
+  ],
+  "status_teste": {
+    "goldeouro.lol/api/health": "200 OK - JSON válido",
+    "goldeouro.lol/manifest.webmanifest": "200 OK - Content-Type correto",
+    "www.goldeouro.lol/api/health": "404 NOT_FOUND - Proxy não funciona",
+    "www.goldeouro.lol/manifest.webmanifest": "200 OK - Headers corretos"
+  },
+  "configuracao_vercel_json": {
+    "rewrites": [
+      { "source": "/api/(.*)", "destination": "https://goldeouro-backend-v2.fly.dev/api/$1" },
+      { "source": "/(.*)", "destination": "/index.html" }
+    ],
+    "headers": [
+      {
+        "source": "/manifest.webmanifest",
+        "headers": [
+          { "key": "Content-Type", "value": "application/manifest+json" },
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      },
+      {
+        "source": "/sw.js",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      }
+    ]
+  },
+  "problema_identificado": {
+    "causa": "Domínio www.goldeouro.lol não está servido pelo projeto com vercel.json correto",
+    "projeto_atual": "player-dist-deploy",
+    "projeto_correto": "goldeouro-player",
+    "solucao": "Configurar redirect 308 de www para apex ou mover domínio para projeto correto"
+  },
+  "solucao_implementada": {
+    "status": "parcial",
+    "vercel_json_criado": true,
+    "proxy_funcionando": "apenas no apex (goldeouro.lol)",
+    "proximo_passo": "Configurar redirect no Vercel Dashboard"
+  }
+}
