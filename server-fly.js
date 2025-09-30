@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // 1) Trust proxy (Fly.io)
 app.set('trust proxy', 1);
@@ -707,6 +707,7 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
 // 20) Rota de metadata
 app.get('/meta', (req, res) => {
   res.status(200).json({
+    ok: true,
     sha: process.env.GIT_SHA || 'unknown',
     builtAt: process.env.BUILT_AT || 'unknown',
     version: process.env.VERSION || '1.1.2',

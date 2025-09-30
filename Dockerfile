@@ -33,6 +33,7 @@ COPY config ./config
 
 # Production environment
 ENV NODE_ENV=production
+ENV PORT=8080
 ENV GIT_SHA=${GIT_SHA}
 ENV BUILT_AT=${BUILT_AT}
 ENV VERSION=${VERSION}
