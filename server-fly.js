@@ -41,6 +41,7 @@ app.use(compression());
 const corsOptions = {
   origin: [
     'https://goldeouro.lol',
+    'https://www.goldeouro.lol',
     'https://admin.goldeouro.lol',
     'https://app.goldeouro.lol',
     'http://localhost:5174',
@@ -586,5 +587,121 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+// 15) Rota de perfil do usuário
+app.get('/api/user/me', authenticateToken, (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    res.status(200).json({
+      id: userId,
+      email: req.user.email,
+      name: req.user.name || 'Usuário',
+      balance: req.user.balance || 0,
+      createdAt: req.user.createdAt || new Date().toISOString(),
+      accountStatus: req.user.accountStatus || 'active'
+    });
+  } catch (error) {
+    console.error('Erro no perfil do usuário:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 16) Rota de status PIX
+app.get('/api/payments/pix/status', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.query;
+    
+    if (!id) {
+      return res.status(400).json({ error: 'ID do pagamento é obrigatório' });
+    }
+    
+    // TODO: Implementar consulta real ao Mercado Pago
+    // Por enquanto, retorna status simulado
+    res.status(200).json({
+      id: id,
+      status: 'pending',
+      message: 'Status consultado com sucesso'
+    });
+  } catch (error) {
+    console.error('Erro ao consultar status PIX:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 17) Rota de webhook PIX
+app.post('/api/payments/pix/webhook', async (req, res) => {
+  try {
+    // TODO: Implementar validação de assinatura do Mercado Pago
+    const { type, data } = req.body;
+    
+    if (type === 'payment' && data?.id) {
+      // TODO: Atualizar status do pagamento no banco
+      console.log(`Webhook PIX recebido: ${type} - ${data.id}`);
+    }
+    
+    res.status(200).json({ received: true });
+  } catch (error) {
+    console.error('Erro no webhook PIX:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 18) Rota de estimativa de saque
+app.get('/api/withdraw/estimate', authenticateToken, (req, res) => {
+  try {
+    const { amount } = req.query;
+    const amountValue = parseFloat(amount) || 0;
+    
+    if (amountValue <= 0) {
+      return res.status(400).json({ error: 'Valor deve ser maior que zero' });
+    }
+    
+    // Taxa fixa de 2% (mínimo R$ 1,00)
+    const fee = Math.max(amountValue * 0.02, 1.00);
+    const net = amountValue - fee;
+    
+    res.status(200).json({
+      amount: amountValue,
+      fee: fee,
+      net: net,
+      message: 'Estimativa calculada com sucesso'
+    });
+  } catch (error) {
+    console.error('Erro na estimativa de saque:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 19) Rota de solicitação de saque
+app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
+  try {
+    const { amount, pix_key } = req.body;
+    const userId = req.user.id;
+    
+    if (!amount || !pix_key) {
+      return res.status(400).json({ error: 'Valor e chave PIX são obrigatórios' });
+    }
+    
+    const amountValue = parseFloat(amount);
+    if (amountValue <= 0) {
+      return res.status(400).json({ error: 'Valor deve ser maior que zero' });
+    }
+    
+    // TODO: Verificar saldo do usuário
+    // TODO: Criar solicitação de saque no banco
+    
+    res.status(200).json({
+      id: `withdraw_${Date.now()}`,
+      status: 'requested',
+      amount: amountValue,
+      pix_key: pix_key,
+      message: 'Solicitação de saque criada com sucesso'
+    });
+  } catch (error) {
+    console.error('Erro na solicitação de saque:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
 
 startServer();
