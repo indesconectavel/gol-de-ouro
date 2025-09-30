@@ -101,3 +101,5 @@ Response: <!doctype html>... (HTML em vez de JSON)
 ---
 **Data:** 2025-09-28  
 **Status:** Sistema funcional, configuração de roteamento pendente
+
+

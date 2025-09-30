@@ -1,25 +1,31 @@
-# Arquivos de áudio grandes
+﻿# Arquivos de áudio grandes
 dist/sounds/music.mp3
 dist/sounds/torcida_2.mp3
 dist/sounds/torcida.mp3
 dist/sounds/gol.mp3
+dist/sounds/click.mp3
+dist/sounds/defesa.mp3
+dist/sounds/kick.mp3
+dist/sounds/kick_2.mp3
+dist/sounds/vaia.mp3
 public/sounds/music.mp3
 public/sounds/torcida_2.mp3
 public/sounds/torcida.mp3
 public/sounds/gol.mp3
 
-# Pastas desnecessárias
+# Pastas grandes
 android/
 temp-deploy/
+artifacts/
+node_modules/
 
-# Arquivos de backup
+# Arquivos de backup e logs
 backups/
 *.backup
 *.log
+*.bundle
 
-# Arquivos de desenvolvimento
-node_modules/
-src/
+# Arquivos de desenvolvimento (mas NÃO src/)
 cypress/
 scripts/
 *.md

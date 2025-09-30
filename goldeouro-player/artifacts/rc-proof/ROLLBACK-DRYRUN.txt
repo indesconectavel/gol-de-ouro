@@ -1,4 +1,0 @@
-🧪 MODO DRY-RUN - Nenhuma alteração será feita
-📊 Hash atual: f88095974d5604f714af0437beaa63fc8a1a4a84
-🏷️ Tag de backup: 6b5c14e657ca341c6ba452788283e3b1b3a6201d
-✅ Dry-run concluído - rollback seria executado com sucesso

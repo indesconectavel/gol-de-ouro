@@ -47,3 +47,5 @@ Write-Host "Backend: Funcionando" -ForegroundColor Green
 Write-Host "Frontend: Funcionando" -ForegroundColor Green
 Write-Host "Proxy: Nao funciona" -ForegroundColor Yellow
 Write-Host "`nRecomendacao: Usar backend direto" -ForegroundColor White
+
+
