@@ -704,4 +704,15 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
   }
 });
 
+// 20) Rota de metadata
+app.get('/meta', (req, res) => {
+  res.status(200).json({
+    sha: process.env.GIT_SHA || 'unknown',
+    builtAt: process.env.BUILT_AT || 'unknown',
+    version: process.env.VERSION || '1.1.2',
+    environment: process.env.NODE_ENV || 'production',
+    timestamp: new Date().toISOString()
+  });
+});
+
 startServer();
