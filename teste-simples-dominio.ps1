@@ -49,3 +49,4 @@ Write-Host "Proxy: Nao funciona" -ForegroundColor Yellow
 Write-Host "`nRecomendacao: Usar backend direto" -ForegroundColor White
 
 
+

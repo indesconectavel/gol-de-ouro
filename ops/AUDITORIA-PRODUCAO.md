@@ -1,173 +1,194 @@
-# 🔍 AUDITORIA REAL DE PRODUÇÃO - GOL DE OURO v1.1.1
+# 🔍 AUDITORIA DE PRODUÇÃO - GOL DE OURO v1.1.1
 
-**Data:** 2025-10-01  
+**Data:** 2025-01-27  
 **Versão:** v1.1.1 Complexo  
-**Status:** Análise Completa
+**Status:** Pré-MVP (Simulação PIX)
 
 ---
 
-## 📊 **INFRAESTRUTURA ATUAL**
+## **🌐 DOMÍNIOS E HOSTING**
 
-### **🌐 Domínios de Produção**
-- **Player:** `https://www.goldeouro.lol` (Vercel)
-- **Admin:** `https://admin.goldeouro.lol` (Vercel)  
-- **Backend:** `https://goldeouro-backend-v2.fly.dev` (Fly.io)
+### **Frontend (Vercel)**
+- **Player:** `https://www.goldeouro.lol`
+- **Admin:** `https://admin.goldeouro.lol`
 
-### **🏗️ Hosting & Build**
-- **Frontend Player:** Vercel (React + Vite + PWA)
-- **Frontend Admin:** Vercel (React + Vite + TypeScript)
-- **Backend:** Fly.io (Node.js + Express + Docker)
-- **Banco:** Supabase PostgreSQL
+### **Backend (Fly.io)**
+- **API:** `https://goldeouro-backend-v2.fly.dev`
+- **Health:** `https://goldeouro-backend-v2.fly.dev/health`
 
 ---
 
-## 🔒 **SEGURANÇA & HEADERS**
+## **⚙️ CONFIGURAÇÕES ATUAIS**
 
-### **CSP (Content Security Policy)**
-**Player (vercel.json):**
-- ❌ **SEM CSP** - Apenas headers básicos
-- ✅ Rewrite `/api/(.*)` → Backend
-- ✅ Cache control para PWA assets
+### **Vercel.json (Player)**
+```json
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://goldeouro-backend-v2.fly.dev/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}
+```
 
-**Admin (vercel.json):**
-- ✅ **CSP AGRESSIVA** configurada
-- ✅ `Service-Worker-Allowed: false`
-- ✅ `Cache-Control: no-cache` global
-- ⚠️ **BLOQUEIA** `https://www.goldeouro.lol` (imagem fundo)
+### **Vercel.json (Admin)**
+```json
+{
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://goldeouro-backend-v2.fly.dev/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}
+```
 
-### **CORS (Backend)**
-```javascript
-origin: [
-  'https://goldeouro.lol',
-  'https://www.goldeouro.lol', 
-  'https://admin.goldeouro.lol',
-  'https://app.goldeouro.lol'
-]
-credentials: true
+### **Fly.toml (Backend)**
+```toml
+app = "goldeouro-backend"
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
 ```
 
 ---
 
-## 🔄 **SERVICE WORKERS & CACHE**
+## **🔐 AUTENTICAÇÃO E SESSÃO**
 
-### **Service Workers Ativos**
-- ✅ **Player:** `sw.js` (PWA completo)
-- ✅ **Admin:** `sw.js` (mas desabilitado via header)
-- ⚠️ **Problema:** SW do Player pode estar causando cache de CSP antigo
+### **Backend (server-fly.js)**
+- **JWT:** Implementado com `jsonwebtoken`
+- **Cookies:** `httpOnly: true`, `sameSite: 'lax'`
+- **CORS:** Configurado para domínios de produção
+- **Rate Limiting:** Implementado
 
-### **Cache Strategy**
-- **Static:** Assets críticos (JS, CSS, imagens, sons)
-- **Dynamic:** API calls com fallback
-- **Background:** Atualização automática
+### **Frontend**
+- **Player:** Axios com `withCredentials: true`
+- **Admin:** Fetch com `credentials: 'include'`
 
 ---
 
-## 💳 **PIX & PAGAMENTOS**
+## **💳 PIX ATUAL (SIMULAÇÃO)**
 
-### **Provedor Atual**
-- **Mercado Pago** (configurado mas não testado)
-- **Token:** `MP_ACCESS_TOKEN` (env)
-- **Webhook:** `/api/payments/pix/webhook`
+### **Rotas Implementadas**
+- `POST /api/payments/pix/criar` - Criação de PIX (simulação)
+- `POST /api/payments/pix/webhook` - Webhook (simulação)
 
-### **Rotas PIX Identificadas**
+### **Configuração**
+- **Provedor:** Simulação (sem Mercado Pago real)
+- **Webhook:** `https://goldeouro-backend-v2.fly.dev/api/payments/pix/webhook`
+- **Status:** Aguardando `MP_ACCESS_TOKEN` para produção
+
+---
+
+## **🎮 ENDPOINTS DO FLUXO ATUAL**
+
+### **Autenticação**
+- `POST /api/auth/login` - Login
+- `POST /api/auth/register` - Cadastro
+- `GET /api/user/me` - Perfil do usuário
+- `POST /api/auth/logout` - Logout
+
+### **Jogo**
+- `POST /api/games/shoot` - Jogar (chute)
+- `GET /api/games/history` - Histórico de jogos
+
+### **PIX (Simulação)**
+- `POST /api/payments/pix/criar` - Criar PIX
+- `POST /api/payments/pix/webhook` - Webhook PIX
+
+### **Admin**
+- `GET /api/admin/users` - Listar usuários
+- `GET /api/admin/games` - Listar jogos
+- `GET /api/admin/withdrawals` - Listar saques
+
+---
+
+## **📱 PWA E SERVICE WORKERS**
+
+### **Player**
+- **Manifest:** `manifest.webmanifest`
+- **SW:** `sw.js` (Workbox)
+- **Cache:** Assets estáticos
+
+### **Admin**
+- **Manifest:** `manifest.webmanifest`
+- **SW:** `sw.js` (Workbox)
+- **Cache:** Assets estáticos
+
+---
+
+## **🗄️ BANCO DE DADOS**
+
+### **Supabase PostgreSQL**
+- **Driver:** `@supabase/supabase-js`
+- **Pool:** Configurado para produção
+- **Schema:** Usuários, jogos, transações, saques
+
+---
+
+## **🚨 PRINCIPAIS BLOCKERS**
+
+1. **PIX Simulação:** Sem Mercado Pago real
+2. **Saque Manual:** Requer aprovação admin
+3. **Dados Fictícios:** Admin com dados mock
+4. **Service Workers:** Podem causar cache issues
+
+---
+
+## **📊 STATUS DE DEPLOY**
+
+### **Health Check**
+```bash
+curl https://goldeouro-backend-v2.fly.dev/health
 ```
-POST /api/payments/pix/criar     - Criar PIX
-GET  /api/payments/pix/status    - Status PIX  
-POST /api/payments/pix/webhook   - Webhook MP
+
+### **Versão**
+```bash
+curl https://goldeouro-backend-v2.fly.dev/version
 ```
 
-### **Status PIX**
-- ⚠️ **SIMULAÇÃO** - Código tem fallback para mock
-- ⚠️ **Webhook** - Não testado em produção
-- ⚠️ **Credenciais** - Depende de env vars
+---
+
+## **🔧 PRÓXIMAS AÇÕES**
+
+1. **Backup completo** da configuração atual
+2. **Implementar PIX real** (Mercado Pago)
+3. **Automatizar saques** (sem aprovação)
+4. **Remover dados fictícios** do Admin
+5. **Teste E2E completo** em produção
 
 ---
 
-## 🎮 **FLUXO DO JOGO REAL**
-
-### **Rotas Identificadas**
-```
-POST /auth/login              - Login
-POST /auth/register           - Cadastro  
-GET  /api/user/me            - Perfil usuário
-POST /api/payments/pix/criar - Depósito PIX
-POST /api/games/shoot        - Jogar (chute)
-GET  /api/withdraw/estimate  - Estimar saque
-POST /api/withdraw/request   - Solicitar saque
-POST /auth/logout            - Logout
-```
-
-### **Backend Principal**
-- **Arquivo:** `server-fly.js`
-- **Porta:** 8080 (Fly.io)
-- **Autenticação:** JWT + bcrypt
-- **Banco:** Supabase (fallback in-memory)
-
----
-
-## 🚨 **BLOCKERS CRÍTICOS IDENTIFICADOS**
-
-### **1. CSP Admin Bloqueando Imagem**
-```
-Refused to connect to 'https://www.goldeouro.lol/images/Gol_de_Ouro_Bg01.jpg'
-```
-**Causa:** CSP não inclui `https://www.goldeouro.lol` em `img-src`
-
-### **2. Service Worker Cache**
-- SW pode estar servindo versões antigas
-- CSP antigo sendo cacheado
-- Necessário `kill-sw.html`
-
-### **3. PIX Não Testado**
-- Mercado Pago configurado mas não validado
-- Webhook não testado
-- Credenciais podem estar inválidas
-
-### **4. Banco Fallback**
-- Supabase pode estar falhando
-- Sistema usando dados in-memory
-- Dados não persistem entre restarts
-
----
-
-## 📱 **MOBILE/APK**
-
-### **Stack Mobile**
-- **Expo SDK:** ~49.0.0 (DESATUALIZADO)
-- **React Native:** 0.72.6 (DESATUALIZADO)
-- **Status:** Dependências quebradas, APK não gerado
-
-### **PWA Status**
-- ✅ **Player:** PWA completo (manifest, SW, offline)
-- ✅ **Instalável** no Android via Chrome
-- ❌ **APK nativo** não disponível
-
----
-
-## 🎯 **PRÓXIMOS PASSOS CRÍTICOS**
-
-1. **Criar `kill-sw.html`** para limpar cache
-2. **Corrigir CSP** do Admin para permitir imagens
-3. **Testar PIX real** com Mercado Pago
-4. **Validar webhook** de pagamento
-5. **Verificar credenciais** Supabase
-6. **Gerar APK** ou focar em PWA
-
----
-
-## 📋 **CONFIRMAÇÕES NECESSÁRIAS**
-
-Antes de implementar SIMPLE_MVP, preciso confirmar:
-
-1. **PLAYER_URL:** `https://www.goldeouro.lol` ✅
-2. **ADMIN_URL:** `https://admin.goldeouro.lol` ✅  
-3. **BACKEND_URL:** `https://goldeouro-backend-v2.fly.dev` ✅
-4. **PIX_TOKEN:** `MP_ACCESS_TOKEN` (precisa validar) ❓
-5. **SUPABASE_CREDS:** (precisa validar) ❓
-6. **CSP_EXTRA:** Apenas vercel.json ✅
-7. **MOBILE_STACK:** Expo (atualizar) ou PWA ❓
-
----
-
-**Status:** ✅ **AUDITORIA COMPLETA**  
-**Próximo:** Backup + Rollback v1.1.1 Complexo
+**Auditoria concluída em:** 2025-01-27 15:30 BRT  
+**Próxima etapa:** Backup e Snapshot v1.1.1 Complexo

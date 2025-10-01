@@ -1,0 +1,34 @@
+{
+  "timestamp": "2025-09-30T18:45:32.581Z",
+  "config": {
+    "PLAYER": "https://www.goldeouro.lol",
+    "ADMIN": "https://admin.goldeouro.lol",
+    "BACKEND": "https://goldeouro-backend-v2.fly.dev",
+    "TIMEOUT": 15000
+  },
+  "checks": [
+    {
+      "name": "Login Real",
+      "url": "https://www.goldeouro.lol/api/auth/login",
+      "method": "POST",
+      "statusCode": 401,
+      "result": "fail",
+      "notes": "Login falhou: {\"error\":\"Credenciais inválidas\"}",
+      "critical": true,
+      "timestamp": "2025-09-30T18:45:33.308Z"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "pass": 0,
+    "warn": 0,
+    "fail": 1
+  },
+  "criticalIssues": [
+    {
+      "name": "Login Real",
+      "url": "https://www.goldeouro.lol/api/auth/login",
+      "notes": "Login falhou: {\"error\":\"Credenciais inválidas\"}"
+    }
+  ]
+}

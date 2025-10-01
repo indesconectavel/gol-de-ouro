@@ -13,7 +13,7 @@ const environments = {
     LOG_LEVEL: 'info'
   },
   production: {
-    API_BASE_URL: 'https://goldeouro-backend-v2.fly.dev',
+    API_BASE_URL: '/api', // Usar rewrite do Vercel
     USE_MOCKS: false,
     USE_SANDBOX: false,
     LOG_LEVEL: 'error'

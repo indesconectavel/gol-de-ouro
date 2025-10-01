@@ -1,60 +1,167 @@
 {
-  "timestamp": "20250930-014958",
-  "player": {
-    "vercel": {
-      "rewrites": "PASS",
-      "csp": "PASS", 
-      "pwaHeaders": "PASS",
-      "extraSecurityHeadersSuggestions": [
-        "Referrer-Policy: no-referrer",
-        "X-Content-Type-Options: nosniff",
-        "Permissions-Policy: geolocation=(), camera=()",
-        "Strict-Transport-Security: max-age=63072000; includeSubDomains; preload"
-      ]
-    },
-    "pwa": {
-      "manifest": "PASS",
-      "sw": "PASS"
-    },
-    "api": {
-      "health_get": 200,
-      "shoot_post": 401
-    },
-    "csp_runtime": "PASS"
+  "timestamp": "2025-09-30T17:48:39.031Z",
+  "config": {
+    "PLAYER": "https://www.goldeouro.lol",
+    "ADMIN": "https://admin.goldeouro.lol",
+    "BACKEND": "https://goldeouro-backend-v2.fly.dev",
+    "TIMEOUT": 15000
   },
-  "admin": {
-    "vercel": {
-      "rewrites": "PASS",
-      "csp": "PASS",
-      "pwaHeaders": "PASS",
-      "extraSecurityHeadersSuggestions": [
-        "Referrer-Policy: no-referrer",
-        "X-Content-Type-Options: nosniff", 
-        "Permissions-Policy: geolocation=(), camera=()",
-        "Strict-Transport-Security: max-age=63072000; includeSubDomains; preload"
-      ]
+  "checks": [
+    {
+      "name": "Player Manifest",
+      "url": "https://www.goldeouro.lol/manifest.webmanifest",
+      "method": "GET",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200 + application/manifest+json",
+      "critical": true,
+      "timestamp": "2025-09-30T17:48:39.239Z"
     },
-    "pwa": {
-      "manifest": "PASS",
-      "sw": "PASS"
+    {
+      "name": "Player SW",
+      "url": "https://www.goldeouro.lol/sw.js",
+      "method": "GET",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200 + no-cache",
+      "critical": true,
+      "timestamp": "2025-09-30T17:48:39.273Z"
     },
-    "api": {
-      "health_get": 200,
-      "shoot_post": "N/A"
+    {
+      "name": "Player API Health",
+      "url": "https://www.goldeouro.lol/api/health",
+      "method": "GET",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200 + JSON ok/healthy",
+      "critical": true,
+      "timestamp": "2025-09-30T17:48:39.328Z"
     },
-    "csp_runtime": "PASS"
-  },
-  "backup": {
-    "archive": "BACKUP-20250930-014958.zip",
-    "size": "8,192 bytes",
-    "files": [
-      ".env",
-      ".env.example", 
-      ".env.local",
-      ".env.production",
-      "index.html",
-      "validate-output.json",
-      "vercel.json"
-    ]
+    {
+      "name": "Player API Shoot Unauthorized",
+      "url": "https://www.goldeouro.lol/api/games/shoot",
+      "method": "POST",
+      "statusCode": 401,
+      "result": "pass",
+      "notes": "401 (esperado sem token)",
+      "critical": true,
+      "timestamp": "2025-09-30T17:48:39.367Z"
+    },
+    {
+      "name": "Player CSP",
+      "url": "https://www.goldeouro.lol",
+      "method": "HEAD",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "CSP presente + backend liberado",
+      "critical": true,
+      "timestamp": "2025-09-30T17:48:39.399Z"
+    },
+    {
+      "name": "Admin Login",
+      "url": "https://admin.goldeouro.lol/login",
+      "method": "GET",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200 (SPA fallback ok)",
+      "critical": true,
+      "timestamp": "2025-09-30T17:48:39.497Z"
+    },
+    {
+      "name": "Admin API Health",
+      "url": "https://admin.goldeouro.lol/api/health",
+      "method": "GET",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200",
+      "critical": true,
+      "timestamp": "2025-09-30T17:48:39.538Z"
+    },
+    {
+      "name": "Backend Health",
+      "url": "https://goldeouro-backend-v2.fly.dev/health",
+      "method": "GET",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200 + JSON ok",
+      "critical": true,
+      "timestamp": "2025-09-30T17:48:39.624Z"
+    },
+    {
+      "name": "Backend Meta",
+      "url": "https://goldeouro-backend-v2.fly.dev/meta",
+      "method": "GET",
+      "statusCode": 404,
+      "result": "warn",
+      "notes": "Status: 404 (não crítico)",
+      "critical": false,
+      "timestamp": "2025-09-30T17:48:39.653Z"
+    },
+    {
+      "name": "PWA Icon icons/icon-192.png",
+      "url": "https://www.goldeouro.lol/icons/icon-192.png",
+      "method": "HEAD",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200",
+      "critical": false,
+      "timestamp": "2025-09-30T17:48:39.682Z"
+    },
+    {
+      "name": "PWA Icon icons/icon-512.png",
+      "url": "https://www.goldeouro.lol/icons/icon-512.png",
+      "method": "HEAD",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200",
+      "critical": false,
+      "timestamp": "2025-09-30T17:48:39.704Z"
+    },
+    {
+      "name": "PWA Icon icons/maskable-192.png",
+      "url": "https://www.goldeouro.lol/icons/maskable-192.png",
+      "method": "HEAD",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200",
+      "critical": false,
+      "timestamp": "2025-09-30T17:48:39.733Z"
+    },
+    {
+      "name": "PWA Icon icons/maskable-512.png",
+      "url": "https://www.goldeouro.lol/icons/maskable-512.png",
+      "method": "HEAD",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200",
+      "critical": false,
+      "timestamp": "2025-09-30T17:48:39.759Z"
+    },
+    {
+      "name": "PWA Icon apple-touch-icon.png",
+      "url": "https://www.goldeouro.lol/apple-touch-icon.png",
+      "method": "HEAD",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200",
+      "critical": false,
+      "timestamp": "2025-09-30T17:48:39.782Z"
+    },
+    {
+      "name": "PWA Icon favicon.png",
+      "url": "https://www.goldeouro.lol/favicon.png",
+      "method": "HEAD",
+      "statusCode": 200,
+      "result": "pass",
+      "notes": "200",
+      "critical": false,
+      "timestamp": "2025-09-30T17:48:39.807Z"
+    }
+  ],
+  "summary": {
+    "total": 15,
+    "pass": 14,
+    "warn": 1,
+    "fail": 0
   }
 }

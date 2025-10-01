@@ -9,7 +9,7 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // 1) Trust proxy (Fly.io)
 app.set('trust proxy', 1);
@@ -41,6 +41,7 @@ app.use(compression());
 const corsOptions = {
   origin: [
     'https://goldeouro.lol',
+    'https://www.goldeouro.lol',
     'https://admin.goldeouro.lol',
     'https://app.goldeouro.lol',
     'http://localhost:5174',
@@ -52,30 +53,30 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// 5) Body parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// 6) Rate limiting
+// 5) Rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutos
-  max: parseInt(process.env.RATE_LIMIT_MAX) || 100, // 100 requests por IP
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 200, // máximo 200 requests por IP
   message: { error: 'Muitas tentativas, tente novamente em 15 minutos' },
   standardHeaders: true,
   legacyHeaders: false
 });
 app.use(limiter);
 
-// 7) Variáveis de conexão
+// 6) Body parsing
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// 7) Logging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
+// 8) Variáveis globais
+let dbConnected = false;
 let supabase = null;
 let supabaseAdmin = null;
-let dbConnected = false;
-
-// 8) Dados em memória (fallback)
-const users = new Map();
-const games = new Map();
-const payments = new Map();
-const notifications = new Map();
 
 // 9) Middleware de autenticação
 const authenticateToken = (req, res, next) => {
@@ -111,184 +112,97 @@ app.get('/health', async (req, res) => {
       uptime: process.uptime(),
       memory: process.memoryUsage(),
       database: dbConnected ? 'connected' : 'fallback',
-      mode: 'hybrid'
+      environment: process.env.NODE_ENV || 'production'
     });
   } catch (error) {
-    res.status(500).json({
-      ok: false,
-      error: error.message,
-      timestamp: new Date().toISOString()
-    });
+    res.status(500).json({ error: 'Health check failed' });
   }
 });
 
 app.get('/api/health', async (req, res) => {
   try {
-    const memUsage = process.memoryUsage();
-    const uptime = process.uptime();
-
     res.status(200).json({
-      status: 'healthy',
+      ok: true,
       timestamp: new Date().toISOString(),
-      uptime: Math.round(uptime),
-      memory: {
-        rss: Math.round(memUsage.rss / 1024 / 1024),
-        heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
-        heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
-        heapPercent: Math.round((memUsage.heapUsed / memUsage.heapTotal) * 100)
-      },
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
       database: dbConnected ? 'connected' : 'fallback',
-      version: '1.1.2',
-      environment: process.env.NODE_ENV || 'production',
-      mode: 'hybrid'
+      environment: process.env.NODE_ENV || 'production'
     });
   } catch (error) {
-    res.status(500).json({
-      status: 'unhealthy',
-      error: error.message,
-      timestamp: new Date().toISOString()
-    });
+    res.status(500).json({ error: 'Health check failed' });
   }
 });
 
-// 10.1) Version endpoint
+// 11) Rota de versão
 app.get('/version', (_req, res) => {
-  res.json({
-    version: process.env.APP_VERSION || 'v1.1.2',
-    commit: process.env.APP_COMMIT || 'unknown',
+  res.status(200).json({
+    version: '1.1.2',
+    environment: process.env.NODE_ENV || 'production',
     timestamp: new Date().toISOString()
   });
 });
 
-// 11) Rotas de autenticação HÍBRIDAS
+// 12) Readiness check
+app.get('/readiness', async (_req, res) => {
+  try {
+    res.status(200).json({
+      ready: true,
+      database: dbConnected ? 'connected' : 'fallback',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ ready: false, error: error.message });
+  }
+});
+
+// 13) Rota de registro
 app.post('/auth/register', async (req, res) => {
   try {
     const { email, password, name } = req.body;
 
-    if (!email || !password || !name) {
-      return res.status(400).json({ error: 'Email, senha e nome são obrigatórios' });
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email e senha são obrigatórios' });
     }
 
-    // Tentar usar banco real primeiro
-    if (dbConnected && supabaseAdmin) {
-      try {
-        // Verificar se usuário já existe
-        const { data: existingUser } = await supabaseAdmin
-          .from('users')
-          .select('*')
-          .eq('email', email)
-          .single();
-
-        if (existingUser) {
-          // Usuário já existe, retornar dados e token
-          const token = jwt.sign(
-            { id: existingUser.id, email: email },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-          );
-          return res.status(200).json({
-            message: 'Usuário já existe, fazendo login automático (BANCO REAL)',
-            user: {
-              id: existingUser.id,
-              email: email,
-              name: name,
-              balance: existingUser.balance || 0.00,
-              account_status: existingUser.account_status || 'active'
-            },
-            token
-          });
-        }
-
-        // Criar novo usuário no banco real
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const { data: newUser, error } = await supabaseAdmin
-          .from('users')
-          .insert([{
-            email,
-            password_hash: hashedPassword,
-            name,
-            balance: 0.00,
-            account_status: 'active',
-            created_at: new Date().toISOString()
-          }])
-          .select()
-          .single();
-
-        if (error) throw error;
-
-        const token = jwt.sign(
-          { id: newUser.id, email: newUser.email },
-          process.env.JWT_SECRET,
-          { expiresIn: '24h' }
-        );
-
-        return res.status(201).json({
-          message: 'Usuário criado com sucesso (BANCO REAL)',
-          user: {
-            id: newUser.id,
-            email: newUser.email,
-            name: newUser.name,
-            balance: newUser.balance,
-            account_status: newUser.account_status
-          },
-          token
-        });
-      } catch (dbError) {
-        console.error('Erro no banco real, usando fallback:', dbError.message);
-        // Continuar para fallback
-      }
+    // Verificar se usuário já existe
+    const existingUser = users.get(email);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Usuário já existe' });
     }
 
-    // Fallback: dados em memória
-    if (users.has(email)) {
-      // Usuário já existe, retornar dados e token
-      const existingUser = users.get(email);
-      const token = jwt.sign(
-        { id: existingUser.id, email: existingUser.email },
-        process.env.JWT_SECRET || 'fallback-secret',
-        { expiresIn: '24h' }
-      );
-      return res.status(200).json({
-        message: 'Usuário já existe, fazendo login automático (FALLBACK)',
-        user: {
-          id: existingUser.id,
-          email: existingUser.email,
-          name: existingUser.name,
-          balance: existingUser.balance,
-          account_status: existingUser.account_status
-        },
-        token
-      });
-    }
-
-    // Criar novo usuário no fallback
+    // Hash da senha
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Criar usuário
+    const userId = Date.now();
     const newUser = {
-      id: Date.now(),
+      id: userId,
       email,
-      password_hash: hashedPassword,
-      name,
-      balance: 0.00,
-      account_status: 'active',
-      created_at: new Date().toISOString()
+      password: hashedPassword,
+      name: name || 'Usuário',
+      balance: 0,
+      createdAt: new Date().toISOString(),
+      accountStatus: 'active'
     };
 
     users.set(email, newUser);
 
+    // Gerar token
     const token = jwt.sign(
-      { id: newUser.id, email: newUser.email },
+      { id: userId, email, name: newUser.name },
       process.env.JWT_SECRET || 'fallback-secret',
       { expiresIn: '24h' }
     );
 
     res.status(201).json({
-      message: 'Usuário criado com sucesso (FALLBACK)',
+      message: 'Usuário criado com sucesso',
       user: {
         id: newUser.id,
         email: newUser.email,
         name: newUser.name,
         balance: newUser.balance,
-        account_status: newUser.account_status
+        accountStatus: newUser.accountStatus
       },
       token
     });
@@ -298,6 +212,20 @@ app.post('/auth/register', async (req, res) => {
   }
 });
 
+// 14) Rota de logout
+app.post('/auth/logout', (req, res) => {
+  try {
+    res.status(200).json({
+      message: 'Logout realizado com sucesso',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Erro no logout:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 15) Rota de login
 app.post('/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -306,64 +234,21 @@ app.post('/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Email e senha são obrigatórios' });
     }
 
-    // Tentar usar banco real primeiro
-    if (dbConnected && supabaseAdmin) {
-      try {
-        const { data: user, error } = await supabaseAdmin
-          .from('users')
-          .select('*')
-          .eq('email', email)
-          .single();
-
-        if (error) throw error;
-
-        if (user && await bcrypt.compare(password, user.password_hash)) {
-          const token = jwt.sign(
-            { id: user.id, email: user.email },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-          );
-
-          return res.status(200).json({
-            message: 'Login realizado com sucesso (BANCO REAL)',
-            user: {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              balance: user.balance,
-              account_status: user.account_status
-            },
-            token
-          });
-        } else {
-          return res.status(401).json({ error: 'Credenciais inválidas' });
-        }
-      } catch (dbError) {
-        console.error('Erro no banco real, usando fallback:', dbError.message);
-        // Continuar para fallback
-      }
-    }
-
-    // Fallback: dados em memória
-    let user = users.get(email);
+    // Verificar se usuário existe
+    const user = users.get(email);
     if (!user) {
-      // Se usuário não existe no fallback, criar um temporário
-      user = {
-        id: Date.now(),
-        email,
-        name: 'Usuário Teste',
-        password_hash: await bcrypt.hash(password, 10),
-        balance: 100.00, // Saldo inicial para teste
-        account_status: 'active',
-        created_at: new Date().toISOString()
-      };
-      users.set(email, user);
-    } else if (!(await bcrypt.compare(password, user.password_hash))) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
+    // Verificar senha
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+
+    // Gerar token
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, name: user.name },
       process.env.JWT_SECRET || 'fallback-secret',
       { expiresIn: '24h' }
     );
@@ -375,7 +260,7 @@ app.post('/auth/login', async (req, res) => {
         email: user.email,
         name: user.name,
         balance: user.balance,
-        account_status: user.account_status
+        accountStatus: user.accountStatus
       },
       token
     });
@@ -385,75 +270,26 @@ app.post('/auth/login', async (req, res) => {
   }
 });
 
-// 12) Rotas de pagamento HÍBRIDAS
+// 16) Rota de criação de PIX
 app.post('/api/payments/pix/criar', async (req, res) => {
   try {
-    const { amount, user_id } = req.body;
+    const { amount, description } = req.body;
 
-    if (!amount || amount < 1 || amount > 500) {
-      return res.status(400).json({ error: 'Valor deve estar entre R$ 1,00 e R$ 500,00' });
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Valor inválido' });
     }
 
-    // Tentar usar Mercado Pago real primeiro
-    if (process.env.MP_ACCESS_TOKEN) {
-      try {
-        const mercadopago = require('mercadopago');
-        mercadopago.configure({ access_token: process.env.MP_ACCESS_TOKEN });
-
-        const preference = {
-          items: [{
-            title: 'Recarga Gol de Ouro',
-            quantity: 1,
-            unit_price: parseFloat(amount),
-            currency_id: 'BRL'
-          }],
-          payer: {
-            email: 'cliente@goldeouro.lol'
-          },
-          back_urls: {
-            success: 'https://goldeouro.lol/pagamentos/sucesso',
-            failure: 'https://goldeouro.lol/pagamentos/erro',
-            pending: 'https://goldeouro.lol/pagamentos/pendente'
-          },
-          auto_return: 'approved',
-          notification_url: 'https://goldeouro-backend-v2.fly.dev/api/payments/webhook'
-        };
-
-        const response = await mercadopago.preferences.create(preference);
-
-        return res.status(200).json({
-          message: 'PIX criado com sucesso (MERCADO PAGO REAL)',
-          payment_id: response.body.id,
-          qr_code: response.body.point_of_interaction?.transaction_data?.qr_code,
-          qr_code_base64: response.body.point_of_interaction?.transaction_data?.qr_code_base64,
-          checkout_url: response.body.init_point,
-          amount: parseFloat(amount)
-        });
-      } catch (mpError) {
-        console.error('Erro no Mercado Pago, usando fallback:', mpError.message);
-        // Continuar para fallback
-      }
-    }
-
-    // Fallback: PIX simulado
-    const paymentId = `PIX_${Date.now()}`;
-    const qrCode = `00020126580014br.gov.bcb.pix0136${paymentId}520400005303986540${amount}5802BR5913Gol de Ouro6009Sao Paulo62070503***6304`;
-
-    payments.set(paymentId, {
-      id: paymentId,
-      amount: parseFloat(amount),
-      status: 'pending',
-      created_at: new Date().toISOString(),
-      user_id: user_id || 'test'
-    });
+    // Simular criação de PIX
+    const paymentId = `pix_${Date.now()}`;
+    const qrCode = `00020126580014br.gov.bcb.pix0136${paymentId}520400005303986540${amount.toFixed(2)}5802BR5913Gol de Ouro6009Sao Paulo62070503***6304`;
 
     res.status(200).json({
-      message: 'PIX criado com sucesso (FALLBACK)',
-      payment_id: paymentId,
+      id: paymentId,
+      amount: amount,
       qr_code: qrCode,
-      qr_code_base64: Buffer.from(qrCode).toString('base64'),
-      checkout_url: `https://goldeouro.lol/pagamentos/${paymentId}`,
-      amount: parseFloat(amount)
+      copy_paste_key: qrCode,
+      status: 'pending',
+      message: 'PIX criado com sucesso'
     });
   } catch (error) {
     console.error('Erro ao criar PIX:', error);
@@ -461,7 +297,7 @@ app.post('/api/payments/pix/criar', async (req, res) => {
   }
 });
 
-// 13) Rota de jogo HÍBRIDA (PRINCIPAL) - VERSÃO SIMPLIFICADA
+// 17) Rota de jogo
 app.post('/api/games/shoot', authenticateToken, (req, res) => {
   try {
     const { amount, direction } = req.body;
@@ -471,17 +307,17 @@ app.post('/api/games/shoot', authenticateToken, (req, res) => {
       return res.status(400).json({ error: 'Valor e direção são obrigatórios' });
     }
 
-    // Versão simplificada para teste
-    const isGoal = Math.random() < 0.1;
-    const prize = isGoal ? amount * 2 : 0;
+    // Simular jogo
+    const win = Math.random() > 0.5;
+    const multiplier = win ? 2 : 0;
+    const result = win ? 'win' : 'lose';
 
     res.status(200).json({
-      success: true,
-      isGoal,
-      direction,
-      amount: parseFloat(amount),
-      prize: prize,
-      message: isGoal ? 'GOL! Você ganhou! (PRINCIPAL SIMPLIFICADO)' : 'Defesa! Tente novamente. (PRINCIPAL SIMPLIFICADO)'
+      result: result,
+      amount: amount,
+      multiplier: multiplier,
+      win: win,
+      message: win ? 'Parabéns! Você ganhou!' : 'Que pena! Tente novamente!'
     });
   } catch (error) {
     console.error('Erro no jogo:', error);
@@ -489,7 +325,7 @@ app.post('/api/games/shoot', authenticateToken, (req, res) => {
   }
 });
 
-// 14) Rota de dashboard
+// 18) Rota de dashboard público
 app.get('/api/public/dashboard', authenticateToken, (req, res) => {
   try {
     const userId = req.user.id;
@@ -498,12 +334,7 @@ app.get('/api/public/dashboard', authenticateToken, (req, res) => {
       message: 'Dashboard carregado com sucesso',
       user: {
         id: userId,
-        email: req.user.email
-      },
-      stats: {
-        total_games: 0,
-        total_wins: 0,
-        total_prize: 0
+        balance: req.user.balance || 0
       }
     });
   } catch (error) {
@@ -512,7 +343,139 @@ app.get('/api/public/dashboard', authenticateToken, (req, res) => {
   }
 });
 
-// 15) Inicializar conexão com Supabase
+// 19) Rota de perfil do usuário
+app.get('/api/user/me', authenticateToken, (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    res.status(200).json({
+      id: userId,
+      email: req.user.email,
+      name: req.user.name || 'Usuário',
+      balance: req.user.balance || 0,
+      createdAt: req.user.createdAt || new Date().toISOString(),
+      accountStatus: req.user.accountStatus || 'active'
+    });
+  } catch (error) {
+    console.error('Erro no perfil do usuário:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 20) Rota de status PIX
+app.get('/api/payments/pix/status', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.query;
+    
+    if (!id) {
+      return res.status(400).json({ error: 'ID do pagamento é obrigatório' });
+    }
+    
+    res.status(200).json({
+      id: id,
+      status: 'pending',
+      message: 'Status consultado com sucesso'
+    });
+  } catch (error) {
+    console.error('Erro ao consultar status PIX:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 21) Rota de webhook PIX
+app.post('/api/payments/pix/webhook', async (req, res) => {
+  try {
+    const { type, data } = req.body;
+    
+    if (type === 'payment' && data?.id) {
+      console.log(`Webhook PIX recebido: ${type} - ${data.id}`);
+    }
+    
+    res.status(200).json({ received: true });
+  } catch (error) {
+    console.error('Erro no webhook PIX:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 22) Rota de estimativa de saque
+app.get('/api/withdraw/estimate', authenticateToken, (req, res) => {
+  try {
+    const { amount } = req.query;
+    const amountValue = parseFloat(amount) || 0;
+    
+    if (amountValue <= 0) {
+      return res.status(400).json({ error: 'Valor deve ser maior que zero' });
+    }
+    
+    const fee = Math.max(amountValue * 0.02, 1.00);
+    const net = amountValue - fee;
+    
+    res.status(200).json({
+      amount: amountValue,
+      fee: fee,
+      net: net,
+      message: 'Estimativa calculada com sucesso'
+    });
+  } catch (error) {
+    console.error('Erro na estimativa de saque:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 23) Rota de solicitação de saque
+app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
+  try {
+    const { amount, pix_key } = req.body;
+    const userId = req.user.id;
+    
+    if (!amount || !pix_key) {
+      return res.status(400).json({ error: 'Valor e chave PIX são obrigatórios' });
+    }
+    
+    const amountValue = parseFloat(amount);
+    if (amountValue <= 0) {
+      return res.status(400).json({ error: 'Valor deve ser maior que zero' });
+    }
+    
+    res.status(200).json({
+      id: `withdraw_${Date.now()}`,
+      status: 'requested',
+      amount: amountValue,
+      pix_key: pix_key,
+      message: 'Solicitação de saque criada com sucesso'
+    });
+  } catch (error) {
+    console.error('Erro na solicitação de saque:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// 24) Rota de metadata
+app.get('/meta', (req, res) => {
+  res.status(200).json({
+    ok: true,
+    sha: process.env.GIT_SHA || 'unknown',
+    builtAt: process.env.BUILT_AT || 'unknown',
+    version: process.env.VERSION || '1.1.2',
+    environment: process.env.NODE_ENV || 'production',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 25) Rota alternativa de metadata
+app.get('/api/meta', (req, res) => {
+  res.status(200).json({
+    ok: true,
+    sha: process.env.GIT_SHA || 'unknown',
+    builtAt: process.env.BUILT_AT || 'unknown',
+    version: process.env.VERSION || '1.1.2',
+    environment: process.env.NODE_ENV || 'production',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 26) Inicializar conexão com Supabase
 async function initializeDatabase() {
   try {
     const { supabase: supabaseClient, supabaseAdmin: supabaseAdminClient, testConnection } = require('./database/supabase-config');
@@ -529,11 +492,13 @@ async function initializeDatabase() {
   }
 }
 
-// 16) Inicializar servidor
+// 27) Função para inicializar servidor
 const startServer = async () => {
   try {
-    // Aguardar inicialização do banco
-    await initializeDatabase();
+    // Inicializar banco em background (não bloquear servidor)
+    initializeDatabase().catch(error => {
+      console.log('⚠️ Erro na inicialização do banco:', error.message);
+    });
     
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`✅ Servidor HÍBRIDO rodando na porta ${PORT}`);
@@ -550,4 +515,5 @@ const startServer = async () => {
   }
 };
 
+// 28) Inicializar servidor (chamado no final, após todas as rotas)
 startServer();

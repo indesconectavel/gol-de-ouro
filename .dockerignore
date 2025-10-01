@@ -8,6 +8,7 @@
 !package.json
 !package-lock.json
 !server-fly.js
+!server-test.js
 !server.js
 !db.js
 !database/**

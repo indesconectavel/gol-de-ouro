@@ -8,6 +8,7 @@ const env = validateEnvironment();
 const apiClient = axios.create({
   baseURL: env.API_BASE_URL,
   timeout: 15000,
+  withCredentials: true, // Incluir cookies nas requisições
   headers: {
     'Content-Type': 'application/json',
   }

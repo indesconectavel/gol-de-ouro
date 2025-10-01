@@ -1,0 +1,100 @@
+{
+  "timestamp": "2025-09-30T16:30:11.680Z",
+  "config": {
+    "PLAYER_DOMAIN": "https://www.goldeouro.lol",
+    "ADMIN_DOMAIN": "https://admin.goldeouro.lol",
+    "BACKEND": "https://goldeouro-backend-v2.fly.dev",
+    "TIMEOUT": 10000
+  },
+  "checks": {
+    "vercel_player": {
+      "api_rewrite": {
+        "name": "API Rewrite",
+        "success": true,
+        "message": "OK"
+      },
+      "spa_fallback": {
+        "name": "SPA Fallback",
+        "success": true,
+        "message": "OK"
+      },
+      "manifest_header": {
+        "name": "Manifest Header",
+        "success": true,
+        "message": "OK"
+      },
+      "sw_header": {
+        "name": "SW Header",
+        "success": true,
+        "message": "OK"
+      },
+      "csp_backend": {
+        "name": "CSP Backend",
+        "success": true,
+        "message": "OK"
+      }
+    },
+    "pwa_player": {
+      "manifest": {
+        "name": "Manifest 200",
+        "success": true,
+        "message": "OK"
+      },
+      "sw": {
+        "name": "SW 200 + no-cache",
+        "success": true,
+        "message": "OK"
+      }
+    },
+    "api_proxy_player": {
+      "health": {
+        "name": "GET /api/health 200",
+        "success": true,
+        "message": "OK"
+      },
+      "shoot_unauthorized": {
+        "name": "POST /api/games/shoot 401/403",
+        "success": true,
+        "message": "OK"
+      }
+    },
+    "csp_player": {
+      "present": {
+        "name": "CSP Header Present",
+        "success": true,
+        "message": "OK"
+      },
+      "backend": {
+        "name": "CSP Backend Allowed",
+        "success": true,
+        "message": "OK"
+      }
+    },
+    "admin": {
+      "login": {
+        "name": "Admin /login 200",
+        "success": true,
+        "message": "OK"
+      }
+    },
+    "backend": {
+      "health": {
+        "name": "Backend /health 200",
+        "success": true,
+        "message": "OK"
+      },
+      "meta": {
+        "name": "Backend /meta 200",
+        "success": false,
+        "message": "Status: 404 (não crítico)",
+        "warning": true
+      }
+    }
+  },
+  "summary": {
+    "total": 13,
+    "pass": 13,
+    "fail": 0,
+    "warn": 1
+  }
+}

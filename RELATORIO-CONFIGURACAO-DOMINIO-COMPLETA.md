@@ -103,3 +103,4 @@ Response: <!doctype html>... (HTML em vez de JSON)
 **Status:** Sistema funcional, configuração de roteamento pendente
 
 
+
