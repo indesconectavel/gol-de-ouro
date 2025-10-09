@@ -17,7 +17,10 @@
     "health:check": "node scripts/network-smoke.js",
     "validate": "node validate-player-system.cjs",
     "rollback": "node rollback-player-to-approved.cjs",
-    "status": "node -e \"console.log('Sistema Jogador Aprovado v1.1.1 - Funcionando Perfeitamente')\""
+    "status": "node -e \"console.log('Sistema Jogador Aprovado v1.1.1 - Funcionando Perfeitamente')\"",
+    "audit:pre-deploy": "cd ../mcp-system && node audit-simple.js",
+    "deploy:safe": "npm run audit:pre-deploy && npm run build && npx vercel --prod",
+    "audit:full": "cd ../mcp-system && node audit-simple.js"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",

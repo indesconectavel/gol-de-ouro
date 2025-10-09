@@ -1,9 +1,9 @@
 ﻿// ConfiguraÃ§Ã£o de Ambientes - Gol de Ouro Player
 const environments = {
   development: {
-    API_BASE_URL: 'http://192.168.1.100:3000', // IP local do desenvolvedor
-    USE_MOCKS: true,
-    USE_SANDBOX: true,
+    API_BASE_URL: 'http://localhost:8080', // Backend local funcionando
+    USE_MOCKS: false,
+    USE_SANDBOX: false,
     LOG_LEVEL: 'debug'
   },
   staging: {

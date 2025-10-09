@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beta - Gol de Ouro ⚽</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            color: white;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .step {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ffd700;
+        }
+        
+        .step h3 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #ffd700;
+            color: #1a1a1a;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #1a1a1a;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+            margin: 10px;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .info-box {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .warning-box {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid #ffa500;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .contact {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        
+        .contact h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        
+        .contact-item {
+            margin: 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .contact-item a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+        
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">⚽ Gol de Ouro</div>
+            <div class="subtitle">Bem-vindo ao Beta! 🎮</div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Como Funciona</h2>
+            <p>O Gol de Ouro é um jogo de apostas onde você pode ganhar dinheiro real! Siga estes passos simples:</p>
+            
+            <div class="step">
+                <h3><span class="step-number">1</span>Criar Conta</h3>
+                <p>Acesse o jogo e crie sua conta gratuitamente. É rápido e seguro!</p>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">2</span>Depositar via PIX</h3>
+                <p>Faça um depósito mínimo de <strong>R$ 1,00</strong> usando PIX. O dinheiro aparece instantaneamente na sua conta!</p>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">3</span>Jogar</h3>
+                <p>Escolha a direção do chute e aposte seu dinheiro. Se acertar, você ganha o dobro!</p>
+            </div>
+            
+            <div class="step">
+                <h3><span class="step-number">4</span>Sacar via PIX</h3>
+                <p>Quando quiser sacar, informe sua chave PIX e receba o dinheiro automaticamente!</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💰 Valores e Limites</h2>
+            
+            <div class="info-box">
+                <h3>💳 Depósito</h3>
+                <ul>
+                    <li><strong>Mínimo:</strong> R$ 1,00</li>
+                    <li><strong>Máximo:</strong> R$ 1.000,00</li>
+                    <li><strong>Método:</strong> PIX instantâneo</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <h3>💸 Saque</h3>
+                <ul>
+                    <li><strong>Mínimo:</strong> R$ 0,50</li>
+                    <li><strong>Máximo:</strong> R$ 1.000,00</li>
+                    <li><strong>Método:</strong> PIX automático</li>
+                    <li><strong>Tempo:</strong> Instantâneo (sem aprovação)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Como Jogar</h2>
+            <p>É muito simples! Siga estes passos:</p>
+            
+            <div class="step">
+                <h3>1. Escolha o Valor</h3>
+                <p>Digite quanto você quer apostar (mínimo R$ 0,50)</p>
+            </div>
+            
+            <div class="step">
+                <h3>2. Escolha a Direção</h3>
+                <p>Clique em "Esquerda" ou "Direita" para chutar</p>
+            </div>
+            
+            <div class="step">
+                <h3>3. Veja o Resultado</h3>
+                <p>Se acertar, você ganha o dobro! Se errar, perde a aposta</p>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <h3>⚠️ Importante</h3>
+            <ul>
+                <li>Este é um jogo de apostas com dinheiro real</li>
+                <li>Jogue com responsabilidade</li>
+                <li>Não aposte mais do que pode perder</li>
+                <li>Se precisar de ajuda, entre em contato conosco</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔒 Segurança</h2>
+            <p>Seus dados e dinheiro estão protegidos:</p>
+            <ul>
+                <li>✅ Criptografia SSL/TLS</li>
+                <li>✅ Dados protegidos por LGPD</li>
+                <li>✅ PIX seguro via Mercado Pago</li>
+                <li>✅ Transações auditadas</li>
+            </ul>
+        </div>
+
+        <div class="contact">
+            <h3>📞 Suporte</h3>
+            <div class="contact-item">
+                <strong>WhatsApp:</strong> <a href="https://wa.me/5511999999999">+55 11 99999-9999</a>
+            </div>
+            <div class="contact-item">
+                <strong>Email:</strong> <a href="mailto:suporte@goldeouro.lol">suporte@goldeouro.lol</a>
+            </div>
+            <div class="contact-item">
+                <strong>Discord:</strong> <a href="https://discord.gg/goldeouro">#gol-de-ouro</a>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="https://www.goldeouro.lol" class="cta-button">
+                🎮 COMEÇAR A JOGAR AGORA
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Gol de Ouro. Todos os direitos reservados.</p>
+            <p>Jogue com responsabilidade. Proibido para menores de 18 anos.</p>
+        </div>
+    </div>
+</body>
+</html>
+
