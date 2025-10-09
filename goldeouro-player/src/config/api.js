@@ -6,8 +6,8 @@ const API_BASE_URL = env.API_BASE_URL;
 
 export const API_ENDPOINTS = {
   // Autenticação
-  LOGIN: `${API_BASE_URL}/auth/login`,
-  REGISTER: `${API_BASE_URL}/auth/register`,
+  LOGIN: `${API_BASE_URL}/api/auth/login`,
+  REGISTER: `${API_BASE_URL}/api/auth/register`,
   PROFILE: `${API_BASE_URL}/api/user/me`,
   
   // Pagamentos
