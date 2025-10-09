@@ -10,9 +10,11 @@ export default async function handler(req, res) {
     return;
   }
 
-  if (req.method === 'POST' && req.url === '/api/auth/login') {
+  if (req.method === 'POST') {
     try {
       const { email, password } = req.body;
+      
+      console.log('🔍 API Route - Dados recebidos:', { email, password });
 
       // Fazer requisição para o backend real
       const backendResponse = await fetch('https://goldeouro-backend.fly.dev/api/auth/login', {
@@ -24,6 +26,8 @@ export default async function handler(req, res) {
       });
 
       const data = await backendResponse.json();
+      
+      console.log('🔍 API Route - Resposta do backend:', data);
       
       res.status(backendResponse.status).json(data);
     } catch (error) {
