@@ -10,6 +10,11 @@
       "destination": "/index.html"
     }
   ],
+  "functions": {
+    "api/auth/login.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",
