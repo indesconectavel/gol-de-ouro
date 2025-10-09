@@ -1,71 +1,36 @@
 {
   "version": 2,
-  "routes": [
-    { "src": "^/api/(.*)", "dest": "https://goldeouro-backend-v2.fly.dev/api/$1" },
-    { "src": "^/health", "dest": "https://goldeouro-backend-v2.fly.dev/health" },
-    { "src": "^/version", "dest": "https://goldeouro-backend-v2.fly.dev/version" },
-    { "src": "^/readiness", "dest": "https://goldeouro-backend-v2.fly.dev/readiness" },
-    { "src": "^(?!/(api|health|version|readiness|kill-sw)).*$", "dest": "/index.html" }
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://goldeouro-backend.fly.dev/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
         {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
         },
         {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
+          "key": "X-Frame-Options",
+          "value": "DENY"
         },
         {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=()"
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
         },
         {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        },
-        {
-          "key": "Pragma",
-          "value": "no-cache"
-        },
-        {
-          "key": "Expires",
-          "value": "0"
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://goldeouro-backend.fly.dev;"
         }
-      ]
-    },
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/manifest.webmanifest",
-      "headers": [
-        { "key": "Content-Type", "value": "application/manifest+json" },
-        { "key": "Cache-Control", "value": "no-cache" }
-      ]
-    },
-    {
-      "source": "/sw.js",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-cache" },
-        { "key": "Service-Worker-Allowed", "value": "false" }
       ]
     }
-  ],
-  "redirects": [
-    { "source": "/", "destination": "https://www.goldeouro.lol/", "permanent": true }
   ]
 }
