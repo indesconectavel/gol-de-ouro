@@ -1,20 +1,17 @@
-// Cliente API ULTRA ROBUSTO - Gol de Ouro Player
+// Cliente API ULTRA DEFINITIVO - Gol de Ouro Player
 import axios from 'axios';
 import { validateEnvironment } from '../config/environments.js';
 
 const env = validateEnvironment();
 
-// Configuração do cliente Axios ULTRA ROBUSTA
+// Configuração do cliente Axios ULTRA DEFINITIVA
 const apiClient = axios.create({
   baseURL: env.API_BASE_URL,
-  timeout: 30000, // Aumentar timeout
-  withCredentials: true, // Incluir cookies nas requisições
+  timeout: 30000,
+  withCredentials: false, // Desabilitar credentials para evitar CORS
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With'
+    'Accept': 'application/json'
   }
 });
 
@@ -42,7 +39,7 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Interceptor para tratamento de erros ULTRA ROBUSTO
+// Interceptor para tratamento de erros ULTRA DEFINITIVO
 apiClient.interceptors.response.use(
   (response) => {
     console.log('✅ API Response:', {
@@ -63,14 +60,6 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('authToken');
       window.location.href = '/';
-    }
-    
-    // Se for erro de CORS, tentar novamente sem credentials
-    if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
-      console.log('🔄 Tentando sem credentials devido a CORS...');
-      const retryConfig = { ...error.config };
-      retryConfig.withCredentials = false;
-      return apiClient.request(retryConfig);
     }
     
     return Promise.reject(error);
