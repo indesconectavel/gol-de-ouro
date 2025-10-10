@@ -1,9 +1,9 @@
-{
+﻿{
   "version": 2,
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://goldeouro-backend.fly.dev/api/$1"
+      "destination": "https://goldeouro-backend-v2.fly.dev/api/"
     },
     {
       "source": "/(.*)",
