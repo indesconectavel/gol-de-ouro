@@ -21,11 +21,13 @@ const environments = {
   }
 };
 
-// Detectar ambiente atual - ULTRA DEFINITIVO
+// Detectar ambiente atual - ULTRA DEFINITIVO COM FORÇA TOTAL
 const getCurrentEnvironment = () => {
-  // SEMPRE usar produção se estiver em produção
-  if (import.meta.env.PROD || window.location.hostname.includes('goldeouro.lol')) {
+  // FORÇAR SEMPRE BACKEND DIRETO EM PRODUÇÃO
+  if (import.meta.env.PROD || window.location.hostname.includes('goldeouro.lol') || window.location.hostname.includes('vercel.app')) {
     console.log('🔧 FORÇANDO AMBIENTE DE PRODUÇÃO - BACKEND DIRETO SEM VERCEL');
+    console.log('🔧 URL atual:', window.location.href);
+    console.log('🔧 Hostname:', window.location.hostname);
     return environments.production;
   }
   const env = import.meta.env.VITE_APP_ENV || 'development';
