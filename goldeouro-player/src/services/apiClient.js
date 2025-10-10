@@ -1,4 +1,4 @@
-// Cliente API ULTRA DEFINITIVO - Gol de Ouro Player
+// Cliente API ULTRA DEFINITIVO COM FALLBACK - Gol de Ouro Player
 import axios from 'axios';
 import { validateEnvironment } from '../config/environments.js';
 
@@ -39,7 +39,7 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Interceptor para tratamento de erros ULTRA DEFINITIVO
+// Interceptor para tratamento de erros ULTRA DEFINITIVO COM FALLBACK
 apiClient.interceptors.response.use(
   (response) => {
     console.log('✅ API Response:', {
@@ -49,13 +49,30 @@ apiClient.interceptors.response.use(
     });
     return response;
   },
-  (error) => {
+  async (error) => {
     console.error('❌ API Response Error:', {
       status: error.response?.status,
       message: error.message,
       url: error.config?.url,
       data: error.response?.data
     });
+    
+    // Se for erro de CORS ou Failed to fetch, tentar backend direto
+    if (error.message.includes('Failed to fetch') || error.message.includes('CORS')) {
+      console.log('🔄 Tentando backend direto devido a CORS...');
+      
+      try {
+        const directConfig = { ...error.config };
+        directConfig.baseURL = 'https://goldeouro-backend.fly.dev/api';
+        directConfig.withCredentials = false;
+        
+        const directResponse = await axios.request(directConfig);
+        console.log('✅ Backend direto funcionou!');
+        return directResponse;
+      } catch (directError) {
+        console.error('❌ Backend direto também falhou:', directError);
+      }
+    }
     
     if (error.response?.status === 401) {
       localStorage.removeItem('authToken');
