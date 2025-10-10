@@ -1,13 +1,13 @@
 ﻿// Configuração ULTRA DEFINITIVA - Gol de Ouro Player
 const environments = {
   development: {
-    API_BASE_URL: 'http://localhost:8080',
+    API_BASE_URL: 'https://goldeouro-backend.fly.dev/api', // FORÇAR BACKEND DIRETO
     USE_MOCKS: false,
     USE_SANDBOX: false,
     LOG_LEVEL: 'debug'
   },
   staging: {
-    API_BASE_URL: 'https://api.staging.goldeouro.lol',
+    API_BASE_URL: 'https://goldeouro-backend.fly.dev/api', // FORÇAR BACKEND DIRETO
     USE_MOCKS: false,
     USE_SANDBOX: true,
     LOG_LEVEL: 'info'
@@ -23,22 +23,13 @@ const environments = {
 
 // Detectar ambiente atual - ULTRA DEFINITIVO COM FORÇA TOTAL
 const getCurrentEnvironment = () => {
-  // FORÇAR SEMPRE BACKEND DIRETO EM PRODUÇÃO - SEMPRE!
-  console.log('🔧 DETECTANDO AMBIENTE:', {
-    PROD: import.meta.env.PROD,
-    hostname: window.location.hostname,
-    href: window.location.href
-  });
+  // FORÇAR SEMPRE BACKEND DIRETO EM TODOS OS AMBIENTES
+  console.log('🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES');
+  console.log('🔧 URL atual:', window.location.href);
+  console.log('🔧 Hostname:', window.location.hostname);
   
-  // SEMPRE usar backend direto em produção
-  if (import.meta.env.PROD || window.location.hostname.includes('goldeouro.lol') || window.location.hostname.includes('vercel.app')) {
-    console.log('🔧 FORÇANDO AMBIENTE DE PRODUÇÃO - BACKEND DIRETO SEM VERCEL');
-    console.log('🔧 URL atual:', window.location.href);
-    console.log('🔧 Hostname:', window.location.hostname);
-    return environments.production;
-  }
-  const env = import.meta.env.VITE_APP_ENV || 'development';
-  return environments[env] || environments.development;
+  // SEMPRE usar backend direto
+  return environments.production;
 };
 
 // Guarda de segurança: erro se mocks em produção
