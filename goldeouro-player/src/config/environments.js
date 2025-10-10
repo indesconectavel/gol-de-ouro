@@ -22,6 +22,10 @@ const environments = {
 
 // Detectar ambiente atual
 const getCurrentEnvironment = () => {
+  // Forçar produção se estiver em produção
+  if (import.meta.env.PROD) {
+    return environments.production;
+  }
   const env = import.meta.env.VITE_APP_ENV || 'development';
   return environments[env] || environments.development;
 };
