@@ -13,7 +13,7 @@ const environments = {
     LOG_LEVEL: 'info'
   },
   production: {
-    // SEMPRE usar backend direto, nunca Vercel
+    // FORÇAR SEMPRE BACKEND DIRETO - CONTORNAR PROBLEMA DO VERCEL
     API_BASE_URL: 'https://goldeouro-backend.fly.dev/api',
     USE_MOCKS: false,
     USE_SANDBOX: false,
@@ -23,7 +23,14 @@ const environments = {
 
 // Detectar ambiente atual - ULTRA DEFINITIVO COM FORÇA TOTAL
 const getCurrentEnvironment = () => {
-  // FORÇAR SEMPRE BACKEND DIRETO EM PRODUÇÃO
+  // FORÇAR SEMPRE BACKEND DIRETO EM PRODUÇÃO - SEMPRE!
+  console.log('🔧 DETECTANDO AMBIENTE:', {
+    PROD: import.meta.env.PROD,
+    hostname: window.location.hostname,
+    href: window.location.href
+  });
+  
+  // SEMPRE usar backend direto em produção
   if (import.meta.env.PROD || window.location.hostname.includes('goldeouro.lol') || window.location.hostname.includes('vercel.app')) {
     console.log('🔧 FORÇANDO AMBIENTE DE PRODUÇÃO - BACKEND DIRETO SEM VERCEL');
     console.log('🔧 URL atual:', window.location.href);
