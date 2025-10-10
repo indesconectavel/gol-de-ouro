@@ -1,4 +1,4 @@
-﻿// Configuração forçada para produção - Gol de Ouro Player
+﻿// Configuração ULTRA SIMPLES para produção - Gol de Ouro Player
 const environments = {
   development: {
     API_BASE_URL: 'http://localhost:8080',
@@ -13,14 +13,14 @@ const environments = {
     LOG_LEVEL: 'info'
   },
   production: {
-    API_BASE_URL: 'https://goldeouro-backend.fly.dev/api', // Backend direto
+    API_BASE_URL: 'https://goldeouro-backend.fly.dev/api',
     USE_MOCKS: false,
     USE_SANDBOX: false,
     LOG_LEVEL: 'error'
   }
 };
 
-// Detectar ambiente atual - FORÇAR PRODUÇÃO
+// Detectar ambiente atual - ULTRA SIMPLES
 const getCurrentEnvironment = () => {
   // SEMPRE usar produção se estiver em produção
   if (import.meta.env.PROD || window.location.hostname.includes('goldeouro.lol')) {
