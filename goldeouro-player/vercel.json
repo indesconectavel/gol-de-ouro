@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://goldeouro-backend-v2.fly.dev/api/"
+      "destination": "https://goldeouro-backend-v2.fly.dev/api/$1"
     },
     {
       "source": "/(.*)",
