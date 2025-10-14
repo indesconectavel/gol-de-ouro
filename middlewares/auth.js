@@ -19,88 +19,165 @@ const verifyToken = (token) => {
   }
 };
 
-// Middleware de autenticação para players
-const authenticatePlayer = async (req, res, next) => {
+// Middleware de autenticação
+const authenticateToken = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-      return res.status(401).json({ error: 'Token de acesso necessário' });
+      return res.status(401).json({ 
+        error: 'Token de acesso requerido',
+        code: 'TOKEN_REQUIRED'
+      });
     }
 
-    // Verificar token JWT
     const decoded = verifyToken(token);
     
-    // Verificar se usuário ainda existe no banco
+    // Verificar se o usuário ainda existe no banco
     const { data: user, error } = await supabase
-      .from('users')
-      .select('id, email, name, balance, status')
-      .eq('id', decoded.userId)
+      .from('usuarios')
+      .select('id, email, nome, ativo, saldo')
+      .eq('id', decoded.id)
       .single();
 
     if (error || !user) {
-      return res.status(401).json({ error: 'Usuário não encontrado' });
+      return res.status(401).json({ 
+        error: 'Usuário não encontrado',
+        code: 'USER_NOT_FOUND'
+      });
     }
 
-    if (user.status !== 'active') {
-      return res.status(401).json({ error: 'Usuário inativo' });
+    if (!user.ativo) {
+      return res.status(401).json({ 
+        error: 'Usuário inativo',
+        code: 'USER_INACTIVE'
+      });
     }
 
     req.user = user;
     next();
   } catch (error) {
     console.error('Erro na autenticação:', error);
-    return res.status(401).json({ error: 'Token inválido' });
+    return res.status(401).json({ 
+      error: 'Token inválido',
+      code: 'INVALID_TOKEN'
+    });
   }
 };
 
-// Middleware de autenticação para admin
-const authenticateAdmin = (req, res, next) => {
-  const adminToken = req.headers['x-admin-token'];
-  
-  if (!adminToken) {
-    return res.status(401).json({ error: 'Token admin necessário' });
-  }
-
-  // Verificar token admin
-  if (adminToken === process.env.ADMIN_TOKEN || adminToken === 'admin-prod-token-2025') {
-    next();
-  } else {
-    return res.status(401).json({ error: 'Token admin inválido' });
-  }
-};
-
-// Middleware opcional de autenticação
-const optionalAuth = async (req, res, next) => {
+// Middleware de autenticação para administradores
+const authenticateAdmin = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (token) {
-      const decoded = verifyToken(token);
-      const { data: user } = await supabase
-        .from('users')
-        .select('id, email, name, balance, status')
-        .eq('id', decoded.userId)
-        .single();
-
-      if (user && user.status === 'active') {
-        req.user = user;
+    await authenticateToken(req, res, () => {
+      if (req.user.tipo !== 'admin' && req.user.tipo !== 'moderador') {
+        return res.status(403).json({ 
+          error: 'Acesso negado - Privilégios de administrador requeridos',
+          code: 'ADMIN_REQUIRED'
+        });
       }
+      next();
+    });
+  } catch (error) {
+    console.error('Erro na autenticação de admin:', error);
+    return res.status(401).json({ 
+      error: 'Falha na autenticação de administrador',
+      code: 'ADMIN_AUTH_FAILED'
+    });
+  }
+};
+
+// Middleware de verificação de saldo
+const checkBalance = (requiredAmount = 0) => {
+  return (req, res, next) => {
+    if (req.user.saldo < requiredAmount) {
+      return res.status(400).json({
+        error: 'Saldo insuficiente',
+        code: 'INSUFFICIENT_BALANCE',
+        required: requiredAmount,
+        current: req.user.saldo
+      });
+    }
+    next();
+  };
+};
+
+// Middleware de rate limiting por usuário
+const userRateLimit = (maxRequests = 100, windowMs = 15 * 60 * 1000) => {
+  const requests = new Map();
+  
+  return (req, res, next) => {
+    const userId = req.user?.id;
+    if (!userId) return next();
+    
+    const now = Date.now();
+    const userRequests = requests.get(userId) || [];
+    
+    // Limpar requisições antigas
+    const validRequests = userRequests.filter(time => now - time < windowMs);
+    
+    if (validRequests.length >= maxRequests) {
+      return res.status(429).json({
+        error: 'Muitas requisições',
+        code: 'RATE_LIMIT_EXCEEDED',
+        retryAfter: Math.ceil(windowMs / 1000)
+      });
     }
     
+    validRequests.push(now);
+    requests.set(userId, validRequests);
     next();
-  } catch (error) {
-    // Se houver erro, continuar sem usuário autenticado
+  };
+};
+
+// Middleware de validação de entrada
+const validateInput = (schema) => {
+  return (req, res, next) => {
+    const { error } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({
+        error: 'Dados inválidos',
+        code: 'VALIDATION_ERROR',
+        details: error.details[0].message
+      });
+    }
     next();
-  }
+  };
+};
+
+// Middleware de logging de segurança
+const securityLogger = (req, res, next) => {
+  const start = Date.now();
+  
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    const logData = {
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      userId: req.user?.id,
+      statusCode: res.statusCode,
+      duration: `${duration}ms`
+    };
+    
+    // Log apenas para operações sensíveis
+    if (req.url.includes('/auth') || req.url.includes('/payment') || req.url.includes('/admin')) {
+      console.log('🔐 Security Log:', JSON.stringify(logData));
+    }
+  });
+  
+  next();
 };
 
 module.exports = {
   generateToken,
   verifyToken,
-  authenticatePlayer,
+  authenticateToken,
   authenticateAdmin,
-  optionalAuth
+  checkBalance,
+  userRateLimit,
+  validateInput,
+  securityLogger
 };

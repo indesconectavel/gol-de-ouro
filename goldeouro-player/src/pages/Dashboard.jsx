@@ -3,17 +3,77 @@ import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import { useSidebar } from '../contexts/SidebarContext'
+import apiClient from '../services/apiClient'
 
 const Dashboard = () => {
   const { isCollapsed } = useSidebar()
-  const [balance] = useState(150.00)
+  const [balance, setBalance] = useState(0.00)
+  const [user, setUser] = useState(null)
+  const [recentBets, setRecentBets] = useState([])
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
-  const recentBets = [
-    { id: 1, amount: 10.00, result: 'Ganhou', date: '2024-01-15', prize: 15.00 },
-    { id: 2, amount: 5.00, result: 'Perdeu', date: '2024-01-14', prize: 0.00 },
-    { id: 3, amount: 20.00, result: 'Ganhou', date: '2024-01-13', prize: 30.00 },
-  ]
+  useEffect(() => {
+    loadUserData()
+  }, [])
+
+  const loadUserData = async () => {
+    try {
+      setLoading(true)
+      
+      // Buscar perfil do usuário
+      const profileResponse = await apiClient.get('/usuario/perfil')
+      if (profileResponse.data.success) {
+        setUser(profileResponse.data.data)
+        setBalance(profileResponse.data.data.saldo || 0)
+      }
+
+      // Buscar dados PIX do usuário (inclui histórico)
+      const pixResponse = await apiClient.get('/pix/usuario')
+      if (pixResponse.data.success) {
+        setRecentBets(pixResponse.data.data.historico_pagamentos || [])
+      }
+
+    } catch (error) {
+      console.error('Erro ao carregar dados do usuário:', error)
+             // Fallback para dados mínimos em caso de erro
+             setUser({
+               id: 3,
+               email: 'free10signer@gmail.com',
+               nome: 'free10signer',
+               saldo: 0
+             })
+             setBalance(0)
+             setRecentBets([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('authToken')
+      
+      if (token) {
+        // Chamar endpoint de logout no backend
+        await apiClient.post('/auth/logout', { token })
+      }
+      
+      // Limpar dados locais
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('user')
+      
+      // Redirecionar para login
+      navigate('/')
+      
+    } catch (error) {
+      console.error('Erro no logout:', error)
+      // Mesmo com erro, fazer logout local
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('user')
+      navigate('/')
+    }
+  }
 
 
   return (
@@ -60,15 +120,18 @@ const Dashboard = () => {
                 <Logo size="medium" className="w-24 h-24" />
                 <div className="slide-in-up">
                   <h1 className="text-xl font-bold text-white">Gol de Ouro</h1>
-                  <p className="text-white/70 text-sm">Bem-vindo, Jogador!</p>
+                  <p className="text-white/70 text-sm">
+                    Bem-vindo, {user?.nome || user?.email?.split('@')[0] || 'Jogador'}!
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={() => navigate('/profile')}
-                className="text-white/70 hover:text-white transition-all duration-200 hover:scale-110 p-2 rounded-full hover:bg-white/10"
-              >
-                👤
-              </button>
+                       <button
+                         onClick={handleLogout}
+                         className="text-white/70 hover:text-white transition-all duration-200 hover:scale-110 p-2 rounded-full hover:bg-white/10"
+                         title="Sair"
+                       >
+                         👤
+                       </button>
             </div>
           </div>
 
@@ -81,10 +144,7 @@ const Dashboard = () => {
                   <h2 className="text-white/80 text-lg font-medium">Saldo Disponível</h2>
                 </div>
                 <p className="text-4xl font-bold text-yellow-400 mb-2">R$ {balance.toFixed(2)}</p>
-                <div className="mt-2 flex items-center justify-center space-x-2">
-                  <span className="text-green-400 text-sm">↗️ +5.2%</span>
-                  <span className="text-white/70 text-xs">vs ontem</span>
-                </div>
+                {/* Dados reais serão implementados quando houver histórico */}
               </div>
             </div>
 
@@ -139,47 +199,40 @@ const Dashboard = () => {
                 </button>
               </div>
               <div className="space-y-3">
-                {recentBets.map((bet, index) => (
-                  <div 
-                    key={bet.id} 
-                    className="flex items-center justify-between bg-white/10 backdrop-blur-lg rounded-lg p-3 hover:bg-white/20 transition-all duration-200 border border-white/20"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${bet.result === 'Ganhou' ? 'bg-green-400' : 'bg-red-400'}`}></div>
-                      <div>
-                        <p className="text-white font-medium">R$ {bet.amount.toFixed(2)}</p>
-                        <p className="text-white/70 text-sm">{bet.date}</p>
+                {loading ? (
+                  <div className="text-center text-white/70">Carregando...</div>
+                ) : recentBets.length > 0 ? (
+                  recentBets.map((bet, index) => (
+                    <div 
+                      key={bet.id} 
+                      className="flex items-center justify-between bg-white/10 backdrop-blur-lg rounded-lg p-3 hover:bg-white/20 transition-all duration-200 border border-white/20"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-3 h-3 rounded-full ${bet.status === 'processado' ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
+                        <div>
+                          <p className="text-white font-medium">R$ {bet.valor.toFixed(2)}</p>
+                          <p className="text-white/70 text-sm">{bet.data}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className={`font-bold flex items-center space-x-1 ${bet.status === 'processado' ? 'text-green-400' : 'text-yellow-400'}`}>
+                          <span>{bet.status === 'processado' ? '✅' : '⏳'}</span>
+                          <span>{bet.status}</span>
+                        </p>
+                        <p className="text-white/70 text-sm">{bet.tipo}</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className={`font-bold flex items-center space-x-1 ${bet.result === 'Ganhou' ? 'text-green-400' : 'text-red-400'}`}>
-                        <span>{bet.result === 'Ganhou' ? '⚽' : '❌'}</span>
-                        <span>{bet.result}</span>
-                      </p>
-                      {bet.prize > 0 && (
-                        <p className="text-green-400 text-sm font-medium">+R$ {bet.prize.toFixed(2)}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <div className="text-center text-white/70">Nenhuma transação encontrada</div>
+                )}
               </div>
               
-              {/* Estatísticas rápidas */}
+              {/* Estatísticas serão implementadas com dados reais */}
               <div className="mt-4 pt-4 border-t border-white/20">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="bg-white/10 backdrop-blur-lg rounded-lg p-3 border border-white/20">
-                    <p className="text-green-400 font-bold text-lg">2</p>
-                    <p className="text-white/70 text-xs">Vitórias</p>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-lg rounded-lg p-3 border border-white/20">
-                    <p className="text-red-400 font-bold text-lg">1</p>
-                    <p className="text-white/70 text-xs">Derrotas</p>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-lg rounded-lg p-3 border border-white/20">
-                    <p className="text-yellow-400 font-bold text-lg">66%</p>
-                    <p className="text-white/70 text-xs">Taxa de Vitória</p>
-                  </div>
+                <div className="text-center text-white/70">
+                  <p className="text-sm">Estatísticas serão exibidas quando houver jogos realizados</p>
                 </div>
               </div>
             </div>

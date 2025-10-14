@@ -7,6 +7,7 @@ import paymentService from '../services/paymentService'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import EmptyState from '../components/EmptyState'
+import apiClient from '../services/apiClient'
 
 const Withdraw = () => {
   const { isCollapsed } = useSidebar()
@@ -36,14 +37,18 @@ const Withdraw = () => {
       setLoading(true)
       setError(null)
       
-      // Simular carregamento do saldo do usuário
-      // Em produção, isso viria da API
-      const userBalance = 150.00
-      setBalance(userBalance)
+      // Buscar saldo real do usuário
+      const response = await apiClient.get('/usuario/perfil')
+      if (response.data.success) {
+        setBalance(response.data.data.saldo || 0)
+      } else {
+             setBalance(0) // Fallback
+      }
       
     } catch (err) {
       console.error('Erro ao carregar dados do usuário:', err)
       setError('Erro ao carregar dados do usuário')
+             setBalance(0) // Fallback
     } finally {
       setLoading(false)
     }

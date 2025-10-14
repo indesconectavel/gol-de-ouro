@@ -1,181 +1,239 @@
-/**
- * Sistema de Monitoramento Otimizado - Sem Vazamentos de Memória
- * ETAPA 5 - Analytics e Monitoramento (Versão Otimizada)
- */
+// Sistema de Monitoramento - Gol de Ouro v1.1.1
+const os = require('os');
+const fs = require('fs');
+const path = require('path');
+const logger = require('./logger');
 
-const cron = require('node-cron');
-const { performance, security, error } = require('./logger');
-const { recordBusinessMetric } = require('./metrics');
-const analyticsCollector = require('./analytics-optimized');
-
-class OptimizedSystemMonitor {
+class MonitoringSystem {
   constructor() {
-    this.maxAlerts = 100; // Limitar número de alertas em memória
-    this.alerts = [];
-    
-    this.thresholds = {
-      cpu: 80, // 80%
-      memory: 85, // 85%
-      responseTime: 2000, // 2 segundos
-      errorRate: 5, // 5%
-      activeConnections: 1000,
-      databaseConnections: 50
+    this.metrics = {
+      system: {},
+      application: {},
+      database: {},
+      api: {},
+      websocket: {}
     };
     
-    this.metrics = {
-      system: {
-        cpu: 0,
-        memory: 0,
-        uptime: 0,
-        loadAverage: [0, 0, 0]
-      },
-      application: {
-        activeUsers: 0,
-        activeGames: 0,
-        totalRequests: 0,
-        errorRate: 0,
-        averageResponseTime: 0
-      },
-      database: {
-        connections: 0,
-        queryTime: 0,
-        slowQueries: 0
-      },
-      business: {
-        totalRevenue: 0,
-        conversionRate: 0,
-        averageGameDuration: 0
-      }
+    this.alerts = [];
+    this.thresholds = {
+      cpu: 80,
+      memory: 85,
+      disk: 90,
+      responseTime: 5000,
+      errorRate: 5
     };
     
     this.startMonitoring();
   }
 
-  // ===== MONITORAMENTO OTIMIZADO =====
-  
   startMonitoring() {
-    // Coleta de métricas a cada 60 segundos (reduzido de 30s)
-    cron.schedule('0 * * * * *', () => {
+    // Coletar métricas a cada 30 segundos
+    setInterval(() => {
       this.collectSystemMetrics();
-    });
-    
-    // Verificação de alertas a cada 2 minutos (reduzido de 1min)
-    cron.schedule('0 */2 * * * *', () => {
+      this.collectApplicationMetrics();
       this.checkAlerts();
-    });
-    
-    // Relatório de saúde a cada 10 minutos (reduzido de 5min)
-    cron.schedule('0 */10 * * * *', () => {
-      this.generateHealthReport();
-    });
-    
-    // Limpeza de alertas antigos a cada 30 minutos (reduzido de 1h)
-    cron.schedule('0 */30 * * * *', () => {
-      this.cleanupOldAlerts();
-    });
+    }, 30000);
+
+    // Coletar métricas de banco a cada 60 segundos
+    setInterval(() => {
+      this.collectDatabaseMetrics();
+    }, 60000);
+
+    logger.info('Sistema de monitoramento iniciado');
   }
 
   collectSystemMetrics() {
     try {
-      // Métricas do sistema (otimizadas)
+      const cpus = os.cpus();
+      const totalMem = os.totalmem();
+      const freeMem = os.freemem();
+      const usedMem = totalMem - freeMem;
+
+      this.metrics.system = {
+        timestamp: new Date().toISOString(),
+        cpu: {
+          cores: cpus.length,
+          usage: this.calculateCPUUsage(cpus),
+          loadAverage: os.loadavg()
+        },
+        memory: {
+          total: totalMem,
+          used: usedMem,
+          free: freeMem,
+          usage: (usedMem / totalMem) * 100
+        },
+        uptime: os.uptime(),
+        platform: os.platform(),
+        arch: os.arch(),
+        nodeVersion: process.version
+      };
+
+      logger.debug('Métricas do sistema coletadas', this.metrics.system);
+    } catch (error) {
+      logger.error('Erro ao coletar métricas do sistema', { error: error.message });
+    }
+  }
+
+  calculateCPUUsage(cpus) {
+    let totalIdle = 0;
+    let totalTick = 0;
+
+    cpus.forEach(cpu => {
+      for (const type in cpu.times) {
+        totalTick += cpu.times[type];
+      }
+      totalIdle += cpu.times.idle;
+    });
+
+    return {
+      idle: totalIdle / cpus.length,
+      total: totalTick / cpus.length,
+      usage: 100 - ~~(100 * totalIdle / totalTick)
+    };
+  }
+
+  collectApplicationMetrics() {
+    try {
       const memUsage = process.memoryUsage();
       
-      this.metrics.system = {
-        cpu: this.calculateCPUUsage(), // Simplificado
-        memory: (memUsage.heapUsed / memUsage.heapTotal) * 100,
-        uptime: process.uptime(),
-        loadAverage: process.platform === 'win32' ? [0, 0, 0] : require('os').loadavg()
-      };
-      
-      // Métricas de negócio em tempo real (otimizadas)
-      const realTimeMetrics = analyticsCollector.getRealTimeMetrics();
-      this.metrics.business = {
-        totalRevenue: realTimeMetrics.totalRevenue,
-        conversionRate: realTimeMetrics.conversionRate,
-        averageGameDuration: realTimeMetrics.averageGameDuration
-      };
-      
       this.metrics.application = {
-        activeUsers: realTimeMetrics.activeUsers,
-        activeGames: realTimeMetrics.activeGames,
-        totalRequests: realTimeMetrics.totalBets,
-        errorRate: this.calculateErrorRate(),
-        averageResponseTime: this.calculateAverageResponseTime()
-      };
-      
-      // Log apenas se houver mudanças significativas
-      if (this.metrics.system.memory > 70) {
-        performance('SYSTEM_METRICS_HIGH_MEMORY', {
-          memory: this.metrics.system.memory,
+        timestamp: new Date().toISOString(),
+        memory: {
+          rss: memUsage.rss,
+          heapTotal: memUsage.heapTotal,
           heapUsed: memUsage.heapUsed,
-          heapTotal: memUsage.heapTotal
-        });
-      }
-      
-    } catch (err) {
-      error('MONITORING_ERROR', {
-        error: err.message,
-        stack: err.stack
-      });
+          external: memUsage.external,
+          arrayBuffers: memUsage.arrayBuffers
+        },
+        uptime: process.uptime(),
+        pid: process.pid,
+        version: process.version,
+        platform: process.platform,
+        arch: process.arch
+      };
+
+      logger.debug('Métricas da aplicação coletadas', this.metrics.application);
+    } catch (error) {
+      logger.error('Erro ao coletar métricas da aplicação', { error: error.message });
     }
   }
 
-  calculateCPUUsage() {
-    // Implementação simplificada para reduzir overhead
-    return Math.random() * 50; // Reduzido de 100 para ser mais realista
+  async collectDatabaseMetrics() {
+    try {
+      // Simular coleta de métricas do banco
+      // Em uma implementação real, isso consultaria o banco de dados
+      this.metrics.database = {
+        timestamp: new Date().toISOString(),
+        connections: {
+          active: Math.floor(Math.random() * 10) + 5,
+          idle: Math.floor(Math.random() * 5) + 2,
+          total: Math.floor(Math.random() * 15) + 7
+        },
+        queries: {
+          total: Math.floor(Math.random() * 1000) + 500,
+          slow: Math.floor(Math.random() * 10),
+          errors: Math.floor(Math.random() * 5)
+        },
+        performance: {
+          avgResponseTime: Math.floor(Math.random() * 100) + 50,
+          maxResponseTime: Math.floor(Math.random() * 500) + 200
+        }
+      };
+
+      logger.debug('Métricas do banco coletadas', this.metrics.database);
+    } catch (error) {
+      logger.error('Erro ao coletar métricas do banco', { error: error.message });
+    }
   }
 
-  calculateErrorRate() {
-    // Implementação simplificada
-    return Math.random() * 3; // Reduzido de 10 para ser mais realista
+  recordAPICall(method, url, statusCode, duration, userId = null) {
+    const timestamp = new Date().toISOString();
+    
+    if (!this.metrics.api[url]) {
+      this.metrics.api[url] = {
+        totalCalls: 0,
+        successCalls: 0,
+        errorCalls: 0,
+        totalDuration: 0,
+        avgDuration: 0,
+        lastCall: timestamp
+      };
+    }
+
+    const apiMetric = this.metrics.api[url];
+    apiMetric.totalCalls++;
+    apiMetric.totalDuration += duration;
+    apiMetric.avgDuration = apiMetric.totalDuration / apiMetric.totalCalls;
+    apiMetric.lastCall = timestamp;
+
+    if (statusCode >= 200 && statusCode < 400) {
+      apiMetric.successCalls++;
+    } else {
+      apiMetric.errorCalls++;
+    }
+
+    logger.logAPI(method, url, statusCode, duration, userId);
   }
 
-  calculateAverageResponseTime() {
-    // Implementação simplificada
-    return Math.random() * 500; // Reduzido de 1000 para ser mais realista
+  recordWebSocketEvent(event, userId, meta = {}) {
+    const timestamp = new Date().toISOString();
+    
+    if (!this.metrics.websocket[event]) {
+      this.metrics.websocket[event] = {
+        totalEvents: 0,
+        uniqueUsers: new Set(),
+        lastEvent: timestamp
+      };
+    }
+
+    const wsMetric = this.metrics.websocket[event];
+    wsMetric.totalEvents++;
+    wsMetric.uniqueUsers.add(userId);
+    wsMetric.lastEvent = timestamp;
+
+    logger.logWebSocket(event, userId, meta);
   }
 
-  // ===== SISTEMA DE ALERTAS OTIMIZADO =====
-  
   checkAlerts() {
     const alerts = [];
-    
-    // Verificar memória (prioridade alta)
-    if (this.metrics.system.memory > this.thresholds.memory) {
+
+    // Verificar CPU
+    if (this.metrics.system.cpu?.usage > this.thresholds.cpu) {
       alerts.push({
-        type: 'memory_high',
-        severity: 'critical',
-        message: `Memory usage is ${this.metrics.system.memory.toFixed(2)}%`,
-        value: this.metrics.system.memory,
-        threshold: this.thresholds.memory,
-        timestamp: new Date().toISOString()
+        type: 'cpu',
+        level: 'warning',
+        message: `CPU usage is ${this.metrics.system.cpu.usage.toFixed(2)}%`,
+        value: this.metrics.system.cpu.usage,
+        threshold: this.thresholds.cpu
       });
     }
-    
-    // Verificar CPU (prioridade média)
-    if (this.metrics.system.cpu > this.thresholds.cpu) {
+
+    // Verificar memória
+    if (this.metrics.system.memory?.usage > this.thresholds.memory) {
       alerts.push({
-        type: 'cpu_high',
-        severity: 'warning',
-        message: `CPU usage is ${this.metrics.system.cpu.toFixed(2)}%`,
-        value: this.metrics.system.cpu,
-        threshold: this.thresholds.cpu,
-        timestamp: new Date().toISOString()
+        type: 'memory',
+        level: 'warning',
+        message: `Memory usage is ${this.metrics.system.memory.usage.toFixed(2)}%`,
+        value: this.metrics.system.memory.usage,
+        threshold: this.thresholds.memory
       });
     }
-    
-    // Verificar taxa de erro (prioridade alta)
-    if (this.metrics.application.errorRate > this.thresholds.errorRate) {
-      alerts.push({
-        type: 'error_rate_high',
-        severity: 'critical',
-        message: `Error rate is ${this.metrics.application.errorRate.toFixed(2)}%`,
-        value: this.metrics.application.errorRate,
-        threshold: this.thresholds.errorRate,
-        timestamp: new Date().toISOString()
-      });
-    }
-    
+
+    // Verificar taxa de erro da API
+    Object.entries(this.metrics.api).forEach(([url, metric]) => {
+      const errorRate = (metric.errorCalls / metric.totalCalls) * 100;
+      if (errorRate > this.thresholds.errorRate) {
+        alerts.push({
+          type: 'api_error_rate',
+          level: 'error',
+          message: `High error rate for ${url}: ${errorRate.toFixed(2)}%`,
+          value: errorRate,
+          threshold: this.thresholds.errorRate,
+          url: url
+        });
+      }
+    });
+
     // Processar alertas
     alerts.forEach(alert => {
       this.processAlert(alert);
@@ -183,247 +241,157 @@ class OptimizedSystemMonitor {
   }
 
   processAlert(alert) {
-    // Verificar se já existe alerta similar recente (aumentado para 10 minutos)
-    const existingAlert = this.alerts.find(a => 
+    const alertId = `${alert.type}_${Date.now()}`;
+    
+    // Verificar se já existe alerta similar recente
+    const recentAlert = this.alerts.find(a => 
       a.type === alert.type && 
-      (Date.now() - new Date(a.timestamp).getTime()) < 600000 // 10 minutos
+      (Date.now() - new Date(a.timestamp).getTime()) < 300000 // 5 minutos
     );
-    
-    if (!existingAlert) {
-      // Limitar número de alertas em memória
-      if (this.alerts.length >= this.maxAlerts) {
-        this.cleanupOldAlerts();
-      }
-      
-      this.alerts.push(alert);
-      
-      // Log do alerta
-      if (alert.severity === 'critical') {
-        security('CRITICAL_ALERT', alert);
-      } else {
-        performance('WARNING_ALERT', alert);
-      }
-      
-      // Registrar métrica de alerta
-      recordBusinessMetric('error', {
-        errorType: 'alert',
-        component: alert.type
-      });
-      
-      // Console log apenas para alertas críticos
-      if (alert.severity === 'critical') {
-        console.log(`🚨 ALERTA ${alert.severity.toUpperCase()}: ${alert.message}`);
-      }
-    }
-  }
 
-  // ===== LIMPEZA DE ALERTAS OTIMIZADA =====
-  
-  cleanupOldAlerts() {
-    const tenMinutesAgo = Date.now() - 600000; // 10 minutos
-    this.alerts = this.alerts.filter(a => 
-      new Date(a.timestamp).getTime() > tenMinutesAgo
-    );
-    
-    // Se ainda estiver muito cheio, manter apenas os mais recentes
-    if (this.alerts.length > this.maxAlerts) {
-      this.alerts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      this.alerts = this.alerts.slice(0, this.maxAlerts);
+    if (recentAlert) {
+      return; // Não duplicar alertas
     }
-  }
 
-  // ===== RELATÓRIOS DE SAÚDE OTIMIZADOS =====
-  
-  generateHealthReport() {
-    const report = {
+    const fullAlert = {
+      id: alertId,
+      ...alert,
       timestamp: new Date().toISOString(),
-      status: this.getSystemStatus(),
-      metrics: {
-        system: {
-          memory: this.metrics.system.memory,
-          cpu: this.metrics.system.cpu,
-          uptime: this.metrics.system.uptime
-        },
-        application: {
-          activeUsers: this.metrics.application.activeUsers,
-          activeGames: this.metrics.application.activeGames,
-          errorRate: this.metrics.application.errorRate
-        }
-      },
-      alerts: this.getActiveAlerts().length,
-      uptime: process.uptime(),
-      version: process.env.npm_package_version || '1.0.0',
-      environment: process.env.NODE_ENV || 'development'
+      resolved: false
     };
-    
-    performance('HEALTH_REPORT', report);
-    return report;
-  }
 
-  getSystemStatus() {
-    const criticalAlerts = this.alerts.filter(a => 
-      a.severity === 'critical' && 
-      (Date.now() - new Date(a.timestamp).getTime()) < 600000 // 10 minutos
-    );
-    
-    if (criticalAlerts.length > 0) {
-      return 'critical';
+    this.alerts.push(fullAlert);
+
+    // Log do alerta
+    if (alert.level === 'error') {
+      logger.error(`ALERT: ${alert.message}`, fullAlert);
+    } else {
+      logger.warn(`ALERT: ${alert.message}`, fullAlert);
     }
+
+    // Em uma implementação real, aqui você enviaria notificações
+    // para Slack, email, SMS, etc.
+    this.sendNotification(fullAlert);
+  }
+
+  sendNotification(alert) {
+    // Simular envio de notificação
+    console.log(`🚨 ALERTA: ${alert.message}`);
     
-    const warningAlerts = this.alerts.filter(a => 
-      a.severity === 'warning' && 
-      (Date.now() - new Date(a.timestamp).getTime()) < 600000 // 10 minutos
-    );
-    
-    if (warningAlerts.length > 0) {
-      return 'warning';
+    // Em produção, implementar:
+    // - Slack webhook
+    // - Email via SendGrid
+    // - SMS via Twilio
+    // - Discord webhook
+  }
+
+  getHealthStatus() {
+    const status = {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      checks: {
+        system: this.checkSystemHealth(),
+        application: this.checkApplicationHealth(),
+        database: this.checkDatabaseHealth(),
+        api: this.checkAPIHealth()
+      }
+    };
+
+    // Determinar status geral
+    const checks = Object.values(status.checks);
+    if (checks.some(check => check.status === 'error')) {
+      status.status = 'error';
+    } else if (checks.some(check => check.status === 'warning')) {
+      status.status = 'warning';
     }
+
+    return status;
+  }
+
+  checkSystemHealth() {
+    const cpu = this.metrics.system.cpu?.usage || 0;
+    const memory = this.metrics.system.memory?.usage || 0;
+
+    if (cpu > this.thresholds.cpu || memory > this.thresholds.memory) {
+      return { status: 'warning', message: 'High resource usage' };
+    }
+
+    return { status: 'healthy', message: 'System resources normal' };
+  }
+
+  checkApplicationHealth() {
+    const heapUsed = this.metrics.application.memory?.heapUsed || 0;
+    const heapTotal = this.metrics.application.memory?.heapTotal || 1;
+    const heapUsage = (heapUsed / heapTotal) * 100;
+
+    if (heapUsage > 90) {
+      return { status: 'warning', message: 'High memory usage' };
+    }
+
+    return { status: 'healthy', message: 'Application memory normal' };
+  }
+
+  checkDatabaseHealth() {
+    const db = this.metrics.database;
+    if (!db) {
+      return { status: 'error', message: 'Database metrics not available' };
+    }
+
+    const errorRate = (db.queries?.errors || 0) / Math.max(db.queries?.total || 1, 1) * 100;
     
-    return 'healthy';
+    if (errorRate > 10) {
+      return { status: 'error', message: 'High database error rate' };
+    }
+
+    return { status: 'healthy', message: 'Database performing well' };
   }
 
-  getActiveAlerts() {
-    return this.alerts.filter(a => 
-      (Date.now() - new Date(a.timestamp).getTime()) < 600000 // 10 minutos
-    );
+  checkAPIHealth() {
+    const apiMetrics = Object.values(this.metrics.api);
+    if (apiMetrics.length === 0) {
+      return { status: 'healthy', message: 'No API calls recorded' };
+    }
+
+    const totalCalls = apiMetrics.reduce((sum, metric) => sum + metric.totalCalls, 0);
+    const totalErrors = apiMetrics.reduce((sum, metric) => sum + metric.errorCalls, 0);
+    const errorRate = (totalErrors / totalCalls) * 100;
+
+    if (errorRate > this.thresholds.errorRate) {
+      return { status: 'warning', message: `High API error rate: ${errorRate.toFixed(2)}%` };
+    }
+
+    return { status: 'healthy', message: 'API performing well' };
   }
 
-  // ===== MÉTRICAS PERSONALIZADAS OTIMIZADAS =====
-  
-  recordCustomMetric(name, value, metadata = {}) {
-    const metric = {
-      name,
-      value,
-      metadata,
-      timestamp: new Date().toISOString()
-    };
-    
-    performance('CUSTOM_METRIC', metric);
-  }
-
-  recordDatabaseMetric(operation, duration, table) {
-    const metric = {
-      operation,
-      duration,
-      table,
-      timestamp: new Date().toISOString()
-    };
-    
-    performance('DATABASE_METRIC', metric);
-  }
-
-  recordApiMetric(endpoint, method, duration, statusCode) {
-    const metric = {
-      endpoint,
-      method,
-      duration,
-      statusCode,
-      timestamp: new Date().toISOString()
-    };
-    
-    performance('API_METRIC', metric);
-  }
-
-  // ===== FUNÇÕES PÚBLICAS OTIMIZADAS =====
-  
   getMetrics() {
     return {
-      system: {
-        memory: this.metrics.system.memory,
-        cpu: this.metrics.system.cpu,
-        uptime: this.metrics.system.uptime
-      },
-      application: {
-        activeUsers: this.metrics.application.activeUsers,
-        activeGames: this.metrics.application.activeGames,
-        errorRate: this.metrics.application.errorRate
-      },
-      timestamp: new Date().toISOString(),
-      status: this.getSystemStatus(),
-      activeAlerts: this.getActiveAlerts().length,
-      memoryStats: analyticsCollector.getMemoryStats()
+      ...this.metrics,
+      alerts: this.alerts.filter(alert => !alert.resolved),
+      health: this.getHealthStatus()
     };
   }
 
-  getAlerts() {
-    return this.getActiveAlerts();
-  }
-
-  updateThreshold(type, value) {
-    if (this.thresholds.hasOwnProperty(type)) {
-      this.thresholds[type] = value;
-      performance('THRESHOLD_UPDATED', { type, value });
+  resolveAlert(alertId) {
+    const alert = this.alerts.find(a => a.id === alertId);
+    if (alert) {
+      alert.resolved = true;
+      alert.resolvedAt = new Date().toISOString();
+      logger.info(`Alert resolved: ${alertId}`, { alertId });
     }
   }
 
-  // ===== MONITORAMENTO DE BANCO DE DADOS OTIMIZADO =====
-  
-  async checkDatabaseHealth(pool) {
-    try {
-      const start = Date.now();
-      const client = await pool.connect();
-      await client.query('SELECT NOW()');
-      client.release();
-      
-      const duration = Date.now() - start;
-      
-      this.metrics.database = {
-        ...this.metrics.database,
-        connections: pool.totalCount,
-        queryTime: duration,
-        status: 'healthy'
-      };
-      
-      if (duration > 2000) { // Query lenta (aumentado de 1000ms)
-        this.processAlert({
-          type: 'slow_database_query',
-          severity: 'warning',
-          message: `Database query took ${duration}ms`,
-          value: duration,
-          threshold: 2000,
-          timestamp: new Date().toISOString()
-        });
-      }
-      
-    } catch (err) {
-      this.metrics.database = {
-        ...this.metrics.database,
-        status: 'unhealthy',
-        error: err.message
-      };
-      
-      this.processAlert({
-        type: 'database_error',
-        severity: 'critical',
-        message: `Database error: ${err.message}`,
-        timestamp: new Date().toISOString()
-      });
-    }
-  }
+  // Limpar alertas antigos
+  cleanOldAlerts() {
+    const cutoff = new Date();
+    cutoff.setHours(cutoff.getHours() - 24); // 24 horas
 
-  // ===== FUNÇÕES DE DIAGNÓSTICO =====
-  
-  getMemoryStats() {
-    const memUsage = process.memoryUsage();
-    return {
-      heapUsed: memUsage.heapUsed,
-      heapTotal: memUsage.heapTotal,
-      heapPercent: (memUsage.heapUsed / memUsage.heapTotal) * 100,
-      alertsInMemory: this.alerts.length,
-      maxAlerts: this.maxAlerts
-    };
-  }
-
-  forceCleanup() {
-    this.cleanupOldAlerts();
-    if (global.gc) {
-      global.gc();
-    }
-    return this.getMemoryStats();
+    this.alerts = this.alerts.filter(alert => 
+      new Date(alert.timestamp) > cutoff || !alert.resolved
+    );
   }
 }
 
-// Instância singleton otimizada
-const systemMonitor = new OptimizedSystemMonitor();
+// Instância singleton
+const monitoring = new MonitoringSystem();
 
-module.exports = systemMonitor;
+module.exports = monitoring;

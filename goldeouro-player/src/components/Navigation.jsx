@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSidebar } from '../contexts/SidebarContext'
+import apiClient from '../services/apiClient'
 
 const Navigation = () => {
   const navigate = useNavigate()
@@ -57,6 +58,31 @@ const Navigation = () => {
         ? 'bg-yellow-500 text-white'
         : 'text-white hover:bg-yellow-600'
     }`
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('authToken')
+      
+      if (token) {
+        // Chamar endpoint de logout no backend
+        await apiClient.post('/auth/logout', { token })
+      }
+      
+      // Limpar dados locais
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('user')
+      
+      // Redirecionar para login
+      navigate('/')
+      
+    } catch (error) {
+      console.error('Erro no logout:', error)
+      // Mesmo com erro, fazer logout local
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('user')
+      navigate('/')
+    }
+  }
 
 
   return (
@@ -129,10 +155,7 @@ const Navigation = () => {
           
           {/* Botão de Logout */}
           <button
-            onClick={() => {
-              // Implementar logout
-              alert('Funcionalidade de logout será implementada em breve!')
-            }}
+            onClick={handleLogout}
             className={`flex items-center gap-3 w-full py-3 text-white hover:bg-red-600 rounded-lg transition-colors font-medium ${isCollapsed ? 'justify-center px-2' : 'px-4'}`}
             title={isCollapsed ? 'Sair' : ''}
           >

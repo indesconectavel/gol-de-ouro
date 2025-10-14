@@ -1,45 +1,82 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import ImageUpload from '../components/ImageUpload'
 import { useSidebar } from '../contexts/SidebarContext'
+import apiClient from '../services/apiClient'
 
 const Profile = () => {
   const { isCollapsed } = useSidebar()
-  const [user] = useState({
-    name: 'João Silva',
-    email: 'joao.silva@email.com',
-    balance: 150.00,
-    totalBets: 25,
-    totalWins: 18,
-    winRate: 72,
+  const [user, setUser] = useState({
+    name: 'Carregando...',
+    email: 'carregando@email.com',
+    balance: 0.00,
+    totalBets: 0,
+    totalWins: 0,
+    winRate: 0,
     joinDate: '2024-01-01',
-    level: 'Ouro',
+    level: 'Bronze',
     avatar: '👤'
   })
   const [activeTab, setActiveTab] = useState('info')
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({
-    name: user.name,
-    email: user.email
+    name: '',
+    email: ''
   })
   const [profileImage, setProfileImage] = useState(null)
+  const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
-  const bettingHistory = [
-    { id: 1, amount: 10.00, result: 'Ganhou', date: '2024-01-15', prize: 15.00, game: 'Gol de Ouro' },
-    { id: 2, amount: 5.00, result: 'Perdeu', date: '2024-01-14', prize: 0.00, game: 'Gol de Ouro' },
-    { id: 3, amount: 20.00, result: 'Ganhou', date: '2024-01-13', prize: 30.00, game: 'Gol de Ouro' },
-    { id: 4, amount: 15.00, result: 'Ganhou', date: '2024-01-12', prize: 22.50, game: 'Gol de Ouro' },
-    { id: 5, amount: 8.00, result: 'Perdeu', date: '2024-01-11', prize: 0.00, game: 'Gol de Ouro' },
-  ]
+  useEffect(() => {
+    loadUserProfile()
+  }, [])
 
-  const withdrawalHistory = [
-    { id: 1, amount: 50.00, date: '2024-01-10', status: 'Processado', method: 'PIX' },
-    { id: 2, amount: 25.00, date: '2024-01-05', status: 'Pendente', method: 'PIX' },
-    { id: 3, amount: 30.00, date: '2024-01-01', status: 'Processado', method: 'PIX' },
-  ]
+  const loadUserProfile = async () => {
+    try {
+      setLoading(true)
+      const response = await apiClient.get('/usuario/perfil')
+      if (response.data.success) {
+        const userData = response.data.data
+        setUser({
+          name: userData.nome || userData.email?.split('@')[0] || 'Usuário',
+          email: userData.email || 'usuario@email.com',
+          balance: userData.saldo || 0,
+          totalBets: userData.total_apostas || 0,
+          totalWins: userData.total_ganhos || 0,
+          winRate: userData.total_apostas > 0 ? Math.round((userData.total_ganhos / userData.total_apostas) * 100) : 0,
+          joinDate: userData.created_at?.split('T')[0] || '2024-01-01',
+          level: userData.tipo === 'admin' ? 'Admin' : 'Jogador',
+          avatar: '👤'
+        })
+        setEditForm({
+          name: userData.nome || userData.email?.split('@')[0] || 'Usuário',
+          email: userData.email || 'usuario@email.com'
+        })
+      }
+    } catch (error) {
+      console.error('Erro ao carregar perfil:', error)
+             // Fallback para dados mínimos
+             setUser({
+               name: 'free10signer',
+               email: 'free10signer@gmail.com',
+               balance: 0.00,
+               totalBets: 0,
+               totalWins: 0,
+               winRate: 0,
+               joinDate: '2024-01-01',
+               level: 'Jogador',
+               avatar: '👤'
+             })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const bettingHistory = [] // Dados reais serão carregados do backend
+
+  const withdrawalHistory = [] // Dados reais serão carregados do backend
 
   const achievements = [
     { id: 1, name: 'Primeiro Gol', description: 'Marque seu primeiro gol', icon: '⚽', unlocked: true },

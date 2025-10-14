@@ -37,7 +37,7 @@ logFiles.forEach(file => {
 });
 
 // Verificar dependências
-const packageJson = require('../package.json');
+const packageJson = require('./package.json');
 const requiredDeps = [
   'winston',
   'prom-client',

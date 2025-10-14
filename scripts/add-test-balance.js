@@ -1,5 +1,5 @@
 const { Pool } = require('pg');
-const env = require('../config/env');
+const env = require('./config/env');
 
 // Configurar conexão com o banco
 const pool = new Pool({

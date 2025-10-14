@@ -1,20 +1,20 @@
 ﻿// Configuração ULTRA DEFINITIVA - Gol de Ouro Player
 const environments = {
   development: {
-    API_BASE_URL: 'https://goldeouro-backend-v2.fly.dev/api', // FORÇAR BACKEND DIRETO
+    API_BASE_URL: 'https://goldeouro-backend.fly.dev', // BACKEND CORRETO
     USE_MOCKS: false,
     USE_SANDBOX: false,
     LOG_LEVEL: 'debug'
   },
   staging: {
-    API_BASE_URL: 'https://goldeouro-backend-v2.fly.dev/api', // FORÇAR BACKEND DIRETO
+    API_BASE_URL: 'https://goldeouro-backend.fly.dev', // BACKEND CORRETO
     USE_MOCKS: false,
     USE_SANDBOX: true,
     LOG_LEVEL: 'info'
   },
   production: {
-    // FORÇAR SEMPRE BACKEND DIRETO - CONTORNAR PROBLEMA DO VERCEL
-    API_BASE_URL: 'https://goldeouro-backend-v2.fly.dev/api',
+    // BACKEND CORRETO PARA PRODUÇÃO
+    API_BASE_URL: 'https://goldeouro-backend.fly.dev', // BACKEND CORRETO
     USE_MOCKS: false,
     USE_SANDBOX: false,
     LOG_LEVEL: 'error'

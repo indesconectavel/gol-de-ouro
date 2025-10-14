@@ -8,7 +8,7 @@ async function executeSchema() {
     console.log('🗄️ Executando schema do banco de dados...');
     
     // Ler o arquivo schema
-    const schemaPath = path.join(__dirname, '..', 'database-schema.sql');
+    const schemaPath = path.join(__dirname, '..', 'database', 'schema.sql');
     const schema = fs.readFileSync(schemaPath, 'utf8');
     
     // Dividir em comandos individuais

@@ -1,5 +1,5 @@
 // src/middlewares/authMiddleware.js
-const env = require('../config/env');
+const env = require('./config/env');
 const jwt = require('jsonwebtoken');
 
 // Middleware de autenticação para rotas administrativas

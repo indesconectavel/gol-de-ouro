@@ -1,220 +1,253 @@
-/**
- * Sistema de Logging Estruturado com Winston
- * ETAPA 5 - Analytics e Monitoramento
- */
-
-const winston = require('winston');
+// Sistema de Logs Estruturados - Gol de Ouro v1.1.1
+const fs = require('fs-extra');
 const path = require('path');
 
-// Configuração de formatos personalizados
-const logFormat = winston.format.combine(
-  winston.format.timestamp({
-    format: 'YYYY-MM-DD HH:mm:ss'
-  }),
-  winston.format.errors({ stack: true }),
-  winston.format.json(),
-  winston.format.printf(({ timestamp, level, message, ...meta }) => {
-    let log = `${timestamp} [${level.toUpperCase()}] ${message}`;
+class Logger {
+  constructor() {
+    this.logDir = path.join(__dirname, '..', '..', 'logs');
+    this.levels = {
+      error: 0,
+      warn: 1,
+      info: 2,
+      debug: 3
+    };
+    this.currentLevel = process.env.LOG_LEVEL || 'info';
+    this.maxFileSize = 10 * 1024 * 1024; // 10MB
+    this.maxFiles = 5;
     
-    // Adicionar metadados se existirem
-    if (Object.keys(meta).length > 0) {
-      log += ` | ${JSON.stringify(meta)}`;
+    this.ensureLogDirectory();
+  }
+
+  ensureLogDirectory() {
+    if (!fs.existsSync(this.logDir)) {
+      fs.mkdirSync(this.logDir, { recursive: true });
     }
-    
-    return log;
-  })
-);
+  }
 
-// Configuração de transportes
-const transports = [
-  // Console para desenvolvimento
-  new winston.transports.Console({
-    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
-    )
-  }),
-  
-  // Arquivo para todos os logs
-  new winston.transports.File({
-    filename: path.join(__dirname, '../../logs/application.log'),
-    level: 'info',
-    format: logFormat,
-    maxsize: 5242880, // 5MB
-    maxFiles: 5
-  }),
-  
-  // Arquivo apenas para erros
-  new winston.transports.File({
-    filename: path.join(__dirname, '../../logs/error.log'),
-    level: 'error',
-    format: logFormat,
-    maxsize: 5242880, // 5MB
-    maxFiles: 5
-  })
-];
+  log(level, message, meta = {}) {
+    if (this.levels[level] > this.levels[this.currentLevel]) {
+      return;
+    }
 
-// Criar logger principal
-const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: logFormat,
-  transports,
-  exitOnError: false
-});
-
-// Logger especializado para analytics
-const analyticsLogger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.File({
-      filename: path.join(__dirname, '../../logs/analytics.log'),
-      maxsize: 10485760, // 10MB
-      maxFiles: 10
-    })
-  ]
-});
-
-// Logger para performance
-const performanceLogger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.File({
-      filename: path.join(__dirname, '../../logs/performance.log'),
-      maxsize: 5242880, // 5MB
-      maxFiles: 5
-    })
-  ]
-});
-
-// Logger para segurança
-const securityLogger = winston.createLogger({
-  level: 'warn',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.File({
-      filename: path.join(__dirname, '../../logs/security.log'),
-      maxsize: 5242880, // 5MB
-      maxFiles: 10
-    }),
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    })
-  ]
-});
-
-// Métodos utilitários para logging estruturado
-const loggers = {
-  // Logger principal
-  info: (message, meta = {}) => logger.info(message, meta),
-  warn: (message, meta = {}) => logger.warn(message, meta),
-  error: (message, meta = {}) => logger.error(message, meta),
-  debug: (message, meta = {}) => logger.debug(message, meta),
-  
-  // Analytics
-  analytics: (event, data = {}) => {
-    analyticsLogger.info('ANALYTICS_EVENT', {
-      event,
+    const logEntry = {
       timestamp: new Date().toISOString(),
-      ...data
-    });
-  },
-  
-  // Performance
-  performance: (operation, duration, meta = {}) => {
-    performanceLogger.info('PERFORMANCE_METRIC', {
-      operation,
-      duration,
-      timestamp: new Date().toISOString(),
-      ...meta
-    });
-  },
-  
-  // Segurança
-  security: (event, data = {}) => {
-    securityLogger.warn('SECURITY_EVENT', {
-      event,
-      timestamp: new Date().toISOString(),
-      ...data
-    });
-  },
-  
-  // Métricas de negócio
-  business: (metric, value, meta = {}) => {
-    analyticsLogger.info('BUSINESS_METRIC', {
-      metric,
-      value,
-      timestamp: new Date().toISOString(),
+      level: level.toUpperCase(),
+      message: message,
+      meta: meta,
+      pid: process.pid,
+      hostname: require('os').hostname()
+    };
+
+    // Log para console
+    this.logToConsole(logEntry);
+
+    // Log para arquivo
+    this.logToFile(level, logEntry);
+  }
+
+  logToConsole(entry) {
+    const colors = {
+      ERROR: '\x1b[31m', // Vermelho
+      WARN: '\x1b[33m',  // Amarelo
+      INFO: '\x1b[36m',  // Ciano
+      DEBUG: '\x1b[37m'  // Branco
+    };
+    const reset = '\x1b[0m';
+
+    const color = colors[entry.level] || '';
+    const metaStr = Object.keys(entry.meta).length > 0 ? 
+      ` ${JSON.stringify(entry.meta)}` : '';
+
+    console.log(
+      `${color}[${entry.timestamp}] ${entry.level}: ${entry.message}${metaStr}${reset}`
+    );
+  }
+
+  logToFile(level, entry) {
+    const logFile = path.join(this.logDir, `${level}.log`);
+    const logLine = JSON.stringify(entry) + '\n';
+
+    // Verificar tamanho do arquivo
+    this.rotateLogFileIfNeeded(logFile);
+
+    // Escrever no arquivo
+    fs.appendFileSync(logFile, logLine);
+  }
+
+  rotateLogFileIfNeeded(logFile) {
+    if (!fs.existsSync(logFile)) return;
+
+    const stats = fs.statSync(logFile);
+    if (stats.size > this.maxFileSize) {
+      // Rotacionar arquivo
+      for (let i = this.maxFiles - 1; i > 0; i--) {
+        const oldFile = `${logFile}.${i}`;
+        const newFile = `${logFile}.${i + 1}`;
+        
+        if (fs.existsSync(oldFile)) {
+          fs.renameSync(oldFile, newFile);
+        }
+      }
+      
+      // Mover arquivo atual para .1
+      fs.renameSync(logFile, `${logFile}.1`);
+    }
+  }
+
+  error(message, meta = {}) {
+    this.log('error', message, meta);
+  }
+
+  warn(message, meta = {}) {
+    this.log('warn', message, meta);
+  }
+
+  info(message, meta = {}) {
+    this.log('info', message, meta);
+  }
+
+  debug(message, meta = {}) {
+    this.log('debug', message, meta);
+  }
+
+  // Logs específicos do sistema
+  logAuth(action, userId, success, meta = {}) {
+    this.info(`Auth: ${action}`, {
+      userId,
+      success,
+      action: 'auth',
       ...meta
     });
   }
-};
 
-// Middleware para logging de requisições HTTP
-const requestLogger = (req, res, next) => {
-  const start = Date.now();
-  
-  // Log da requisição
-  loggers.info('HTTP_REQUEST', {
-    method: req.method,
-    url: req.url,
-    userAgent: req.get('User-Agent'),
-    ip: req.ip,
-    userId: req.user?.id || null
-  });
-  
-  // Interceptar resposta para log de performance
-  const originalSend = res.send;
-  res.send = function(data) {
-    const duration = Date.now() - start;
-    
-    loggers.performance('HTTP_REQUEST', duration, {
-      method: req.method,
-      url: req.url,
-      statusCode: res.statusCode,
-      contentLength: data ? data.length : 0
+  logGame(action, gameId, userId, meta = {}) {
+    this.info(`Game: ${action}`, {
+      gameId,
+      userId,
+      action: 'game',
+      ...meta
     });
+  }
+
+  logPayment(action, transactionId, userId, amount, meta = {}) {
+    this.info(`Payment: ${action}`, {
+      transactionId,
+      userId,
+      amount,
+      action: 'payment',
+      ...meta
+    });
+  }
+
+  logError(error, context = {}) {
+    this.error('System Error', {
+      message: error.message,
+      stack: error.stack,
+      ...context
+    });
+  }
+
+  logSecurity(event, userId, ip, meta = {}) {
+    this.warn(`Security: ${event}`, {
+      userId,
+      ip,
+      event: 'security',
+      ...meta
+    });
+  }
+
+  // Métricas de performance
+  logPerformance(operation, duration, meta = {}) {
+    this.info(`Performance: ${operation}`, {
+      operation,
+      duration: `${duration}ms`,
+      action: 'performance',
+      ...meta
+    });
+  }
+
+  // Logs de API
+  logAPI(method, url, statusCode, duration, userId = null) {
+    const level = statusCode >= 400 ? 'warn' : 'info';
+    this.log(level, `API: ${method} ${url}`, {
+      method,
+      url,
+      statusCode,
+      duration: `${duration}ms`,
+      userId,
+      action: 'api'
+    });
+  }
+
+  // Logs de WebSocket
+  logWebSocket(event, userId, meta = {}) {
+    this.info(`WebSocket: ${event}`, {
+      userId,
+      event: 'websocket',
+      ...meta
+    });
+  }
+
+  // Logs de banco de dados
+  logDatabase(operation, table, duration, meta = {}) {
+    this.debug(`Database: ${operation}`, {
+      operation,
+      table,
+      duration: `${duration}ms`,
+      action: 'database',
+      ...meta
+    });
+  }
+
+  // Obter logs recentes
+  async getRecentLogs(level = 'info', limit = 100) {
+    const logFile = path.join(this.logDir, `${level}.log`);
     
-    originalSend.call(this, data);
-  };
-  
-  next();
-};
+    if (!fs.existsSync(logFile)) {
+      return [];
+    }
 
-// Middleware para logging de erros
-const errorLogger = (err, req, res, next) => {
-  loggers.error('HTTP_ERROR', {
-    error: err.message,
-    stack: err.stack,
-    method: req.method,
-    url: req.url,
-    ip: req.ip,
-    userId: req.user?.id || null
-  });
-  
-  next(err);
-};
+    try {
+      const content = fs.readFileSync(logFile, 'utf8');
+      const lines = content.trim().split('\n').slice(-limit);
+      
+      return lines.map(line => {
+        try {
+          return JSON.parse(line);
+        } catch (error) {
+          return { message: line, timestamp: new Date().toISOString() };
+        }
+      });
+    } catch (error) {
+      this.error('Erro ao ler logs', { error: error.message });
+      return [];
+    }
+  }
 
-module.exports = {
-  logger,
-  analyticsLogger,
-  performanceLogger,
-  securityLogger,
-  ...loggers,
-  requestLogger,
-  errorLogger
-};
+  // Limpar logs antigos
+  async cleanOldLogs(days = 30) {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    try {
+      const files = fs.readdirSync(this.logDir);
+      
+      for (const file of files) {
+        const filePath = path.join(this.logDir, file);
+        const stats = fs.statSync(filePath);
+        
+        if (stats.mtime < cutoffDate) {
+          fs.removeSync(filePath);
+          this.info(`Log removido: ${file}`);
+        }
+      }
+    } catch (error) {
+      this.error('Erro ao limpar logs antigos', { error: error.message });
+    }
+  }
+}
+
+// Instância singleton
+const logger = new Logger();
+
+module.exports = logger;

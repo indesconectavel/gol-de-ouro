@@ -3,8 +3,8 @@
  * ETAPA 5 - Analytics e Monitoramento
  */
 
-const analyticsCollector = require('../src/utils/analytics');
-const { recordBusinessMetric } = require('../src/utils/metrics');
+const analyticsCollector = require('./src/utils/analytics');
+const { recordBusinessMetric } = require('./src/utils/metrics');
 
 // Middleware para rastrear eventos de API
 const trackApiEvent = (eventType) => {
@@ -174,7 +174,7 @@ const trackDatabaseQuery = (queryType, table) => {
       const duration = (Date.now() - startTime) / 1000; // em segundos
       
       // Registrar métrica de banco de dados
-      const { recordDatabaseQuery } = require('../src/utils/metrics');
+      const { recordDatabaseQuery } = require('./src/utils/metrics');
       recordDatabaseQuery(queryType, table, duration);
       
       originalSend.call(this, data);

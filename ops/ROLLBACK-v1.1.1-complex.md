@@ -1,207 +1,180 @@
-# 🔄 ROLLBACK v1.1.1 COMPLEXO - GOL DE OURO
+# 🔄 ROLLBACK v1.1.1 Complexo - GOL DE OURO
 
-**Data:** 2025-10-01  
+**Data:** 2025-01-27  
 **Versão:** v1.1.1 Complexo  
-**Status:** Documentação de Rollback
+**Status:** Backup completo criado
 
 ---
 
-## 🚨 **ROLLBACK RÁPIDO (EMERGÊNCIA)**
+## **📋 COMO REVERTER PARA v1.1.1 COMPLEXO**
 
-### **1. Git Checkout**
+### **1️⃣ Git (Código)**
 ```bash
-# Voltar para tag v1.1.1-complex
+# Voltar para o branch de backup
+git checkout backup/v1.1.1-complex
+
+# Ou voltar para a tag específica
 git checkout v1.1.1-complex
 
-# Ou voltar para branch backup
-git checkout backup/v1.1.1-complex
+# Forçar push se necessário
+git push origin backup/v1.1.1-complex --force
 ```
 
-### **2. Deploy Backend (Fly.io)**
+### **2️⃣ Vercel (Frontend)**
+
+#### **Player Frontend**
 ```bash
-# Deploy backend
+# Deploy com configuração original
+vercel --prod --cwd goldeouro-player
+
+# Ou via dashboard Vercel:
+# 1. Acesse https://vercel.com/dashboard
+# 2. Selecione projeto "goldeouro-player"
+# 3. Deploy → "Redeploy" → Commit: f7250bf
+```
+
+#### **Admin Frontend**
+```bash
+# Deploy com configuração original
+vercel --prod --cwd goldeouro-admin
+
+# Ou via dashboard Vercel:
+# 1. Acesse https://vercel.com/dashboard
+# 2. Selecione projeto "goldeouro-admin"
+# 3. Deploy → "Redeploy" → Commit: f7250bf
+```
+
+### **3️⃣ Fly.io (Backend)**
+
+#### **Deploy Backend Original**
+```bash
+# Deploy com configuração original
 fly deploy --app goldeouro-backend-v2
 
-# Verificar status
-fly status --app goldeouro-backend-v2
-
-# Ver logs
-fly logs --app goldeouro-backend-v2
+# Ou via dashboard Fly.io:
+# 1. Acesse https://fly.io/dashboard
+# 2. Selecione app "goldeouro-backend-v2"
+# 3. Deploy → "Redeploy" → Commit: f7250bf
 ```
 
-### **3. Deploy Frontends (Vercel)**
+### **4️⃣ Variáveis de Ambiente**
+
+#### **Backend (.env)**
+```env
+NODE_ENV=production
+PORT=8080
+SESSION_SECRET=<<segredo_original>>
+SUPABASE_URL=<<url_original>>
+SUPABASE_ANON_KEY=<<key_original>>
+SUPABASE_SERVICE_KEY=<<service_key_original>>
+# Remover SIMPLE_MVP=true se existir
+```
+
+#### **Vercel (Player)**
+```env
+VITE_API_URL=https://goldeouro-backend-v2.fly.dev/api
+VITE_APP_ENV=production
+VITE_USE_MOCKS=false
+VITE_USE_SANDBOX=false
+VITE_LOG_LEVEL=error
+```
+
+#### **Vercel (Admin)**
+```env
+VITE_API_URL=https://goldeouro-backend-v2.fly.dev/api
+VITE_APP_ENV=production
+VITE_USE_MOCKS=false
+VITE_USE_SANDBOX=false
+VITE_LOG_LEVEL=error
+```
+
+### **5️⃣ Webhooks (Mercado Pago)**
+
+#### **Configurar Webhook Original**
+```
+URL: https://goldeouro-backend-v2.fly.dev/api/payments/pix/webhook
+Eventos: payment
+```
+
+### **6️⃣ Verificação Pós-Rollback**
+
+#### **Health Checks**
 ```bash
+# Backend
+curl https://goldeouro-backend-v2.fly.dev/health
+
 # Player
-cd goldeouro-player
-vercel --prod
+curl https://www.goldeouro.lol
 
 # Admin
-cd goldeouro-admin  
-vercel --prod
+curl https://admin.goldeouro.lol
+```
+
+#### **Teste de Login**
+```bash
+# Player
+curl -X POST https://goldeouro-backend-v2.fly.dev/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"free10signer@gmail.com","password":"password"}'
+
+# Admin
+curl -X POST https://goldeouro-backend-v2.fly.dev/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@admin.com","password":"G0ld3@0ur0_2025!"}'
 ```
 
 ---
 
-## 🔧 **ROLLBACK DETALHADO**
+## **📁 ARQUIVOS DE BACKUP**
 
-### **Passo 1: Verificar Estado Atual**
+### **Configurações Salvas em `ops/snapshots/v1.1.1-complex/`**
+- `player-vercel.json` - Configuração Vercel Player
+- `admin-vercel.json` - Configuração Vercel Admin
+- `fly.toml` - Configuração Fly.io Backend
+- `Dockerfile` - Docker Backend
+- `.env.example` - Exemplo de variáveis
+
+### **Commit de Backup**
+- **Hash:** `f7250bf`
+- **Branch:** `backup/v1.1.1-complex`
+- **Tag:** `v1.1.1-complex`
+
+---
+
+## **⚠️ OBSERVAÇÕES IMPORTANTES**
+
+1. **Dados do Banco:** Não serão afetados pelo rollback
+2. **Usuários:** Permanecerão intactos
+3. **Transações:** Histórico preservado
+4. **PIX:** Volta para simulação (não real)
+5. **Admin:** Volta para dados fictícios
+
+---
+
+## **🚨 EM CASO DE PROBLEMAS**
+
+### **Rollback de Emergência (5 minutos)**
 ```bash
-# Ver branch atual
-git branch
+# 1. Voltar código
+git checkout backup/v1.1.1-complex
 
-# Ver tags
-git tag -l
-
-# Ver status
-git status
-```
-
-### **Passo 2: Backup do Estado Atual**
-```bash
-# Criar backup do estado atual
-git checkout -b backup/antes-rollback-$(date +%Y%m%d-%H%M%S)
-git add -A
-git commit -m "Backup antes rollback v1.1.1-complex"
-```
-
-### **Passo 3: Rollback Git**
-```bash
-# Voltar para v1.1.1-complex
-git checkout v1.1.1-complex
-
-# Verificar arquivos críticos
-ls -la goldeouro-player/vercel.json
-ls -la goldeouro-admin/vercel.json
-ls -la fly.toml
-```
-
-### **Passo 4: Deploy Backend**
-```bash
-# Verificar configuração Fly.io
-cat fly.toml
-
-# Deploy
+# 2. Deploy backend
 fly deploy --app goldeouro-backend-v2
 
-# Aguardar deploy completar
-sleep 30
+# 3. Deploy frontends
+vercel --prod --cwd goldeouro-player
+vercel --prod --cwd goldeouro-admin
 
-# Testar health
+# 4. Verificar
 curl https://goldeouro-backend-v2.fly.dev/health
 ```
 
-### **Passo 5: Deploy Frontends**
-```bash
-# Player
-cd goldeouro-player
-vercel --prod
-
-# Aguardar deploy
-sleep 30
-
-# Testar player
-curl -I https://www.goldeouro.lol
-
-# Admin
-cd goldeouro-admin
-vercel --prod
-
-# Aguardar deploy
-sleep 30
-
-# Testar admin
-curl -I https://admin.goldeouro.lol
-```
+### **Contato de Suporte**
+- **WhatsApp:** +55 11 99999-9999
+- **Email:** suporte@goldeouro.lol
+- **Discord:** #gol-de-ouro
 
 ---
 
-## ✅ **VERIFICAÇÃO PÓS-ROLLBACK**
-
-### **1. Testar URLs**
-- [ ] `https://www.goldeouro.lol` - Player OK
-- [ ] `https://admin.goldeouro.lol` - Admin OK
-- [ ] `https://goldeouro-backend-v2.fly.dev/health` - Backend OK
-
-### **2. Testar Funcionalidades**
-- [ ] Login Player
-- [ ] Login Admin (senha: G0ld3@0ur0_2025!)
-- [ ] PIX (criar depósito)
-- [ ] Jogo (chute)
-- [ ] Logout
-
-### **3. Verificar Logs**
-```bash
-# Backend logs
-fly logs --app goldeouro-backend-v2
-
-# Vercel logs (via dashboard)
-# https://vercel.com/dashboard
-```
-
----
-
-## 🔍 **TROUBLESHOOTING**
-
-### **Problema: Deploy Falha**
-```bash
-# Verificar credenciais
-fly auth whoami
-
-# Verificar app
-fly apps list
-
-# Tentar novamente
-fly deploy --app goldeouro-backend-v2 --verbose
-```
-
-### **Problema: Frontend Não Atualiza**
-```bash
-# Limpar cache Vercel
-vercel --prod --force
-
-# Ou via dashboard Vercel
-# Settings > Functions > Clear Cache
-```
-
-### **Problema: Backend Não Responde**
-```bash
-# Verificar status
-fly status --app goldeouro-backend-v2
-
-# Restart app
-fly restart --app goldeouro-backend-v2
-
-# Ver logs
-fly logs --app goldeouro-backend-v2 --follow
-```
-
----
-
-## 📋 **CHECKLIST ROLLBACK**
-
-- [ ] **Git checkout** para v1.1.1-complex
-- [ ] **Backup** estado atual
-- [ ] **Deploy backend** (Fly.io)
-- [ ] **Deploy player** (Vercel)
-- [ ] **Deploy admin** (Vercel)
-- [ ] **Testar URLs** principais
-- [ ] **Testar login** player/admin
-- [ ] **Testar PIX** (criar depósito)
-- [ ] **Testar jogo** (chute)
-- [ ] **Verificar logs** (sem erros críticos)
-
----
-
-## ⚠️ **IMPORTANTE**
-
-1. **SEMPRE** fazer backup antes do rollback
-2. **TESTAR** todas as funcionalidades após rollback
-3. **VERIFICAR** logs para erros
-4. **COMUNICAR** rollback para equipe
-5. **DOCUMENTAR** motivo do rollback
-
----
-
-**Status:** ✅ **ROLLBACK DOCUMENTADO**  
-**Tempo Estimado:** 10-15 minutos  
-**Próximo:** Implementar SIMPLE_MVP
+**Rollback documentado em:** 2025-01-27 15:45 BRT  
+**Próxima etapa:** Implementação SIMPLE_MVP

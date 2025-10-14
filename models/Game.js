@@ -1,4 +1,4 @@
-const pool = require('../db');
+const pool = require('./db');
 
 // Modelo Game para PostgreSQL
 class Game {

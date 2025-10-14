@@ -1,4 +1,4 @@
-const pool = require('../db');
+const pool = require('./db');
 
 // Modelo User para PostgreSQL
 class User {

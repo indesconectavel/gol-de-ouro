@@ -1,5 +1,5 @@
 // Serviço PIX para Produção - Gol de Ouro v1.1.1
-const { supabase } = require('../database/supabase-config');
+const { supabase } = require('./database/supabase-config');
 
 // Configurações do gateway PIX (Mercado Pago)
 const PIX_CONFIG = {

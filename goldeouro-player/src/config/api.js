@@ -6,19 +6,19 @@ const API_BASE_URL = env.API_BASE_URL;
 
 export const API_ENDPOINTS = {
   // Autenticação
-  LOGIN: `${API_BASE_URL}/auth/login`,
-  REGISTER: `${API_BASE_URL}/auth/register`,
-  PROFILE: `${API_BASE_URL}/user/me`,
+  LOGIN: `/auth/login`,
+  REGISTER: `/auth/register`,
+  PROFILE: `/user/profile`,
   
   // Pagamentos
-  PIX_CREATE: `${API_BASE_URL}/payments/pix/criar`,
-  PIX_STATUS: `${API_BASE_URL}/payments/pix/status`,
-  PIX_USER: `${API_BASE_URL}/payments/pix/usuario`,
+  PIX_CREATE: `/api/payments/pix/criar`,
+  PIX_STATUS: `/api/payments/pix/status`,
+  PIX_USER: `/api/payments/pix/usuario`,
   
   // Jogos
-  GAMES_QUEUE_ENTRAR: `${API_BASE_URL}/games/fila/entrar`,
-  GAMES_STATUS: `${API_BASE_URL}/games/status`,
-  GAMES_CHUTAR: `${API_BASE_URL}/games/chutar`,
+  GAMES_QUEUE_ENTRAR: `/api/games/fila/entrar`,
+  GAMES_STATUS: `/api/games/status`,
+  GAMES_CHUTAR: `/api/games/chutar`,
   
   // Fila
   QUEUE: `${API_BASE_URL}/fila`,
@@ -32,7 +32,10 @@ export const API_ENDPOINTS = {
   ANALYTICS_DASHBOARD: `${API_BASE_URL}/analytics/dashboard`,
   
   // Health
-  HEALTH: `${API_BASE_URL}/health`
+  HEALTH: `${API_BASE_URL}/health`,
+  
+  // Meta
+  META: `${API_BASE_URL.replace('/api', '')}/meta`
 };
 
 export default API_BASE_URL;

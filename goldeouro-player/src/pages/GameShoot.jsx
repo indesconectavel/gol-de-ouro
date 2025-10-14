@@ -159,7 +159,7 @@ export default function GameShoot() {
           return;
         }
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         if (!token) {
           navigate('/');
           return;

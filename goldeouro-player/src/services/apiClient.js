@@ -28,7 +28,7 @@ apiClient.interceptors.request.use(
       url: config.url,
       method: config.method,
       baseURL: config.baseURL,
-      fullURL: `${config.baseURL}${config.url}`
+      fullURL: config.url.startsWith('http') ? config.url : `${config.baseURL}${config.url}`
     });
     
     return config;
@@ -63,7 +63,7 @@ apiClient.interceptors.response.use(
       
       try {
         const directConfig = { ...error.config };
-        directConfig.baseURL = 'https://goldeouro-backend-v2.fly.dev/api';
+        directConfig.baseURL = 'https://goldeouro-backend.fly.dev';
         directConfig.withCredentials = false;
         
         const directResponse = await axios.request(directConfig);

@@ -1,271 +1,233 @@
-# 🎯 CHECKLIST E2E PRODUÇÃO - GOL DE OURO
+# ✅ CHECKLIST E2E - GOL DE OURO MVP
 
-**Data:** 2025-10-01  
+**Data:** 2025-01-27  
 **Versão:** v1.1.1 + SIMPLE_MVP  
-**Status:** Checklist Completo
+**Status:** Produção
 
 ---
 
-## 🚀 **PRÉ-REQUISITOS**
+## **🎯 FLUXO COMPLETO E2E**
 
-### **1. Ativar SIMPLE_MVP**
-```powershell
-# Windows PowerShell
-.\ops\activate-simple-mvp.ps1
+### **1️⃣ Preparação**
+- [ ] Acessar https://www.goldeouro.lol/kill-sw.html
+- [ ] Acessar https://admin.goldeouro.lol/kill-sw.html
+- [ ] Confirmar cache limpo
+- [ ] Verificar rewrites /api → BACKEND_URL
 
-# Linux/Mac
-./ops/activate-simple-mvp.sh
+### **2️⃣ Player Frontend**
+- [ ] **Login:** free10signer@gmail.com / password
+- [ ] **Perfil:** Dados carregando corretamente
+- [ ] **Depósito PIX:** Criar PIX de R$ 10,00
+- [ ] **Pagar PIX:** Escanear QR e pagar
+- [ ] **Saldo:** Confirmar crédito automático
+- [ ] **Jogar:** Apostar R$ 5,00 e jogar
+- [ ] **Resultado:** Ver ganho/perda no saldo
+- [ ] **Saque:** Solicitar saque de R$ 3,00
+- [ ] **Chave PIX:** Informar CPF válido
+- [ ] **Confirmação:** Saque processado automaticamente
+- [ ] **Logout:** Sair da conta
+
+### **3️⃣ Admin Frontend**
+- [ ] **Login:** admin@admin.com / password
+- [ ] **Dashboard:** Estatísticas reais carregando
+- [ ] **Usuários:** Lista de usuários reais
+- [ ] **Jogos:** Histórico de jogos reais
+- [ ] **Saques:** Lista de saques reais
+- [ ] **Logs:** Logs do sistema funcionando
+- [ ] **Logout:** Sair da conta
+
+### **4️⃣ Backend API**
+- [ ] **Health:** https://goldeouro-backend-v2.fly.dev/health
+- [ ] **Login Player:** POST /auth/login
+- [ ] **Login Admin:** POST /auth/login
+- [ ] **Perfil:** GET /api/user/me
+- [ ] **PIX Criar:** POST /api/payments/pix/criar
+- [ ] **PIX Webhook:** POST /api/payments/pix/webhook
+- [ ] **Jogo:** POST /api/games/shoot
+- [ ] **Saque:** POST /api/withdraw/request
+- [ ] **Admin Stats:** GET /api/admin/stats
+- [ ] **Logout:** POST /auth/logout
+
+---
+
+## **📊 RESULTADOS ESPERADOS**
+
+### **✅ Player Frontend**
+- Login: 200 OK
+- Perfil: 200 OK (dados reais)
+- Depósito: 200 OK (QR gerado)
+- Jogo: 200 OK (resultado correto)
+- Saque: 200 OK (processado)
+- Logout: 200 OK
+
+### **✅ Admin Frontend**
+- Login: 200 OK
+- Dashboard: 200 OK (dados reais)
+- Usuários: 200 OK (lista real)
+- Jogos: 200 OK (histórico real)
+- Saques: 200 OK (lista real)
+- Logout: 200 OK
+
+### **✅ Backend API**
+- Health: 200 OK
+- Todas as rotas: 200 OK
+- PIX funcionando: Sim
+- Webhook funcionando: Sim
+- Dados reais: Sim
+
+---
+
+## **🔧 COMANDOS DE TESTE**
+
+### **Teste E2E Automatizado**
+```bash
+node test-e2e-mvp-final.cjs
 ```
 
-### **2. Limpar Cache**
-- Acessar `https://www.goldeouro.lol/kill-sw.html`
-- Acessar `https://admin.goldeouro.lol/kill-sw.html`
-- Verificar Application → Service Workers (vazio)
+### **Teste Manual Player**
+```bash
+# Login
+curl -X POST https://goldeouro-backend-v2.fly.dev/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"free10signer@gmail.com","password":"password"}'
+
+# PIX
+curl -X POST https://goldeouro-backend-v2.fly.dev/api/payments/pix/criar \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{"amount":10.00,"description":"Teste","user_id":"free10signer@gmail.com"}'
+```
+
+### **Teste Manual Admin**
+```bash
+# Login Admin
+curl -X POST https://goldeouro-backend-v2.fly.dev/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@admin.com","password":"password"}'
+
+# Stats
+curl -X GET https://goldeouro-backend-v2.fly.dev/api/admin/stats \
+  -H "Authorization: Bearer <token>"
+```
 
 ---
 
-## 🔍 **TESTE 1: INFRAESTRUTURA**
+## **📱 TESTE PWA**
 
-### **1.1 Backend (Fly.io)**
-- [ ] **Health Check:** `https://goldeouro-backend-v2.fly.dev/health`
-- [ ] **Status:** 200 OK
-- [ ] **Resposta:** `{"ok": true, "database": "connected"}`
+### **Instalação Android**
+1. Acesse https://www.goldeouro.lol
+2. Toque no menu (3 pontos)
+3. Selecione "Adicionar à tela inicial"
+4. Confirme a instalação
+5. Teste todas as funcionalidades
 
-### **1.2 Player (Vercel)**
-- [ ] **URL:** `https://www.goldeouro.lol`
-- [ ] **Status:** 200 OK
-- [ ] **Carregamento:** Página carrega sem erros
-- [ ] **Console:** Sem erros críticos
-
-### **1.3 Admin (Vercel)**
-- [ ] **URL:** `https://admin.goldeouro.lol`
-- [ ] **Status:** 200 OK
-- [ ] **Carregamento:** Página carrega sem erros
-- [ ] **Imagem Fundo:** Carrega corretamente
-- [ ] **Console:** Sem erros CSP
+### **Instalação iOS**
+1. Acesse https://www.goldeouro.lol
+2. Toque no botão de compartilhar
+3. Selecione "Adicionar à tela inicial"
+4. Confirme a instalação
+5. Teste todas as funcionalidades
 
 ---
 
-## 🔐 **TESTE 2: AUTENTICAÇÃO**
+## **🌐 TESTE DE REDE**
 
-### **2.1 Player - Login**
-- [ ] **Acessar:** `https://www.goldeouro.lol`
-- [ ] **Login:** `free10signer@gmail.com` / `Free10signer`
-- [ ] **Resultado:** Login bem-sucedido
-- [ ] **Redirecionamento:** Para dashboard do jogo
-- [ ] **Verificar:** Cookie presente e usuário autenticado
-- [ ] **Testar:** GET /me retorna dados do usuário
+### **WiFi**
+- [ ] Login funcionando
+- [ ] PIX funcionando
+- [ ] Jogo funcionando
+- [ ] Saque funcionando
 
-### **2.2 Player - Cadastro**
-- [ ] **Acessar:** Página de cadastro
-- [ ] **Dados:** Email, senha, confirmação
-- [ ] **Resultado:** Cadastro bem-sucedido
-- [ ] **Login:** Automático após cadastro
+### **3G/4G**
+- [ ] Login funcionando
+- [ ] PIX funcionando
+- [ ] Jogo funcionando
+- [ ] Saque funcionando
 
-### **2.3 Admin - Login**
-- [ ] **Acessar:** `https://admin.goldeouro.lol`
-- [ ] **Login:** `admin@admin.com` / `G0ld3@0ur0_2025!`
-- [ ] **Resultado:** Login bem-sucedido
-- [ ] **Redirecionamento:** Para painel admin
+### **Offline**
+- [ ] App não abre (esperado)
+- [ ] Mensagem de erro clara
+- [ ] Reconexão automática
 
 ---
 
-## 💳 **TESTE 3: PIX - DEPÓSITO**
+## **🔒 TESTE DE SEGURANÇA**
 
-### **3.1 Criar Depósito PIX**
-- [ ] **Acessar:** Seção de depósito
-- [ ] **Valor:** R$ 1,00 (teste mínimo)
-- [ ] **Descrição:** "Teste depósito"
-- [ ] **Criar PIX:** Clicar em "Gerar PIX"
-- [ ] **Resultado:** QR Code gerado
-- [ ] **Status:** "Pendente"
-- [ ] **Verificar:** Payment ID e external_reference nos logs
+### **Autenticação**
+- [ ] Tokens JWT válidos
+- [ ] Cookies httpOnly
+- [ ] Sessão expira corretamente
+- [ ] Logout limpa sessão
 
-### **3.2 Verificar PIX**
-- [ ] **QR Code:** Visível e legível
-- [ ] **Código PIX:** Copiável
-- [ ] **Valor:** R$ 10,00
-- [ ] **Status:** "Pendente"
+### **PIX**
+- [ ] Validação de valores
+- [ ] Chaves PIX validadas
+- [ ] Webhook autenticado
+- [ ] Logs de auditoria
 
-### **3.3 Simular Pagamento**
-- [ ] **Usar app bancário:** Escanear QR Code
-- [ ] **Valor:** R$ 10,00
-- [ ] **Pagar:** Confirmar pagamento
-- [ ] **Resultado:** Pagamento processado
+### **Dados**
+- [ ] Senhas criptografadas
+- [ ] Dados sensíveis protegidos
+- [ ] HTTPS obrigatório
+- [ ] CORS configurado
 
 ---
 
-## 🎮 **TESTE 4: JOGO**
+## **📈 MÉTRICAS DE PERFORMANCE**
 
-### **4.1 Acessar Jogo**
-- [ ] **Dashboard:** Ver saldo atual
-- [ ] **Jogo:** Clicar em "Jogar"
-- [ ] **Carregamento:** Jogo carrega
+### **Tempo de Resposta**
+- [ ] Login: < 2s
+- [ ] PIX: < 3s
+- [ ] Jogo: < 1s
+- [ ] Saque: < 2s
 
-### **4.2 Fazer Chute**
-- [ ] **Valor:** R$ 5,00
-- [ ] **Direção:** Esquerda ou Direita
-- [ ] **Chutar:** Confirmar aposta
-- [ ] **Resultado:** Win/Lose exibido
-- [ ] **Saldo:** Atualizado corretamente
+### **Uptime**
+- [ ] Player: 99.9%
+- [ ] Admin: 99.9%
+- [ ] Backend: 99.9%
 
-### **4.3 Múltiplos Chutes**
-- [ ] **Chute 1:** R$ 2,00 - Esquerda
-- [ ] **Chute 2:** R$ 3,00 - Direita
-- [ ] **Chute 3:** R$ 1,00 - Esquerda
-- [ ] **Resultado:** Todos processados
+### **Erros**
+- [ ] Taxa de erro: < 1%
+- [ ] Timeout: < 0.1%
+- [ ] 500 errors: < 0.1%
 
 ---
 
-## 💰 **TESTE 5: SAQUE**
+## **✅ CRITÉRIOS DE ACEITE**
 
-### **5.1 Solicitar Saque**
-- [ ] **Acessar:** Seção de saque
-- [ ] **Valor:** R$ 5,00
-- [ ] **Dados PIX:** Chave PIX válida
-- [ ] **Solicitar:** Confirmar saque
-- [ ] **Resultado:** Solicitação criada
+### **Funcionalidade**
+- [ ] Fluxo completo funcionando
+- [ ] PIX real funcionando
+- [ ] Saque automático funcionando
+- [ ] Admin com dados reais
+- [ ] PWA instalável
 
-### **5.2 Verificar Status**
-- [ ] **Status:** "Pendente"
-- [ ] **Valor:** R$ 5,00
-- [ ] **Data:** Data atual
-- [ ] **ID:** Gerado
+### **Segurança**
+- [ ] Autenticação segura
+- [ ] PIX validado
+- [ ] Dados protegidos
+- [ ] Logs de auditoria
 
----
-
-## 👨‍💼 **TESTE 6: ADMIN PANEL**
-
-### **6.1 Dashboard Admin**
-- [ ] **Acessar:** `https://admin.goldeouro.lol`
-- [ ] **Login:** Credenciais admin
-- [ ] **Dashboard:** Carrega dados
-- [ ] **Métricas:** Usuários, transações, saques
-
-### **6.2 Gerenciar Usuários**
-- [ ] **Lista:** Usuários cadastrados
-- [ ] **Dados:** Nome, email, saldo
-- [ ] **Filtros:** Funcionando
-
-### **6.3 Gerenciar Transações**
-- [ ] **Lista:** Transações PIX
-- [ ] **Status:** Pendente/Aprovado
-- [ ] **Valores:** Corretos
-
-### **6.4 Gerenciar Saques**
-- [ ] **Lista:** Solicitações de saque
-- [ ] **Aprovar:** Funcionalidade
-- [ ] **Rejeitar:** Funcionalidade
+### **Performance**
+- [ ] Tempo de resposta < 3s
+- [ ] Uptime > 99%
+- [ ] Taxa de erro < 1%
 
 ---
 
-## 🔄 **TESTE 7: FLUXO COMPLETO**
+## **🆘 PROBLEMAS CONHECIDOS**
 
-### **7.1 Usuário Novo**
-1. [ ] **Cadastro:** Novo usuário
-2. [ ] **Login:** Primeiro acesso
-3. [ ] **Depósito:** PIX R$ 20,00
-4. [ ] **Jogar:** 3 chutes de R$ 5,00
-5. [ ] **Saque:** R$ 10,00
-6. [ ] **Logout:** Sair do sistema
+### **Resolvidos**
+- ✅ CSP bloqueando imagens
+- ✅ Service Worker causando cache
+- ✅ Login admin com credenciais incorretas
+- ✅ Dados fictícios no admin
 
-### **7.2 Usuário Existente**
-1. [ ] **Login:** Usuário existente
-2. [ ] **Depósito:** PIX R$ 15,00
-3. [ ] **Jogar:** 2 chutes de R$ 3,00
-4. [ ] **Saque:** R$ 8,00
-5. [ ] **Logout:** Sair do sistema
+### **Em Monitoramento**
+- ⚠️ Payouts PIX (aguardando habilitação)
+- ⚠️ Rate limiting (configurado)
 
 ---
 
-## 📱 **TESTE 8: MOBILE/PWA**
-
-### **8.1 PWA Player**
-- [ ] **Acessar:** `https://www.goldeouro.lol` (mobile)
-- [ ] **Instalar:** "Adicionar à tela inicial"
-- [ ] **App:** Abre como app nativo
-- [ ] **Funcionalidades:** Todas funcionando
-
-### **8.2 PWA Admin**
-- [ ] **Acessar:** `https://admin.goldeouro.lol` (mobile)
-- [ ] **Instalar:** "Adicionar à tela inicial"
-- [ ] **App:** Abre como app nativo
-- [ ] **Funcionalidades:** Todas funcionando
-
----
-
-## 🚨 **TESTE 9: CENÁRIOS DE ERRO**
-
-### **9.1 Login Inválido**
-- [ ] **Email:** inexistente@test.com
-- [ ] **Senha:** 123456
-- [ ] **Resultado:** Erro "Credenciais inválidas"
-
-### **9.2 PIX Inválido**
-- [ ] **Valor:** R$ 0,50 (muito baixo)
-- [ ] **Resultado:** Erro "Valor inválido"
-
-### **9.3 Saque Maior que Saldo**
-- [ ] **Saldo:** R$ 5,00
-- [ ] **Saque:** R$ 10,00
-- [ ] **Resultado:** Erro "Saldo insuficiente"
-
----
-
-## 📊 **TESTE 10: PERFORMANCE**
-
-### **10.1 Tempos de Resposta**
-- [ ] **Player:** < 3 segundos
-- [ ] **Admin:** < 3 segundos
-- [ ] **API:** < 1 segundo
-- [ ] **PIX:** < 5 segundos
-
-### **10.2 Memória**
-- [ ] **Backend:** < 100MB
-- [ ] **Frontend:** < 50MB
-- [ ] **Sem vazamentos:** Monitorar
-
----
-
-## ✅ **CRITÉRIOS DE SUCESSO**
-
-### **Obrigatórios (100%)**
-- [ ] Login player funciona
-- [ ] Login admin funciona
-- [ ] PIX cria e gera QR Code
-- [ ] Jogo funciona (chute)
-- [ ] Saque solicita corretamente
-- [ ] Admin acessa dados
-- [ ] Sem erros críticos no console
-
-### **Desejáveis (80%)**
-- [ ] PIX real funciona (com token MP)
-- [ ] Webhook processa pagamentos
-- [ ] Saldo credita automaticamente
-- [ ] PWA instala corretamente
-- [ ] Performance otimizada
-
----
-
-## 📋 **RELATÓRIO FINAL**
-
-### **Status Geral**
-- [ ] ✅ **PASSOU** - Todos os testes obrigatórios
-- [ ] ⚠️ **PARCIAL** - Alguns testes falharam
-- [ ] ❌ **FALHOU** - Testes críticos falharam
-
-### **Problemas Identificados**
-1. ________________________________
-2. ________________________________
-3. ________________________________
-
-### **Próximos Passos**
-1. ________________________________
-2. ________________________________
-3. ________________________________
-
----
-
-**Data do Teste:** _______________  
-**Testador:** _______________  
-**Versão:** v1.1.1 + SIMPLE_MVP
+**Checklist E2E atualizado em:** 2025-01-27 16:45 BRT  
+**Próxima revisão:** Após 7 dias de produção
