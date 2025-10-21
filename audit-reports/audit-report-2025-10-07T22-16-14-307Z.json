@@ -1,0 +1,94 @@
+{
+  "timestamp": "2025-10-07T22-16-14-307Z",
+  "system": {
+    "os": "win32",
+    "node": "v22.17.0",
+    "memory": {
+      "rss": 46432256,
+      "heapTotal": 10547200,
+      "heapUsed": 5999712,
+      "external": 1815744,
+      "arrayBuffers": 10515
+    },
+    "uptime": 0.2649784,
+    "issues": [],
+    "score": 100
+  },
+  "backend": {
+    "status": "online",
+    "memory": {
+      "rss": 78008320,
+      "heapTotal": 25559040,
+      "heapUsed": 16051488,
+      "external": 3426536,
+      "arrayBuffers": 106630
+    },
+    "performance": "unknown",
+    "issues": [],
+    "score": 100
+  },
+  "frontend": {
+    "admin": {
+      "status": "online",
+      "issues": []
+    },
+    "player": {
+      "status": "offline",
+      "issues": [
+        {
+          "type": "error",
+          "message": "Player frontend offline",
+          "recommendation": "Verificar deploy do player"
+        }
+      ]
+    },
+    "score": 75
+  },
+  "security": {
+    "csp": "configured",
+    "https": "unknown",
+    "headers": "unknown",
+    "vulnerabilities": [],
+    "score": 100
+  },
+  "performance": {
+    "buildSize": "unknown",
+    "loadTime": "unknown",
+    "optimization": "unknown",
+    "issues": [],
+    "score": 100
+  },
+  "deployment": {
+    "backend": "unknown",
+    "frontend": "unknown",
+    "cdn": "unknown",
+    "issues": [],
+    "score": 100
+  },
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "frontend",
+      "title": "Corrigir Frontends",
+      "description": "Frontends com problemas de deploy ou configuração",
+      "actions": [
+        "Corrigir deploy do admin",
+        "Verificar configurações do Vercel",
+        "Otimizar CSP",
+        "Implementar testes E2E"
+      ]
+    },
+    {
+      "priority": "medium",
+      "category": "general",
+      "title": "Implementar Monitoramento",
+      "description": "Sistema precisa de monitoramento contínuo",
+      "actions": [
+        "Configurar health checks",
+        "Implementar logging",
+        "Configurar alertas",
+        "Criar dashboards"
+      ]
+    }
+  ]
+}

@@ -7,7 +7,16 @@ const AuthContext = createContext()
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    console.warn('useAuth chamado fora do AuthProvider - retornando contexto padrão')
+    return {
+      user: null,
+      loading: false,
+      error: null,
+      login: () => Promise.resolve({ success: false, error: 'AuthProvider não inicializado' }),
+      register: () => Promise.resolve({ success: false, error: 'AuthProvider não inicializado' }),
+      logout: () => {},
+      isAuthenticated: false
+    }
   }
   return context
 }
@@ -67,12 +76,18 @@ export const AuthProvider = ({ children }) => {
       setError(null)
       
       const response = await apiClient.post(API_ENDPOINTS.REGISTER, {
-        name,
+        username: name,
         email,
         password
       })
       
-      return { success: true, data: response.data }
+      const { token, user: userData } = response.data
+      
+      // Fazer login automático após registro
+      localStorage.setItem('authToken', token)
+      setUser(userData)
+      
+      return { success: true, data: response.data, user: userData }
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Erro ao registrar'
       setError(errorMessage)

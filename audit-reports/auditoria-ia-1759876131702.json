@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-10-07T22:28:51.700Z",
+  "problemas": [
+    {
+      "tipo": "critical",
+      "componente": "player",
+      "problema": "Player frontend offline",
+      "solucao": "FAZER DEPLOY IMEDIATO do player frontend"
+    },
+    {
+      "tipo": "critical",
+      "componente": "jogo",
+      "problema": "Arquivo goldeouro-player/src/components/GameCanvas.jsx ausente",
+      "solucao": "Criar arquivo ausente"
+    },
+    {
+      "tipo": "critical",
+      "componente": "jogo",
+      "problema": "Arquivo goldeouro-player/src/utils/gameLogic.js ausente",
+      "solucao": "Criar arquivo ausente"
+    }
+  ],
+  "score": 40,
+  "criticos": 3,
+  "warnings": 0
+}

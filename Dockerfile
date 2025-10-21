@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -13,4 +13,4 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-CMD ["node", "server.js"]
+CMD ["node", "server-fly.js"]

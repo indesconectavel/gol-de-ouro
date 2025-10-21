@@ -4,6 +4,7 @@ import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import { useSidebar } from '../contexts/SidebarContext'
 import apiClient from '../services/apiClient'
+import { API_ENDPOINTS } from '../config/api'
 
 const Dashboard = () => {
   const { isCollapsed } = useSidebar()
@@ -22,14 +23,14 @@ const Dashboard = () => {
       setLoading(true)
       
       // Buscar perfil do usuário
-      const profileResponse = await apiClient.get('/usuario/perfil')
+      const profileResponse = await apiClient.get(API_ENDPOINTS.PROFILE)
       if (profileResponse.data.success) {
         setUser(profileResponse.data.data)
         setBalance(profileResponse.data.data.saldo || 0)
       }
 
       // Buscar dados PIX do usuário (inclui histórico)
-      const pixResponse = await apiClient.get('/pix/usuario')
+      const pixResponse = await apiClient.get(API_ENDPOINTS.PIX_USER)
       if (pixResponse.data.success) {
         setRecentBets(pixResponse.data.data.historico_pagamentos || [])
       }

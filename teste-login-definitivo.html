@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Login - Gol de Ouro</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .container { max-width: 400px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 10px; border: 1px solid #333; border-radius: 5px; background: #333; color: white; }
+        button { width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .error { color: #f44336; margin-top: 10px; }
+        .success { color: #4CAF50; margin-top: 10px; }
+        .log { background: #222; padding: 10px; border-radius: 5px; margin-top: 20px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Teste Login - Gol de Ouro</h1>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="free10signer@gmail.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" value="Free10signer" required>
+            </div>
+            
+            <button type="submit">🔐 Fazer Login</button>
+        </form>
+        
+        <div id="result"></div>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script type="module">
+        // Importar o sistema de login
+        import './src/main.js';
+        
+        const form = document.getElementById('loginForm');
+        const result = document.getElementById('result');
+        const log = document.getElementById('log');
+        
+        // Função para adicionar log
+        function addLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `[${timestamp}] ${message}<br>`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // Interceptar console.log para mostrar no log
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog(`✅ ${args.join(' ')}`);
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog(`❌ ${args.join(' ')}`);
+        };
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            result.innerHTML = '<div>🔄 Fazendo login...</div>';
+            addLog(`🔄 Tentando login com: ${email}`);
+            
+            try {
+                // Usar a função global
+                const response = await window.goldeouroLogin(email, password);
+                
+                result.innerHTML = `
+                    <div class="success">
+                        ✅ Login realizado com sucesso!<br>
+                        Token: ${response.token ? response.token.substring(0, 20) + '...' : 'N/A'}<br>
+                        Usuário: ${response.user ? response.user.email : 'N/A'}
+                    </div>
+                `;
+                
+                addLog(`✅ Login bem-sucedido!`);
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="error">
+                        ❌ Erro no login:<br>
+                        ${error.message || 'Erro desconhecido'}
+                    </div>
+                `;
+                
+                addLog(`❌ Erro no login: ${error.message}`);
+            }
+        });
+        
+        // Testar meta automaticamente
+        addLog('🚀 Carregando sistema...');
+        setTimeout(async () => {
+            try {
+                await window.goldeouroCheckMeta();
+            } catch (error) {
+                addLog(`❌ Erro ao verificar meta: ${error.message}`);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

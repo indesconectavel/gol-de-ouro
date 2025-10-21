@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Login Específico - Gol de Ouro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Teste Login Específico - Gol de Ouro</h1>
+        <p>Teste específico para identificar o problema de login.</p>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="free10signer@gmail.com">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <input type="password" id="password" value="Free10signer">
+        </div>
+        
+        <button onclick="testLogin()">🔐 Testar Login</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function testLogin() {
+            const resultDiv = document.getElementById('result');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '🔄 Testando login...';
+            
+            try {
+                // Teste 1: Backend direto
+                console.log('🔄 Testando backend direto...');
+                const backendResponse = await fetch('https://goldeouro-backend.fly.dev/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const backendData = await backendResponse.json();
+                console.log('✅ Backend direto:', backendData);
+                
+                // Teste 2: Frontend via Vercel
+                console.log('🔄 Testando frontend via Vercel...');
+                const frontendResponse = await fetch('https://goldeouro.lol/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const frontendData = await frontendResponse.json();
+                console.log('✅ Frontend via Vercel:', frontendData);
+                
+                // Comparar resultados
+                if (backendData.success && frontendData.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ LOGIN FUNCIONANDO!
+                    
+Backend Direto:
+Status: ${backendResponse.status}
+Usuário: ${backendData.user.username}
+Email: ${backendData.user.email}
+Saldo: R$ ${backendData.user.saldo}
+
+Frontend via Vercel:
+Status: ${frontendResponse.status}
+Usuário: ${frontendData.user.username}
+Email: ${frontendData.user.email}
+Saldo: R$ ${frontendData.user.saldo}
+
+🎉 AMBOS FUNCIONANDO PERFEITAMENTE!`;
+                } else if (backendData.success && !frontendData.success) {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ PROBLEMA NO FRONTEND VIA VERCEL!
+                    
+Backend Direto: ✅ FUNCIONANDO
+Frontend via Vercel: ❌ ${frontendData.message || 'ERRO DESCONHECIDO'}
+
+🔧 O problema está no Vercel rewrite!`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ PROBLEMA NO BACKEND!
+                    
+Backend Direto: ❌ ${backendData.message || 'ERRO DESCONHECIDO'}
+Frontend via Vercel: ❌ ${frontendData.message || 'ERRO DESCONHECIDO'}
+
+🔧 O problema está no backend!`;
+                }
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ ERRO DE REDE: ${error.message}
+                
+🔧 Verifique sua conexão ou configuração CORS!`;
+                console.error('❌ Erro:', error);
+            }
+        }
+    </script>
+</body>
+</html>

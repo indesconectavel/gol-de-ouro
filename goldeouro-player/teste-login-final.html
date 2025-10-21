@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Login Final - Gol de Ouro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        .error {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+        .success {
+            border-left-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        input {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Teste Login Final - Gol de Ouro</h1>
+        <p><strong>Data:</strong> <span id="data"></span></p>
+        
+        <div class="test-section">
+            <h3>📋 Configuração Atual</h3>
+            <p><strong>Backend URL:</strong> <span id="backend-url"></span></p>
+            <p><strong>Frontend URL:</strong> <span id="frontend-url"></span></p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 Teste de Login</h3>
+            <input type="email" id="email" placeholder="Email" value="free10signer@gmail.com">
+            <input type="password" id="password" placeholder="Senha" value="Free10signer">
+            <br>
+            <button onclick="testarLogin()">🧪 Testar Login</button>
+            <button onclick="testarBackendDireto()">🔗 Testar Backend Direto</button>
+            <button onclick="limparLog()">🗑️ Limpar Log</button>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Resultados</h3>
+            <div id="resultados"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📝 Log Detalhado</h3>
+            <div id="log" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração
+        const BACKEND_URL = 'https://goldeouro-backend-v2.fly.dev/api';
+        const FRONTEND_URL = 'https://goldeouro.lol';
+        
+        // Elementos
+        const logElement = document.getElementById('log');
+        const resultadosElement = document.getElementById('resultados');
+        const dataElement = document.getElementById('data');
+        const backendUrlElement = document.getElementById('backend-url');
+        const frontendUrlElement = document.getElementById('frontend-url');
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            dataElement.textContent = new Date().toLocaleString('pt-BR');
+            backendUrlElement.textContent = BACKEND_URL;
+            frontendUrlElement.textContent = FRONTEND_URL;
+            log('🚀 Teste Login Final iniciado');
+        });
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString('pt-BR');
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+        
+        function limparLog() {
+            logElement.textContent = '';
+            resultadosElement.innerHTML = '';
+        }
+        
+        function adicionarResultado(titulo, status, detalhes) {
+            const div = document.createElement('div');
+            div.className = `test-section ${status}`;
+            div.innerHTML = `
+                <h4>${titulo}</h4>
+                <p><strong>Status:</strong> ${status === 'success' ? '✅ Sucesso' : '❌ Erro'}</p>
+                <p><strong>Detalhes:</strong> ${detalhes}</p>
+            `;
+            resultadosElement.appendChild(div);
+        }
+        
+        async function testarLogin() {
+            log('🧪 Iniciando teste de login...');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                log('❌ Email ou senha não preenchidos');
+                adicionarResultado('Teste de Login', 'error', 'Email ou senha não preenchidos');
+                return;
+            }
+            
+            try {
+                log(`📤 Enviando requisição para: ${BACKEND_URL}/auth/login`);
+                log(`📤 Dados: ${JSON.stringify({email, password})}`);
+                
+                const response = await fetch(`${BACKEND_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({email, password})
+                });
+                
+                log(`📥 Resposta recebida: ${response.status} ${response.statusText}`);
+                
+                const data = await response.json();
+                log(`📥 Dados da resposta: ${JSON.stringify(data)}`);
+                
+                if (response.ok && data.success) {
+                    log('✅ Login realizado com sucesso!');
+                    adicionarResultado('Teste de Login', 'success', 
+                        `Login OK! Token: ${data.token?.substring(0, 20)}... | Usuário: ${data.user?.email} | Saldo: R$ ${data.user?.saldo}`);
+                } else {
+                    log(`❌ Login falhou: ${data.message || 'Erro desconhecido'}`);
+                    adicionarResultado('Teste de Login', 'error', data.message || 'Erro desconhecido');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro na requisição: ${error.message}`);
+                adicionarResultado('Teste de Login', 'error', `Erro na requisição: ${error.message}`);
+            }
+        }
+        
+        async function testarBackendDireto() {
+            log('🔗 Testando backend direto...');
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('✅ Backend direto funcionando!');
+                    adicionarResultado('Teste Backend Direto', 'success', 
+                        `Backend OK! Status: ${data.status || 'OK'} | Versão: ${data.version || 'N/A'}`);
+                } else {
+                    log(`❌ Backend direto com problemas: ${response.status}`);
+                    adicionarResultado('Teste Backend Direto', 'error', `Status: ${response.status}`);
+                }
+                
+            } catch (error) {
+                log(`❌ Erro ao testar backend direto: ${error.message}`);
+                adicionarResultado('Teste Backend Direto', 'error', `Erro: ${error.message}`);
+            }
+        }
+        
+        // Teste automático ao carregar
+        setTimeout(() => {
+            log('🔄 Executando teste automático...');
+            testarBackendDireto();
+        }, 2000);
+    </script>
+</body>
+</html>

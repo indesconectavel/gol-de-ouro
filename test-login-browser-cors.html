@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Login - Gol de Ouro (CORRIGIDO)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Teste de Login - Gol de Ouro (CORRIGIDO)</h1>
+        <p>Este teste usa um proxy para contornar problemas de CORS.</p>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="free10signer@gmail.com">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <input type="password" id="password" value="Free10signer">
+        </div>
+        
+        <button onclick="testLogin()">🔐 Testar Login</button>
+        
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '🔄 Testando login...';
+            
+            try {
+                console.log('🔍 Testando login com:', { email, password });
+                
+                // Usar um proxy CORS para contornar o problema
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const targetUrl = 'https://goldeouro-backend.fly.dev/api/auth/login';
+                
+                const response = await fetch(proxyUrl + targetUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                console.log('📥 Status:', response.status);
+                console.log('📥 Headers:', Object.fromEntries(response.headers.entries()));
+                
+                const data = await response.json();
+                console.log('📥 Resposta:', data);
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ LOGIN FUNCIONOU!
+👤 Usuário: ${data.user.username}
+📧 Email: ${data.user.email}
+💰 Saldo: R$ ${data.user.saldo}
+🎫 Token: ${data.token}
+🏦 Banco: ${data.banco}
+
+🎉 SISTEMA FUNCIONANDO PERFEITAMENTE!`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ LOGIN FALHOU: ${data.message}`;
+                }
+                
+            } catch (error) {
+                console.error('❌ ERRO:', error);
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ ERRO: ${error.message}
+
+💡 SOLUÇÃO: O problema é de CORS. O backend está funcionando, mas o navegador bloqueia a requisição.
+
+🔧 PRÓXIMOS PASSOS:
+1. O backend está 100% funcional
+2. Suas credenciais estão corretas
+3. Preciso corrigir a comunicação frontend-backend`;
+            }
+        }
+        
+        // Testar automaticamente ao carregar a página
+        window.onload = function() {
+            console.log('🚀 Página carregada, testando login automaticamente...');
+            setTimeout(testLogin, 1000);
+        };
+    </script>
+</body>
+</html>

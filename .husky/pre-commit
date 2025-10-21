@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Executando verificações pré-commit..."
+
+# Executar linting
+echo "📝 Verificando código com ESLint..."
+npm run lint
+
+# Executar testes unitários
+echo "🧪 Executando testes unitários..."
+npm run test
+
+# Verificar se não há arquivos de debug
+echo "🔍 Verificando arquivos de debug..."
+if git diff --cached --name-only | grep -E '\.(log|tmp|debug)$'; then
+  echo "❌ Arquivos de debug detectados! Remova antes de fazer commit."
+  exit 1
+fi
+
+# Verificar se não há credenciais expostas
+echo "🔒 Verificando credenciais expostas..."
+if git diff --cached --name-only | grep -E '\.(env|key|secret)$'; then
+  echo "❌ Arquivos sensíveis detectados! Não commite arquivos de configuração."
+  exit 1
+fi
+
+echo "✅ Verificações pré-commit concluídas com sucesso!"

@@ -1,0 +1,176 @@
+{
+  "titulo": "AUDITORIA ALTERNATIVA DE USUÁRIOS E DADOS - GOL DE OURO v1.1.1",
+  "timestamp": "2025-10-08T21:51:57.062Z",
+  "tipo": "DADOS_MOCK_PARA_DEMONSTRACAO",
+  "resumo": {
+    "totalUsuarios": 5,
+    "admins": 1,
+    "players": 4,
+    "dadosFicticios": 5
+  },
+  "credenciais": {
+    "admins": [
+      {
+        "email": "admin@goldeouro.com",
+        "username": "admin_principal",
+        "senha": "admin123",
+        "role": "admin",
+        "saldo": 0,
+        "created_at": "2025-10-01T10:00:00Z",
+        "status": "ATIVO",
+        "observacao": "DADOS FICTÍCIOS"
+      }
+    ],
+    "players": [
+      {
+        "email": "test@example.com",
+        "username": "testuser",
+        "senha": "player123",
+        "role": "player",
+        "saldo": 150,
+        "created_at": "2025-10-01T11:00:00Z",
+        "status": "ATIVO",
+        "observacao": "DADOS FICTÍCIOS"
+      },
+      {
+        "email": "player1@goldeouro.com",
+        "username": "jogador1",
+        "senha": "player123",
+        "role": "player",
+        "saldo": 0,
+        "created_at": "2025-10-02T09:00:00Z",
+        "status": "ATIVO",
+        "observacao": "DADOS FICTÍCIOS"
+      },
+      {
+        "email": "demo@test.com",
+        "username": "demo_user",
+        "senha": "player123",
+        "role": "player",
+        "saldo": 1000,
+        "created_at": "2025-10-03T14:00:00Z",
+        "status": "ATIVO",
+        "observacao": "DADOS FICTÍCIOS"
+      },
+      {
+        "email": "mock@example.com",
+        "username": "mock_player",
+        "senha": "player123",
+        "role": "player",
+        "saldo": 500,
+        "created_at": "2025-10-04T16:00:00Z",
+        "status": "ATIVO",
+        "observacao": "DADOS FICTÍCIOS"
+      }
+    ],
+    "recomendacoes": [
+      "🧹 LIMPAR DADOS FICTÍCIOS antes do lançamento",
+      "🔐 ALTERAR SENHAS PADRÃO antes do lançamento",
+      "📧 CONFIGURAR EMAILS REAIS para produção"
+    ]
+  },
+  "dadosFicticios": [
+    {
+      "usuario": {
+        "id": 1,
+        "email": "admin@goldeouro.com",
+        "username": "admin_principal",
+        "role": "admin",
+        "saldo": 0,
+        "created_at": "2025-10-01T10:00:00Z",
+        "updated_at": "2025-10-01T10:00:00Z",
+        "status": "ativo"
+      },
+      "motivos": [
+        "Dados padrão (sem atividade)"
+      ]
+    },
+    {
+      "usuario": {
+        "id": 2,
+        "email": "test@example.com",
+        "username": "testuser",
+        "role": "player",
+        "saldo": 150,
+        "created_at": "2025-10-01T11:00:00Z",
+        "updated_at": "2025-10-08T15:30:00Z",
+        "status": "ativo"
+      },
+      "motivos": [
+        "Email de teste",
+        "Username de teste"
+      ]
+    },
+    {
+      "usuario": {
+        "id": 3,
+        "email": "player1@goldeouro.com",
+        "username": "jogador1",
+        "role": "player",
+        "saldo": 0,
+        "created_at": "2025-10-02T09:00:00Z",
+        "updated_at": "2025-10-02T09:00:00Z",
+        "status": "ativo"
+      },
+      "motivos": [
+        "Dados padrão (sem atividade)"
+      ]
+    },
+    {
+      "usuario": {
+        "id": 4,
+        "email": "demo@test.com",
+        "username": "demo_user",
+        "role": "player",
+        "saldo": 1000,
+        "created_at": "2025-10-03T14:00:00Z",
+        "updated_at": "2025-10-03T14:00:00Z",
+        "status": "ativo"
+      },
+      "motivos": [
+        "Email de teste",
+        "Username de teste"
+      ]
+    },
+    {
+      "usuario": {
+        "id": 5,
+        "email": "mock@example.com",
+        "username": "mock_player",
+        "role": "player",
+        "saldo": 500,
+        "created_at": "2025-10-04T16:00:00Z",
+        "updated_at": "2025-10-04T16:00:00Z",
+        "status": "ativo"
+      },
+      "motivos": [
+        "Username de teste"
+      ]
+    }
+  ],
+  "relatorio": [
+    "✅ Conexão simulada com banco de dados",
+    "⚠️ ATENÇÃO: Usando dados mock para demonstração",
+    "✅ Gerados 5 usuários mock",
+    "📊 Admins: 1, Players: 4",
+    "🔍 Encontrados 5 usuários com dados fictícios",
+    "🔍 Encontradas 3 transações fictícias (simulado)",
+    "🔑 Credenciais geradas: 1 admins, 4 players",
+    "📊 usuarios: 5 registros",
+    "📊 transacoes: 0 registros",
+    "📊 pagamentos_pix: 0 registros",
+    "📊 saques: 0 registros",
+    "📊 partidas: 0 registros",
+    "⚠️ Tabela vazia: transacoes",
+    "⚠️ Tabela vazia: pagamentos_pix",
+    "⚠️ Tabela vazia: saques",
+    "⚠️ Tabela vazia: partidas"
+  ],
+  "recomendacoes": [
+    "1. Configurar credenciais reais do Supabase",
+    "2. Criar usuários reais para produção",
+    "3. Limpar dados fictícios antes do lançamento",
+    "4. Configurar senhas seguras",
+    "5. Validar integridade dos dados reais"
+  ]
+}

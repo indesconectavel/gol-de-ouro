@@ -165,15 +165,17 @@ const GameField = ({ onShoot, gameStatus, selectedZone, currentShot, totalShots 
         </div>
       </div>
 
-      {/* Goleiro Realista - Uniforme Vermelho */}
+      {/* Goleiro Realista - Uniforme Vermelho - RESPONSIVO */}
       <div className={`absolute right-10 top-1/2 transform -translate-y-1/2 z-20 transition-all duration-500 ${
         goalkeeperPose === 'diving' ? 'goalkeeper-dive' : ''
       }`}>
-        <div className={`w-16 h-20 relative transition-all duration-300 ${
-          shootDirection === 1 || shootDirection === 4 ? 'transform -rotate-12' : 
-          shootDirection === 2 || shootDirection === 5 ? 'transform rotate-12' : 
-          shootDirection === 3 ? 'transform -translate-y-2' : ''
-        }`}>
+        <div className={`
+          relative transition-all duration-300
+          w-12 h-16 sm:w-14 sm:h-18 md:w-16 md:h-20 lg:w-18 lg:h-22 xl:w-20 xl:h-24
+          ${shootDirection === 1 || shootDirection === 4 ? 'transform -rotate-12' : 
+            shootDirection === 2 || shootDirection === 5 ? 'transform rotate-12' : 
+            shootDirection === 3 ? 'transform -translate-y-2' : ''}
+        `}>
           {/* Corpo do goleiro */}
           <div className="w-full h-full bg-gradient-to-b from-red-500 via-red-600 to-red-700 rounded-xl relative shadow-2xl">
             {/* Detalhes do uniforme */}

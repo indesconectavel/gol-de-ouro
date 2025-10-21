@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Login Frontend React - Gol de Ouro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #45a049; }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Teste Login Frontend React - Gol de Ouro</h1>
+        <p>Teste específico para simular o comportamento do frontend React.</p>
+        
+        <div class="test-section">
+            <h3>1. Configuração do Frontend</h3>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="free10signer@gmail.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" value="Free10signer">
+            </div>
+            <button onclick="testFrontendLogin()">🔐 Testar Login Frontend</button>
+            <div id="frontendResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. Teste Backend Direto</h3>
+            <button onclick="testBackendDirect()">🔐 Testar Backend Direto</button>
+            <div id="backendResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. Comparação de URLs</h3>
+            <button onclick="compareUrls()">🔍 Comparar URLs</button>
+            <div id="urlResult" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const email = 'free10signer@gmail.com';
+        const password = 'Free10signer';
+        
+        // Simular a configuração do frontend React
+        const frontendConfig = {
+            API_BASE_URL: 'https://goldeouro-backend.fly.dev/api',
+            LOGIN_ENDPOINT: 'https://goldeouro-backend.fly.dev/api/auth/login'
+        };
+        
+        async function testFrontendLogin() {
+            const resultDiv = document.getElementById('frontendResult');
+            const emailInput = document.getElementById('email').value;
+            const passwordInput = document.getElementById('password').value;
+            
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '🔄 Testando login como frontend React...';
+            
+            try {
+                console.log('🔍 Frontend config:', frontendConfig);
+                console.log('🔍 Login endpoint:', frontendConfig.LOGIN_ENDPOINT);
+                
+                const response = await fetch(frontendConfig.LOGIN_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        email: emailInput, 
+                        password: passwordInput 
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('✅ Frontend response:', data);
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ FRONTEND LOGIN FUNCIONANDO!
+                    
+Status: ${response.status}
+Usuário: ${data.user.username}
+Email: ${data.user.email}
+Saldo: R$ ${data.user.saldo}
+Token: ${data.token.substring(0, 20)}...
+
+🎉 O frontend React deveria funcionar!`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ ERRO NO FRONTEND: ${data.message}`;
+                }
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ ERRO DE REDE: ${error.message}`;
+                console.error('❌ Frontend error:', error);
+            }
+        }
+        
+        async function testBackendDirect() {
+            const resultDiv = document.getElementById('backendResult');
+            resultDiv.className = 'result info';
+            resultDiv.textContent = '🔄 Testando backend direto...';
+            
+            try {
+                const response = await fetch('https://goldeouro-backend.fly.dev/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ BACKEND FUNCIONANDO!
+                    
+Status: ${response.status}
+Usuário: ${data.user.username}
+Email: ${data.user.email}
+Saldo: R$ ${data.user.saldo}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ ERRO: ${data.message}`;
+                }
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ ERRO: ${error.message}`;
+            }
+        }
+        
+        function compareUrls() {
+            const resultDiv = document.getElementById('urlResult');
+            resultDiv.className = 'result info';
+            
+            const urls = {
+                'Frontend Config': frontendConfig.API_BASE_URL,
+                'Login Endpoint': frontendConfig.LOGIN_ENDPOINT,
+                'Backend Direto': 'https://goldeouro-backend.fly.dev/api/auth/login',
+                'Vercel Frontend': 'https://goldeouro.lol/api/auth/login'
+            };
+            
+            resultDiv.textContent = `🔍 COMPARAÇÃO DE URLs:
+            
+Frontend Config: ${urls['Frontend Config']}
+Login Endpoint: ${urls['Login Endpoint']}
+Backend Direto: ${urls['Backend Direto']}
+Vercel Frontend: ${urls['Vercel Frontend']}
+
+✅ Frontend está configurado para usar backend direto
+❌ Vercel não está sendo usado pelo frontend`;
+        }
+        
+        // Executar comparação de URLs automaticamente
+        window.onload = function() {
+            compareUrls();
+        };
+    </script>
+</body>
+</html>

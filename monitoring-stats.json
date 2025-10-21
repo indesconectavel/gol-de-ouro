@@ -1,0 +1,27 @@
+{
+  "totalChecks": 90,
+  "successfulChecks": 89,
+  "failedChecks": 1,
+  "startTime": "2025-10-19T19:33:47.669Z",
+  "lastCheck": "2025-10-20T02:58:49.427Z",
+  "services": {
+    "backend": {
+      "status": "online",
+      "responseTime": 162,
+      "lastCheck": "2025-10-20T02:58:49.591Z",
+      "statusCode": 200
+    },
+    "frontend": {
+      "status": "online",
+      "responseTime": 72,
+      "lastCheck": "2025-10-20T02:58:49.663Z",
+      "statusCode": 200
+    },
+    "admin": {
+      "status": "online",
+      "responseTime": 77,
+      "lastCheck": "2025-10-20T02:58:49.740Z",
+      "statusCode": 200
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "mcp": {
+    "goldeouro": {
+      "name": "Gol de Ouro MCP System",
+      "description": "Sistema MCP para auditoria automática do Gol de Ouro",
+      "version": "1.1.1",
+      "commands": {
+        "Audit Gol de Ouro": {
+          "description": "Executa auditoria completa do sistema Gol de Ouro",
+          "command": "node cursor-mcp-command.js",
+          "autoTrigger": {
+            "gitPush": true,
+            "deploy": true,
+            "branches": ["main", "master"]
+          },
+          "output": {
+            "reports": "./reports/",
+            "latest": "audit-latest.md",
+            "timestamped": "audit-[timestamp].md"
+          }
+        },
+        "audit:full": {
+          "description": "Auditoria completa com relatório detalhado",
+          "command": "cd mcp-system && node audit-simple.js --full --report"
+        },
+        "audit:quick": {
+          "description": "Auditoria rápida sem relatório",
+          "command": "cd mcp-system && node audit-simple.js"
+        }
+      },
+      "triggers": {
+        "prePush": {
+          "enabled": true,
+          "branches": ["main", "master"],
+          "command": "Audit Gol de Ouro",
+          "action": "validate"
+        },
+        "preDeploy": {
+          "enabled": true,
+          "platforms": ["vercel", "render", "railway"],
+          "command": "Audit Gol de Ouro",
+          "action": "validate"
+        }
+      },
+      "settings": {
+        "criticalErrors": "cancel",
+        "warnings": "continue",
+        "reportFormat": "markdown",
+        "logLevel": "info"
+      }
+    }
+  }
+}

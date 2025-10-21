@@ -1,0 +1,43 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Executando verificações pré-push..."
+
+# Executar auditoria MCP
+echo "🤖 Executando auditoria MCP..."
+node cursor-mcp-command.js
+
+if [ $? -ne 0 ]; then
+  echo "❌ Auditoria MCP falhou! Push bloqueado."
+  exit 1
+fi
+
+# Executar todos os testes
+echo "🧪 Executando todos os testes..."
+npm run test:all
+
+if [ $? -ne 0 ]; then
+  echo "❌ Testes falharam! Push bloqueado."
+  exit 1
+fi
+
+# Verificar cobertura de testes
+echo "📊 Verificando cobertura de testes..."
+npm run test:coverage
+
+# Verificar se é push para main
+if [ "$1" = "refs/heads/main" ]; then
+  echo "⚠️  Push para branch main detectado!"
+  echo "🔍 Executando verificações adicionais..."
+  
+  # Verificar se todos os arquivos críticos existem
+  echo "📁 Verificando arquivos críticos..."
+  test -f server-fly.js || { echo "❌ server-fly.js não encontrado!"; exit 1; }
+  test -d routes || { echo "❌ diretório routes não encontrado!"; exit 1; }
+  test -d controllers || { echo "❌ diretório controllers não encontrado!"; exit 1; }
+  test -d middlewares || { echo "❌ diretório middlewares não encontrado!"; exit 1; }
+  
+  echo "✅ Verificações para main concluídas!"
+fi
+
+echo "✅ Verificações pré-push concluídas com sucesso!"

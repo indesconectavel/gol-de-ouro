@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Logout - Gol de Ouro</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+        button {
+            background: #f59e0b;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #d97706;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Teste de Funcionalidade de Logout - Gol de Ouro</h1>
+    
+    <div class="test-section">
+        <h2>1. Teste de Login</h2>
+        <button onclick="testLogin()">Testar Login</button>
+        <div id="loginResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Teste de Logout</h2>
+        <button onclick="testLogout()">Testar Logout</button>
+        <div id="logoutResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Status Atual</h2>
+        <button onclick="checkStatus()">Verificar Status</button>
+        <div id="statusResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. URLs de Teste</h2>
+        <p><strong>Frontend Atualizado:</strong> <a href="https://goldeouro-player-g6qjdfehs-goldeouro-admins-projects.vercel.app" target="_blank" style="color: #f59e0b;">https://goldeouro-player-g6qjdfehs-goldeouro-admins-projects.vercel.app</a></p>
+        <p><strong>Domínio Principal:</strong> <a href="https://www.goldeouro.lol" target="_blank" style="color: #f59e0b;">https://www.goldeouro.lol</a></p>
+        <p><strong>Backend:</strong> <a href="https://goldeouro-backend-v2.fly.dev" target="_blank" style="color: #f59e0b;">https://goldeouro-backend-v2.fly.dev</a></p>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://goldeouro-backend-v2.fly.dev';
+        
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = '<div class="info">Testando login...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'free10signer@gmail.com',
+                        password: 'Free10signer'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    resultDiv.innerHTML = `<div class="success">✅ Login realizado com sucesso! Token: ${data.token.substring(0, 20)}...</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Erro no login: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro na requisição: ${error.message}</div>`;
+            }
+        }
+        
+        async function testLogout() {
+            const resultDiv = document.getElementById('logoutResult');
+            resultDiv.innerHTML = '<div class="info">Testando logout...</div>';
+            
+            try {
+                const token = localStorage.getItem('authToken');
+                
+                if (!token) {
+                    resultDiv.innerHTML = '<div class="error">❌ Nenhum token encontrado. Faça login primeiro.</div>';
+                    return;
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('user');
+                    resultDiv.innerHTML = '<div class="success">✅ Logout realizado com sucesso!</div>';
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Erro no logout: ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro na requisição: ${error.message}</div>`;
+            }
+        }
+        
+        function checkStatus() {
+            const resultDiv = document.getElementById('statusResult');
+            const token = localStorage.getItem('authToken');
+            const user = localStorage.getItem('user');
+            
+            if (token && user) {
+                const userData = JSON.parse(user);
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ Usuário logado:<br>
+                        Email: ${userData.email}<br>
+                        Token: ${token.substring(0, 20)}...<br>
+                        Saldo: R$ ${userData.saldo || 0}
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = '<div class="error">❌ Usuário não está logado</div>';
+            }
+        }
+        
+        // Verificar status ao carregar a página
+        window.onload = function() {
+            checkStatus();
+        };
+    </script>
+</body>
+</html>

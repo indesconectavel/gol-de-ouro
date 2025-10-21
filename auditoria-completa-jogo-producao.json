@@ -1,0 +1,300 @@
+{
+  "timestamp": "2025-10-21T14:35:25.279Z",
+  "totalTests": 30,
+  "passedTests": 21,
+  "failedTests": 3,
+  "warnings": 6,
+  "categories": {
+    "AUTHENTICATION": {
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "warnings": 0
+    },
+    "GAME_SYSTEM": {
+      "tests": 5,
+      "passed": 4,
+      "failed": 1,
+      "warnings": 0
+    },
+    "PAYMENT_SYSTEM": {
+      "tests": 4,
+      "passed": 3,
+      "failed": 1,
+      "warnings": 0
+    },
+    "DATABASE": {
+      "tests": 2,
+      "passed": 2,
+      "failed": 0,
+      "warnings": 0
+    },
+    "SECURITY": {
+      "tests": 4,
+      "passed": 1,
+      "failed": 0,
+      "warnings": 3
+    },
+    "PERFORMANCE": {
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "warnings": 0
+    },
+    "API_ENDPOINTS": {
+      "tests": 8,
+      "passed": 4,
+      "failed": 1,
+      "warnings": 3
+    }
+  },
+  "details": [
+    {
+      "category": "API_ENDPOINTS",
+      "test": "GET /health",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 300,
+      "timestamp": "2025-10-21T14:35:25.583Z"
+    },
+    {
+      "category": "API_ENDPOINTS",
+      "test": "GET /meta",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 33,
+      "timestamp": "2025-10-21T14:35:25.622Z"
+    },
+    {
+      "category": "AUTHENTICATION",
+      "test": "POST /api/auth/register",
+      "status": "PASS",
+      "message": "Status 201",
+      "responseTime": 257,
+      "timestamp": "2025-10-21T14:35:25.888Z"
+    },
+    {
+      "category": "AUTHENTICATION",
+      "test": "POST /api/auth/login",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 179,
+      "timestamp": "2025-10-21T14:35:26.068Z"
+    },
+    {
+      "category": "GAME_SYSTEM",
+      "test": "GET /api/user/profile",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 68,
+      "timestamp": "2025-10-21T14:35:26.137Z"
+    },
+    {
+      "category": "GAME_SYSTEM",
+      "test": "GET /usuario/perfil",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 67,
+      "timestamp": "2025-10-21T14:35:26.235Z"
+    },
+    {
+      "category": "GAME_SYSTEM",
+      "test": "POST /api/games/create-lote",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 39,
+      "timestamp": "2025-10-21T14:35:26.275Z"
+    },
+    {
+      "category": "GAME_SYSTEM",
+      "test": "POST /api/games/join-lote",
+      "status": "FAIL",
+      "message": "Request failed with status code 400",
+      "responseTime": 43,
+      "timestamp": "2025-10-21T14:35:26.321Z"
+    },
+    {
+      "category": "GAME_SYSTEM",
+      "test": "POST /api/games/shoot",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 187,
+      "timestamp": "2025-10-21T14:35:26.514Z"
+    },
+    {
+      "category": "PAYMENT_SYSTEM",
+      "test": "GET /api/payments/pix/usuario",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 104,
+      "timestamp": "2025-10-21T14:35:26.622Z"
+    },
+    {
+      "category": "PAYMENT_SYSTEM",
+      "test": "POST /api/payments/pix/criar",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 1323,
+      "timestamp": "2025-10-21T14:35:27.949Z"
+    },
+    {
+      "category": "PAYMENT_SYSTEM",
+      "test": "GET /api/payments/pix/status?paymentId=130753298114",
+      "status": "FAIL",
+      "message": "Request failed with status code 404",
+      "responseTime": 66,
+      "timestamp": "2025-10-21T14:35:28.025Z"
+    },
+    {
+      "category": "PAYMENT_SYSTEM",
+      "test": "POST /api/withdraw",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 93,
+      "timestamp": "2025-10-21T14:35:28.120Z"
+    },
+    {
+      "category": "SECURITY",
+      "test": "GET /health",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 58,
+      "timestamp": "2025-10-21T14:35:28.179Z"
+    },
+    {
+      "category": "SECURITY",
+      "test": "OPTIONS /api/auth/login",
+      "status": "WARN",
+      "message": "Expected 200, got 204",
+      "responseTime": 29,
+      "timestamp": "2025-10-21T14:35:28.208Z"
+    },
+    {
+      "category": "SECURITY",
+      "test": "GET /api/user/profile",
+      "status": "WARN",
+      "message": "Expected 401, got 200",
+      "responseTime": 93,
+      "timestamp": "2025-10-21T14:35:28.302Z"
+    },
+    {
+      "category": "SECURITY",
+      "test": "GET /api/user/profile",
+      "status": "WARN",
+      "message": "Expected 401, got 200",
+      "responseTime": 77,
+      "timestamp": "2025-10-21T14:35:28.380Z"
+    },
+    {
+      "category": "PERFORMANCE",
+      "test": "GET /health",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 72,
+      "timestamp": "2025-10-21T14:35:28.453Z"
+    },
+    {
+      "category": "PERFORMANCE",
+      "test": "GET /meta",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 29,
+      "timestamp": "2025-10-21T14:35:28.482Z"
+    },
+    {
+      "category": "PERFORMANCE",
+      "test": "GET /api/user/profile",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 84,
+      "timestamp": "2025-10-21T14:35:28.567Z"
+    },
+    {
+      "category": "PERFORMANCE",
+      "test": "GET /usuario/perfil",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 61,
+      "timestamp": "2025-10-21T14:35:28.628Z"
+    },
+    {
+      "category": "PERFORMANCE",
+      "test": "GET /api/payments/pix/usuario",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 91,
+      "timestamp": "2025-10-21T14:35:28.719Z"
+    },
+    {
+      "category": "DATABASE",
+      "test": "GET /api/user/profile",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 65,
+      "timestamp": "2025-10-21T14:35:28.784Z"
+    },
+    {
+      "category": "DATABASE",
+      "test": "GET /api/payments/pix/usuario",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 101,
+      "timestamp": "2025-10-21T14:35:28.885Z"
+    },
+    {
+      "category": "API_ENDPOINTS",
+      "test": "GET /health",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 68,
+      "timestamp": "2025-10-21T14:35:28.955Z"
+    },
+    {
+      "category": "API_ENDPOINTS",
+      "test": "GET /meta",
+      "status": "PASS",
+      "message": "Status 200",
+      "responseTime": 29,
+      "timestamp": "2025-10-21T14:35:28.985Z"
+    },
+    {
+      "category": "API_ENDPOINTS",
+      "test": "POST /api/auth/login",
+      "status": "FAIL",
+      "message": "Request failed with status code 401",
+      "responseTime": 81,
+      "timestamp": "2025-10-21T14:35:29.066Z"
+    },
+    {
+      "category": "API_ENDPOINTS",
+      "test": "GET /api/user/profile",
+      "status": "WARN",
+      "message": "Expected 401, got 200",
+      "responseTime": 65,
+      "timestamp": "2025-10-21T14:35:29.145Z"
+    },
+    {
+      "category": "API_ENDPOINTS",
+      "test": "GET /usuario/perfil",
+      "status": "WARN",
+      "message": "Expected 401, got 200",
+      "responseTime": 68,
+      "timestamp": "2025-10-21T14:35:29.215Z"
+    },
+    {
+      "category": "API_ENDPOINTS",
+      "test": "GET /api/payments/pix/usuario",
+      "status": "WARN",
+      "message": "Expected 401, got 200",
+      "responseTime": 98,
+      "timestamp": "2025-10-21T14:35:29.313Z"
+    }
+  ],
+  "summary": {
+    "totalTests": 30,
+    "passedTests": 21,
+    "failedTests": 3,
+    "warnings": 6,
+    "successRate": "70.00"
+  }
+}

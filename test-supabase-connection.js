@@ -1,74 +1,96 @@
-// Teste de conexão com Supabase
+// Script para testar conexão com Supabase usando credenciais reais
 const { createClient } = require('@supabase/supabase-js');
 
-// Credenciais atuais (vamos testar)
-const supabaseUrl = process.env.SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseKey = process.env.SUPABASE_ANON_KEY || 'your-anon-key';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || 'your-service-key';
+// Credenciais reais do Supabase
+const supabaseUrl = 'https://gayopagjdrkcmkirmfvy.supabase.co';
+const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdheW9wYWdqZHJrY21raXJtZnZ5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDAyMDY2OSwiZXhwIjoyMDc1NTk2NjY5fQ.BjmwUSoKDksHybO9pta71F4E5RyILNeuK_FRzxkPnqU';
 
-console.log('🔍 TESTANDO CONEXÃO COM SUPABASE');
-console.log('URL:', supabaseUrl);
-console.log('ANON_KEY:', supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'NÃO DEFINIDA');
-console.log('SERVICE_KEY:', supabaseServiceKey ? `${supabaseServiceKey.substring(0, 20)}...` : 'NÃO DEFINIDA');
-
-// Testar com chave anônima
-async function testAnonKey() {
-  try {
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    const { data, error } = await supabase.from('users').select('count').limit(1);
-    
-    if (error) {
-      console.log('❌ Erro com ANON_KEY:', error.message);
-      return false;
-    } else {
-      console.log('✅ ANON_KEY funcionando');
-      return true;
-    }
-  } catch (err) {
-    console.log('❌ Erro na conexão ANON_KEY:', err.message);
-    return false;
-  }
-}
-
-// Testar com chave de serviço
-async function testServiceKey() {
+async function testSupabaseConnection() {
+  console.log('🔍 Testando conexão com Supabase...');
+  console.log('📡 URL:', supabaseUrl);
+  console.log('🔑 Service Key configurada:', supabaseServiceKey ? 'Sim' : 'Não');
+  
   try {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const { data, error } = await supabase.from('users').select('count').limit(1);
+    
+    // Testar conexão básica
+    console.log('🔄 Testando conexão básica...');
+    const { data, error } = await supabase.from('usuarios').select('id').limit(1);
     
     if (error) {
-      console.log('❌ Erro com SERVICE_KEY:', error.message);
-      return false;
+      console.log('❌ Erro na conexão:', error.message);
+      console.log('🔍 Código do erro:', error.code);
+      console.log('🔍 Detalhes:', error.details);
+      
+      // Se a tabela não existe, tentar criar
+      if (error.code === 'PGRST116') {
+        console.log('📋 Tabela usuarios não existe. Tentando criar...');
+        await createTables(supabase);
+      }
     } else {
-      console.log('✅ SERVICE_KEY funcionando');
-      return true;
+      console.log('✅ Conexão com Supabase estabelecida com sucesso!');
+      console.log('📊 Dados encontrados:', data);
     }
-  } catch (err) {
-    console.log('❌ Erro na conexão SERVICE_KEY:', err.message);
-    return false;
+    
+  } catch (error) {
+    console.log('❌ Erro geral:', error.message);
   }
 }
 
-// Executar testes
-async function runTests() {
-  console.log('\n🧪 TESTANDO CONEXÕES...\n');
+async function createTables(supabase) {
+  console.log('🔧 Criando tabelas necessárias...');
   
-  const anonResult = await testAnonKey();
-  const serviceResult = await testServiceKey();
-  
-  console.log('\n📊 RESULTADOS:');
-  console.log('ANON_KEY:', anonResult ? '✅ OK' : '❌ FALHA');
-  console.log('SERVICE_KEY:', serviceResult ? '✅ OK' : '❌ FALHA');
-  
-  if (!anonResult && !serviceResult) {
-    console.log('\n🚨 PROBLEMA: Nenhuma chave está funcionando!');
-    console.log('Verifique se as credenciais estão corretas no Fly.io');
-  } else if (!serviceResult) {
-    console.log('\n⚠️ AVISO: SERVICE_KEY não funciona, mas ANON_KEY sim');
-    console.log('Isso pode causar problemas nas operações administrativas');
-  } else {
-    console.log('\n🎉 SUCESSO: Todas as chaves estão funcionando!');
+  try {
+    // Criar tabela usuarios
+    const { error: usuariosError } = await supabase.rpc('exec_sql', {
+      sql: `
+        CREATE TABLE IF NOT EXISTS usuarios (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          email VARCHAR(255) UNIQUE NOT NULL,
+          username VARCHAR(100) NOT NULL,
+          senha_hash VARCHAR(255) NOT NULL,
+          saldo DECIMAL(10,2) DEFAULT 0.00,
+          tipo VARCHAR(50) DEFAULT 'jogador',
+          ativo BOOLEAN DEFAULT true,
+          email_verificado BOOLEAN DEFAULT false,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
+    });
+    
+    if (usuariosError) {
+      console.log('❌ Erro ao criar tabela usuarios:', usuariosError.message);
+    } else {
+      console.log('✅ Tabela usuarios criada com sucesso!');
+    }
+    
+    // Criar tabela metricas_globais
+    const { error: metricasError } = await supabase.rpc('exec_sql', {
+      sql: `
+        CREATE TABLE IF NOT EXISTS metricas_globais (
+          id SERIAL PRIMARY KEY,
+          contador_chutes_global INTEGER DEFAULT 0 NOT NULL,
+          ultimo_gol_de_ouro INTEGER DEFAULT 0 NOT NULL,
+          total_usuarios INTEGER DEFAULT 0,
+          total_jogos INTEGER DEFAULT 0,
+          total_receita DECIMAL(10,2) DEFAULT 0.00,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `
+    });
+    
+    if (metricasError) {
+      console.log('❌ Erro ao criar tabela metricas_globais:', metricasError.message);
+    } else {
+      console.log('✅ Tabela metricas_globais criada com sucesso!');
+    }
+    
+  } catch (error) {
+    console.log('❌ Erro ao criar tabelas:', error.message);
   }
 }
 
-runTests().catch(console.error);
+// Executar teste
+testSupabaseConnection();

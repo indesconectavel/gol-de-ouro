@@ -5,6 +5,7 @@ import { useSidebar } from '../contexts/SidebarContext';
 import Logo from '../components/Logo';
 import Navigation from '../components/Navigation';
 import apiClient from '../services/apiClient';
+import { API_ENDPOINTS } from '../config/api';
 
 const Pagamentos = () => {
   const navigate = useNavigate();
@@ -20,32 +21,22 @@ const Pagamentos = () => {
   const valoresRecarga = [10, 25, 50, 100, 200, 500];
 
   useEffect(() => {
+
     carregarDados();
-  }, []);
+  
+}, [carregarDados]);
 
   const carregarDados = async () => {
     try {
       // Em desenvolvimento, usar dados simulados
-      if (import.meta.env.MODE === 'development') {
-        setSaldo(150); // Saldo simulado para desenvolvimento
-        setPagamentos([
-          {
-            id: '1',
-            amount: 50,
-            status: 'completed',
-            createdAt: new Date().toISOString(),
-            description: 'Depósito simulado'
-          }
-        ]);
-        return;
-      }
+      // Sem dados simulados - sempre buscar dados reais
 
       // Carregar saldo do usuário
-      const response = await apiClient.get('/usuario/perfil');
+      const response = await apiClient.get(API_ENDPOINTS.PROFILE);
       setSaldo(response.data.balance || 0);
 
       // Carregar histórico de pagamentos
-      const pagamentosResponse = await apiClient.get('/api/payments/pix/usuario');
+      const pagamentosResponse = await apiClient.get(API_ENDPOINTS.PIX_USER);
       setPagamentos(pagamentosResponse.data.data.payments || []);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -67,9 +58,10 @@ const Pagamentos = () => {
         description: `Recarga de saldo - R$ ${valorRecarga.toFixed(2)}`
       });
 
-      if (response.data) {
-        // O backend retorna os dados diretamente, não em .data
-        setPagamentoAtual(response.data);
+      if (response.data.success) {
+        // O backend retorna os dados em .data
+        console.log('🔍 [PIX] Dados recebidos do backend:', response.data.data);
+        setPagamentoAtual(response.data.data);
         toast.success('Pagamento PIX criado com sucesso!');
         carregarDados(); // Recarregar dados
       } else {
@@ -85,8 +77,14 @@ const Pagamentos = () => {
 
   const consultarStatusPagamento = async (paymentId) => {
     try {
+      if (!paymentId) {
+        console.error('ID do pagamento não fornecido');
+        toast.error('ID do pagamento não encontrado');
+        return;
+      }
+      
       const token = localStorage.getItem('authToken');
-      const response = await apiClient.get(`/api/payments/pix/status/${paymentId}`);
+      const response = await apiClient.get(`${API_ENDPOINTS.PIX_STATUS}?paymentId=${paymentId}`);
 
       if (response.data) {
         if (response.data.data.status === 'approved') {
@@ -237,12 +235,18 @@ const Pagamentos = () => {
                     R$ {valorRecarga.toFixed(2)}
                   </p>
                   <p className="text-sm text-gray-500">
-                    ID: {pagamentoAtual.payment_id}
+                    ID: {pagamentoAtual.id}
                   </p>
                 </div>
 
                 {/* PIX Code - MVP SIMPLIFICADO */}
-                {pagamentoAtual.pix_code && (
+                {console.log('🔍 [PIX] Verificando exibição:', {
+                  pagamentoAtual,
+                  hasPixCode: pagamentoAtual?.pix_code,
+                  hasQrCode: pagamentoAtual?.qr_code,
+                  hasCopyPaste: pagamentoAtual?.pix_copy_paste
+                })}
+                {(pagamentoAtual?.pix_code || pagamentoAtual?.qr_code || pagamentoAtual?.pix_copy_paste) && (
                   <div className="text-center mb-6">
                     <h3 className="text-lg font-bold text-green-600 mb-4">
                       ✅ Código PIX Gerado com Sucesso!
@@ -252,11 +256,12 @@ const Pagamentos = () => {
                     </p>
                     <div className="bg-white p-4 rounded-lg border-2 border-green-200 shadow-sm">
                       <code className="text-sm font-mono break-all text-gray-800 block mb-4 bg-gray-50 p-3 rounded">
-                        {pagamentoAtual.pix_code}
+                        {pagamentoAtual.pix_code || pagamentoAtual.qr_code || pagamentoAtual.pix_copy_paste}
                       </code>
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText(pagamentoAtual.pix_code);
+                          const pixCode = pagamentoAtual.pix_code || pagamentoAtual.qr_code || pagamentoAtual.pix_copy_paste;
+                          navigator.clipboard.writeText(pixCode);
                           setCopiado(true);
                           setTimeout(() => setCopiado(false), 3000);
                         }}
@@ -272,6 +277,23 @@ const Pagamentos = () => {
                     <p className="text-xs text-gray-500 mt-2">
                       💡 Cole este código no seu app bancário para completar o pagamento
                     </p>
+                  </div>
+                )}
+
+                {/* Fallback - Se não tiver código PIX na resposta */}
+                {!pagamentoAtual.pix_code && !pagamentoAtual.qr_code && !pagamentoAtual.pix_copy_paste && (
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg font-bold text-blue-600 mb-4">
+                      📧 PIX Enviado por Email!
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4 font-medium">
+                      O código PIX foi enviado para seu email. Verifique sua caixa de entrada.
+                    </p>
+                    <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                      <p className="text-sm text-blue-800">
+                        💡 Se não recebeu o email, verifique a pasta de spam ou lixeira.
+                      </p>
+                    </div>
                   </div>
                 )}
 
@@ -297,7 +319,7 @@ const Pagamentos = () => {
 
                 <div className="mt-6 text-center">
                   <button
-                    onClick={() => consultarStatusPagamento(pagamentoAtual.payment_id)}
+                    onClick={() => consultarStatusPagamento(pagamentoAtual.id)}
                     className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
                   >
                     🔄 Verificar Status

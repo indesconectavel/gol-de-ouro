@@ -204,7 +204,7 @@ router.post('/auth/register', async (req, res) => {
 
     // Verificar se usuário já existe
     const { data: existingUser } = await supabase
-      .from('users')
+      .from('usuarios')
       .select('id')
       .eq('email', email)
       .single();
@@ -218,12 +218,14 @@ router.post('/auth/register', async (req, res) => {
 
     // Criar usuário
     const { data, error } = await supabase
-      .from('users')
+      .from('usuarios')
       .insert([{
         email,
-        password_hash: passwordHash,
-        name,
-        balance: 0.00
+        senha_hash: passwordHash,
+        username,
+        saldo: 0.00,
+        tipo: 'jogador',
+        ativo: true
       }])
       .select()
       .single();
@@ -250,8 +252,8 @@ router.post('/auth/login', async (req, res) => {
 
     // Buscar usuário
     const { data, error } = await supabase
-      .from('users')
-      .select('id, email, name, password_hash, balance')
+      .from('usuarios')
+      .select('id, email, username, senha_hash, saldo, tipo, ativo')
       .eq('email', email)
       .single();
 
@@ -259,18 +261,37 @@ router.post('/auth/login', async (req, res) => {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    // Verificar senha (implementar bcrypt)
-    if (data.password_hash !== password) {
+    // Verificar status da conta
+    if (data.ativo !== true) {
+      return res.status(403).json({ error: 'Conta desativada' });
+    }
+
+    // Verificar senha com bcrypt
+    const bcrypt = require('bcryptjs');
+    const isPasswordValid = await bcrypt.compare(password, data.senha_hash);
+    
+    if (!isPasswordValid) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    // Gerar JWT (implementar jwt)
-    const token = `jwt_${data.id}_${Date.now()}`; // Placeholder
+    // Gerar JWT
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      { id: data.id, email: data.email, role: data.tipo },
+      process.env.JWT_SECRET || 'goldeouro-secret-key-2025',
+      { expiresIn: '24h' }
+    );
 
     res.status(200).json({
       message: 'Login realizado com sucesso',
       token,
-      user: { id: data.id, email: data.email, name: data.name, balance: data.balance }
+      user: { 
+        id: data.id, 
+        email: data.email, 
+        username: data.username, 
+        saldo: data.saldo,
+        role: data.tipo
+      }
     });
   } catch (error) {
     console.error('Erro ao fazer login:', error);

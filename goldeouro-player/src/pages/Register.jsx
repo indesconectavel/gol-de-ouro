@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import Logo from '../components/Logo'
 
 const Register = () => {
@@ -12,21 +13,45 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { register } = useAuth()
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setError('')
+    
     if (formData.password !== formData.confirmPassword) {
-      alert('As senhas não coincidem!')
+      setError('As senhas não coincidem!')
       return
     }
     if (!acceptTerms) {
-      alert('Você deve aceitar os termos de uso!')
+      setError('Você deve aceitar os termos de uso!')
       return
     }
-    // Simular registro
-    navigate('/dashboard')
+    if (formData.password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres!')
+      return
+    }
+    
+    setIsSubmitting(true)
+    
+    try {
+      const result = await register(formData.name, formData.email, formData.password)
+      
+      if (result.success) {
+        // Registro bem-sucedido - fazer login automático
+        navigate('/dashboard')
+      } else {
+        setError(result.error || 'Erro ao criar conta')
+      }
+    } catch (error) {
+      setError('Erro interno. Tente novamente.')
+      console.error('Erro no registro:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -49,6 +74,13 @@ const Register = () => {
             <Logo size="xlarge" className="mx-auto mb-4" animated={true} />
             <p className="text-white/70 text-lg">Crie sua conta</p>
           </div>
+
+          {/* Exibir erro se houver */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm">
+              ❌ {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Nome */}
@@ -181,9 +213,14 @@ const Register = () => {
             {/* Botão de Registro */}
             <button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
+              disabled={isSubmitting}
+              className={`w-full font-bold py-3 px-6 rounded-lg transition-all duration-200 transform ${
+                isSubmitting 
+                  ? 'bg-gray-500 cursor-not-allowed' 
+                  : 'bg-green-600 hover:bg-green-700 hover:scale-105'
+              } text-white`}
             >
-              ⚽ Criar Conta
+              {isSubmitting ? '⏳ Criando conta...' : '⚽ Criar Conta'}
             </button>
           </form>
 

@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-10-07T22:41:01.626Z",
+  "problemas": [
+    {
+      "tipo": "critical",
+      "componente": "player",
+      "problema": "Player frontend offline",
+      "solucao": "FAZER DEPLOY IMEDIATO do player frontend"
+    }
+  ],
+  "score": 80,
+  "criticos": 1,
+  "warnings": 0
+}

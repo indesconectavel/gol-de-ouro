@@ -1,0 +1,123 @@
+{
+  "timestamp": "2025-10-07T22-05-23-750Z",
+  "system": {
+    "os": "win32",
+    "node": "v22.17.0",
+    "memory": {
+      "rss": 37916672,
+      "heapTotal": 10547200,
+      "heapUsed": 6000720,
+      "external": 1815744,
+      "arrayBuffers": 10515
+    },
+    "uptime": 6.7949102,
+    "issues": [],
+    "score": 100
+  },
+  "backend": {
+    "status": "online",
+    "memory": {
+      "rss": 78032896,
+      "heapTotal": 25559040,
+      "heapUsed": 15384792,
+      "external": 3418344,
+      "arrayBuffers": 98438
+    },
+    "performance": "unknown",
+    "issues": [],
+    "score": 100
+  },
+  "frontend": {
+    "admin": {
+      "status": "online",
+      "issues": []
+    },
+    "player": {
+      "status": "offline",
+      "issues": [
+        {
+          "type": "error",
+          "message": "Player frontend offline",
+          "recommendation": "Verificar deploy do player"
+        }
+      ]
+    },
+    "score": 75
+  },
+  "security": {
+    "csp": "missing",
+    "https": "unknown",
+    "headers": "unknown",
+    "vulnerabilities": [
+      {
+        "type": "warning",
+        "message": "CSP não configurado em goldeouro-admin/vercel.json",
+        "recommendation": "Configurar Content Security Policy"
+      },
+      {
+        "type": "warning",
+        "message": "CSP não configurado em goldeouro-player/vercel.json",
+        "recommendation": "Configurar Content Security Policy"
+      }
+    ],
+    "score": 80
+  },
+  "performance": {
+    "buildSize": "unknown",
+    "loadTime": "unknown",
+    "optimization": "unknown",
+    "issues": [],
+    "score": 100
+  },
+  "deployment": {
+    "backend": "unknown",
+    "frontend": "unknown",
+    "cdn": "unknown",
+    "issues": [
+      {
+        "type": "error",
+        "message": "Arquivo de deploy ausente: Dockerfile.optimized",
+        "recommendation": "Criar arquivo de configuração"
+      }
+    ],
+    "score": 85
+  },
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "frontend",
+      "title": "Corrigir Frontends",
+      "description": "Frontends com problemas de deploy ou configuração",
+      "actions": [
+        "Corrigir deploy do admin",
+        "Verificar configurações do Vercel",
+        "Otimizar CSP",
+        "Implementar testes E2E"
+      ]
+    },
+    {
+      "priority": "medium",
+      "category": "security",
+      "title": "Melhorar Segurança",
+      "description": "Implementar melhorias de segurança",
+      "actions": [
+        "Configurar CSP adequadamente",
+        "Implementar headers de segurança",
+        "Fazer scan de vulnerabilidades",
+        "Configurar HTTPS"
+      ]
+    },
+    {
+      "priority": "medium",
+      "category": "general",
+      "title": "Implementar Monitoramento",
+      "description": "Sistema precisa de monitoramento contínuo",
+      "actions": [
+        "Configurar health checks",
+        "Implementar logging",
+        "Configurar alertas",
+        "Criar dashboards"
+      ]
+    }
+  ]
+}

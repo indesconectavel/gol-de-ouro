@@ -15,7 +15,12 @@ class PaymentService {
   }
 
   getPaymentConfig() {
-    if (this.isProduction) {
+    // FORÇAR PRODUÇÃO REAL EM DOMÍNIOS DE PRODUÇÃO
+    const isProductionDomain = window.location.hostname.includes('goldeouro.lol') || 
+                               window.location.hostname.includes('app.goldeouro.lol');
+    
+    if (this.isProduction || isProductionDomain) {
+      console.log('💳 PIX: Usando configuração LIVE (Produção Real)');
       // Configuração de produção - PIX Live
       return {
         pixProvider: 'live',
@@ -31,6 +36,7 @@ class PaymentService {
         timeout: 30000
       };
     } else if (this.isSandbox) {
+      console.log('💳 PIX: Usando configuração SANDBOX');
       // Configuração de sandbox - PIX Sandbox
       return {
         pixProvider: 'sandbox',
@@ -46,6 +52,7 @@ class PaymentService {
         timeout: 15000
       };
     } else {
+      console.log('💳 PIX: Usando configuração MOCK (Desenvolvimento)');
       // Configuração de desenvolvimento - Mock
       return {
         pixProvider: 'mock',

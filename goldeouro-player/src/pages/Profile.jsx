@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
-import ImageUpload from '../components/ImageUpload'
+// import ImageUpload from '../components/ImageUpload' // Removido - funcionalidade desnecessária
 import { useSidebar } from '../contexts/SidebarContext'
 import apiClient from '../services/apiClient'
+import { API_ENDPOINTS } from '../config/api'
 
 const Profile = () => {
   const { isCollapsed } = useSidebar()
@@ -25,7 +26,7 @@ const Profile = () => {
     name: '',
     email: ''
   })
-  const [profileImage, setProfileImage] = useState(null)
+  // const [profileImage, setProfileImage] = useState(null) // Removido - funcionalidade desnecessária
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -36,7 +37,7 @@ const Profile = () => {
   const loadUserProfile = async () => {
     try {
       setLoading(true)
-      const response = await apiClient.get('/usuario/perfil')
+      const response = await apiClient.get(API_ENDPOINTS.PROFILE)
       if (response.data.success) {
         const userData = response.data.data
         setUser({
@@ -89,10 +90,32 @@ const Profile = () => {
     setIsEditing(true)
   }
 
-  const handleSave = () => {
-    // Aqui você salvaria as alterações no backend
-    setIsEditing(false)
-    // Atualizar o estado do usuário com os novos dados
+  const handleSave = async () => {
+    try {
+      setLoading(true)
+      const response = await apiClient.put('/api/user/profile', {
+        nome: editForm.name,
+        email: editForm.email
+      })
+      
+      if (response.data.success) {
+        // Atualizar o estado do usuário com os novos dados
+        setUser(prev => ({
+          ...prev,
+          name: response.data.data.nome,
+          email: response.data.data.email
+        }))
+        setIsEditing(false)
+        alert('Perfil atualizado com sucesso!')
+      } else {
+        alert(response.data.message || 'Erro ao atualizar perfil')
+      }
+    } catch (error) {
+      console.error('Erro ao salvar perfil:', error)
+      alert('Erro ao atualizar perfil. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleCancel = () => {
@@ -103,11 +126,11 @@ const Profile = () => {
     setIsEditing(false)
   }
 
-  const handleImageSelect = (file) => {
-    setProfileImage(file)
-    // Aqui você pode implementar o upload para o servidor
-    console.log('Imagem selecionada:', file)
-  }
+  // const handleImageSelect = (file) => {
+  //   setProfileImage(file)
+  //   // Aqui você pode implementar o upload para o servidor
+  //   console.log('Imagem selecionada:', file)
+  // } // Removido - funcionalidade desnecessária
 
   const getLevelColor = (level) => {
     switch(level) {
@@ -169,13 +192,9 @@ const Profile = () => {
               </div>
             </div>
             <div className="relative pr-4">
-              <ImageUpload
-                onImageSelect={handleImageSelect}
-                currentImage={profileImage ? URL.createObjectURL(profileImage) : null}
-                className="w-20 h-20"
-              />
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">✓</span>
+              {/* Avatar removido - funcionalidade desnecessária */}
+              <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-3xl font-bold text-slate-900 shadow-lg">
+                {user.name.charAt(0).toUpperCase()}
               </div>
             </div>
           </div>
