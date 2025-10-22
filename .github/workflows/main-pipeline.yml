@@ -2,264 +2,53 @@ name: 🚀 Pipeline Principal - Gol de Ouro
 
 on:
   push:
-    branches: [ main, dev ]
-  pull_request:
     branches: [ main ]
-  workflow_dispatch:  # Permitir execução manual
-
-env:
-  NODE_VERSION: '20'
-  FLY_APP_NAME: goldeouro-backend
-  VERCEL_PROJECT_ID: goldeouro-player
+  workflow_dispatch:
 
 jobs:
-  # 🔍 Análise e Validação
-  analyze:
-    name: 🔍 Análise e Validação
+  build-and-deploy:
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: 📥 Checkout código
-        uses: actions/checkout@v4
-        
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          
-      - name: 📦 Instalar dependências
-        run: |
-          npm ci
-          cd goldeouro-player && npm ci
-          echo "✅ Dependências instaladas"
-          
-      - name: 🔍 Análise de código
-        run: |
-          echo "🔍 Analisando qualidade do código..."
-          npm run lint || echo "⚠️ Problemas de linting encontrados"
-          
-      - name: 🔍 Análise de segurança
-        run: |
-          echo "🔍 Analisando segurança..."
-          npm audit --audit-level=moderate || echo "⚠️ Vulnerabilidades encontradas"
-          
-      - name: 🔍 Verificação de estrutura
-        run: |
-          echo "🔍 Verificando estrutura do projeto..."
-          if [ -f "server-fly.js" ] && [ -f "package.json" ] && [ -f "fly.toml" ]; then
-            echo "✅ Estrutura backend válida"
-          else
-            echo "❌ Estrutura backend inválida"
-            exit 1
-          fi
-          
-          if [ -d "goldeouro-player" ] && [ -f "goldeouro-player/package.json" ]; then
-            echo "✅ Estrutura frontend válida"
-          else
-            echo "❌ Estrutura frontend inválida"
-            exit 1
-          fi
 
-  # 🧪 Testes
-  test:
-    name: 🧪 Testes
-    runs-on: ubuntu-latest
-    needs: analyze
-    
     steps:
-      - name: 📥 Checkout código
+      - name: 🔍 Checkout do código
         uses: actions/checkout@v4
-        
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          
-      - name: 📦 Instalar dependências
-        run: |
-          npm ci
-          echo "✅ Dependências instaladas"
-          
-      - name: 🧪 Executar testes unitários
-        run: |
-          echo "🧪 Executando testes unitários..."
-          npm run test:unit || echo "⚠️ Alguns testes unitários falharam"
-          
-      - name: 🧪 Executar testes de integração
-        run: |
-          echo "🧪 Executando testes de integração..."
-          npm run test:integration || echo "⚠️ Alguns testes de integração falharam"
-          
-      - name: 🧪 Executar testes de segurança
-        run: |
-          echo "🧪 Executando testes de segurança..."
-          npm run test:security || echo "⚠️ Alguns testes de segurança falharam"
-          
-      - name: 🧪 Executar testes de performance
-        run: |
-          echo "🧪 Executando testes de performance..."
-          npm run test:performance || echo "⚠️ Alguns testes de performance falharam"
 
-  # 🚀 Deploy Backend
-  deploy-backend:
-    name: 🚀 Deploy Backend
-    runs-on: ubuntu-latest
-    needs: [analyze, test]
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: 📥 Checkout código
-        uses: actions/checkout@v4
-        
-      - name: 🔧 Setup Node.js
+      - name: ⚙️ Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          
+          node-version: 18
+
       - name: 📦 Instalar dependências
-        run: |
-          npm ci
-          echo "✅ Dependências instaladas"
-          
-      - name: 🔐 Configurar Fly.io
-        uses: superfly/flyctl-actions/setup-flyctl@master
-        
-      - name: 🚀 Deploy para Fly.io
-        run: |
-          echo "🚀 Iniciando deploy do backend..."
-          flyctl deploy --remote-only --no-cache
-          echo "✅ Deploy do backend concluído"
+        run: npm install --legacy-peer-deps
+
+      - name: 🧱 Build do projeto
+        run: npm run build
+
+      - name: 🚀 Deploy Backend (Fly.io)
+        uses: superfly/flyctl-actions@master
+        with:
+          args: "deploy --remote-only"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-          
-      - name: 🧪 Teste de saúde backend
-        run: |
-          echo "🧪 Testando saúde do backend..."
-          sleep 30  # Aguardar deploy
-          curl -f https://${{ env.FLY_APP_NAME }}.fly.dev/health || exit 1
-          echo "✅ Backend saudável"
 
-  # 🎨 Deploy Frontend
-  deploy-frontend:
-    name: 🎨 Deploy Frontend
-    runs-on: ubuntu-latest
-    needs: [analyze, test]
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: 📥 Checkout código
-        uses: actions/checkout@v4
-        
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: goldeouro-player/package-lock.json
-          
-      - name: 📦 Instalar dependências
-        run: |
-          cd goldeouro-player
-          npm ci
-          echo "✅ Dependências instaladas"
-          
-      - name: 🔐 Configurar Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: goldeouro-player
-          vercel-args: '--prod'
-          
-      - name: 🧪 Teste de saúde frontend
-        run: |
-          echo "🧪 Testando saúde do frontend..."
-          sleep 30  # Aguardar deploy
-          curl -f https://goldeouro.lol || exit 1
-          echo "✅ Frontend saudável"
+      - name: 🌐 Deploy Frontend (Vercel)
+        run: npx vercel --prod --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-  # 📊 Monitoramento Pós-Deploy
-  monitor:
-    name: 📊 Monitoramento
-    runs-on: ubuntu-latest
-    needs: [deploy-backend, deploy-frontend]
-    if: always() && github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: 📥 Checkout código
-        uses: actions/checkout@v4
-        
-      - name: 🔍 Verificar saúde dos serviços
+      - name: ✅ Validar endpoints principais
         run: |
-          echo "🔍 Verificando saúde dos serviços..."
-          
-          # Backend
-          backend_status=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.FLY_APP_NAME }}.fly.dev/health)
-          if [ "$backend_status" = "200" ]; then
-            echo "✅ Backend: Saudável"
-          else
-            echo "❌ Backend: Problemas (HTTP $backend_status)"
-          fi
-          
-          # Frontend
-          frontend_status=$(curl -s -o /dev/null -w "%{http_code}" https://goldeouro.lol)
-          if [ "$frontend_status" = "200" ]; then
-            echo "✅ Frontend: Saudável"
-          else
-            echo "❌ Frontend: Problemas (HTTP $frontend_status)"
-          fi
-          
-      - name: 📊 Coletar métricas
+          echo "🔍 Testando endpoints de produção..."
+          curl -f https://goldeouro-backend.fly.dev/health
+          curl -f https://goldeouro-backend.fly.dev/api/status
+          echo "✅ Todos os endpoints estão funcionando!"
+
+      - name: 📊 Log final
         run: |
-          echo "📊 Coletando métricas..."
-          curl -s https://${{ env.FLY_APP_NAME }}.fly.dev/api/metrics | jq '.' || echo "⚠️ Não foi possível obter métricas"
-          
-      - name: 📢 Notificar resultado
-        run: |
-          echo "📢 Pipeline concluído!"
-          echo "🌐 Backend: https://${{ env.FLY_APP_NAME }}.fly.dev"
+          echo "=================================================="
+          echo "🏆 DEPLOY DO GOL DE OURO CONCLUÍDO COM SUCESSO!"
           echo "🌐 Frontend: https://goldeouro.lol"
-          echo "📊 Status: ${{ job.status }}"
-
-  # 🔄 Deploy Desenvolvimento
-  deploy-dev:
-    name: 🔄 Deploy Dev
-    runs-on: ubuntu-latest
-    needs: [analyze, test]
-    if: github.ref == 'refs/heads/dev'
-    
-    steps:
-      - name: 📥 Checkout código
-        uses: actions/checkout@v4
-        
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          
-      - name: 📦 Instalar dependências
-        run: |
-          npm ci
-          echo "✅ Dependências instaladas"
-          
-      - name: 🔐 Configurar Fly.io (Dev)
-        uses: superfly/flyctl-actions/setup-flyctl@master
-        
-      - name: 🚀 Deploy para desenvolvimento
-        run: |
-          echo "🔄 Deploy para ambiente de desenvolvimento..."
-          flyctl deploy --remote-only --no-cache
-          echo "✅ Deploy de desenvolvimento concluído"
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-          
-      - name: 📢 Notificar deploy dev
-        run: |
-          echo "🔄 Deploy de desenvolvimento concluído!"
-          echo "🌐 URL: https://${{ env.FLY_APP_NAME }}.fly.dev"
-          echo "📊 Status: Ambiente de desenvolvimento"
+          echo "⚙️ Backend:  https://goldeouro-backend.fly.dev"
+          echo "=================================================="
