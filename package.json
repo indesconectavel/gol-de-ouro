@@ -35,7 +35,16 @@
     "build": "echo 'No build step required for Node.js backend'",
     "deploy": "npm run test:all && npm run lint && npm run audit && echo 'Deploy ready'",
     "test:unit": "jest --testPathPattern=tests/unit",
-    "test:integration": "jest --testPathPattern=tests/integration"
+    "test:integration": "jest --testPathPattern=tests/integration",
+    "test:api": "jest --testPathPattern=tests/api",
+    "test:security": "jest --testPathPattern=tests/security",
+    "test:performance": "jest --testPathPattern=tests/performance",
+    "test:security:auth": "jest --testPathPattern=tests/security/auth",
+    "test:security:authz": "jest --testPathPattern=tests/security/authorization",
+    "test:security:validation": "jest --testPathPattern=tests/security/validation",
+    "test:load": "jest --testPathPattern=tests/performance/load",
+    "test:stress": "jest --testPathPattern=tests/performance/stress",
+    "test:coverage": "jest --coverage --testPathPattern=tests/unit"
   },
   "author": "Fred S. Silva",
   "license": "MIT",

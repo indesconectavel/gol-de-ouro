@@ -1,0 +1,220 @@
+name: 📊 Monitoramento e Alertas
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '*/15 * * * *'  # Executar a cada 15 minutos
+  workflow_dispatch:  # Permitir execução manual
+
+env:
+  NODE_VERSION: '20'
+  FLY_APP_NAME: goldeouro-backend
+
+jobs:
+  # 📊 Monitoramento de Saúde
+  health-monitoring:
+    name: 📊 Monitoramento de Saúde
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: 🔍 Verificar saúde do backend
+        run: |
+          echo "🔍 Verificando saúde do backend..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.FLY_APP_NAME }}.fly.dev/health)
+          if [ "$response" = "200" ]; then
+            echo "✅ Backend saudável"
+          else
+            echo "❌ Backend com problemas: HTTP $response"
+            exit 1
+          fi
+          
+      - name: 🔍 Verificar saúde do frontend
+        run: |
+          echo "🔍 Verificando saúde do frontend..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://goldeouro.lol)
+          if [ "$response" = "200" ]; then
+            echo "✅ Frontend saudável"
+          else
+            echo "❌ Frontend com problemas: HTTP $response"
+            exit 1
+          fi
+          
+      - name: 🔍 Verificar tempo de resposta
+        run: |
+          echo "🔍 Verificando tempo de resposta..."
+          backend_time=$(curl -s -o /dev/null -w "%{time_total}" https://${{ env.FLY_APP_NAME }}.fly.dev/health)
+          frontend_time=$(curl -s -o /dev/null -w "%{time_total}" https://goldeouro.lol)
+          
+          echo "Backend: ${backend_time}s"
+          echo "Frontend: ${frontend_time}s"
+          
+          # Alertar se tempo > 5s
+          if (( $(echo "$backend_time > 5" | bc -l) )); then
+            echo "⚠️ Backend lento: ${backend_time}s"
+          fi
+          if (( $(echo "$frontend_time > 5" | bc -l) )); then
+            echo "⚠️ Frontend lento: ${frontend_time}s"
+          fi
+
+  # 📊 Monitoramento de Performance
+  performance-monitoring:
+    name: 📊 Monitoramento de Performance
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: 📊 Análise de performance frontend
+        run: |
+          echo "📊 Analisando performance do frontend..."
+          if command -v lighthouse &> /dev/null; then
+            lighthouse https://goldeouro.lol --output=json --output-path=./lighthouse-report.json --chrome-flags="--headless"
+            
+            # Extrair métricas principais
+            performance=$(cat lighthouse-report.json | jq '.categories.performance.score * 100')
+            accessibility=$(cat lighthouse-report.json | jq '.categories.accessibility.score * 100')
+            best_practices=$(cat lighthouse-report.json | jq '.categories."best-practices".score * 100')
+            seo=$(cat lighthouse-report.json | jq '.categories.seo.score * 100')
+            
+            echo "Performance: ${performance}%"
+            echo "Accessibility: ${accessibility}%"
+            echo "Best Practices: ${best_practices}%"
+            echo "SEO: ${seo}%"
+            
+            # Alertar se performance < 80
+            if (( $(echo "$performance < 80" | bc -l) )); then
+              echo "⚠️ Performance baixa: ${performance}%"
+            fi
+          else
+            echo "⚠️ Lighthouse não instalado"
+          fi
+          
+      - name: 📊 Monitoramento de recursos
+        run: |
+          echo "📊 Monitorando recursos do backend..."
+          if command -v flyctl &> /dev/null; then
+            flyctl status --app ${{ env.FLY_APP_NAME }} || echo "⚠️ Não foi possível obter status"
+          else
+            echo "⚠️ Flyctl não instalado"
+          fi
+
+  # 📊 Monitoramento de Logs
+  log-monitoring:
+    name: 📊 Monitoramento de Logs
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: 📊 Coletar logs do backend
+        run: |
+          echo "📊 Coletando logs do backend..."
+          if command -v flyctl &> /dev/null; then
+            flyctl logs --app ${{ env.FLY_APP_NAME }} --lines 100 > backend-logs.txt
+            echo "✅ Logs coletados"
+            
+            # Verificar erros
+            error_count=$(grep -i "error\|exception\|failed" backend-logs.txt | wc -l)
+            echo "Erros encontrados: $error_count"
+            
+            if [ "$error_count" -gt 10 ]; then
+              echo "⚠️ Muitos erros encontrados: $error_count"
+            fi
+          else
+            echo "⚠️ Flyctl não instalado"
+          fi
+          
+      - name: 📊 Análise de logs
+        run: |
+          echo "📊 Analisando logs..."
+          if [ -f "backend-logs.txt" ]; then
+            echo "Total de linhas: $(wc -l < backend-logs.txt)"
+            echo "Erros: $(grep -i "error" backend-logs.txt | wc -l)"
+            echo "Warnings: $(grep -i "warning" backend-logs.txt | wc -l)"
+            echo "Info: $(grep -i "info" backend-logs.txt | wc -l)"
+          fi
+
+  # 📊 Relatório de Monitoramento
+  monitoring-report:
+    name: 📊 Relatório de Monitoramento
+    runs-on: ubuntu-latest
+    needs: [health-monitoring, performance-monitoring, log-monitoring]
+    if: always()
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 📊 Gerar relatório
+        run: |
+          echo "📊 Gerando relatório de monitoramento..."
+          echo "## 📊 Relatório de Monitoramento - $(date)" >> monitoring-report.md
+          echo "" >> monitoring-report.md
+          echo "### 🔍 Status dos Serviços:" >> monitoring-report.md
+          echo "- Monitoramento de Saúde: ${{ needs.health-monitoring.result }}" >> monitoring-report.md
+          echo "- Monitoramento de Performance: ${{ needs.performance-monitoring.result }}" >> monitoring-report.md
+          echo "- Monitoramento de Logs: ${{ needs.log-monitoring.result }}" >> monitoring-report.md
+          echo "" >> monitoring-report.md
+          echo "### 📈 Métricas:" >> monitoring-report.md
+          echo "- Data: $(date)" >> monitoring-report.md
+          echo "- Branch: ${{ github.ref_name }}" >> monitoring-report.md
+          echo "- Commit: ${{ github.sha }}" >> monitoring-report.md
+          echo "- Backend: https://${{ env.FLY_APP_NAME }}.fly.dev" >> monitoring-report.md
+          echo "- Frontend: https://goldeouro.lol" >> monitoring-report.md
+          
+      - name: 📤 Upload relatório
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitoring-report
+          path: monitoring-report.md
+          retention-days: 7
+          
+      - name: 📤 Upload logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-logs
+          path: backend-logs.txt
+          retention-days: 7
+        if: always()
+
+  # 🚨 Alertas
+  alerts:
+    name: 🚨 Alertas
+    runs-on: ubuntu-latest
+    needs: [health-monitoring, performance-monitoring, log-monitoring]
+    if: failure()
+    
+    steps:
+      - name: 🚨 Enviar alerta
+        run: |
+          echo "🚨 ALERTA: Problemas detectados no sistema!"
+          echo "Verifique os logs acima para mais detalhes."
+          echo "Serviços afetados:"
+          echo "- Backend: https://${{ env.FLY_APP_NAME }}.fly.dev"
+          echo "- Frontend: https://goldeouro.lol"
+          
+          # Aqui você pode adicionar integração com Slack, Discord, etc.
+          # curl -X POST -H 'Content-type: application/json' \
+          #   --data '{"text":"🚨 Alerta: Problemas no Gol de Ouro"}' \
+          #   ${{ secrets.SLACK_WEBHOOK_URL }}
