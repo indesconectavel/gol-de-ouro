@@ -35,6 +35,17 @@ goldeouro-admin/node_modules/
 goldeouro-player/node_modules/
 goldeouro-backend/node_modules/
 
+# Arquivos grandes e temporários
+.cache/
+.parcel-cache/
+dist/
+build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+
 # IDE and editor files
 .vscode/
 .idea/
