@@ -17,6 +17,24 @@ build/
 .next/
 out/
 
+# Backups e temporários
+BACKUP-COMPLETO-*
+backups/
+artifacts/
+teste-rollback-*/
+tmp/
+logs/
+docs/logs/
+*.zip
+*.tar
+*.mp4
+*.mov
+
+# Duplicações de dependências
+goldeouro-admin/node_modules/
+goldeouro-player/node_modules/
+goldeouro-backend/node_modules/
+
 # IDE and editor files
 .vscode/
 .idea/
