@@ -1,0 +1,101 @@
+name: 🔍 Health Monitor – Gol de Ouro
+
+on:
+  schedule:
+    - cron: "*/15 * * * *" # Executa a cada 15 minutos
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Verificar backend (Fly.io)
+        run: |
+          echo "Verificando backend..."
+          STATUS_BACKEND=$(curl -s -o /dev/null -w "%{http_code}" https://goldeouro-backend.fly.dev/health)
+          echo "Backend HTTP: $STATUS_BACKEND"
+          if [ "$STATUS_BACKEND" != "200" ]; then
+            echo "❌ Backend fora do ar"
+            echo "Backend status: $STATUS_BACKEND" >> docs/logs/health-fails.log
+            echo "⚠️ Backend OFFLINE - $(date)" >> docs/logs/health-summary.log
+            echo "::error::Backend offline"
+          else
+            echo "✅ Backend online"
+            echo "✅ Backend ONLINE - $(date)" >> docs/logs/health-summary.log
+          fi
+
+      - name: Verificar frontend (Vercel)
+        run: |
+          echo "Verificando frontend..."
+          STATUS_FRONT=$(curl -s -o /dev/null -w "%{http_code}" https://goldeouro.lol)
+          echo "Frontend HTTP: $STATUS_FRONT"
+          if [ "$STATUS_FRONT" != "200" ]; then
+            echo "❌ Frontend fora do ar"
+            echo "Frontend status: $STATUS_FRONT" >> docs/logs/health-fails.log
+            echo "⚠️ Frontend OFFLINE - $(date)" >> docs/logs/health-summary.log
+            echo "::error::Frontend offline"
+          else
+            echo "✅ Frontend online"
+            echo "✅ Frontend ONLINE - $(date)" >> docs/logs/health-summary.log
+          fi
+
+      - name: Verificar banco de dados (Supabase)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          echo "Verificando banco de dados..."
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_KEY" ]; then
+            curl -s -H "apikey: $SUPABASE_KEY" "$SUPABASE_URL/rest/v1" > /dev/null
+            if [ $? -ne 0 ]; then
+              echo "❌ Supabase inacessível"
+              echo "⚠️ Supabase OFFLINE - $(date)" >> docs/logs/health-summary.log
+              echo "::error::Supabase offline"
+            else
+              echo "✅ Banco de dados operacional"
+              echo "✅ Supabase ONLINE - $(date)" >> docs/logs/health-summary.log
+            fi
+          else
+            echo "⚠️ Credenciais Supabase não configuradas"
+            echo "⚠️ Supabase SKIP - $(date)" >> docs/logs/health-summary.log
+          fi
+
+      - name: Gerar relatório diário de saúde
+        run: |
+          echo "📊 Relatório de monitoramento - $(date)" > docs/RELATORIO-HEALTH-MONITOR.md
+          echo "" >> docs/RELATORIO-HEALTH-MONITOR.md
+          echo "Últimas verificações:" >> docs/RELATORIO-HEALTH-MONITOR.md
+          if [ -f "docs/logs/health-summary.log" ]; then
+            tail -n 20 docs/logs/health-summary.log >> docs/RELATORIO-HEALTH-MONITOR.md
+          else
+            echo "Nenhuma verificação anterior encontrada" >> docs/RELATORIO-HEALTH-MONITOR.md
+          fi
+
+      - name: Commitar relatórios
+        run: |
+          git config --global user.email "ci@goldeouro.dev"
+          git config --global user.name "CI Pipeline"
+          git add docs/logs/ docs/RELATORIO-HEALTH-MONITOR.md
+          git commit -m "📊 Atualização automática – Health Monitor $(date)" || echo "Nenhuma mudança para commitar"
+          git push origin main || echo "Push falhou ou não há mudanças"
+
+      - name: Enviar alerta (Slack/Discord)
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -n "$DISCORD_WEBHOOK_URL" ]; then
+            curl -X POST -H 'Content-type: application/json' \
+            --data "{\"content\":\"⚠️ *Gol de Ouro alerta:* Um dos serviços está offline! Verifique o pipeline no GitHub Actions.\"}" \
+            $DISCORD_WEBHOOK_URL || true
+          fi
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"⚠️ Gol de Ouro alerta: Um dos serviços está offline! Verifique o pipeline no GitHub Actions.\"}" \
+            $SLACK_WEBHOOK_URL || true
+          fi
