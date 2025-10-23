@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  backend-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Node setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Smoke local
+        run: |
+          npm i -D husky
+          node -e "console.log('husky ok')"
+          node -e "require('fs').existsSync('goldeouro-backend/Dockerfile') || process.exit(1)"
+          node -e "const f=require('fs').readFileSync('goldeouro-backend/Dockerfile','utf8'); if(/\bCOPY\s+\.\s+\./i.test(f)) process.exit(2)"
+          node -e "const f=require('fs').readFileSync('goldeouro-backend/fly.toml','utf8'); if(!/ignorefile\s*=\s*\".dockerignore\"/.test(f)) process.exit(3)"
+          node -e "const f=require('fs').readFileSync('goldeouro-admin/vercel.json','utf8'); if(!/\"routes\"/.test(f)) process.exit(4)"
+
+      - name: Docker build (no push)
+        working-directory: goldeouro-backend
+        run: |
+          docker build -t gdo-test:ci .

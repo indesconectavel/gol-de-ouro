@@ -1,0 +1,57 @@
+name: ⚠️ Rollback Automático – Gol de Ouro
+
+on:
+  workflow_run:
+    workflows: ["🚀 Pipeline Principal - Gol de Ouro"]
+    types:
+      - completed
+
+jobs:
+  rollback:
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔄 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Fly.io CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: ⚙️ Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 🔁 Rollback Backend (Fly.io)
+        run: |
+          echo "⚠️ Deploy do backend falhou. Iniciando rollback..."
+          flyctl releases --app goldeouro-backend
+          LAST_RELEASE=$(flyctl releases --app goldeouro-backend | awk 'NR==2{print $1}')
+          flyctl deploy --app goldeouro-backend --image-release $LAST_RELEASE
+          echo "✅ Rollback do backend concluído com sucesso."
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: 🔁 Rollback Frontend (Vercel)
+        run: |
+          echo "⚠️ Deploy do frontend falhou. Revertendo para versão anterior..."
+          npx vercel rollback ${{ secrets.VERCEL_PROJECT_ID }} --token=${{ secrets.VERCEL_TOKEN }}
+          echo "✅ Rollback do frontend concluído com sucesso."
+
+      - name: 🧾 Registrar logs
+        run: |
+          mkdir -p docs/logs
+          echo "Rollback executado em $(date)" >> docs/logs/rollback-history.log
+          echo "Workflow com falha: ${{ github.event.workflow_run.name }}" >> docs/logs/rollback-history.log
+          echo "Conclusão: ${{ github.event.workflow_run.conclusion }}" >> docs/logs/rollback-history.log
+          echo "---" >> docs/logs/rollback-history.log
+
+      - name: 📢 Notificar via Slack/Discord (opcional)
+        if: env.SLACK_WEBHOOK_URL != ''
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"⚠️ Rollback executado automaticamente no projeto Gol de Ouro. Última versão restaurada com sucesso.\"}" \
+          $SLACK_WEBHOOK_URL
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

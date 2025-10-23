@@ -1,0 +1,38 @@
+name: Contract Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  contract-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: |
+        cd goldeouro-backend
+        npm ci
+        
+    - name: Run contract tests
+      run: |
+        cd goldeouro-backend
+        npm run test:contract
+        
+    - name: Contract test results
+      if: failure()
+      run: |
+        echo "❌ CONTRATO QUEBROU - FALHA DURA!"
+        echo "Verifique os testes de contrato em tests/contracts/"
+        exit 1

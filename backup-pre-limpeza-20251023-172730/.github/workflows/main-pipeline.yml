@@ -1,0 +1,54 @@
+name: 🚀 Pipeline Principal - Gol de Ouro
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔍 Checkout do código
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 📦 Instalar dependências
+        run: npm install --legacy-peer-deps
+
+      - name: 🧱 Build do projeto
+        run: npm run build
+
+      - name: 🚀 Deploy Backend (Fly.io)
+        uses: superfly/flyctl-actions@master
+        with:
+          args: "deploy --remote-only"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: 🌐 Deploy Frontend (Vercel)
+        run: npx vercel --prod --yes
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: ✅ Validar endpoints principais
+        run: |
+          echo "🔍 Testando endpoints de produção..."
+          curl -f https://goldeouro-backend.fly.dev/health
+          curl -f https://goldeouro-backend.fly.dev/api/status
+          echo "✅ Todos os endpoints estão funcionando!"
+
+      - name: 📊 Log final
+        run: |
+          echo "=================================================="
+          echo "🏆 DEPLOY DO GOL DE OURO CONCLUÍDO COM SUCESSO!"
+          echo "🌐 Frontend: https://goldeouro.lol"
+          echo "⚙️ Backend:  https://goldeouro-backend.fly.dev"
+          echo "=================================================="

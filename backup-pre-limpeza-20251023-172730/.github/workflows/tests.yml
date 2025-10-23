@@ -1,0 +1,246 @@
+name: 🧪 Testes Automatizados
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * *'  # Executar diariamente às 2h
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # 🧪 Testes Backend
+  test-backend:
+    name: 🧪 Testes Backend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: |
+          npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: 🧪 Testes unitários backend
+        run: |
+          echo "🧪 Executando testes unitários..."
+          if [ -f "tests/unit/backend.test.js" ]; then
+            npm run test:unit
+          else
+            echo "⚠️ Testes unitários não encontrados"
+          fi
+          
+      - name: 🧪 Testes de integração
+        run: |
+          echo "🧪 Executando testes de integração..."
+          if [ -f "tests/integration/api.test.js" ]; then
+            npm run test:integration
+          else
+            echo "⚠️ Testes de integração não encontrados"
+          fi
+          
+      - name: 🧪 Testes de API
+        run: |
+          echo "🧪 Executando testes de API..."
+          if [ -f "tests/api/endpoints.test.js" ]; then
+            npm run test:api
+          else
+            echo "⚠️ Testes de API não encontrados"
+          fi
+          
+      - name: 📊 Cobertura de testes
+        run: |
+          echo "📊 Gerando relatório de cobertura..."
+          if [ -f "tests/coverage.js" ]; then
+            npm run test:coverage
+          else
+            echo "⚠️ Relatório de cobertura não configurado"
+          fi
+
+  # 🧪 Testes Frontend
+  test-frontend:
+    name: 🧪 Testes Frontend
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: goldeouro-player/package-lock.json
+          
+      - name: 📦 Instalar dependências
+        run: |
+          cd goldeouro-player
+          npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: 🧪 Testes unitários frontend
+        run: |
+          cd goldeouro-player
+          echo "🧪 Executando testes unitários..."
+          if [ -f "tests/unit/components.test.js" ]; then
+            npm run test:unit
+          else
+            echo "⚠️ Testes unitários não encontrados"
+          fi
+          
+      - name: 🧪 Testes de componentes
+        run: |
+          cd goldeouro-player
+          echo "🧪 Executando testes de componentes..."
+          if [ -f "tests/components/Game.test.js" ]; then
+            npm run test:components
+          else
+            echo "⚠️ Testes de componentes não encontrados"
+          fi
+          
+      - name: 🧪 Testes E2E
+        run: |
+          cd goldeouro-player
+          echo "🧪 Executando testes E2E..."
+          if [ -f "tests/e2e/game-flow.test.js" ]; then
+            npm run test:e2e
+          else
+            echo "⚠️ Testes E2E não encontrados"
+          fi
+
+  # 🧪 Testes de Segurança
+  security-tests:
+    name: 🔒 Testes de Segurança
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: |
+          npm ci
+          cd goldeouro-player && npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: 🔍 Análise de vulnerabilidades
+        run: |
+          echo "🔍 Analisando vulnerabilidades backend..."
+          npm audit --audit-level=moderate
+          
+          echo "🔍 Analisando vulnerabilidades frontend..."
+          cd goldeouro-player
+          npm audit --audit-level=moderate
+          
+      - name: 🔍 Análise de dependências
+        run: |
+          echo "🔍 Analisando dependências..."
+          npx audit-ci --config audit-ci.json || echo "⚠️ Vulnerabilidades encontradas"
+          
+      - name: 🔍 Verificação de secrets
+        run: |
+          echo "🔍 Verificando secrets expostos..."
+          if command -v truffleHog &> /dev/null; then
+            truffleHog --no-verification --regex --entropy=False .
+          else
+            echo "⚠️ TruffleHog não instalado"
+          fi
+
+  # 🧪 Testes de Performance
+  performance-tests:
+    name: ⚡ Testes de Performance
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: |
+          npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: ⚡ Testes de carga
+        run: |
+          echo "⚡ Executando testes de carga..."
+          if [ -f "tests/performance/load.test.js" ]; then
+            npm run test:load
+          else
+            echo "⚠️ Testes de carga não encontrados"
+          fi
+          
+      - name: ⚡ Testes de stress
+        run: |
+          echo "⚡ Executando testes de stress..."
+          if [ -f "tests/performance/stress.test.js" ]; then
+            npm run test:stress
+          else
+            echo "⚠️ Testes de stress não encontrados"
+          fi
+          
+      - name: 📊 Análise de performance
+        run: |
+          echo "📊 Analisando performance..."
+          if command -v lighthouse &> /dev/null; then
+            lighthouse https://goldeouro.lol --output=json --output-path=./lighthouse-report.json
+          else
+            echo "⚠️ Lighthouse não instalado"
+          fi
+
+  # 📊 Relatório de Testes
+  test-report:
+    name: 📊 Relatório de Testes
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend, security-tests, performance-tests]
+    if: always()
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 📊 Gerar relatório
+        run: |
+          echo "📊 Gerando relatório de testes..."
+          echo "## 📊 Relatório de Testes - $(date)" >> test-report.md
+          echo "" >> test-report.md
+          echo "### 🧪 Status dos Testes:" >> test-report.md
+          echo "- Backend: ${{ needs.test-backend.result }}" >> test-report.md
+          echo "- Frontend: ${{ needs.test-frontend.result }}" >> test-report.md
+          echo "- Segurança: ${{ needs.security-tests.result }}" >> test-report.md
+          echo "- Performance: ${{ needs.performance-tests.result }}" >> test-report.md
+          echo "" >> test-report.md
+          echo "### 📈 Métricas:" >> test-report.md
+          echo "- Data: $(date)" >> test-report.md
+          echo "- Branch: ${{ github.ref_name }}" >> test-report.md
+          echo "- Commit: ${{ github.sha }}" >> test-report.md
+          
+      - name: 📤 Upload relatório
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test-report.md
+          retention-days: 30

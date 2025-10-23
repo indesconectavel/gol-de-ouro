@@ -1,0 +1,183 @@
+name: 🚀 Backend Deploy (Fly.io)
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - 'server-fly.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'Dockerfile'
+      - 'fly.toml'
+      - 'config/**'
+      - 'controllers/**'
+      - 'middlewares/**'
+      - 'services/**'
+      - 'scripts/**'
+      - '.github/workflows/backend-deploy.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'server-fly.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'Dockerfile'
+      - 'fly.toml'
+      - 'config/**'
+      - 'controllers/**'
+      - 'middlewares/**'
+      - 'services/**'
+      - 'scripts/**'
+
+env:
+  NODE_VERSION: '20'
+  FLY_APP_NAME: goldeouro-backend
+
+jobs:
+  # 🔍 Análise de Código e Testes
+  test-and-analyze:
+    name: 🧪 Testes e Análise
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: |
+          npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: 🔍 Análise de segurança
+        run: |
+          npm audit --audit-level=moderate
+          echo "✅ Análise de segurança concluída"
+          
+      - name: 🧪 Executar testes
+        run: |
+          if [ -f "tests/backend-tests.js" ]; then
+            npm test
+          else
+            echo "⚠️ Arquivo de testes não encontrado, pulando testes"
+          fi
+          echo "✅ Testes executados"
+          
+      - name: 📊 Análise de qualidade
+        run: |
+          echo "🔍 Verificando sintaxe..."
+          node -c server-fly.js
+          echo "✅ Sintaxe válida"
+          
+          echo "🔍 Verificando estrutura..."
+          if [ -f "package.json" ] && [ -f "server-fly.js" ] && [ -f "fly.toml" ]; then
+            echo "✅ Estrutura válida"
+          else
+            echo "❌ Estrutura inválida"
+            exit 1
+          fi
+
+  # 🚀 Deploy para Fly.io
+  deploy-backend:
+    name: 🚀 Deploy Backend
+    runs-on: ubuntu-latest
+    needs: test-and-analyze
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: |
+          npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: 🔐 Configurar Fly.io
+        uses: superfly/flyctl-actions/setup-flyctl@master
+        
+      - name: 🚀 Deploy para Fly.io
+        run: |
+          echo "🚀 Iniciando deploy para Fly.io..."
+          flyctl deploy --remote-only --no-cache
+          echo "✅ Deploy concluído"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          
+      - name: 🔍 Verificar deploy
+        run: |
+          echo "🔍 Verificando status do deploy..."
+          flyctl status --app ${{ env.FLY_APP_NAME }}
+          echo "✅ Verificação concluída"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          
+      - name: 📊 Logs do deploy
+        run: |
+          echo "📊 Coletando logs..."
+          flyctl logs --app ${{ env.FLY_APP_NAME }} --lines 50
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          
+      - name: 🧪 Teste de saúde
+        run: |
+          echo "🧪 Testando endpoint de saúde..."
+          sleep 30  # Aguardar deploy
+          curl -f https://${{ env.FLY_APP_NAME }}.fly.dev/health || exit 1
+          echo "✅ Endpoint de saúde funcionando"
+          
+      - name: 📢 Notificar sucesso
+        run: |
+          echo "🎉 Deploy do backend concluído com sucesso!"
+          echo "🌐 URL: https://${{ env.FLY_APP_NAME }}.fly.dev"
+          echo "📊 Status: Online"
+
+  # 🔄 Deploy para desenvolvimento
+  deploy-dev:
+    name: 🔄 Deploy Dev
+    runs-on: ubuntu-latest
+    needs: test-and-analyze
+    if: github.ref == 'refs/heads/dev'
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: |
+          npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: 🔐 Configurar Fly.io
+        uses: superfly/flyctl-actions/setup-flyctl@master
+        
+      - name: 🚀 Deploy para desenvolvimento
+        run: |
+          echo "🔄 Deploy para ambiente de desenvolvimento..."
+          flyctl deploy --remote-only --no-cache
+          echo "✅ Deploy de desenvolvimento concluído"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          
+      - name: 📢 Notificar deploy dev
+        run: |
+          echo "🔄 Deploy de desenvolvimento concluído!"
+          echo "🌐 URL: https://${{ env.FLY_APP_NAME }}.fly.dev"
+          echo "📊 Status: Ambiente de desenvolvimento"

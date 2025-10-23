@@ -1,0 +1,208 @@
+name: 🔒 Segurança e Qualidade
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 3 * * *'  # Executar diariamente às 3h
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # 🔒 Análise de Segurança
+  security-analysis:
+    name: 🔒 Análise de Segurança
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: |
+          npm ci
+          cd goldeouro-player && npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: 🔍 CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+          
+      - name: 🔍 CodeQL Autobuild
+        uses: github/codeql-action/autobuild@v3
+        
+      - name: 🔍 CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        
+      - name: 🔍 Análise de vulnerabilidades
+        run: |
+          echo "🔍 Analisando vulnerabilidades..."
+          npm audit --audit-level=moderate
+          cd goldeouro-player
+          npm audit --audit-level=moderate
+          
+      - name: 🔍 Verificação de secrets
+        run: |
+          echo "🔍 Verificando secrets expostos..."
+          if command -v truffleHog &> /dev/null; then
+            truffleHog --no-verification --regex --entropy=False .
+          else
+            echo "⚠️ TruffleHog não instalado"
+          fi
+          
+      - name: 🔍 Análise de dependências
+        run: |
+          echo "🔍 Analisando dependências..."
+          npx audit-ci --config audit-ci.json || echo "⚠️ Vulnerabilidades encontradas"
+
+  # 📊 Análise de Qualidade
+  quality-analysis:
+    name: 📊 Análise de Qualidade
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: |
+          npm ci
+          cd goldeouro-player && npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: 🔍 ESLint Backend
+        run: |
+          echo "🔍 Executando ESLint no backend..."
+          if [ -f ".eslintrc.js" ]; then
+            npx eslint . --ext .js --max-warnings 0
+          else
+            echo "⚠️ ESLint não configurado"
+          fi
+          
+      - name: 🔍 ESLint Frontend
+        run: |
+          cd goldeouro-player
+          echo "🔍 Executando ESLint no frontend..."
+          if [ -f ".eslintrc.js" ]; then
+            npx eslint src/ --ext .js,.jsx,.ts,.tsx --max-warnings 0
+          else
+            echo "⚠️ ESLint não configurado"
+          fi
+          
+      - name: 🔍 Prettier
+        run: |
+          echo "🔍 Verificando formatação..."
+          if [ -f ".prettierrc" ]; then
+            npx prettier --check .
+            cd goldeouro-player
+            npx prettier --check src/
+          else
+            echo "⚠️ Prettier não configurado"
+          fi
+          
+      - name: 🔍 TypeScript Check
+        run: |
+          cd goldeouro-player
+          echo "🔍 Verificando TypeScript..."
+          if [ -f "tsconfig.json" ]; then
+            npx tsc --noEmit
+          else
+            echo "⚠️ TypeScript não configurado"
+          fi
+
+  # 🧪 Testes de Segurança
+  security-tests:
+    name: 🧪 Testes de Segurança
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: 📦 Instalar dependências
+        run: |
+          npm ci
+          echo "✅ Dependências instaladas"
+          
+      - name: 🧪 Testes de autenticação
+        run: |
+          echo "🧪 Testando autenticação..."
+          if [ -f "tests/security/auth.test.js" ]; then
+            npm run test:security:auth
+          else
+            echo "⚠️ Testes de autenticação não encontrados"
+          fi
+          
+      - name: 🧪 Testes de autorização
+        run: |
+          echo "🧪 Testando autorização..."
+          if [ -f "tests/security/authorization.test.js" ]; then
+            npm run test:security:authz
+          else
+            echo "⚠️ Testes de autorização não encontrados"
+          fi
+          
+      - name: 🧪 Testes de validação
+        run: |
+          echo "🧪 Testando validação de dados..."
+          if [ -f "tests/security/validation.test.js" ]; then
+            npm run test:security:validation
+          else
+            echo "⚠️ Testes de validação não encontrados"
+          fi
+
+  # 📊 Relatório de Segurança
+  security-report:
+    name: 📊 Relatório de Segurança
+    runs-on: ubuntu-latest
+    needs: [security-analysis, quality-analysis, security-tests]
+    if: always()
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        
+      - name: 📊 Gerar relatório
+        run: |
+          echo "📊 Gerando relatório de segurança..."
+          echo "## 🔒 Relatório de Segurança - $(date)" >> security-report.md
+          echo "" >> security-report.md
+          echo "### 🔍 Status das Análises:" >> security-report.md
+          echo "- Análise de Segurança: ${{ needs.security-analysis.result }}" >> security-report.md
+          echo "- Análise de Qualidade: ${{ needs.quality-analysis.result }}" >> security-report.md
+          echo "- Testes de Segurança: ${{ needs.security-tests.result }}" >> security-report.md
+          echo "" >> security-report.md
+          echo "### 📈 Métricas:" >> security-report.md
+          echo "- Data: $(date)" >> security-report.md
+          echo "- Branch: ${{ github.ref_name }}" >> security-report.md
+          echo "- Commit: ${{ github.sha }}" >> security-report.md
+          echo "- Vulnerabilidades: Verificar logs acima" >> security-report.md
+          
+      - name: 📤 Upload relatório
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.md
+          retention-days: 30
