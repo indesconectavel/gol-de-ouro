@@ -52,7 +52,7 @@ class PixService {
 
       // Buscar dados do usuário
       const { data: user, error: userError } = await this.supabase
-        .from('users')
+        .from('usuarios')
         .select('email, username')
         .eq('id', userId)
         .single();
@@ -216,7 +216,7 @@ class PixService {
 
           // Atualizar saldo do usuário
           const { error: balanceError } = await this.supabase
-            .from('users')
+            .from('usuarios')
             .update({
               balance: this.supabase.raw(`balance + ${transaction.amount}`),
               updated_at: new Date().toISOString()
@@ -333,7 +333,7 @@ class PixService {
 
       // Verificar saldo do usuário
       const { data: user, error: userError } = await this.supabase
-        .from('users')
+        .from('usuarios')
         .select('balance')
         .eq('id', userId)
         .single();
@@ -386,7 +386,7 @@ class PixService {
 
         // Debitar saldo do usuário
         const { error: balanceError } = await this.supabase
-          .from('users')
+          .from('usuarios')
           .update({
             balance: this.supabase.raw(`balance - ${amount}`),
             updated_at: new Date().toISOString()

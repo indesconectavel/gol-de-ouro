@@ -103,7 +103,7 @@ const processPixWebhook = async (webhookData) => {
 
       // Atualizar saldo do usuário
       const { error: balanceError } = await supabase
-        .from('users')
+        .from('usuarios')
         .update({
           balance: supabase.raw(`balance + ${transaction.amount}`),
           total_credits: supabase.raw(`total_credits + ${transaction.amount}`)

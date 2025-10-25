@@ -220,7 +220,7 @@ class HealthChecker {
     try {
       // Verificar conexão com banco
       const { data, error } = await supabase
-        .from('users')
+        .from('usuarios')
         .select('count')
         .limit(1);
 

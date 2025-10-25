@@ -1,8 +1,8 @@
-# 🔐 CONFIGURAÇÃO UNIFICADA DO SUPABASE - GOL DE OURO v1.2.0
-# ============================================================
-# Data: 23/10/2025
-# Status: CONFIGURAÇÃO UNIFICADA E VALIDADA
-# Versão: v1.2.0-supabase-unified
+// 🔐 CONFIGURAÇÃO UNIFICADA DO SUPABASE - GOL DE OURO v1.2.0
+// ============================================================
+// Data: 23/10/2025
+// Status: CONFIGURAÇÃO UNIFICADA E VALIDADA
+// Versão: v1.2.0-supabase-unified
 
 const { createClient } = require('@supabase/supabase-js');
 

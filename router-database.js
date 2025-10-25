@@ -84,7 +84,7 @@ const authenticatePlayer = async (req, res, next) => {
 router.post('/admin/lista-usuarios', authenticateAdmin, async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin
-      .from('users')
+      .from('usuarios')
       .select('id, name, email, balance, status, total_shots, total_goals, created_at')
       .order('created_at', { ascending: false });
     
@@ -99,7 +99,7 @@ router.post('/admin/lista-usuarios', authenticateAdmin, async (req, res) => {
 router.post('/admin/relatorio-usuarios', authenticateAdmin, async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin
-      .from('users')
+      .from('usuarios')
       .select('id, name, email, balance, status, total_shots, total_goals, total_credits, total_debits, created_at')
       .order('created_at', { ascending: false });
     
@@ -139,7 +139,7 @@ router.post('/admin/chutes-recentes', authenticateAdmin, async (req, res) => {
 router.post('/admin/top-jogadores', authenticateAdmin, async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin
-      .from('users')
+      .from('usuarios')
       .select('id, name, total_goals, total_shots, balance')
       .order('total_goals', { ascending: false })
       .limit(10);
@@ -155,7 +155,7 @@ router.post('/admin/top-jogadores', authenticateAdmin, async (req, res) => {
 router.post('/admin/usuarios-bloqueados', authenticateAdmin, async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin
-      .from('users')
+      .from('usuarios')
       .select('id, name, email, status, created_at')
       .eq('status', 'blocked');
     
@@ -171,7 +171,7 @@ router.post('/admin/usuarios-bloqueados', authenticateAdmin, async (req, res) =>
 router.get('/api/public/dashboard', async (req, res) => {
   try {
     const [usersResult, gamesResult, transactionsResult] = await Promise.all([
-      supabase.from('users').select('id', { count: 'exact' }),
+      supabase.from('usuarios').select('id', { count: 'exact' }),
       supabase.from('games').select('id', { count: 'exact' }),
       supabase.from('transactions').select('amount').eq('type', 'credit')
     ]);
@@ -204,7 +204,7 @@ router.post('/auth/register', async (req, res) => {
 
     // Verificar se usuário já existe
     const { data: existingUser } = await supabase
-      .from('users')
+      .from('usuarios')
       .select('id')
       .eq('email', email)
       .single();
@@ -218,7 +218,7 @@ router.post('/auth/register', async (req, res) => {
 
     // Criar usuário
     const { data, error } = await supabase
-      .from('users')
+      .from('usuarios')
       .insert([{
         email,
         password_hash: passwordHash,
@@ -250,7 +250,7 @@ router.post('/auth/login', async (req, res) => {
 
     // Buscar usuário
     const { data, error } = await supabase
-      .from('users')
+      .from('usuarios')
       .select('id, email, name, password_hash, balance')
       .eq('email', email)
       .single();
@@ -374,7 +374,7 @@ router.post('/api/games/shoot', authenticatePlayer, async (req, res) => {
 
     // Atualizar estatísticas do usuário
     await supabase
-      .from('users')
+      .from('usuarios')
       .update({
         total_shots: supabase.raw('total_shots + 1'),
         total_goals: result !== 'defense' ? supabase.raw('total_goals + 1') : supabase.raw('total_goals'),
