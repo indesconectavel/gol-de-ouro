@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import Logo from '../components/Logo'
+import VersionBanner from '../components/VersionBanner'
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator'
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -62,6 +64,14 @@ const Register = () => {
            backgroundPosition: 'center',
            backgroundRepeat: 'no-repeat'
          }}>
+      {/* Banner de Versão */}
+      <VersionBanner 
+        version="v1.2.0" 
+        deployDate="25/10/2025" 
+        deployTime="08:50"
+        showTime={true}
+      />
+      
       {/* Overlay escuro para melhorar legibilidade */}
       <div className="absolute inset-0 bg-black/60"></div>
       
@@ -150,6 +160,9 @@ const Register = () => {
                   </span>
                 </button>
               </div>
+              
+              {/* Indicador de força da senha */}
+              <PasswordStrengthIndicator password={formData.password} />
             </div>
 
             {/* Confirmar Senha */}

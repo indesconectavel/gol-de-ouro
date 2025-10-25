@@ -11,8 +11,9 @@ https://github.com/indesconectavel/gol-de-ouro/settings/secrets/actions
 
 #### **FLY_API_TOKEN**
 - **Nome:** `FLY_API_TOKEN`
-- **Valor:** `fm2_lJPECAAAAAAACf4KxBDyp6f1h+oOEkp4dUMmd8i2wrVodHRwczovL2FwaS5mbHkuaW8vdjGUAJLOABNH6h8Lk7lodHRwczovL2FwaS5mbHkuaW8vYWFhL3YxxDyaStRyh8Ddp6RGWSd0zeQxWqto2ruEAHeS/nfo8QxR57r77MKAZcDGHlvDiWfXDMD2iwebU4CQgAZL/HvETl5h6Qb2FLHB1x12ylm0V3zvt2ftDw0gqpSL4Cx4INqEK+YR5zldgzU8DE1hft50sWMEgQ+WLEPrW8VJwTMP5EG8xLet5bnUNLBlCGhBIsQgJckCFNpUi24YgWKicppYYaRL7iD3PBaCByU8YrW95wA=,fm2_lJPETl5h6Qb2FLHB1x12ylm0V3zvt2ftDw0gqpSL4Cx4INqEK+YR5zldgzU8DE1hft50sWMEgQ+WLEPrW8VJwTMP5EG8xLet5bnUNLBlCGhBIsQQS6TMA8KX+sBR3QK4BZpIPMO5aHR0cHM6Ly9hcGkuZmx5LmlvL2FhYS92MZYEks5o+NP6zmj41nAXzgASh6sKkc4AEoerxCDUWuEv+xJaXw3uh/rOIMF7BYaqlAIfACzOCVguAnErMw==,fo1_YfYVQQGlYtR4u-NSUtNY_CuyYoLxvRpC687atGhT2cY`
+- **Valor:** [OBTER VIA `flyctl auth token` - NÃO EXPOR EM DOCUMENTAÇÃO]
 - **Descrição:** Token de autenticação do Fly.io
+- **⚠️ IMPORTANTE:** Nunca exponha tokens em documentação pública
 
 #### **VERCEL_TOKEN**
 - **Nome:** `VERCEL_TOKEN`

@@ -26,6 +26,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            goldeouro-player/package-lock.json
           
       - name: 📦 Instalar dependências
         run: |
@@ -68,6 +71,17 @@ jobs:
             echo "⚠️ Relatório de cobertura não configurado"
           fi
 
+      - name: 📊 Upload relatório de testes
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report-${{ github.run_number }}
+          path: |
+            test-results/
+            coverage/
+            test-report.md
+          retention-days: 7
+
   # 🧪 Testes Frontend
   test-frontend:
     name: 🧪 Testes Frontend
@@ -82,6 +96,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            goldeouro-player/package-lock.json
           cache-dependency-path: goldeouro-player/package-lock.json
           
       - name: 📦 Instalar dependências
@@ -134,6 +151,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            goldeouro-player/package-lock.json
           
       - name: 📦 Instalar dependências
         run: |
@@ -178,6 +198,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            goldeouro-player/package-lock.json
           
       - name: 📦 Instalar dependências
         run: |

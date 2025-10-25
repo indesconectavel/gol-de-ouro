@@ -27,3 +27,5 @@ echo "📊 Verificando tamanho final..."
 git count-objects -vH
 
 echo "✅ Limpeza do histórico concluída!"
+
+

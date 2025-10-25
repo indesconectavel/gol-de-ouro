@@ -15,40 +15,99 @@ const bcrypt = require('bcryptjs');
 const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
 const { calculateInitialBalance, validateRealData, isProductionMode } = require('./config/system-config');
+
+// Importar validadores
+const PixValidator = require('./utils/pix-validator');
+const LoteIntegrityValidator = require('./utils/lote-integrity-validator');
+const WebhookSignatureValidator = require('./utils/webhook-signature-validator');
+
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 // =====================================================
-// CONFIGURAÇÃO SUPABASE
+// INSTÂNCIAS DOS VALIDADORES
 // =====================================================
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const pixValidator = new PixValidator();
+const loteIntegrityValidator = new LoteIntegrityValidator();
+const webhookSignatureValidator = new WebhookSignatureValidator();
 
-let supabase;
+// =====================================================
+// CONFIGURAÇÃO SUPABASE UNIFICADA
+// =====================================================
+
+const { 
+  supabaseAdmin, 
+  validateSupabaseCredentials, 
+  testSupabaseConnection, 
+  supabaseHealthCheck 
+} = require('./database/supabase-unified-config');
+
+// Importar serviço de email
+const emailService = require('./services/emailService');
+
+// =====================================================
+// SISTEMAS DE MONITORAMENTO AVANÇADOS
+// =====================================================
+
+const {
+  startCustomMetricsCollection,
+  stopCustomMetricsCollection,
+  getCustomMetricsStats,
+  generateCustomMetricsReport,
+  testCustomMetrics
+} = require('./monitoring/flyio-custom-metrics');
+
+const {
+  startNotificationSystem,
+  stopNotificationSystem,
+  sendNotification,
+  getNotificationStats,
+  generateNotificationReport,
+  testNotifications
+} = require('./monitoring/flyio-advanced-notifications');
+
+const {
+  startConfigBackupSystem,
+  stopConfigBackupSystem,
+  executeManualBackup,
+  getBackupStats,
+  generateBackupReport,
+  testConfigBackup
+} = require('./monitoring/flyio-config-backup');
+
+let supabase = supabaseAdmin;
 let dbConnected = false;
 
-// Conectar Supabase
+// Conectar Supabase com validação
 async function connectSupabase() {
-  if (!supabaseUrl || !supabaseServiceRoleKey) {
-    console.log('⚠️ [SUPABASE] Credenciais não configuradas');
-    return false;
-  }
-
   try {
-    supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+    console.log('🔍 [SUPABASE] Validando credenciais...');
+    
+    // Validar credenciais
+    const validation = validateSupabaseCredentials();
+    if (!validation.valid) {
+      console.error('❌ [SUPABASE] Credenciais inválidas:', validation.errors);
+      dbConnected = false;
+      return false;
+    }
+    
+    console.log('✅ [SUPABASE] Credenciais validadas');
     
     // Testar conexão
-    const { data, error } = await supabase.from('usuarios').select('id').limit(1);
-    if (error && error.code !== 'PGRST116') {
-      throw error;
+    const connectionTest = await testSupabaseConnection();
+    if (!connectionTest.success) {
+      console.error('❌ [SUPABASE] Falha na conexão:', connectionTest.error);
+      dbConnected = false;
+      return false;
     }
     
     console.log('✅ [SUPABASE] Conectado com sucesso');
     dbConnected = true;
     return true;
+    
   } catch (error) {
     console.log('❌ [SUPABASE] Erro na conexão:', error.message);
     dbConnected = false;
@@ -270,6 +329,262 @@ function getOrCreateLoteByValue(amount) {
 // =====================================================
 // ROTAS DE AUTENTICAÇÃO
 // =====================================================
+
+// Recuperação de senha - GERAR TOKEN
+app.post('/api/auth/forgot-password', [
+  body('email').isEmail().normalizeEmail()
+], validateData, async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    // Verificar se email existe
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('id, email, username')
+      .eq('email', email)
+      .eq('ativo', true)
+      .single();
+
+    if (userError || !user) {
+      // Por segurança, sempre retornar sucesso mesmo se email não existir
+      console.log(`📧 [FORGOT-PASSWORD] Email não encontrado: ${email}`);
+      return res.status(200).json({
+        success: true,
+        message: 'Se o email existir, você receberá um link de recuperação'
+      });
+    }
+
+    // Gerar token de recuperação (válido por 1 hora)
+    const resetToken = jwt.sign(
+      { 
+        userId: user.id, 
+        email: user.email, 
+        type: 'password_reset' 
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // Salvar token no banco de dados
+    const { error: tokenError } = await supabase
+      .from('password_reset_tokens')
+      .insert({
+        user_id: user.id,
+        token: resetToken,
+        expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hora
+        used: false,
+        created_at: new Date().toISOString()
+      });
+
+    if (tokenError) {
+      console.error('❌ [FORGOT-PASSWORD] Erro ao salvar token:', tokenError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor'
+      });
+    }
+
+    // Enviar email real com link de recuperação
+    const emailResult = await emailService.sendPasswordResetEmail(email, user.username, resetToken);
+    
+    if (emailResult.success) {
+      console.log(`📧 [FORGOT-PASSWORD] Email enviado para ${email}:`, emailResult.messageId);
+    } else {
+      console.log(`⚠️ [FORGOT-PASSWORD] Falha ao enviar email para ${email}:`, emailResult.error);
+      // Logar token como fallback
+      console.log(`🔗 [FORGOT-PASSWORD] Link de recuperação: https://goldeouro.lol/reset-password?token=${resetToken}`);
+    }
+
+    console.log(`✅ [FORGOT-PASSWORD] Token de recuperação gerado para: ${email}`);
+    
+    res.status(200).json({
+      success: true,
+      message: 'Se o email existir, você receberá um link de recuperação'
+    });
+
+  } catch (error) {
+    console.error('❌ [FORGOT-PASSWORD] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Reset de senha - VALIDAR TOKEN E ALTERAR SENHA
+app.post('/api/auth/reset-password', [
+  body('token').notEmpty(),
+  body('newPassword').isLength({ min: 6 })
+], validateData, async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    // Verificar se token existe e é válido
+    const { data: tokenData, error: tokenError } = await supabase
+      .from('password_reset_tokens')
+      .select('user_id, expires_at, used')
+      .eq('token', token)
+      .eq('used', false)
+      .single();
+
+    if (tokenError || !tokenData) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token inválido ou expirado'
+      });
+    }
+
+    // Verificar se token não expirou
+    if (new Date() > new Date(tokenData.expires_at)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token expirado'
+      });
+    }
+
+    // Hash da nova senha
+    const saltRounds = 10;
+    const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
+
+    // Atualizar senha do usuário
+    const { error: updateError } = await supabase
+      .from('usuarios')
+      .update({ 
+        senha_hash: newPasswordHash,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', tokenData.user_id);
+
+    if (updateError) {
+      console.error('❌ [RESET-PASSWORD] Erro ao atualizar senha:', updateError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao atualizar senha'
+      });
+    }
+
+    // Marcar token como usado
+    const { error: markUsedError } = await supabase
+      .from('password_reset_tokens')
+      .update({ used: true })
+      .eq('token', token);
+
+    if (markUsedError) {
+      console.error('❌ [RESET-PASSWORD] Erro ao marcar token como usado:', markUsedError);
+    }
+
+    console.log(`✅ [RESET-PASSWORD] Senha alterada com sucesso para usuário ${tokenData.user_id}`);
+    
+    res.status(200).json({
+      success: true,
+      message: 'Senha alterada com sucesso'
+    });
+
+  } catch (error) {
+    console.error('❌ [RESET-PASSWORD] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Verificação de email
+app.post('/api/auth/verify-email', [
+  body('token').notEmpty()
+], validateData, async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    // Verificar se token existe e é válido
+    const { data: tokenData, error: tokenError } = await supabase
+      .from('email_verification_tokens')
+      .select('user_id, expires_at, used')
+      .eq('token', token)
+      .eq('used', false)
+      .single();
+
+    if (tokenError || !tokenData) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token de verificação inválido ou expirado'
+      });
+    }
+
+    // Verificar se token não expirou
+    if (new Date() > new Date(tokenData.expires_at)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token de verificação expirado'
+      });
+    }
+
+    // Marcar email como verificado
+    const { error: updateError } = await supabase
+      .from('usuarios')
+      .update({ 
+        email_verificado: true,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', tokenData.user_id);
+
+    if (updateError) {
+      console.error('❌ [VERIFY-EMAIL] Erro ao verificar email:', updateError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao verificar email'
+      });
+    }
+
+    // Marcar token como usado
+    const { error: markUsedError } = await supabase
+      .from('email_verification_tokens')
+      .update({ used: true })
+      .eq('token', token);
+
+    if (markUsedError) {
+      console.error('❌ [VERIFY-EMAIL] Erro ao marcar token como usado:', markUsedError);
+    }
+
+    console.log(`✅ [VERIFY-EMAIL] Email verificado com sucesso para usuário ${tokenData.user_id}`);
+    
+    res.status(200).json({
+      success: true,
+      message: 'Email verificado com sucesso! Sua conta está ativa.'
+    });
+
+  } catch (error) {
+    console.error('❌ [VERIFY-EMAIL] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
 
 // Registro de usuário
 app.post('/api/auth/register', async (req, res) => {
@@ -718,6 +1033,21 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     // Obter ou criar lote para este valor
     const lote = getOrCreateLoteByValue(amount);
     
+    // Validar integridade do lote antes de processar chute
+    const integrityValidation = loteIntegrityValidator.validateBeforeShot(lote, {
+      direction: direction,
+      amount: amount,
+      userId: req.user.userId
+    });
+
+    if (!integrityValidation.valid) {
+      console.error('❌ [SHOOT] Problema de integridade do lote:', integrityValidation.error);
+      return res.status(400).json({
+        success: false,
+        message: integrityValidation.error
+      });
+    }
+    
     // Incrementar contador global
     contadorChutesGlobal++;
     
@@ -764,6 +1094,26 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     lote.chutes.push(chute);
     lote.totalArrecadado += amount;
     lote.premioTotal += premio + premioGolDeOuro;
+
+    // Validar integridade do lote após adicionar chute
+    const postShotValidation = loteIntegrityValidator.validateAfterShot(lote, {
+      result: result,
+      premio: premio,
+      premioGolDeOuro: premioGolDeOuro,
+      timestamp: new Date().toISOString()
+    });
+
+    if (!postShotValidation.valid) {
+      console.error('❌ [SHOOT] Problema de integridade após chute:', postShotValidation.error);
+      // Reverter chute do lote
+      lote.chutes.pop();
+      lote.totalArrecadado -= amount;
+      lote.premioTotal -= premio + premioGolDeOuro;
+      return res.status(400).json({
+        success: false,
+        message: postShotValidation.error
+      });
+    }
 
     // Salvar chute no banco de dados
     const { error: chuteError } = await supabase
@@ -831,6 +1181,177 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('❌ [SHOOT] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// =====================================================
+// SISTEMA DE SAQUES PIX COM VALIDAÇÃO
+// =====================================================
+
+// Solicitar saque PIX
+app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
+  try {
+    const { valor, chave_pix, tipo_chave } = req.body;
+    const userId = req.user.userId;
+
+    // Validar dados de entrada usando PixValidator
+    const withdrawData = {
+      amount: valor,
+      pixKey: chave_pix,
+      pixType: tipo_chave,
+      userId: userId
+    };
+
+    const validation = await pixValidator.validateWithdrawData(withdrawData);
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: validation.error
+      });
+    }
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    // Verificar saldo do usuário
+    const { data: usuario, error: userError } = await supabase
+      .from('usuarios')
+      .select('saldo')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !usuario) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+
+    if (parseFloat(usuario.saldo) < parseFloat(valor)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Saldo insuficiente'
+      });
+    }
+
+    // Calcular taxa de saque
+    const taxa = parseFloat(process.env.PAGAMENTO_TAXA_SAQUE || '2.00');
+    const valorLiquido = parseFloat(valor) - taxa;
+
+    // Criar saque no banco
+    const { data: saque, error: saqueError } = await supabase
+      .from('saques')
+      .insert({
+        usuario_id: userId,
+        valor: parseFloat(valor),
+        valor_liquido: valorLiquido,
+        taxa: taxa,
+        chave_pix: validation.data.pixKey,
+        tipo_chave: validation.data.pixType,
+        status: 'pendente',
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (saqueError) {
+      console.error('❌ [SAQUE] Erro ao criar saque:', saqueError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao criar saque'
+      });
+    }
+
+    // Criar transação de débito
+    const { error: transacaoError } = await supabase
+      .from('transacoes')
+      .insert({
+        usuario_id: userId,
+        tipo: 'debito',
+        valor: parseFloat(valor),
+        descricao: `Saque PIX - ${validation.data.pixType}`,
+        status: 'processando',
+        referencia_id: saque.id,
+        created_at: new Date().toISOString()
+      });
+
+    if (transacaoError) {
+      console.error('❌ [SAQUE] Erro ao criar transação:', transacaoError);
+    }
+
+    console.log(`💰 [SAQUE] Saque solicitado: R$ ${valor} para usuário ${userId}`);
+
+    res.status(201).json({
+      success: true,
+      message: 'Saque solicitado com sucesso',
+      data: {
+        id: saque.id,
+        valor: valor,
+        valor_liquido: valorLiquido,
+        taxa: taxa,
+        chave_pix: validation.data.pixKey,
+        tipo_chave: validation.data.pixType,
+        status: 'pendente',
+        created_at: saque.created_at
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [SAQUE] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Buscar saques do usuário
+app.get('/api/withdraw/history', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const { data: saques, error: saquesError } = await supabase
+      .from('saques')
+      .select('*')
+      .eq('usuario_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (saquesError) {
+      console.error('❌ [SAQUE] Erro ao buscar saques:', saquesError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao buscar histórico de saques'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        saques: saques || [],
+        total: saques?.length || 0
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [SAQUE] Erro:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor'
@@ -1055,8 +1576,8 @@ app.get('/api/payments/pix/usuario', authenticateToken, async (req, res) => {
 // WEBHOOK PIX CORRIGIDO
 // =====================================================
 
-// Webhook principal
-app.post('/api/payments/webhook', async (req, res) => {
+// Webhook principal com validação de signature
+app.post('/api/payments/webhook', webhookSignatureValidator.createValidationMiddleware(), async (req, res) => {
   try {
     const { type, data } = req.body;
     console.log('📨 [WEBHOOK] PIX recebido:', { type, data });
@@ -1405,84 +1926,6 @@ app.get('/meta', (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Erro ao obter informações do sistema'
-    });
-  }
-});
-
-// Endpoint para recuperação de senha
-app.post('/api/auth/forgot-password', async (req, res) => {
-  try {
-    const { email } = req.body;
-    
-    if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email é obrigatório'
-      });
-    }
-
-    // APENAS SUPABASE REAL - SEM FALLBACK
-    if (!dbConnected || !supabase) {
-      return res.status(503).json({ 
-        success: false,
-        message: 'Sistema temporariamente indisponível' 
-      });
-    }
-    
-    // Verificar se o usuário existe
-    const { data: user, error: userError } = await supabase
-        .from('usuarios')
-        .select('id, email, username')
-        .eq('email', email)
-      .eq('ativo', true)
-        .single();
-
-    if (userError || !user) {
-      console.log('❌ [FORGOT-PASSWORD] Usuário não encontrado:', email);
-        return res.status(404).json({
-          success: false,
-        message: 'Usuário não encontrado'
-      });
-    }
-    
-    // Gerar nova senha temporária
-    const tempPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(tempPassword, 10);
-    
-    // Atualizar senha no banco
-    const { error: updateError } = await supabase
-      .from('usuarios')
-      .update({ senha_hash: hashedPassword })
-      .eq('id', user.id);
-    
-    if (updateError) {
-      console.error('❌ [FORGOT-PASSWORD] Erro ao atualizar senha:', updateError);
-      return res.status(500).json({
-        success: false,
-        message: 'Erro interno do servidor'
-      });
-    }
-    
-    console.log(`✅ [FORGOT-PASSWORD] Nova senha gerada para: ${email}`);
-    
-    // Em produção, aqui seria enviado um email com a nova senha
-    // Por enquanto, retornamos a senha temporária (apenas para desenvolvimento)
-    res.json({
-        success: true,
-      message: 'Nova senha gerada com sucesso',
-      data: {
-        email: user.email,
-        username: user.username,
-        tempPassword: tempPassword, // REMOVER EM PRODUÇÃO - apenas para desenvolvimento
-        instructions: 'Use esta senha temporária para fazer login. Recomendamos alterar a senha após o login.'
-      }
-    });
-    
-  } catch (error) {
-    console.error('❌ [FORGOT-PASSWORD] Erro:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor'
     });
   }
 });
@@ -1845,12 +2288,39 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
       });
     });
     
+    // Iniciar sistemas de monitoramento
+    async function startMonitoringSystems() {
+      try {
+        console.log('🚀 [MONITORING] Iniciando sistemas de monitoramento avançados...');
+        
+        // Iniciar coleta de métricas customizadas
+        await startCustomMetricsCollection();
+        console.log('✅ [MONITORING] Métricas customizadas iniciadas');
+        
+        // Iniciar sistema de notificações
+        startNotificationSystem();
+        console.log('✅ [MONITORING] Sistema de notificações iniciado');
+        
+        // Iniciar sistema de backup automático
+        await startConfigBackupSystem();
+        console.log('✅ [MONITORING] Sistema de backup automático iniciado');
+        
+        console.log('🎯 [MONITORING] Todos os sistemas de monitoramento ativos');
+        
+      } catch (error) {
+        console.error('❌ [MONITORING] Erro ao iniciar sistemas:', error.message);
+      }
+    }
+
     // Iniciar servidor
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 [SERVER] Servidor iniciado na porta ${PORT}`);
       console.log(`🌐 [SERVER] Ambiente: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📊 [SERVER] Supabase: ${dbConnected ? 'Conectado' : 'Desconectado'}`);
       console.log(`💳 [SERVER] Mercado Pago: ${mercadoPagoConnected ? 'Conectado' : 'Desconectado'}`);
+      
+      // Iniciar sistemas de monitoramento após servidor estar rodando
+      setTimeout(startMonitoringSystems, 2000);
     });
     
   } catch (error) {

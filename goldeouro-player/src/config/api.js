@@ -13,6 +13,8 @@ export const API_ENDPOINTS = {
   // Autenticação
   LOGIN: `${API_BASE_URL}/api/auth/login`,
   REGISTER: `${API_BASE_URL}/api/auth/register`,
+  FORGOT_PASSWORD: `${API_BASE_URL}/api/auth/forgot-password`,
+  RESET_PASSWORD: `${API_BASE_URL}/api/auth/reset-password`,
   PROFILE: `${API_BASE_URL}/api/user/profile`,
   
   // Pagamentos PIX

@@ -106,3 +106,5 @@ echo "====================================================="
 echo "🏁 LIMPEZA E OTIMIZAÇÃO CONCLUÍDAS!"
 echo "📦 Tamanho final: $AFTER_SIZE"
 echo "✅ Repositório pronto para produção!"
+
+

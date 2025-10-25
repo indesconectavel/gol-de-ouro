@@ -35,8 +35,11 @@ export const AuthProvider = ({ children }) => {
         .then(response => {
           setUser(response.data)
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log('🔒 Token inválido ou expirado:', error.response?.status)
           localStorage.removeItem('authToken')
+          localStorage.removeItem('userData')
+          setUser(null)
         })
         .finally(() => {
           setLoading(false)

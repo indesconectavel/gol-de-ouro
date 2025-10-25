@@ -16,13 +16,20 @@ jobs:
       - name: ⚙️ Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: 'npm'
 
       - name: 📦 Instalar dependências
-        run: npm install --legacy-peer-deps
+        run: |
+          echo "📦 Instalando dependências..."
+          npm install --legacy-peer-deps
+          echo "✅ Dependências instaladas com sucesso"
 
       - name: 🧱 Build do projeto
-        run: npm run build
+        run: |
+          echo "🧱 Iniciando build do projeto..."
+          npm run build
+          echo "✅ Build concluído com sucesso"
 
       - name: 🚀 Deploy Backend (Fly.io)
         uses: superfly/flyctl-actions@master
@@ -32,7 +39,10 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: 🌐 Deploy Frontend (Vercel)
-        run: npx vercel --prod --yes
+        run: |
+          echo "🌐 Iniciando deploy do frontend..."
+          npx vercel --prod --yes
+          echo "✅ Deploy do frontend concluído"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -45,10 +55,23 @@ jobs:
           curl -f https://goldeouro-backend.fly.dev/api/status
           echo "✅ Todos os endpoints estão funcionando!"
 
+      - name: 📊 Upload artifacts de deploy
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deploy-artifacts-${{ github.run_number }}
+          path: |
+            package-lock.json
+            dist/
+            build/
+          retention-days: 7
+
       - name: 📊 Log final
         run: |
           echo "=================================================="
           echo "🏆 DEPLOY DO GOL DE OURO CONCLUÍDO COM SUCESSO!"
           echo "🌐 Frontend: https://goldeouro.lol"
           echo "⚙️ Backend:  https://goldeouro-backend.fly.dev"
+          echo "📊 Admin:    https://admin.goldeouro.lol"
+          echo "📱 Mobile:   APK disponível nos artifacts"
           echo "=================================================="

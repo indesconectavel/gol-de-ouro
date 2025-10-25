@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
+import VersionBanner from '../components/VersionBanner'
 import { useSidebar } from '../contexts/SidebarContext'
 import apiClient from '../services/apiClient'
 import { API_ENDPOINTS } from '../config/api'
+import { retryDataRequest } from '../utils/retryLogic'
+import { quickDashboardTest } from '../utils/dashboardTest'
 
 const Dashboard = () => {
   const { isCollapsed } = useSidebar()
@@ -15,37 +18,59 @@ const Dashboard = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    loadUserData()
+    // Executar teste rápido e carregar dados
+    const initializeDashboard = async () => {
+      // Teste rápido em desenvolvimento
+      if (import.meta.env.DEV) {
+        const testResult = await quickDashboardTest()
+        console.log('🧪 [DASHBOARD] Teste rápido:', testResult);
+      }
+      
+      // Carregar dados do usuário
+      await loadUserData()
+    }
+    
+    initializeDashboard()
   }, [])
 
   const loadUserData = async () => {
     try {
       setLoading(true)
       
-      // Buscar perfil do usuário
-      const profileResponse = await apiClient.get(API_ENDPOINTS.PROFILE)
+      // Buscar perfil do usuário - COM RETRY LOGIC
+      const profileResponse = await retryDataRequest(() => 
+        apiClient.get(API_ENDPOINTS.PROFILE)
+      )
       if (profileResponse.data.success) {
         setUser(profileResponse.data.data)
         setBalance(profileResponse.data.data.saldo || 0)
       }
 
-      // Buscar dados PIX do usuário (inclui histórico)
-      const pixResponse = await apiClient.get(API_ENDPOINTS.PIX_USER)
-      if (pixResponse.data.success) {
-        setRecentBets(pixResponse.data.data.historico_pagamentos || [])
+      // Buscar dados PIX do usuário (inclui histórico) - COM RETRY LOGIC E TRATAMENTO DE ERRO ROBUSTO
+      try {
+        const pixResponse = await retryDataRequest(() => 
+          apiClient.get(API_ENDPOINTS.PIX_USER)
+        )
+        if (pixResponse.data.success) {
+          setRecentBets(pixResponse.data.data.historico_pagamentos || [])
+        }
+      } catch (pixError) {
+        console.warn('⚠️ [DASHBOARD] Erro ao carregar dados PIX após retry:', pixError.message)
+        // Fallback para lista vazia em caso de erro PIX
+        setRecentBets([])
       }
 
     } catch (error) {
-      console.error('Erro ao carregar dados do usuário:', error)
-             // Fallback para dados mínimos em caso de erro
-             setUser({
-               id: 3,
-               email: 'free10signer@gmail.com',
-               nome: 'free10signer',
-               saldo: 0
-             })
-             setBalance(0)
-             setRecentBets([])
+      console.error('❌ [DASHBOARD] Erro ao carregar dados do usuário após retry:', error)
+      // Fallback para dados mínimos em caso de erro
+      setUser({
+        id: 3,
+        email: 'free10signer@gmail.com',
+        nome: 'free10signer',
+        saldo: 0
+      })
+      setBalance(0)
+      setRecentBets([])
     } finally {
       setLoading(false)
     }
@@ -79,6 +104,14 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen flex">
+      {/* Banner de Versão */}
+      <VersionBanner 
+        version="v1.2.0" 
+        deployDate="25/10/2025" 
+        deployTime="08:50"
+        showTime={true}
+      />
+      
       {/* Menu de Navegação */}
       <Navigation />
       

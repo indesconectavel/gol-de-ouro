@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import { useSidebar } from '../contexts/SidebarContext';
 import Logo from '../components/Logo';
 import Navigation from '../components/Navigation';
-import gameService from '../services/gameService-corrected';
+import gameService from '../services/gameService';
 import apiClient from '../services/apiClient';
 import { API_ENDPOINTS } from '../config/api';
 

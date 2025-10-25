@@ -63,41 +63,144 @@ class MusicManager {
   }
 
   // Método genérico para tocar arquivos de áudio
-  playAudioFile(src, type) {
+  async playAudioFile(src, type) {
     try {
+      // Verificar se o arquivo existe antes de tentar carregar
+      const fileExists = await this.checkAudioFileExists(src);
+      if (!fileExists) {
+        console.warn(`⚠️ Arquivo de áudio não encontrado: ${src}`);
+        if (type === 'defense') {
+          this.playDefenseFallback();
+        } else if (type === 'page') {
+          this.playPageMusicFallback();
+        }
+        return;
+      }
+
       const audio = new Audio(src);
       audio.volume = type === 'defense' ? 0.6 : this.volume;
       audio.loop = type !== 'defense';
       
+      // Timeout para carregamento
+      const loadTimeout = setTimeout(() => {
+        console.warn(`⏰ Timeout ao carregar áudio: ${src}`);
+        if (type === 'defense') {
+          this.playDefenseFallback();
+        } else if (type === 'page') {
+          this.playPageMusicFallback();
+        }
+      }, 5000); // 5 segundos timeout
+      
       audio.addEventListener('canplaythrough', () => {
+        clearTimeout(loadTimeout);
         if (type !== 'defense') {
           this.currentMusic = audio;
           this.isPlaying = true;
         }
-        audio.play().catch(e => console.warn('Erro ao reproduzir áudio:', e));
+        audio.play().catch(e => {
+          console.warn('Erro ao reproduzir áudio:', e);
+          if (type === 'defense') {
+            this.playDefenseFallback();
+          } else if (type === 'page') {
+            this.playPageMusicFallback();
+          }
+        });
       });
 
       audio.addEventListener('ended', () => {
+        clearTimeout(loadTimeout);
         if (type === 'defense') {
           audio.remove();
         }
       });
 
       audio.addEventListener('error', (e) => {
-        console.warn(`Erro ao carregar áudio ${src}:`, e);
+        clearTimeout(loadTimeout);
+        console.warn(`❌ Erro ao carregar áudio ${src}:`, e);
         // Fallback para som programático se o arquivo não existir
         if (type === 'defense') {
           this.playDefenseFallback();
+        } else if (type === 'page') {
+          this.playPageMusicFallback();
         }
+      });
+
+      // Adicionar listener para timeout de carregamento
+      audio.addEventListener('loadstart', () => {
+        console.log(`🎵 Iniciando carregamento de áudio: ${src}`);
+      });
+
+      audio.addEventListener('loadeddata', () => {
+        console.log(`🎵 Dados de áudio carregados: ${src}`);
       });
 
       audio.load();
     } catch (error) {
-      console.warn(`Erro ao criar áudio ${src}:`, error);
+      console.warn(`❌ Erro ao criar áudio ${src}:`, error);
       if (type === 'defense') {
         this.playDefenseFallback();
+      } else if (type === 'page') {
+        this.playPageMusicFallback();
       }
     }
+  }
+
+  // Verificar se arquivo de áudio existe - CORREÇÃO ULTRA ROBUSTA
+  async checkAudioFileExists(src) {
+    // CORREÇÃO CRÍTICA: Verificar se já foi testado nesta sessão
+    const sessionKey = `audio_checked_${src}`;
+    const alreadyChecked = sessionStorage.getItem(sessionKey);
+    
+    if (alreadyChecked === 'true') {
+      return true;
+    }
+    
+    if (alreadyChecked === 'false') {
+      return false;
+    }
+
+    try {
+      // Usar GET em vez de HEAD para arquivos de áudio
+      const response = await fetch(src, { 
+        method: 'GET',
+        cache: 'no-cache',
+        headers: {
+          'Range': 'bytes=0-1' // Apenas os primeiros bytes
+        }
+      });
+      
+      const exists = response.ok || response.status === 206; // 206 = Partial Content
+      sessionStorage.setItem(sessionKey, exists.toString());
+      return exists;
+    } catch (error) {
+      console.warn(`⚠️ Erro ao verificar arquivo de áudio ${src}:`, error);
+      sessionStorage.setItem(sessionKey, 'false');
+      return false;
+    }
+  }
+
+  // Fallback para música de página (programático)
+  playPageMusicFallback() {
+    if (!this.audioContext) return;
+    
+    console.log('🎵 Usando música de fundo sintética como fallback');
+    
+    const oscillator = this.audioContext.createOscillator();
+    const gainNode = this.audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(this.audioContext.destination);
+    
+    // Melodia suave para música de fundo
+    oscillator.frequency.setValueAtTime(220, this.audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(330, this.audioContext.currentTime + 2);
+    oscillator.frequency.setValueAtTime(440, this.audioContext.currentTime + 4);
+    
+    gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(this.volume * 0.3, this.audioContext.currentTime + 0.1);
+    
+    oscillator.start(this.audioContext.currentTime);
+    oscillator.stop(this.audioContext.currentTime + 6);
   }
 
   // Fallback para som de defesa (programático)

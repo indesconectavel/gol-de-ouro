@@ -28,6 +28,6 @@ primary_region = "gru"
 
   [[services.http_checks]]
     path = "/health"
-    interval = "15s"
-    timeout = "5s"
+    interval = "30s"
+    timeout = "10s"
     method = "get"

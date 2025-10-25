@@ -43,8 +43,8 @@ const keepAlive = () => {
   req.end();
 };
 
-// Executar a cada 5 minutos (300000ms)
-const interval = setInterval(keepAlive, 5 * 60 * 1000);
+// Executar a cada 10 minutos (600000ms) - OTIMIZADO PARA REDUZIR CUSTOS
+const interval = setInterval(keepAlive, 10 * 60 * 1000);
 
 // Executar imediatamente
 console.log('🔄 [KEEP-ALIVE] Iniciando keep-alive do backend...');
@@ -63,4 +63,4 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
-console.log('✅ [KEEP-ALIVE] Keep-alive ativo - Backend será mantido ativo a cada 5 minutos');
+console.log('✅ [KEEP-ALIVE] Keep-alive ativo - Backend será mantido ativo a cada 10 minutos (OTIMIZADO)');

@@ -2,13 +2,18 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
-// import ImageUpload from '../components/ImageUpload' // Removido - funcionalidade desnecessária
+import VersionBanner from '../components/VersionBanner'
 import { useSidebar } from '../contexts/SidebarContext'
 import apiClient from '../services/apiClient'
 import { API_ENDPOINTS } from '../config/api'
+import { useAdvancedGamification } from '../hooks/useAdvancedGamification'
+import AdvancedStats from '../components/AdvancedStats'
+import AvatarSystem from '../components/AvatarSystem'
+import NotificationCenter from '../components/NotificationCenter'
 
 const Profile = () => {
   const { isCollapsed } = useSidebar()
+  const { userStats, badges, achievements, loading: gamificationLoading } = useAdvancedGamification()
   const [user, setUser] = useState({
     name: 'Carregando...',
     email: 'carregando@email.com',
@@ -26,7 +31,6 @@ const Profile = () => {
     name: '',
     email: ''
   })
-  // const [profileImage, setProfileImage] = useState(null) // Removido - funcionalidade desnecessária
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -79,7 +83,8 @@ const Profile = () => {
 
   const withdrawalHistory = [] // Dados reais serão carregados do backend
 
-  const achievements = [
+  // Usar achievements do hook de gamificação
+  const localAchievements = achievements || [
     { id: 1, name: 'Primeiro Gol', description: 'Marque seu primeiro gol', icon: '⚽', unlocked: true },
     { id: 2, name: 'Goleiro Vencido', description: 'Marque 10 gols', icon: '🥅', unlocked: true },
     { id: 3, name: 'Artilheiro', description: 'Marque 50 gols', icon: '👑', unlocked: false },
@@ -142,8 +147,21 @@ const Profile = () => {
     }
   }
 
+  // Função para atualizar avatar
+  const handleAvatarUpdate = (newAvatar) => {
+    setUser(prev => ({ ...prev, avatar: newAvatar }))
+  }
+
   return (
     <div className="min-h-screen flex">
+      {/* Banner de Versão */}
+      <VersionBanner 
+        version="v1.2.0" 
+        deployDate="25/10/2025" 
+        deployTime="08:50"
+        showTime={true}
+      />
+      
       {/* Menu de Navegação */}
       <Navigation />
       
@@ -192,10 +210,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="relative pr-4">
-              {/* Avatar removido - funcionalidade desnecessária */}
-              <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center text-3xl font-bold text-slate-900 shadow-lg">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
+              <AvatarSystem user={user} onAvatarUpdate={handleAvatarUpdate} />
             </div>
           </div>
 
@@ -261,6 +276,36 @@ const Profile = () => {
             }`}
           >
             🏆 Conquistas
+          </button>
+          <button
+            onClick={() => setActiveTab('stats')}
+            className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
+              activeTab === 'stats'
+                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
+            }`}
+          >
+            📊 Estatísticas
+          </button>
+          <button
+            onClick={() => setActiveTab('gamification')}
+            className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
+              activeTab === 'gamification'
+                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
+            }`}
+          >
+            🎮 Gamificação
+          </button>
+          <button
+            onClick={() => setActiveTab('notifications')}
+            className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
+              activeTab === 'notifications'
+                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
+            }`}
+          >
+            🔔 Notificações
           </button>
         </div>
 
@@ -401,7 +446,7 @@ const Profile = () => {
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-2xl">
             <h3 className="text-xl font-bold text-white mb-6">Conquistas</h3>
             <div className="grid grid-cols-2 gap-4">
-              {achievements.map((achievement) => (
+              {localAchievements.map((achievement) => (
                 <div key={achievement.id} className={`p-4 rounded-lg border-2 transition-all duration-200 backdrop-blur-lg ${
                   achievement.unlocked 
                     ? 'bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 border-yellow-400/50' 
@@ -429,6 +474,87 @@ const Profile = () => {
               ))}
             </div>
           </div>
+        )}
+
+        {/* Nova Aba: Estatísticas Avançadas */}
+        {activeTab === 'stats' && (
+          <AdvancedStats user={user} />
+        )}
+
+        {/* Nova Aba: Gamificação */}
+        {activeTab === 'gamification' && (
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-2xl">
+            <h3 className="text-xl font-bold text-white mb-6">Sistema de Gamificação</h3>
+            
+            {/* Informações do Usuário */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                <div className="text-3xl font-bold text-purple-400">{userStats.level}</div>
+                <div className="text-white/70 text-sm">Nível Atual</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                <div className="text-3xl font-bold text-blue-400">{userStats.totalXP.toLocaleString()}</div>
+                <div className="text-white/70 text-sm">XP Total</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                <div className="text-3xl font-bold text-green-400">{userStats.rank}</div>
+                <div className="text-white/70 text-sm">Ranking</div>
+              </div>
+            </div>
+
+            {/* Barra de Progresso XP */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-white/80 text-sm">Progresso para o próximo nível</span>
+                <span className="text-white/60 text-sm">{userStats.xp}/{userStats.xpToNextLevel} XP</span>
+              </div>
+              <div className="w-full bg-white/20 rounded-full h-3">
+                <div 
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-300"
+                  style={{ width: `${(userStats.xp / userStats.xpToNextLevel) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Badges */}
+            <div className="mb-6">
+              <h4 className="text-white/80 font-medium mb-3">Badges Conquistados</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {badges.slice(0, 8).map((badge, index) => (
+                  <div key={index} className="bg-white/10 backdrop-blur-lg rounded-lg p-3 border border-white/20 text-center">
+                    <div className="text-2xl mb-1">{badge.icon}</div>
+                    <div className="text-white/80 text-xs font-medium">{badge.name}</div>
+                    <div className="text-white/50 text-xs">{badge.description}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Estatísticas de Gamificação */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                <div className="text-2xl font-bold text-yellow-400">{userStats.streak}</div>
+                <div className="text-white/70 text-sm">Sequência</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                <div className="text-2xl font-bold text-orange-400">{userStats.weeklyXP}</div>
+                <div className="text-white/70 text-sm">XP Semanal</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                <div className="text-2xl font-bold text-red-400">{userStats.monthlyXP}</div>
+                <div className="text-white/70 text-sm">XP Mensal</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 text-center">
+                <div className="text-2xl font-bold text-cyan-400">{badges.length}</div>
+                <div className="text-white/70 text-sm">Badges</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Nova Aba: Notificações */}
+        {activeTab === 'notifications' && (
+          <NotificationCenter />
         )}
       </div>
       </div>

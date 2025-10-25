@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import VersionBanner from '../components/VersionBanner';
+import apiClient from '../services/apiClient';
+import { API_ENDPOINTS } from '../config/api';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -14,12 +17,26 @@ const ForgotPassword = () => {
     setError('');
 
     try {
-      // Simular envio de email (implementar endpoint real)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setIsSent(true);
+      // Validação básica de email
+      if (!email || !email.includes('@')) {
+        setError('Por favor, digite um email válido');
+        setIsLoading(false);
+        return;
+      }
+
+      // Chamar endpoint real de recuperação de senha
+      const response = await apiClient.post(API_ENDPOINTS.FORGOT_PASSWORD, {
+        email: email
+      });
+
+      if (response.data.success) {
+        setIsSent(true);
+      } else {
+        setError(response.data.message || 'Erro ao enviar email de recuperação');
+      }
     } catch (err) {
-      setError('Erro ao enviar email de recuperação');
+      console.error('Erro ao enviar email de recuperação:', err);
+      setError(err.response?.data?.message || 'Erro ao enviar email de recuperação');
     } finally {
       setIsLoading(false);
     }
@@ -28,6 +45,14 @@ const ForgotPassword = () => {
   if (isSent) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-900 via-yellow-900 to-green-800 flex items-center justify-center p-4">
+        {/* Banner de Versão */}
+        <VersionBanner 
+          version="v1.2.0" 
+          deployDate="25/10/2025" 
+          deployTime="08:50"
+          showTime={true}
+        />
+        
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white mb-4">Email Enviado!</h1>
@@ -48,6 +73,14 @@ const ForgotPassword = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-yellow-900 to-green-800 flex items-center justify-center p-4">
+      {/* Banner de Versão */}
+      <VersionBanner 
+        version="v1.2.0" 
+        deployDate="25/10/2025" 
+        deployTime="08:50"
+        showTime={true}
+      />
+      
       <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
@@ -79,7 +112,8 @@ const ForgotPassword = () => {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3">
+            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 flex items-center">
+              <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
               <p className="text-red-300 text-sm">{error}</p>
             </div>
           )}

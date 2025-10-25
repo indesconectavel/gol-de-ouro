@@ -50,6 +50,27 @@ jobs:
       - name: 📢 Notificar via Slack/Discord (opcional)
         if: env.SLACK_WEBHOOK_URL != ''
         run: |
+          echo "📢 Enviando notificação de rollback..."
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":"⚠️ ROLLBACK EXECUTADO: Pipeline principal falhou e foi revertido automaticamente"}' \
+            ${{ secrets.SLACK_WEBHOOK_URL }} || echo "⚠️ Falha ao enviar notificação Slack"
+          
+      - name: 📢 Notificar via Discord (opcional)
+        if: env.DISCORD_WEBHOOK_URL != ''
+        run: |
+          echo "📢 Enviando notificação Discord..."
+          curl -X POST -H 'Content-type: application/json' \
+            --data '{"content":"⚠️ **ROLLBACK EXECUTADO**\nPipeline principal falhou e foi revertido automaticamente"}' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }} || echo "⚠️ Falha ao enviar notificação Discord"
+
+      - name: 📊 Upload logs de rollback
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rollback-logs-${{ github.run_number }}
+          path: docs/logs/rollback-history.log
+          retention-days: 30if: env.SLACK_WEBHOOK_URL != ''
+        run: |
           curl -X POST -H 'Content-type: application/json' \
           --data "{\"text\":\"⚠️ Rollback executado automaticamente no projeto Gol de Ouro. Última versão restaurada com sucesso.\"}" \
           $SLACK_WEBHOOK_URL
