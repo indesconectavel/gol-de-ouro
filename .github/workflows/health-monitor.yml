@@ -2,59 +2,77 @@ name: 🔍 Health Monitor – Gol de Ouro
 
 on:
   schedule:
-    - cron: "*/15 * * * *" # Executa a cada 15 minutos
+    - cron: "*/30 * * * *" # Executa a cada 30 minutos - OTIMIZADO PARA REDUZIR CUSTOS
   workflow_dispatch:
 
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
 
+      - name: Criar diretórios de logs
+        run: |
+          mkdir -p docs/logs
+          touch docs/logs/health-summary.log
+          touch docs/logs/health-fails.log
+          echo "✅ Diretórios de logs criados e arquivos inicializados"
+
       - name: Verificar backend (Fly.io)
+        id: backend-check
         run: |
           echo "Verificando backend..."
-          STATUS_BACKEND=$(curl -s -o /dev/null -w "%{http_code}" https://goldeouro-backend.fly.dev/health)
+          STATUS_BACKEND=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://goldeouro-backend.fly.dev/health)
           echo "Backend HTTP: $STATUS_BACKEND"
+          echo "status=$STATUS_BACKEND" >> $GITHUB_OUTPUT
+          
           if [ "$STATUS_BACKEND" != "200" ]; then
             echo "❌ Backend fora do ar"
             echo "Backend status: $STATUS_BACKEND" >> docs/logs/health-fails.log
             echo "⚠️ Backend OFFLINE - $(date)" >> docs/logs/health-summary.log
             echo "::error::Backend offline"
+            exit 1
           else
             echo "✅ Backend online"
             echo "✅ Backend ONLINE - $(date)" >> docs/logs/health-summary.log
           fi
 
       - name: Verificar frontend (Vercel)
+        id: frontend-check
         run: |
           echo "Verificando frontend..."
-          STATUS_FRONT=$(curl -s -o /dev/null -w "%{http_code}" https://goldeouro.lol)
+          STATUS_FRONT=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://goldeouro.lol)
           echo "Frontend HTTP: $STATUS_FRONT"
+          echo "status=$STATUS_FRONT" >> $GITHUB_OUTPUT
+          
           if [ "$STATUS_FRONT" != "200" ]; then
             echo "❌ Frontend fora do ar"
             echo "Frontend status: $STATUS_FRONT" >> docs/logs/health-fails.log
             echo "⚠️ Frontend OFFLINE - $(date)" >> docs/logs/health-summary.log
             echo "::error::Frontend offline"
+            exit 1
           else
             echo "✅ Frontend online"
             echo "✅ Frontend ONLINE - $(date)" >> docs/logs/health-summary.log
           fi
 
       - name: Verificar banco de dados (Supabase)
+        id: supabase-check
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
           echo "Verificando banco de dados..."
           if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_KEY" ]; then
-            curl -s -H "apikey: $SUPABASE_KEY" "$SUPABASE_URL/rest/v1" > /dev/null
+            curl -s -H "apikey: $SUPABASE_KEY" --max-time 10 "$SUPABASE_URL/rest/v1" > /dev/null
             if [ $? -ne 0 ]; then
               echo "❌ Supabase inacessível"
               echo "⚠️ Supabase OFFLINE - $(date)" >> docs/logs/health-summary.log
               echo "::error::Supabase offline"
+              exit 1
             else
               echo "✅ Banco de dados operacional"
               echo "✅ Supabase ONLINE - $(date)" >> docs/logs/health-summary.log
@@ -63,6 +81,43 @@ jobs:
             echo "⚠️ Credenciais Supabase não configuradas"
             echo "⚠️ Supabase SKIP - $(date)" >> docs/logs/health-summary.log
           fi
+
+      - name: Verificar admin panel
+        id: admin-check
+        run: |
+          echo "Verificando admin panel..."
+          STATUS_ADMIN=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://admin.goldeouro.lol)
+          echo "Admin HTTP: $STATUS_ADMIN"
+          echo "status=$STATUS_ADMIN" >> $GITHUB_OUTPUT
+          
+          if [ "$STATUS_ADMIN" != "200" ]; then
+            echo "❌ Admin panel fora do ar"
+            echo "Admin status: $STATUS_ADMIN" >> docs/logs/health-fails.log
+            echo "⚠️ Admin OFFLINE - $(date)" >> docs/logs/health-summary.log
+            echo "::error::Admin panel offline"
+            exit 1
+          else
+            echo "✅ Admin panel online"
+            echo "✅ Admin ONLINE - $(date)" >> docs/logs/health-summary.log
+          fi
+
+      - name: Gerar relatório de saúde
+        run: |
+          echo "📊 Gerando relatório de saúde..."
+          echo "=== RELATÓRIO DE SAÚDE - $(date) ===" > docs/logs/health-report.md
+          echo "Backend: ${{ steps.backend-check.outputs.status }}" >> docs/logs/health-report.md
+          echo "Frontend: ${{ steps.frontend-check.outputs.status }}" >> docs/logs/health-report.md
+          echo "Admin: ${{ steps.admin-check.outputs.status }}" >> docs/logs/health-report.md
+          echo "Supabase: $(if [ -n "$SUPABASE_URL" ]; then echo "Configurado"; else echo "Não configurado"; fi)" >> docs/logs/health-report.md
+          echo "================================" >> docs/logs/health-report.md
+
+      - name: Upload relatório de saúde
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: health-report-${{ github.run_number }}
+          path: docs/logs/health-report.md
+          retention-days: 7
 
       - name: Gerar relatório diário de saúde
         run: |
