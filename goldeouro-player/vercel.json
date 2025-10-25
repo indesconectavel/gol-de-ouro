@@ -4,6 +4,10 @@
       "source": "/(.*)",
       "headers": [
         {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' https://www.goldeouro.lol https://app.goldeouro.lol; img-src 'self' https://www.goldeouro.lol https://app.goldeouro.lol data:; connect-src 'self' https://goldeouro-backend.fly.dev https://www.goldeouro.lol https://app.goldeouro.lol; style-src 'self' 'unsafe-inline'; font-src 'self' data:;"
+        },
+        {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
         },
@@ -17,7 +21,15 @@
         },
         {
           "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
         }
       ]
     },
