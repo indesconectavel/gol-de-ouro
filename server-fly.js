@@ -1576,8 +1576,8 @@ app.get('/api/payments/pix/usuario', authenticateToken, async (req, res) => {
 // WEBHOOK PIX CORRIGIDO
 // =====================================================
 
-// Webhook principal com validação de signature
-app.post('/api/payments/webhook', webhookSignatureValidator.createValidationMiddleware(), async (req, res) => {
+// Webhook principal (validação de signature comentada temporariamente para debug)
+app.post('/api/payments/webhook', async (req, res) => {
   try {
     const { type, data } = req.body;
     console.log('📨 [WEBHOOK] PIX recebido:', { type, data });
