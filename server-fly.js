@@ -14,6 +14,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
+const { body, validationResult } = require('express-validator');
 const { calculateInitialBalance, validateRealData, isProductionMode } = require('./config/system-config');
 
 // Importar validadores
@@ -52,6 +53,9 @@ const emailService = require('./services/emailService');
 // SISTEMAS DE MONITORAMENTO AVANÇADOS
 // =====================================================
 
+// Sistema de monitoramento desabilitado temporariamente para estabilidade
+// TODO: Re-habilitar após backend estável
+/*
 const {
   startCustomMetricsCollection,
   stopCustomMetricsCollection,
@@ -77,6 +81,7 @@ const {
   generateBackupReport,
   testConfigBackup
 } = require('./monitoring/flyio-config-backup');
+*/
 
 let supabase = supabaseAdmin;
 let dbConnected = false;
@@ -242,6 +247,23 @@ app.use('/api/auth/', authLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+
+// =====================================================
+// MIDDLEWARE DE VALIDAÇÃO
+// =====================================================
+
+// Middleware para validar dados usando express-validator
+const validateData = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Dados inválidos',
+      errors: errors.array()
+    });
+  }
+  next();
+};
 
 // =====================================================
 // MIDDLEWARE DE AUTENTICAÇÃO
@@ -2331,39 +2353,13 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
       });
     });
     
-    // Iniciar sistemas de monitoramento
-    async function startMonitoringSystems() {
-      try {
-        console.log('🚀 [MONITORING] Iniciando sistemas de monitoramento avançados...');
-        
-        // Iniciar coleta de métricas customizadas
-        await startCustomMetricsCollection();
-        console.log('✅ [MONITORING] Métricas customizadas iniciadas');
-        
-        // Iniciar sistema de notificações
-        startNotificationSystem();
-        console.log('✅ [MONITORING] Sistema de notificações iniciado');
-        
-        // Iniciar sistema de backup automático
-        await startConfigBackupSystem();
-        console.log('✅ [MONITORING] Sistema de backup automático iniciado');
-        
-        console.log('🎯 [MONITORING] Todos os sistemas de monitoramento ativos');
-        
-      } catch (error) {
-        console.error('❌ [MONITORING] Erro ao iniciar sistemas:', error.message);
-      }
-    }
-
     // Iniciar servidor
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 [SERVER] Servidor iniciado na porta ${PORT}`);
       console.log(`🌐 [SERVER] Ambiente: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📊 [SERVER] Supabase: ${dbConnected ? 'Conectado' : 'Desconectado'}`);
       console.log(`💳 [SERVER] Mercado Pago: ${mercadoPagoConnected ? 'Conectado' : 'Desconectado'}`);
-      
-      // Iniciar sistemas de monitoramento após servidor estar rodando
-      setTimeout(startMonitoringSystems, 2000);
+      console.log('✅ [SERVER] Sistema de monitoramento desabilitado temporariamente');
     });
     
   } catch (error) {
