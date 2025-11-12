@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  NODE_VERSION: '20'
+  FLY_APP_NAME: goldeouro-backend-v2  # ✅ CORRIGIDO: Especifica app explicitamente
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -16,7 +20,7 @@ jobs:
       - name: ⚙️ Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: 📦 Instalar dependências
@@ -34,11 +38,12 @@ jobs:
       - name: 🚀 Deploy Backend (Fly.io)
         uses: superfly/flyctl-actions@master
         with:
-          args: "deploy --remote-only"
+          args: "deploy --remote-only --app ${{ env.FLY_APP_NAME }}"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: 🌐 Deploy Frontend (Vercel)
+        working-directory: ./goldeouro-player  # ✅ CORRIGIDO: Especifica diretório
         run: |
           echo "🌐 Iniciando deploy do frontend..."
           npx vercel --prod --yes
