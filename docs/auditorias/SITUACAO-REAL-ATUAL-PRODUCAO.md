@@ -127,3 +127,4 @@ Desculpe pela confusão! Você está certo:
 4. Testar com pagamento real de R$ 1,00
 
 **Status:** 🟢 **99% PRONTO** - Falta apenas atualizar URL
+

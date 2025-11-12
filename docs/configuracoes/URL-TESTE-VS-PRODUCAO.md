@@ -126,3 +126,4 @@ flyctl logs --app goldeouro-backend-v2 | grep "WEBHOOK"
 - URL de TESTE = opcional
 - URL de PRODUÇÃO = obrigatório (já configurado ✅)
 - Pode testar agora mesmo!
+

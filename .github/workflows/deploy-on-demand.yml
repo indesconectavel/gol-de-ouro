@@ -1,0 +1,84 @@
+name: Deploy On Demand (Backend Fly.io + Player Vercel)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Ambiente alvo"
+        required: true
+        default: production
+        type: choice
+        options:
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-backend-flyio:
+    name: Backend (Fly.io)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy Backend
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          if [[ -z "${FLY_API_TOKEN}" ]]; then
+            echo "❌ FLY_API_TOKEN não configurado em Secrets"
+            exit 1
+          fi
+          # Autenticar e publicar no app de produção (goldeouro-backend-v2)
+          flyctl auth login --access-token "${FLY_API_TOKEN}"
+          flyctl deploy --config fly.toml --remote-only --app goldeouro-backend-v2
+
+      - name: Health check (Fly.io)
+        run: |
+          for i in {1..18}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://goldeouro-backend-v2.fly.dev/health || true)
+            echo "Tentativa ${i}: HTTP ${code}"
+            if [ "$code" = "200" ]; then
+              echo "✅ Backend online"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "❌ Health check falhou"
+          exit 1
+
+  deploy-player-vercel:
+    name: Player (Vercel)
+    runs-on: ubuntu-latest
+    needs: deploy-backend-flyio
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy com Vercel Action
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_PLAYER }}
+          working-directory: ./goldeouro-player
+          vercel-args: "--prod"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Informações pós-deploy
+        run: |
+          echo "✅ Player implantado. Domínio: https://goldeouro.lol"
+          echo "ℹ️ Se necessário, invalide a edge cache no Vercel (Dashboard -> Project -> Settings -> Cache)."
+
+

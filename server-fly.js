@@ -14,6 +14,20 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
+const http = require('http');
+// Logger opcional - fallback para console se não disponível
+let logger;
+try {
+  logger = require('./logging/sistema-logs-avancado').logger;
+} catch (error) {
+  // Fallback simples para console se logger não disponível
+  logger = {
+    info: (...args) => console.log('[INFO]', ...args),
+    error: (...args) => console.error('[ERROR]', ...args),
+    warn: (...args) => console.warn('[WARN]', ...args),
+    debug: (...args) => console.log('[DEBUG]', ...args)
+  };
+}
 const { body, validationResult } = require('express-validator');
 const { calculateInitialBalance, validateRealData, isProductionMode } = require('./config/system-config');
 
@@ -23,6 +37,13 @@ const LoteIntegrityValidator = require('./utils/lote-integrity-validator');
 const WebhookSignatureValidator = require('./utils/webhook-signature-validator');
 
 require('dotenv').config();
+
+// Validação das variáveis de ambiente obrigatórias
+const { assertRequiredEnv, isProduction } = require('./config/required-env');
+assertRequiredEnv(
+  ['JWT_SECRET', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'],
+  { onlyInProduction: ['MERCADOPAGO_ACCESS_TOKEN'] }
+);
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -48,6 +69,8 @@ const {
 
 // Importar serviço de email
 const emailService = require('./services/emailService');
+// WebSocket Manager (inicializado após criar o servidor HTTP)
+const WebSocketManager = require('./src/websocket');
 
 // =====================================================
 // SISTEMAS DE MONITORAMENTO AVANÇADOS
@@ -183,15 +206,21 @@ app.use(compression());
 app.set('trust proxy', true);
 
 // CORS configurado
-app.use(cors({
-  origin: [
+const parseCorsOrigins = () => {
+  const csv = process.env.CORS_ORIGIN || '';
+  const list = csv.split(',').map(s => s.trim()).filter(Boolean);
+  return list.length > 0 ? list : [
     'https://goldeouro.lol',
     'https://www.goldeouro.lol',
     'https://admin.goldeouro.lol'
-  ],
+  ];
+};
+
+app.use(cors({
+  origin: parseCorsOrigins(),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Idempotency-Key']
 }));
 
 // Rate limiting melhorado
@@ -242,9 +271,19 @@ const authLimiter = rateLimit({
 app.use(limiter); // Rate limiting global
 app.use('/api/', limiter);
 app.use('/api/auth/', authLimiter);
+app.use('/auth/', authLimiter);
 
 // Body parsing
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ 
+  limit: '10mb',
+  verify: (req, res, buf) => {
+    try {
+      req.rawBody = buf.toString('utf8');
+    } catch (e) {
+      req.rawBody = undefined;
+    }
+  }
+}));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 
@@ -311,7 +350,6 @@ const batchConfigs = {
   10: { size: 1, totalValue: 10, winChance: 1.0, description: "100% chance" }
 };
 
-// Função para obter ou criar lote por valor de aposta
 function getOrCreateLoteByValue(amount) {
   const config = batchConfigs[amount];
   if (!config) {
@@ -321,7 +359,10 @@ function getOrCreateLoteByValue(amount) {
   // Verificar se existe lote ativo para este valor
   let loteAtivo = null;
   for (const [loteId, lote] of lotesAtivos.entries()) {
-    if (lote.valorAposta === amount && lote.status === 'active' && lote.chutes.length < config.size) {
+    // Compatível com validador: usa lote.valor e booleano lote.ativo
+    const valorLote = typeof lote.valor !== 'undefined' ? lote.valor : lote.valorAposta;
+    const ativo = typeof lote.ativo === 'boolean' ? lote.ativo : lote.status === 'active';
+    if (valorLote === amount && ativo && lote.chutes.length < config.size) {
       loteAtivo = lote;
       break;
     }
@@ -332,6 +373,11 @@ function getOrCreateLoteByValue(amount) {
     const loteId = `lote_${amount}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     loteAtivo = {
       id: loteId,
+      // Campos esperados pelo validador de integridade
+      valor: amount,
+      ativo: true,
+
+      // Mantém compatibilidade com código existente
       valorAposta: amount,
       config: config,
       chutes: [],
@@ -1097,12 +1143,18 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
         ultimoGolDeOuro = contadorChutesGlobal;
         console.log(`🏆 [GOL DE OURO] Chute #${contadorChutesGlobal} - Prêmio: R$ ${premioGolDeOuro}`);
       }
+      
+      // Encerrar o lote imediatamente após o gol (um vencedor por lote)
+      // Isso evita novos chutes no mesmo lote e alinha com o validador de integridade.
+      lote.status = 'completed';
+      lote.ativo = false;
     }
     
     // Adicionar chute ao lote
     const chute = {
       id: `${lote.id}_${shotIndex}`,
-      playerId: req.user.userId,
+      // Campo esperado pelo validador
+      userId: req.user.userId,
       direction,
       amount,
       result,
@@ -1137,7 +1189,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
     }
 
-    // Salvar chute no banco de dados
+    // Salvar chute no banco de dados (usar tabela 'chutes' para acionar gatilhos de métricas/saldo)
     const { error: chuteError } = await supabase
       .from('chutes')
       .insert({
@@ -1158,8 +1210,11 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     }
 
     // Verificar se lote está completo
-    if (lote.chutes.length >= lote.config.size) {
+    // Já encerrado em caso de gol, mas mantém fechamento por tamanho para consistência
+    if (lote.chutes.length >= lote.config.size && lote.status !== 'completed') {
       lote.status = 'completed';
+      // Desativar para o validador entender que não aceita mais chutes
+      lote.ativo = false;
       console.log(`🏆 [LOTE] Lote ${lote.id} completado: ${lote.chutes.length} chutes, R$${lote.totalArrecadado} arrecadado, R$${lote.premioTotal} em prêmios`);
     }
     
@@ -1179,19 +1234,25 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
         total: lote.config.size,
         remaining: lote.config.size - lote.chutes.length
       },
-      isLoteComplete: lote.status === 'completed',
-      novoSaldo: user.saldo - amount + premio + premioGolDeOuro
+      isLoteComplete: lote.status === 'completed'
     };
 
-    // Atualizar saldo do usuário
-    const novoSaldo = user.saldo - amount + premio + premioGolDeOuro;
-    const { error: saldoError } = await supabase
-      .from('usuarios')
-      .update({ saldo: novoSaldo })
-      .eq('id', req.user.userId);
-
-    if (saldoError) {
-      console.error('❌ [SHOOT] Erro ao atualizar saldo:', saldoError);
+    // Ajuste de saldo:
+    // - Perdas: gatilho do banco subtrai 'valor_aposta' automaticamente
+    // - Vitórias: gatilho do banco credita apenas o prêmio (premio + premioGolDeOuro)
+    //   Para manter a economia esperada (todos pagam a aposta), subtrair manualmente
+    //   o valor da aposta apenas quando houver gol (evita dupla cobrança nas derrotas).
+    if (isGoal) {
+      const novoSaldoVencedor = user.saldo - amount + premio + premioGolDeOuro;
+      const { error: saldoWinnerError } = await supabase
+        .from('usuarios')
+        .update({ saldo: novoSaldoVencedor })
+        .eq('id', req.user.userId);
+      if (saldoWinnerError) {
+        console.error('❌ [SHOOT] Erro ao ajustar saldo do vencedor:', saldoWinnerError);
+      } else {
+        shootResult.novoSaldo = novoSaldoVencedor;
+      }
     }
     
     console.log(`⚽ [SHOOT] Chute #${contadorChutesGlobal}: ${result} por usuário ${req.user.userId}`);
@@ -1269,16 +1330,21 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
     const taxa = parseFloat(process.env.PAGAMENTO_TAXA_SAQUE || '2.00');
     const valorLiquido = parseFloat(valor) - taxa;
 
-    // Criar saque no banco
+    // Criar saque no banco (schema padronizado)
     const { data: saque, error: saqueError } = await supabase
       .from('saques')
       .insert({
         usuario_id: userId,
-        valor: parseFloat(valor),
-        valor_liquido: valorLiquido,
-        taxa: taxa,
+        // Compatibilidade com esquemas antigos e novos
+        valor: parseFloat(valor), // alguns schemas usam 'valor'
+        amount: parseFloat(valor),
+        // colunas novas
+        pix_key: validation.data.pixKey,
+        pix_type: validation.data.pixType,
+        // colunas legadas
         chave_pix: validation.data.pixKey,
         tipo_chave: validation.data.pixType,
+        // status compatível com ambos esquemas (aceita 'pendente' sem CHECK no novo; requerido no antigo)
         status: 'pendente',
         created_at: new Date().toISOString()
       })
@@ -1293,22 +1359,7 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
       });
     }
 
-    // Criar transação de débito
-    const { error: transacaoError } = await supabase
-      .from('transacoes')
-      .insert({
-        usuario_id: userId,
-        tipo: 'debito',
-        valor: parseFloat(valor),
-        descricao: `Saque PIX - ${validation.data.pixType}`,
-        status: 'processando',
-        referencia_id: saque.id,
-        created_at: new Date().toISOString()
-      });
-
-    if (transacaoError) {
-      console.error('❌ [SAQUE] Erro ao criar transação:', transacaoError);
-    }
+    // Transação contábil: delegada para processador externo/contábil (removida do backend direto)
 
     console.log(`💰 [SAQUE] Saque solicitado: R$ ${valor} para usuário ${userId}`);
 
@@ -1317,12 +1368,10 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
       message: 'Saque solicitado com sucesso',
       data: {
         id: saque.id,
-        valor: valor,
-        valor_liquido: valorLiquido,
-        taxa: taxa,
-        chave_pix: validation.data.pixKey,
-        tipo_chave: validation.data.pixType,
-        status: 'pendente',
+        amount: valor,
+        pix_key: validation.data.pixKey,
+        pix_type: validation.data.pixType,
+        status: 'pending',
         created_at: saque.created_at
       }
     });
@@ -1428,6 +1477,9 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
       const firstName = names[0] || '';
       const lastName = names.slice(1).join(' ') || '';
 
+      // CPF opcional vindo do cliente; fallback seguro
+      const payerCpf = (req.body && req.body.cpf) ? String(req.body.cpf).replace(/\\D/g, '') : '52998224725';
+
       const paymentData = {
         transaction_amount: parseFloat(amount),
         description: 'Depósito Gol de Ouro',
@@ -1438,18 +1490,10 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
           last_name: lastName,
           identification: {
             type: 'CPF',
-            number: '00000000000' // Campo obrigatório, usar valor temporário
+            number: payerCpf // CPF obrigatório para produção
           }
         },
         external_reference: `goldeouro_${req.user.userId}_${Date.now()}`,
-        items: [{
-          id: 'deposito',
-          title: 'Depósito Gol de Ouro',
-          description: 'Recarga de saldo para o jogo',
-          category_id: 'digital',
-          quantity: 1,
-          unit_price: parseFloat(amount)
-        }],
         statement_descriptor: 'GOL DE OURO',
         notification_url: `${process.env.BACKEND_URL || 'https://goldeouro-backend-v2.fly.dev'}/api/payments/webhook`
       };
@@ -1475,6 +1519,9 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
       );
 
       const payment = response.data;
+      if (!payment || !payment.id || !payment.point_of_interaction?.transaction_data?.qr_code) {
+        throw new Error(`Resposta inválida do Mercado Pago: ${JSON.stringify(response.data || {})}`);
+      }
       
       // Salvar no banco de dados
       if (dbConnected && supabase) {
@@ -1482,9 +1529,10 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
           .from('pagamentos_pix')
           .insert({
             usuario_id: req.user.userId,
-            external_id: payment.id.toString(),
-            payment_id: payment.id.toString(),
+            external_id: String(payment.id),
+            payment_id: String(payment.id),
             amount: parseFloat(amount),
+            valor: parseFloat(amount),
             status: 'pending',
             qr_code: payment.point_of_interaction?.transaction_data?.qr_code || null,
             qr_code_base64: payment.point_of_interaction?.transaction_data?.qr_code_base64 || null,
@@ -1516,7 +1564,16 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
       });
 
     } catch (mpError) {
-      console.error('❌ [PIX] Erro Mercado Pago:', mpError.response?.data || mpError.message);
+      const mpDetail = mpError?.response?.data || { message: mpError.message };
+      console.error('❌ [PIX] Erro Mercado Pago:', mpDetail);
+      // Modo diagnóstico opcional e temporário
+      if (req.query?.debug === '1' || req.body?.debug === true) {
+        return res.status(500).json({
+          success: false,
+          message: 'Erro ao criar PIX (diagnóstico)',
+          detalhe: mpDetail
+        });
+      }
       return res.status(500).json({
         success: false,
         message: 'Erro ao criar PIX. Tente novamente em alguns minutos.'
@@ -1576,7 +1633,7 @@ app.get('/api/payments/pix/usuario', authenticateToken, async (req, res) => {
     const { data: payments, error: paymentsError } = await supabase
                 .from('pagamentos_pix')
                 .select('*')
-      .eq('user_id', req.user.userId)
+      .eq('usuario_id', req.user.userId)
       .order('created_at', { ascending: false })
       .limit(50);
 
@@ -1630,19 +1687,8 @@ app.get('/api/payments/pix/usuario', authenticateToken, async (req, res) => {
 // WEBHOOK PIX CORRIGIDO
 // =====================================================
 
-// Webhook principal com validação básica de signature
-app.post('/api/payments/webhook', (req, res, next) => {
-  // Validação básica de signature (headers do webhook)
-  const signature = req.get('x-signature') || req.get('x-signature-2');
-  const timestamp = req.get('x-request-id');
-  
-  // Log básico para debug
-  console.log('📨 [WEBHOOK] Signature:', signature ? 'Presente' : 'Ausente');
-  console.log('📨 [WEBHOOK] Request ID:', timestamp);
-  
-  // Continuar processamento (validação desabilitada temporariamente)
-  next();
-}, async (req, res) => {
+// Webhook principal com validação de signature
+app.post('/api/payments/webhook', webhookSignatureValidator.createValidationMiddleware(), async (req, res) => {
   try {
     const { type, data } = req.body;
     console.log('📨 [WEBHOOK] PIX recebido:', { type, data });
@@ -1651,11 +1697,20 @@ app.post('/api/payments/webhook', (req, res, next) => {
     
     if (type === 'payment' && data?.id) {
       // Verificar se já foi processado (idempotência)
-      const { data: existingPayment, error: checkError } = await supabase
+      let { data: existingPayment, error: checkError } = await supabase
         .from('pagamentos_pix')
         .select('id, status')
         .eq('external_id', data.id)
-        .single();
+        .maybeSingle();
+      if ((!existingPayment || checkError) && (!existingPayment?.id)) {
+        // fallback por payment_id (schemas legados)
+        const alt = await supabase
+          .from('pagamentos_pix')
+          .select('id, status')
+          .eq('payment_id', String(data.id))
+          .maybeSingle();
+        existingPayment = alt.data;
+      }
         
       if (existingPayment && existingPayment.status === 'approved') {
         console.log('📨 [WEBHOOK] Pagamento já processado:', data.id);
@@ -1676,13 +1731,30 @@ app.post('/api/payments/webhook', (req, res, next) => {
       
       if (payment.data.status === 'approved') {
         // Atualizar status do pagamento
-        const { error: updateError } = await supabase
+        // Atualizar por external_id; se não afetar linhas, tentar por payment_id
+        let { error: updateError } = await supabase
           .from('pagamentos_pix')
-          .update({ 
-            status: 'approved',
-            updated_at: new Date().toISOString()
-          })
+          .update({ status: 'approved', updated_at: new Date().toISOString() })
           .eq('external_id', data.id);
+        if (updateError) {
+          console.error('❌ [WEBHOOK] Update por external_id falhou:', updateError);
+        }
+        // Checar se atualizou alguma linha; se não, tentar por payment_id
+        const checkAfterUpdate = await supabase
+          .from('pagamentos_pix')
+          .select('id')
+          .eq('external_id', data.id)
+          .maybeSingle();
+        if (!checkAfterUpdate.data) {
+          const upd2 = await supabase
+            .from('pagamentos_pix')
+            .update({ status: 'approved', updated_at: new Date().toISOString() })
+            .eq('payment_id', String(data.id));
+          if (upd2.error) {
+            console.error('❌ [WEBHOOK] Update por payment_id falhou:', upd2.error);
+            return;
+          }
+        }
           
         if (updateError) {
           console.error('❌ [WEBHOOK] Erro ao atualizar pagamento:', updateError);
@@ -1690,11 +1762,20 @@ app.post('/api/payments/webhook', (req, res, next) => {
         }
 
         // Buscar usuário e atualizar saldo
-        const { data: pixRecord, error: pixError } = await supabase
+        // Buscar registro por external_id ou payment_id
+        let { data: pixRecord, error: pixError } = await supabase
           .from('pagamentos_pix')
-          .select('usuario_id, amount')
+          .select('usuario_id, amount, valor')
           .eq('external_id', data.id)
-          .single();
+          .maybeSingle();
+        if ((!pixRecord || pixError) && (!pixRecord?.usuario_id)) {
+          const alt2 = await supabase
+            .from('pagamentos_pix')
+            .select('usuario_id, amount, valor')
+            .eq('payment_id', String(data.id))
+            .maybeSingle();
+          pixRecord = alt2.data;
+        }
 
         if (pixError || !pixRecord) {
           console.error('❌ [WEBHOOK] Erro ao buscar pagamento:', pixError);
@@ -1713,7 +1794,8 @@ app.post('/api/payments/webhook', (req, res, next) => {
           return;
         }
 
-        const novoSaldo = user.saldo + pixRecord.amount;
+        const credit = pixRecord.amount ?? pixRecord.valor ?? 0;
+        const novoSaldo = user.saldo + credit;
         const { error: saldoError } = await supabase
           .from('usuarios')
           .update({ saldo: novoSaldo })
@@ -1758,17 +1840,125 @@ async function saveGlobalCounter() {
   }
 }
 
+// Reconciliação automática de PIX pendentes (fallback ao webhook)
+let reconciling = false;
+async function reconcilePendingPayments() {
+  if (reconciling) return;
+  if (!dbConnected || !supabase || !mercadoPagoConnected) return;
+  try {
+    reconciling = true;
+    const maxAgeMin = parseInt(process.env.MP_RECONCILE_MIN_AGE_MIN || '2', 10);
+    const limit = parseInt(process.env.MP_RECONCILE_LIMIT || '10', 10);
+    const sinceIso = new Date(Date.now() - maxAgeMin * 60 * 1000).toISOString();
+
+    const { data: pendings, error: listError } = await supabase
+      .from('pagamentos_pix')
+      .select('id, usuario_id, external_id, payment_id, status, amount, valor, created_at')
+      .eq('status', 'pending')
+      .lt('created_at', sinceIso)
+      .order('created_at', { ascending: true })
+      .limit(limit);
+
+    if (listError) {
+      console.error('❌ [RECON] Erro ao listar pendentes:', listError.message);
+      return;
+    }
+    if (!pendings || pendings.length === 0) return;
+
+    for (const p of pendings) {
+      const mpId = String(p.external_id || p.payment_id || '').trim();
+      if (!mpId) continue;
+
+      try {
+        const resp = await axios.get(`https://api.mercadopago.com/v1/payments/${mpId}`, {
+          headers: { Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}` },
+          timeout: 5000
+        });
+        const status = resp?.data?.status;
+        if (status === 'approved') {
+          let { error: updError } = await supabase
+            .from('pagamentos_pix')
+            .update({ status: 'approved', updated_at: new Date().toISOString() })
+            .eq('external_id', mpId);
+          if (updError) {
+            const alt = await supabase
+              .from('pagamentos_pix')
+              .update({ status: 'approved', updated_at: new Date().toISOString() })
+              .eq('payment_id', mpId);
+            if (alt.error) {
+              console.error('❌ [RECON] Falha ao aprovar registro:', alt.error.message);
+              continue;
+            }
+          }
+
+          const credit = (p.amount ?? p.valor ?? 0);
+          if (credit > 0) {
+            const { data: userRow, error: userErr } = await supabase
+              .from('usuarios')
+              .select('saldo')
+              .eq('id', p.usuario_id)
+              .single();
+            if (!userErr && userRow) {
+              const novoSaldo = Number(userRow.saldo || 0) + Number(credit);
+              const { error: saldoErr } = await supabase
+                .from('usuarios')
+                .update({ saldo: novoSaldo })
+                .eq('id', p.usuario_id);
+              if (saldoErr) {
+                console.error('❌ [RECON] Erro ao creditar saldo:', saldoErr.message);
+              } else {
+                console.log(`✅ [RECON] Pagamento ${mpId} aprovado e saldo +${credit} aplicado ao usuário ${p.usuario_id}`);
+              }
+            }
+          }
+        }
+      } catch (mpErr) {
+        console.log(`⚠️ [RECON] Erro consultando MP ${mpId}:`, mpErr.response?.data || mpErr.message);
+      }
+    }
+  } catch (err) {
+    console.error('❌ [RECON] Erro geral:', err.message);
+  } finally {
+    reconciling = false;
+  }
+}
+
+// Agendar reconciliação (habilitado por padrão)
+if (process.env.MP_RECONCILE_ENABLED !== 'false') {
+  const intervalMs = parseInt(process.env.MP_RECONCILE_INTERVAL_MS || '60000', 10);
+  setInterval(reconcilePendingPayments, Math.max(30000, intervalMs));
+  console.log(`🕒 [RECON] Reconciliação de PIX pendentes ativa a cada ${Math.round(intervalMs / 1000)}s`);
+}
+
 // =====================================================
 // ROTAS DE SAÚDE E MONITORAMENTO
 // =====================================================
 
-// Health check
-app.get('/health', (req, res) => {
+// Health check (com verificação ativa do banco)
+app.get('/health', async (req, res) => {
+  let dbStatus = dbConnected;
+  try {
+    if (!dbConnected) {
+      await connectSupabase();
+      dbStatus = dbConnected;
+    }
+    if (supabase) {
+      // Ping leve ao banco
+      const { error } = await supabase
+        .from('usuarios')
+        .select('id', { count: 'exact', head: true })
+        .limit(1);
+      if (!error) dbStatus = true;
+    }
+  } catch (_) {
+    dbStatus = false;
+  }
+
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     version: '1.2.0',
-    database: dbConnected ? 'connected' : 'disconnected',
+    database: dbStatus ? 'connected' : 'disconnected',
     mercadoPago: mercadoPagoConnected ? 'connected' : 'disconnected',
     contadorChutes: contadorChutesGlobal,
     ultimoGolDeOuro: ultimoGolDeOuro
@@ -1835,6 +2025,12 @@ app.get('/api/metrics', async (req, res) => {
 
 async function startServer() {
   try {
+    // Validar variáveis obrigatórias
+    if (!process.env.JWT_SECRET) {
+      console.error('❌ [ENV] JWT_SECRET não configurado');
+      process.exit(1);
+    }
+
     // Conectar Supabase
     await connectSupabase();
     
@@ -2161,6 +2357,50 @@ app.post('/auth/login', async (req, res) => {
   }
 });
 
+// =====================================================
+// BOOTSTRAP ADMIN (one-shot) - promove o usuário autenticado a admin
+// Somente se ainda não houver nenhum admin no sistema
+// =====================================================
+app.post('/api/admin/bootstrap', authenticateToken, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+    // Verificar se já existe algum admin
+    const { count, error: countError } = await supabase
+      .from('usuarios')
+      .select('*', { count: 'exact', head: true })
+      .eq('tipo', 'admin');
+    if (countError) {
+      console.error('❌ [ADMIN-BOOTSTRAP] Erro ao contar admins:', countError);
+      return res.status(500).json({ success: false, message: 'Erro ao verificar admins' });
+    }
+    if ((count || 0) > 0) {
+      return res.status(403).json({
+        success: false,
+        message: 'Já existe um administrador configurado'
+      });
+    }
+    // Promover o usuário atual
+    const { error: promoteError } = await supabase
+      .from('usuarios')
+      .update({ tipo: 'admin', updated_at: new Date().toISOString() })
+      .eq('id', req.user.userId);
+    if (promoteError) {
+      console.error('❌ [ADMIN-BOOTSTRAP] Erro ao promover admin:', promoteError);
+      return res.status(500).json({ success: false, message: 'Erro ao promover usuário' });
+    }
+    console.log(`🛡️ [ADMIN-BOOTSTRAP] Usuário ${req.user.userId} promovido a admin`);
+    res.json({ success: true, message: 'Administrador criado com sucesso' });
+  } catch (error) {
+    console.error('❌ [ADMIN-BOOTSTRAP] Erro:', error);
+    res.status(500).json({ success: false, message: 'Erro interno do servidor' });
+  }
+});
+
 // Endpoint para verificar se sistema está em produção real
 app.get('/api/production-status', (req, res) => {
   try {
@@ -2342,6 +2582,25 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
       });
     });
 
+    // Middleware global de tratamento de erros
+    app.use((err, req, res, next) => {
+      try {
+        logger.error('Unhandled error', {
+          path: req.originalUrl,
+          method: req.method,
+          ip: req.ip,
+          message: err.message,
+          stack: err.stack
+        });
+      } catch (_) {
+        console.error('❌ [ERROR] Unhandled error (logger fallback):', err);
+      }
+      res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor'
+      });
+    });
+
     // Middleware para rotas não encontradas (deve ser o último)
     app.use('*', (req, res) => {
       console.log(`❌ [404] Rota não encontrada: ${req.method} ${req.originalUrl}`);
@@ -2353,8 +2612,10 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
       });
     });
     
-    // Iniciar servidor
-    app.listen(PORT, '0.0.0.0', () => {
+    // Iniciar servidor HTTP e WebSocket
+    const server = http.createServer(app);
+    const wss = new WebSocketManager(server);
+    server.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 [SERVER] Servidor iniciado na porta ${PORT}`);
       console.log(`🌐 [SERVER] Ambiente: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📊 [SERVER] Supabase: ${dbConnected ? 'Conectado' : 'Desconectado'}`);

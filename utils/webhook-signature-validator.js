@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 class WebhookSignatureValidator {
   constructor() {
-    this.secret = process.env.MERCADOPAGO_WEBHOOK_SECRET || 'goldeouro-webhook-secret-2025-real';
+    this.secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
     this.allowedAlgorithms = ['sha256', 'sha1'];
     this.maxTimestampDiff = 5 * 60 * 1000; // 5 minutos
   }
@@ -17,6 +17,14 @@ class WebhookSignatureValidator {
         return {
           valid: false,
           error: 'Payload e signature são obrigatórios'
+        };
+      }
+
+      // Garantir secret configurado
+      if (!this.secret) {
+        return {
+          valid: false,
+          error: 'MERCADOPAGO_WEBHOOK_SECRET não configurado'
         };
       }
 
@@ -138,7 +146,9 @@ class WebhookSignatureValidator {
     try {
       const signature = req.headers['x-signature'];
       const timestamp = req.headers['x-timestamp'];
-      const payload = JSON.stringify(req.body);
+      const payload = typeof req.rawBody === 'string' && req.rawBody.length > 0 
+        ? req.rawBody 
+        : JSON.stringify(req.body);
 
       if (!signature) {
         return {
@@ -181,7 +191,9 @@ class WebhookSignatureValidator {
     try {
       const signature = req.headers['x-signature'] || req.headers['x-hub-signature-256'];
       const timestamp = req.headers['x-timestamp'];
-      const payload = JSON.stringify(req.body);
+      const payload = typeof req.rawBody === 'string' && req.rawBody.length > 0 
+        ? req.rawBody 
+        : JSON.stringify(req.body);
 
       if (!signature) {
         return {

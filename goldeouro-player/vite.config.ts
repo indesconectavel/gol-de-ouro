@@ -1,9 +1,56 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { readFileSync, existsSync } from 'fs'
+import { resolve } from 'path'
 
-export default defineConfig({
-  plugins: [
+// Obter data e hora atual no fuso horário de São Paulo
+const now = new Date();
+const saoPauloTime = new Intl.DateTimeFormat('pt-BR', {
+  timeZone: 'America/Sao_Paulo',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit'
+}).formatToParts(now);
+
+const buildDate = `${saoPauloTime.find(p => p.type === 'day').value}/${saoPauloTime.find(p => p.type === 'month').value}/${saoPauloTime.find(p => p.type === 'year').value}`;
+const buildTime = `${saoPauloTime.find(p => p.type === 'hour').value}:${saoPauloTime.find(p => p.type === 'minute').value}`;
+
+export default defineConfig(({ mode }) => {
+  // Carregar variáveis de ambiente
+  const env = loadEnv(mode, process.cwd(), '');
+  
+  // Tentar ler .env.local se existir
+  let buildVersion = 'v1.2.0';
+  let buildDateEnv = buildDate;
+  let buildTimeEnv = buildTime;
+  
+  const envLocalPath = resolve(process.cwd(), '.env.local');
+  if (existsSync(envLocalPath)) {
+    try {
+      const envLocal = readFileSync(envLocalPath, 'utf-8');
+      const versionMatch = envLocal.match(/VITE_BUILD_VERSION=(.+)/);
+      const dateMatch = envLocal.match(/VITE_BUILD_DATE=(.+)/);
+      const timeMatch = envLocal.match(/VITE_BUILD_TIME=(.+)/);
+      
+      if (versionMatch) buildVersion = versionMatch[1].trim();
+      if (dateMatch) buildDateEnv = dateMatch[1].trim();
+      if (timeMatch) buildTimeEnv = timeMatch[1].trim();
+    } catch (error) {
+      console.warn('⚠️ Não foi possível ler .env.local, usando valores padrão');
+    }
+  }
+
+  return {
+    define: {
+      // Injetar variáveis de build no código
+      'import.meta.env.VITE_BUILD_VERSION': JSON.stringify(buildVersion),
+      'import.meta.env.VITE_BUILD_DATE': JSON.stringify(buildDateEnv),
+      'import.meta.env.VITE_BUILD_TIME': JSON.stringify(buildTimeEnv),
+    },
+    plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -59,5 +106,6 @@ export default defineConfig({
       },
       devOptions: { enabled: false }
     })
-  ],
+    ],
+  }
 })

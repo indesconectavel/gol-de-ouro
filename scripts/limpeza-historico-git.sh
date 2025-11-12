@@ -29,3 +29,7 @@ git count-objects -vH
 echo "✅ Limpeza do histórico concluída!"
 
 
+
+
+
+

@@ -114,3 +114,7 @@ echo "🧠 Backup salvo em: $BACKUP_NAME"
 echo "✅ Repositório pronto e pipeline acionado."
 
 
+
+
+
+

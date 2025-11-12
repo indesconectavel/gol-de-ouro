@@ -136,3 +136,4 @@ Execute um teste com valor REAL pequeno para validar:
 **Status:** 🟢 **ATIVO EM PRODUÇÃO**
 
 **Atenção:** Todos os pagamentos serão REAIS a partir de agora!
+

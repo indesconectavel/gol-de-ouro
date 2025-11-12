@@ -13,8 +13,8 @@ const environments = {
     LOG_LEVEL: 'info'
   },
   production: {
-    // BACKEND CORRETO PARA PRODUÇÃO
-    API_BASE_URL: 'https://goldeouro-backend.fly.dev', // BACKEND PRODUÇÃO
+    // BACKEND CORRETO PARA PRODUÇÃO (UNIFICADO)
+    API_BASE_URL: 'https://goldeouro-backend-v2.fly.dev', // BACKEND PRODUÇÃO
     USE_MOCKS: false,
     USE_SANDBOX: false,
     LOG_LEVEL: 'error'
@@ -112,9 +112,13 @@ const validateEnvironment = () => {
 // CORREÇÃO CRÍTICA: Forçar backend direto apenas uma vez por sessão
 const FORCE_BACKEND_DIRECT = true;
 if (FORCE_BACKEND_DIRECT && !getSessionFlag('backend_forced')) {
-  console.log('🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES');
-  console.log('🔧 URL atual:', window.location.href);
-  console.log('🔧 Hostname:', window.location.hostname);
+  // Em produção, evitar logs verbosos para não poluir console do usuário
+  const isProduction = window.location.hostname.includes('goldeouro.lol');
+  if (!isProduction) {
+    console.log('🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES');
+    console.log('🔧 URL atual:', window.location.href);
+    console.log('🔧 Hostname:', window.location.hostname);
+  }
   setSessionFlag('backend_forced', true);
 }
 

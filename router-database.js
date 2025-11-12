@@ -56,7 +56,7 @@ const authenticateAdmin = (req, res, next) => {
   if (!adminToken) {
     return res.status(401).json({ error: 'Token admin necessário' });
   }
-  if (adminToken === process.env.ADMIN_TOKEN || adminToken === 'admin-prod-token-2025') {
+  if (adminToken === process.env.ADMIN_TOKEN) {
     next();
   } else {
     return res.status(401).json({ error: 'Token admin inválido' });

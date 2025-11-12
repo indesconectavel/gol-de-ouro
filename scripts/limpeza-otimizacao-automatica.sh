@@ -108,3 +108,7 @@ echo "📦 Tamanho final: $AFTER_SIZE"
 echo "✅ Repositório pronto para produção!"
 
 
+
+
+
+

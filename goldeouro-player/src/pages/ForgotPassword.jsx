@@ -46,12 +46,7 @@ const ForgotPassword = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-900 via-yellow-900 to-green-800 flex items-center justify-center p-4">
         {/* Banner de Versão */}
-        <VersionBanner 
-          version="v1.2.0" 
-          deployDate="25/10/2025" 
-          deployTime="08:50"
-          showTime={true}
-        />
+        <VersionBanner showTime={true} />
         
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-4" />
@@ -74,12 +69,7 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-yellow-900 to-green-800 flex items-center justify-center p-4">
       {/* Banner de Versão */}
-      <VersionBanner 
-        version="v1.2.0" 
-        deployDate="25/10/2025" 
-        deployTime="08:50"
-        showTime={true}
-      />
+      <VersionBanner showTime={true} />
       
       <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full">
         {/* Header */}

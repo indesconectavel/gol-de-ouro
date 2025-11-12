@@ -10,8 +10,13 @@ class AuthService {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
     
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error('Configuração inválida: JWT_SECRET não definido no ambiente');
+    }
+
     this.jwtConfig = {
-      secret: process.env.JWT_SECRET || 'goldeouro-secret-key-2025',
+      secret: jwtSecret,
       expiresIn: process.env.JWT_EXPIRES_IN || '24h'
     };
     

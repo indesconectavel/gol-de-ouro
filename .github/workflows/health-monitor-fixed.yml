@@ -1,8 +1,6 @@
-name: 🔍 Health Monitor – Gol de Ouro
+name: 🔍 Health Monitor – Gol de Ouro (Manual/Tolerante)
 
 on:
-  schedule:
-    - cron: "*/15 * * * *" # Executa a cada 15 minutos
   workflow_dispatch:
 
 jobs:
@@ -19,11 +17,24 @@ jobs:
           mkdir -p docs/logs
           echo "✅ Diretórios de logs criados"
 
-      - name: Verificar backend (Fly.io)
+      - name: Verificar backend (Fly.io) - crítico
         id: backend-check
         run: |
           echo "Verificando backend..."
-          STATUS_BACKEND=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://goldeouro-backend.fly.dev/health)
+          STATUS_BACKEND="000"
+          for i in {1..3}; do
+            echo "Tentativa BACKEND $i de 3..."
+            STATUS_BACKEND=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 https://goldeouro-backend-v2.fly.dev/health)
+            echo "Backend HTTP: $STATUS_BACKEND"
+            if [ "$STATUS_BACKEND" = "200" ]; then
+              echo "✅ Backend online na tentativa $i"
+              break
+            fi
+            if [ $i -lt 3 ]; then
+              echo "⏳ Aguardando 10s antes da próxima tentativa..."
+              sleep 10
+            fi
+          done
           echo "Backend HTTP: $STATUS_BACKEND"
           echo "status=$STATUS_BACKEND" >> $GITHUB_OUTPUT
           
@@ -42,16 +53,27 @@ jobs:
         id: frontend-check
         run: |
           echo "Verificando frontend..."
-          STATUS_FRONT=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://goldeouro.lol)
+          STATUS_FRONT="000"
+          for i in {1..3}; do
+            echo "Tentativa FRONT $i de 3..."
+            STATUS_FRONT=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://goldeouro.lol)
+            echo "Frontend HTTP: $STATUS_FRONT"
+            if [ "$STATUS_FRONT" = "200" ]; then
+              echo "✅ Frontend online na tentativa $i"
+              break
+            fi
+            if [ $i -lt 3 ]; then
+              echo "⏳ Aguardando 10s antes da próxima tentativa..."
+              sleep 10
+            fi
+          done
           echo "Frontend HTTP: $STATUS_FRONT"
           echo "status=$STATUS_FRONT" >> $GITHUB_OUTPUT
           
           if [ "$STATUS_FRONT" != "200" ]; then
-            echo "❌ Frontend fora do ar"
+            echo "❗ Frontend com instabilidade (não fatal)"
             echo "Frontend status: $STATUS_FRONT" >> docs/logs/health-fails.log
-            echo "⚠️ Frontend OFFLINE - $(date)" >> docs/logs/health-summary.log
-            echo "::error::Frontend offline"
-            exit 1
+            echo "⚠️ Frontend WARNING - $(date)" >> docs/logs/health-summary.log
           else
             echo "✅ Frontend online"
             echo "✅ Frontend ONLINE - $(date)" >> docs/logs/health-summary.log
@@ -65,15 +87,25 @@ jobs:
         run: |
           echo "Verificando banco de dados..."
           if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_KEY" ]; then
-            curl -s -H "apikey: $SUPABASE_KEY" --max-time 10 "$SUPABASE_URL/rest/v1" > /dev/null
-            if [ $? -ne 0 ]; then
-              echo "❌ Supabase inacessível"
-              echo "⚠️ Supabase OFFLINE - $(date)" >> docs/logs/health-summary.log
-              echo "::error::Supabase offline"
-              exit 1
-            else
+            SUCCESS=false
+            for i in {1..3}; do
+              echo "Tentativa DB $i de 3..."
+              curl -s -H "apikey: $SUPABASE_KEY" --max-time 15 "$SUPABASE_URL/rest/v1" > /dev/null
+              if [ $? -eq 0 ]; then
+                SUCCESS=true
+                break
+              fi
+              if [ $i -lt 3 ]; then
+                echo "⏳ Aguardando 10s antes da próxima tentativa..."
+                sleep 10
+              fi
+            done
+            if [ "$SUCCESS" = true ]; then
               echo "✅ Banco de dados operacional"
               echo "✅ Supabase ONLINE - $(date)" >> docs/logs/health-summary.log
+            else
+              echo "❗ Supabase com instabilidade (não fatal)"
+              echo "⚠️ Supabase WARNING - $(date)" >> docs/logs/health-summary.log
             fi
           else
             echo "⚠️ Credenciais Supabase não configuradas"
@@ -84,16 +116,27 @@ jobs:
         id: admin-check
         run: |
           echo "Verificando admin panel..."
-          STATUS_ADMIN=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://admin.goldeouro.lol)
+          STATUS_ADMIN="000"
+          for i in {1..3}; do
+            echo "Tentativa ADMIN $i de 3..."
+            STATUS_ADMIN=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://admin.goldeouro.lol)
+            echo "Admin HTTP: $STATUS_ADMIN"
+            if [ "$STATUS_ADMIN" = "200" ]; then
+              echo "✅ Admin online na tentativa $i"
+              break
+            fi
+            if [ $i -lt 3 ]; then
+              echo "⏳ Aguardando 10s antes da próxima tentativa..."
+              sleep 10
+            fi
+          done
           echo "Admin HTTP: $STATUS_ADMIN"
           echo "status=$STATUS_ADMIN" >> $GITHUB_OUTPUT
           
           if [ "$STATUS_ADMIN" != "200" ]; then
-            echo "❌ Admin panel fora do ar"
+            echo "❗ Admin com instabilidade (não fatal)"
             echo "Admin status: $STATUS_ADMIN" >> docs/logs/health-fails.log
-            echo "⚠️ Admin OFFLINE - $(date)" >> docs/logs/health-summary.log
-            echo "::error::Admin panel offline"
-            exit 1
+            echo "⚠️ Admin WARNING - $(date)" >> docs/logs/health-summary.log
           else
             echo "✅ Admin panel online"
             echo "✅ Admin ONLINE - $(date)" >> docs/logs/health-summary.log

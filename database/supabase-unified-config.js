@@ -12,10 +12,10 @@ const { createClient } = require('@supabase/supabase-js');
 
 // Credenciais ÚNICAS e VALIDADAS para produção
 const SUPABASE_CONFIG = {
-  // Projeto: goldeouro-production (ID: gayopagjdrkcmkirmfvy)
-  url: process.env.SUPABASE_URL || 'https://gayopagjdrkcmkirmfvy.supabase.co',
-  anonKey: process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdheW9wYWdqZHJrY21raXJtZnZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMjA2NjksImV4cCI6MjA3NTU5NjY2OX0.iiCn8Ygm98bR9HzNgVucafON0KzUQDN2lHNiX_rVhvI',
-  serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdheW9wYWdqZHJrY21raXJtZnZ5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDAyMDY2OSwiZXhwIjoyMDc1NTk2NjY5fQ.BjmwUSoKDksHybO9pta71F4E5RyILNeuK_FRzxkPnqU',
+  // Projeto: goldeouro-production
+  url: process.env.SUPABASE_URL,
+  anonKey: process.env.SUPABASE_ANON_KEY,
+  serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   
   // Configurações de conexão
   options: {

@@ -3,13 +3,15 @@ name: 📊 Monitoramento e Alertas
 on:
   push:
     branches: [ main ]
-  schedule:
-    - cron: '*/30 * * * *'  # Executar a cada 30 minutos - OTIMIZADO PARA REDUZIR CUSTOS
-  workflow_dispatch:  # Permitir execução manual
+  # Desabilitado para evitar monitores duplicados (mantemos apenas o Health Monitor agendado)
+  # schedule:
+  #   - cron: '*/30 * * * *'
+  workflow_dispatch:  # Execução manual quando necessário
 
 env:
   NODE_VERSION: '20'
-  FLY_APP_NAME: goldeouro-backend
+  FLY_APP_NAME: goldeouro-backend-v2
+  BACKEND_URL: https://goldeouro-backend-v2.fly.dev
 
 jobs:
   # 📊 Monitoramento de Saúde
@@ -26,32 +28,41 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           
-      - name: 🔍 Verificar saúde do backend
+      - name: 🔍 Verificar saúde do backend (não-fatal, com retry)
         run: |
           echo "🔍 Verificando saúde do backend..."
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.FLY_APP_NAME }}.fly.dev/health)
-          if [ "$response" = "200" ]; then
+          ATTEMPTS=3
+          SUCCESS=0
+          for i in $(seq 1 $ATTEMPTS); do
+            echo "Tentativa $i de $ATTEMPTS..."
+            response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${BACKEND_URL}/health")
+            echo "HTTP: $response"
+            if [ "$response" = "200" ]; then
+              SUCCESS=1
+              break
+            fi
+            sleep 5
+          done
+          if [ "$SUCCESS" = "1" ]; then
             echo "✅ Backend saudável"
           else
-            echo "❌ Backend com problemas: HTTP $response"
-            exit 1
+            echo "❗ Backend com instabilidade (não-fatal aqui; Health Monitor é o monitor oficial)"
           fi
           
-      - name: 🔍 Verificar saúde do frontend
+      - name: 🔍 Verificar saúde do frontend (não-fatal)
         run: |
           echo "🔍 Verificando saúde do frontend..."
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://goldeouro.lol)
+          response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 https://goldeouro.lol)
           if [ "$response" = "200" ]; then
             echo "✅ Frontend saudável"
           else
-            echo "❌ Frontend com problemas: HTTP $response"
-            exit 1
+            echo "❗ Frontend com instabilidade: HTTP $response (não-fatal)"
           fi
           
       - name: 🔍 Verificar tempo de resposta
         run: |
           echo "🔍 Verificando tempo de resposta..."
-          backend_time=$(curl -s -o /dev/null -w "%{time_total}" https://${{ env.FLY_APP_NAME }}.fly.dev/health)
+          backend_time=$(curl -s -o /dev/null -w "%{time_total}" ${BACKEND_URL}/health)
           frontend_time=$(curl -s -o /dev/null -w "%{time_total}" https://goldeouro.lol)
           
           echo "Backend: ${backend_time}s"

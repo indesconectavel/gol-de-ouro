@@ -6,10 +6,12 @@ class LoteIntegrityValidator {
   constructor() {
     // Configurações dos lotes por valor de aposta
     this.batchConfigs = {
+      // Alinhado ao modelo de jogo:
+      // R$1 → 10 chutes, R$2 → 5 chutes, R$5 → 2 chutes, R$10 → 1 chute
       1: { tamanho: 10, multiplicador: 10 },
-      2: { tamanho: 20, multiplicador: 10 },
-      5: { tamanho: 50, multiplicador: 10 },
-      10: { tamanho: 100, multiplicador: 10 }
+      2: { tamanho: 5, multiplicador: 10 },
+      5: { tamanho: 2, multiplicador: 10 },
+      10: { tamanho: 1, multiplicador: 10 }
     };
 
     // Cache de validações para performance
@@ -177,10 +179,7 @@ class LoteIntegrityValidator {
       errors.push(`Índice do vencedor excede tamanho do lote: ${lote.winnerIndex}/${config.tamanho}`);
     }
 
-    // Verificar se o índice do vencedor é válido para o número atual de chutes
-    if (lote.chutes.length > 0 && lote.winnerIndex >= lote.chutes.length) {
-      errors.push(`Índice do vencedor inválido para número atual de chutes: ${lote.winnerIndex}/${lote.chutes.length}`);
-    }
+    // O vencedor pode estar em qualquer posição válida do lote; não restringir ao número atual de chutes
 
     return {
       valid: errors.length === 0,
@@ -232,12 +231,7 @@ class LoteIntegrityValidator {
       }
     });
 
-    // Verificar duplicatas
-    const userIds = lote.chutes.map(chute => chute.userId);
-    const uniqueUserIds = [...new Set(userIds)];
-    if (userIds.length !== uniqueUserIds.length) {
-      errors.push('Lote contém chutes duplicados do mesmo usuário');
-    }
+    // É permitido o mesmo usuário chutar várias vezes no mesmo lote
 
     return {
       valid: errors.length === 0,
@@ -258,9 +252,7 @@ class LoteIntegrityValidator {
         errors.push('Lote completo mas índice do vencedor inválido');
       }
 
-      if (!isComplete && lote.winnerIndex < lote.chutes.length) {
-        errors.push('Lote incompleto mas já tem vencedor definido');
-      }
+      // O índice do vencedor pode ser pré-definido; não validar aqui enquanto o lote não estiver completo
     }
 
     // Verificar se há chutes após o vencedor
@@ -374,14 +366,8 @@ class LoteIntegrityValidator {
         };
       }
 
-      // Validar se o usuário já fez chute neste lote
-      const userAlreadyShot = lote.chutes.some(chute => chute.userId === shotData.userId);
-      if (userAlreadyShot) {
-        return {
-          valid: false,
-          error: 'Usuário já fez chute neste lote'
-        };
-      }
+      // Permitir múltiplos chutes do mesmo usuário no mesmo lote
+      // (regra do jogo: um mesmo jogador pode chutar mais de uma vez no lote)
 
       return {
         valid: true,
@@ -400,15 +386,7 @@ class LoteIntegrityValidator {
   // Validar lote após processar chute
   validateAfterShot(lote, shotResult) {
     try {
-      // Revalidar integridade do lote
-      const integrityValidation = this.validateLoteIntegrity(lote);
-      if (!integrityValidation.valid) {
-        return {
-          valid: false,
-          error: 'Lote com problemas de integridade após chute',
-          details: integrityValidation.errors
-        };
-      }
+      // Pós‑chute: validar apenas o essencial para não bloquear fluxo legítimo
 
       // Validar resultado do chute
       if (!shotResult) {

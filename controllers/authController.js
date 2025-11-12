@@ -3,7 +3,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { supabase } = require('../database/supabase-config');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'goldeouro-secret-key-2025';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('Configuração inválida: JWT_SECRET não definido no ambiente');
+}
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 class AuthController {

@@ -56,7 +56,7 @@ const authenticateAdmin = (req, res, next) => {
   if (!adminToken) {
     return res.status(401).json({ error: 'Token admin necessário' });
   }
-  if (adminToken === process.env.ADMIN_TOKEN || adminToken === 'admin-prod-token-2025') {
+  if (adminToken === process.env.ADMIN_TOKEN) {
     next();
   } else {
     return res.status(401).json({ error: 'Token admin inválido' });
@@ -278,7 +278,7 @@ router.post('/auth/login', async (req, res) => {
     const jwt = require('jsonwebtoken');
     const token = jwt.sign(
       { id: data.id, email: data.email, role: data.tipo },
-      process.env.JWT_SECRET || 'goldeouro-secret-key-2025',
+    process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
 

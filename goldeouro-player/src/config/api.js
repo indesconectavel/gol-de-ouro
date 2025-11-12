@@ -5,40 +5,40 @@
 // Versão: v1.2.0-final-production
 // GPT-4o Auto-Fix: API endpoints corrigidos
 
-// URL base do backend em produção
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://goldeouro-backend.fly.dev';
+// URL base do backend em produção (unificado com domínio v2 do Fly.io)
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://goldeouro-backend-v2.fly.dev';
 
-// Endpoints da API corrigidos
+// Endpoints relativos da API (evitar URL absoluto para não duplicar base)
 export const API_ENDPOINTS = {
   // Autenticação
-  LOGIN: `${API_BASE_URL}/api/auth/login`,
-  REGISTER: `${API_BASE_URL}/api/auth/register`,
-  FORGOT_PASSWORD: `${API_BASE_URL}/api/auth/forgot-password`,
-  RESET_PASSWORD: `${API_BASE_URL}/api/auth/reset-password`,
-  PROFILE: `${API_BASE_URL}/api/user/profile`,
+  LOGIN: `/api/auth/login`,
+  REGISTER: `/api/auth/register`,
+  FORGOT_PASSWORD: `/api/auth/forgot-password`,
+  RESET_PASSWORD: `/api/auth/reset-password`,
+  PROFILE: `/api/user/profile`,
   
   // Pagamentos PIX
-  PIX_CREATE: `${API_BASE_URL}/api/payments/pix/criar`,
-  PIX_STATUS: `${API_BASE_URL}/api/payments/pix/status`,
-  PIX_USER: `${API_BASE_URL}/api/payments/pix/usuario`,
+  PIX_CREATE: `/api/payments/pix/criar`,
+  PIX_STATUS: `/api/payments/pix/status`,
+  PIX_USER: `/api/payments/pix/usuario`,
   
   // Sistema de Jogo
-  GAMES_SHOOT: `${API_BASE_URL}/api/games/shoot`,
-  GAMES_METRICS: `${API_BASE_URL}/api/metrics`,
+  GAMES_SHOOT: `/api/games/shoot`,
+  GAMES_METRICS: `/api/metrics`,
   
   // Sistema de Lotes (compatibilidade)
-  GAMES_QUEUE_ENTRAR: `${API_BASE_URL}/api/games/join-lote`,
-  GAMES_STATUS: `${API_BASE_URL}/api/games/status`,
-  GAMES_CHUTAR: `${API_BASE_URL}/api/games/shoot`,
+  GAMES_QUEUE_ENTRAR: `/api/games/join-lote`,
+  GAMES_STATUS: `/api/games/status`,
+  GAMES_CHUTAR: `/api/games/shoot`,
   
   // Saques
-  WITHDRAW: `${API_BASE_URL}/api/withdraw`,
+  WITHDRAW: `/api/withdraw`,
   
   // Health Check
-  HEALTH: `${API_BASE_URL}/health`,
+  HEALTH: `/health`,
   
   // Meta (compatibilidade)
-  META: `${API_BASE_URL}/meta`
+  META: `/meta`
 };
 
 // Configuração do cliente API

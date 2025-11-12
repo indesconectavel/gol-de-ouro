@@ -19,6 +19,23 @@ const apiClient = axios.create({
 // Interceptor para autenticação e cache
 apiClient.interceptors.request.use(
   (config) => {
+    // Saneamento de URL: remover BOM e espaços e evitar URL absoluta duplicada
+    if (typeof config.url === 'string') {
+      // remover BOM (U+FEFF) no início, caso exista
+      config.url = config.url.replace(/^\uFEFF/, '').trim();
+
+      // Se por algum motivo vier uma URL absoluta do mesmo backend, tornar relativa
+      const base = (env.API_BASE_URL || '').replace(/\/+$/, '');
+      if (config.url.startsWith(base)) {
+        config.url = config.url.slice(base.length);
+      }
+
+      // Garantir que comece com uma única barra quando for relativa
+      if (!config.url.startsWith('http') && !config.url.startsWith('/')) {
+        config.url = `/${config.url}`;
+      }
+    }
+
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -140,7 +157,7 @@ apiClient.interceptors.response.use(
       
       try {
         const directConfig = { ...error.config };
-        directConfig.baseURL = 'https://goldeouro-backend.fly.dev';
+        directConfig.baseURL = 'https://goldeouro-backend-v2.fly.dev';
         directConfig.withCredentials = false;
         
         const directResponse = await axios.request(directConfig);

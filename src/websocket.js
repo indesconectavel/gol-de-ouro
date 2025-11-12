@@ -1,7 +1,12 @@
 // WebSocket Server - Gol de Ouro v1.1.1
 const WebSocket = require('ws');
 const jwt = require('jsonwebtoken');
-const { supabase } = require('./database/supabase-config');
+const { supabase } = require('../database/supabase-config');
+
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('Configuração inválida: JWT_SECRET não definido no ambiente');
+}
 
 class WebSocketManager {
   constructor(server) {
@@ -91,7 +96,7 @@ class WebSocketManager {
 
   async authenticateClient(ws, token) {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'goldeouro-secret-key-2025');
+      const decoded = jwt.verify(token, JWT_SECRET);
       
       // Verificar se o usuário existe no banco
       const { data: user, error } = await supabase

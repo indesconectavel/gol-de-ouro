@@ -65,12 +65,7 @@ const Register = () => {
            backgroundRepeat: 'no-repeat'
          }}>
       {/* Banner de Versão */}
-      <VersionBanner 
-        version="v1.2.0" 
-        deployDate="25/10/2025" 
-        deployTime="08:50"
-        showTime={true}
-      />
+      <VersionBanner showTime={true} />
       
       {/* Overlay escuro para melhorar legibilidade */}
       <div className="absolute inset-0 bg-black/60"></div>

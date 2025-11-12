@@ -195,3 +195,4 @@ Todas as funcionalidades estão implementadas e funcionando:
 ---
 
 **STATUS:** 🟡 **Aguardando configuração no painel (5 minutos para concluir)**
+

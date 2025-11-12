@@ -156,3 +156,4 @@ O sistema JÁ FUNCIONA em produção (Payment ID 131190274698 foi criado), mas p
 ---
 
 **Próximo passo:** Testar pagamento real para confirmar funcionamento completo!
+

@@ -9,8 +9,14 @@ const config = {
   DATABASE_URL: process.env.DATABASE_URL || 'postgresql://user:pass@localhost:5432/goldeouro',
   
   // JWT
-  JWT_SECRET: process.env.JWT_SECRET || 'your-super-secret-jwt-key',
-  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key',
+  JWT_SECRET: (() => {
+    if (!process.env.JWT_SECRET) throw new Error('Configuração inválida: JWT_SECRET não definido no ambiente');
+    return process.env.JWT_SECRET;
+  })(),
+  JWT_REFRESH_SECRET: (() => {
+    if (!process.env.JWT_REFRESH_SECRET) throw new Error('Configuração inválida: JWT_REFRESH_SECRET não definido no ambiente');
+    return process.env.JWT_REFRESH_SECRET;
+  })(),
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1h',
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
   

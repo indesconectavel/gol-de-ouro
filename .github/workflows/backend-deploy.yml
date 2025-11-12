@@ -31,7 +31,7 @@ on:
 
 env:
   NODE_VERSION: '20'
-  FLY_APP_NAME: goldeouro-backend
+  FLY_APP_NAME: goldeouro-backend-v2  # ✅ CORRIGIDO
 
 jobs:
   # 🔍 Análise de Código e Testes

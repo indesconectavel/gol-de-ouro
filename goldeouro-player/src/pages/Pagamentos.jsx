@@ -124,12 +124,7 @@ const Pagamentos = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Banner de Versão */}
-      <VersionBanner 
-        version="v1.2.0" 
-        deployDate="25/10/2025" 
-        deployTime="08:50"
-        showTime={true}
-      />
+      <VersionBanner showTime={true} />
       
       <Navigation />
       

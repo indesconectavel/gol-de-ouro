@@ -172,3 +172,4 @@ curl -X POST https://goldeouro-backend-v2.fly.dev/api/payments/webhook
 ---
 
 **Tempo Estimado para 100% Produção:** 10-15 minutos
+

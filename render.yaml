@@ -4,7 +4,7 @@ services:
     env: node
     plan: free
     buildCommand: "npm ci"
-    startCommand: "node server-render-fix.js"
+    startCommand: "node server-fly.js"
     healthCheckPath: /health
     healthCheckTimeout: 300
     autoDeploy: true
@@ -17,7 +17,7 @@ services:
         sync: false
       - key: ADMIN_TOKEN
         sync: false
-      - key: CORS_ORIGINS
+      - key: CORS_ORIGIN
         value: "https://goldeouro-admin.vercel.app,https://goldeouro-player.vercel.app,https://goldeouro-backend.onrender.com"
       - key: NODE_ENV
         value: production

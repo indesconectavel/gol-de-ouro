@@ -239,3 +239,4 @@ curl -X POST https://goldeouro-backend-v2.fly.dev/api/payments/webhook \
 ---
 
 **STATUS:** 🟡 **Aguardando configuração no painel Mercado Pago**
+

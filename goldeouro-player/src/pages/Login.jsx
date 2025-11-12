@@ -40,12 +40,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Banner de Versão */}
-      <VersionBanner 
-        version="v1.2.0" 
-        deployDate="25/10/2025" 
-        deployTime="08:50"
-        showTime={true}
-      />
+      <VersionBanner showTime={true} />
       {/* Background com fallback */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
