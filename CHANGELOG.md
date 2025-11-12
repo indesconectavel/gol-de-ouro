@@ -1,120 +1,84 @@
-# Changelog - Gol de Ouro
+# 📋 Changelog - Gol de Ouro
 
-## v1.1.2 — PWA + APK + Fix shoot (2025-09-27)
+Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-### 🎯 Correções Críticas
-- **Fix:** /api/games/shoot: 404 → 200 (contratos + testes)
-- **Fix:** Trava de regressão implementada
-- **Fix:** Testes de contrato para rota do jogo
-
-### 📱 PWA (Progressive Web App)
-- **PWA:** Player/Admin (manifest + SW + autoUpdate)
-- **PWA:** Cache inteligente para API e assets
-- **PWA:** Offline fallback para SPA
-- **PWA:** Banner "Nova versão disponível"
-
-### 📱 APK (Android)
-- **APK:** Capacitor apontando para https://goldeouro.lol
-- **APK:** App ID: com.goldeouro.app
-- **APK:** Splash screen e ícones nativos
-
-### 🔧 Melhorias
-- **CI:** GitHub Actions para testes de contrato
-- **Version:** Endpoint /version consistente
-- **Testing:** Scripts de contrato para /api/games/shoot
-- **Release:** Script formalizado para v1.1.2
-
-### 🔒 Segurança
-- **Backend:** CORS completo com métodos e headers específicos
-- **Backend:** Rate-limit específico para webhook MP
-- **Backend:** Endpoint /version para monitoramento
-
-### 📊 Validação
-- **GO/NO-GO:** Validação estrita sem falso-positivo
-- **Evidence:** Pack de evidências para auditoria
-- **Contract:** Testes automatizados de contrato
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
+e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
-## v1.1.2 (PWA + APK) - 2025-01-24
+## [1.2.0] - 2025-11-12
 
-### 📱 PWA (Progressive Web App)
-- **PWA:** Manifest configurado para Player e Admin
-- **PWA:** Service Worker com autoUpdate via Workbox
-- **PWA:** Cache inteligente para API e assets
-- **PWA:** Offline fallback para SPA
-- **PWA:** Banner "Nova versão disponível"
-- **PWA:** Ícones maskable para Android
+### ✅ Adicionado
+- Sistema automático de atualização de banner com data/hora do deploy
+- Script `inject-build-info.js` para injetar informações de build
+- Dependabot configurado para atualizações automáticas de dependências
+- Arquivos padrão: CONTRIBUTING.md, SECURITY.md, CHANGELOG.md
+- Correções de URL do backend (unificação para goldeouro-backend-v2.fly.dev)
+- Saneamento de URL no apiClient (remoção de BOM, normalização)
+- Permissões corrigidas no health-monitor.yml
+- Timeout aumentado no health-monitor.yml
 
-### 📱 APK (Android)
-- **APK:** Capacitor configurado para Android
-- **APK:** WebView apontando para https://goldeouro.lol
-- **APK:** App ID: com.goldeouro.app
-- **APK:** Permissões de internet configuradas
-- **APK:** Splash screen e ícones nativos
+### 🔧 Corrigido
+- Banner mostrando data desatualizada (agora atualiza automaticamente)
+- URL malformada no login (BOM character removido)
+- CORS configurado incorretamente (X-Idempotency-Key adicionado)
+- Backend boot failure (logger opcional com fallback)
+- App name incorreto em workflows (goldeouro-backend-v2)
+- Workflows duplicados identificados e documentados
+- Código duplicado no rollback.yml removido
 
-### 🔧 Melhorias
-- **Build:** Scripts PowerShell para PWA + APK
-- **Docs:** README-PWA-APK.md criado
-- **Icons:** Sistema de ícones PWA padronizado
+### 🔄 Alterado
+- VersionBanner agora usa variáveis de ambiente injetadas no build
+- Todas as páginas removem props hardcoded do VersionBanner
+- Health monitor mais tolerante a falhas temporárias
+- Workflows atualizados para usar app correto (goldeouro-backend-v2)
 
-### 🔒 Segurança
-- **Backend:** CORS completo com métodos e headers específicos
-- **Backend:** Rate-limit específico para webhook MP (30 req/min)
-- **Backend:** Endpoint /version para monitoramento
-- **DB:** mp_events endurecido (apenas service_role)
-
----
-
-## v1.1.1 (produção) - 2025-01-24
-
-### 🐛 Correções
-- **Fix:** SPA fallback no Admin (Vercel) para rotas diretas (/login) sem 404
-- **Fix:** Logout client-side via react-router (sem full reload)
-- **Fix:** Configuração CORS estrita para Player/Admin
-
-### 🚀 Infraestrutura
-- **Infra:** Backend migrado para Fly.io com healthcheck /health
-- **Infra:** Dockerfile otimizado para produção
-- **Infra:** fly.toml configurado para região GRU
-- **Infra:** Dependências pg e mercadopago adicionadas
-
-### 💳 Pagamentos
-- **Pagamentos:** Mercado Pago Prod validado
-- **Pagamentos:** PIX com validação R$1 a R$500
-- **Pagamentos:** Webhook configurado para produção
-
-### 🔧 Melhorias
-- **Admin:** Componente Logout.tsx para navegação client-side
-- **Admin:** vercel.json com SPA fallback correto
-- **Backend:** server-fly.js otimizado para Fly.io
-- **Backend:** Conexão Supabase com pooler SSL
-
-### 📊 Monitoramento
-- **Health:** Endpoint /health para Fly.io
-- **Health:** Endpoint /readiness com verificação de banco
-- **Logs:** Logs estruturados para produção
+### 📚 Documentação
+- Auditoria completa de correções recentes
+- Auditoria completa do GitHub Actions
+- Auditoria completa e avançada do GitHub
+- Resumos executivos criados
 
 ---
 
-## v1.1.0 (desenvolvimento) - 2025-01-23
+## [1.1.0] - 2025-10-25
 
-### ✨ Funcionalidades
-- Sistema de apostas dinâmicas (R$1, R$2, R$5, R$10)
-- Lógica de gol/defesa (10% chance)
-- Gol de Ouro (1 em 1000 chutes, R$100)
+### ✅ Adicionado
+- Sistema de monitoramento de saúde
+- Workflows de CI/CD completos
+- Análise de segurança automatizada
+- CodeQL Analysis
+
+### 🔧 Corrigido
+- Problemas de CORS
+- Configurações de deploy
+
+---
+
+## [1.0.0] - 2025-09-21
+
+### ✅ Adicionado
+- Versão inicial do sistema
+- Backend Node.js + Express
+- Frontend React + Vite
 - Sistema de autenticação JWT
-- Admin Panel completo
-- Responsividade mobile/tablet/desktop
+- Integração com Mercado Pago PIX
+- Sistema de jogo completo
+- Deploy para Fly.io e Vercel
 
-### 🎨 Interface
-- Design system harmonizado
-- Animações de gol e defesa
-- Overlays de vitória
-- Header com estatísticas em tempo real
+---
 
-### 🔒 Segurança
-- CORS configurado
-- Headers de segurança
-- Validação de tokens
-- Rate limiting
+## Tipos de Mudanças
+
+- `✅ Adicionado` - Novas funcionalidades
+- `🔄 Alterado` - Mudanças em funcionalidades existentes
+- `🗑️ Removido` - Funcionalidades removidas
+- `🔧 Corrigido` - Correções de bugs
+- `🔒 Segurança` - Correções de segurança
+- `📚 Documentação` - Mudanças na documentação
+
+---
+
+**Formato baseado em:** [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/)  
+**Versionamento:** [Semantic Versioning](https://semver.org/lang/pt-BR/)

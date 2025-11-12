@@ -75,9 +75,15 @@ jobs:
         name: build-artifacts
     
     - name: Deploy to staging
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       run: |
-        echo "Deploying to staging environment..."
-        # Add staging deployment commands here
+        echo "🔄 Deploying to staging environment..."
+        echo "⚠️ Staging deployment not configured. Skipping..."
+        # TODO: Configure staging environment when needed
 
   deploy-production:
     needs: build
@@ -93,17 +99,24 @@ jobs:
         name: build-artifacts
     
     - name: Deploy to production
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
       run: |
-        echo "Deploying to production environment..."
-        # Add production deployment commands here
+        echo "🚀 Deploying to production environment..."
+        echo "⚠️ Use 'deploy-on-demand.yml' or 'main-pipeline.yml' for production deploys"
+        echo "⚠️ This workflow is for CI/CD testing only"
     
     - name: Health check
       run: |
-        echo "Performing health check..."
-        # Add health check commands here
+        echo "🔍 Performing health check..."
+        sleep 5
+        echo "✅ Health check completed (simulated)"
     
     - name: Rollback on failure
       if: failure()
       run: |
-        echo "Deployment failed, initiating rollback..."
-        # Add rollback commands here
+        echo "⚠️ Deployment failed, initiating rollback..."
+        echo "⚠️ Use 'rollback.yml' workflow for automatic rollback"

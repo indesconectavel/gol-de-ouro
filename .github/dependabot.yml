@@ -1,0 +1,78 @@
+# Dependabot configuration for Gol de Ouro
+# Automatically updates dependencies weekly
+
+version: 2
+updates:
+  # Backend dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "indesconectavel"
+    labels:
+      - "dependencies"
+      - "backend"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    ignore:
+      # Ignore major version updates (require manual review)
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Frontend Player dependencies
+  - package-ecosystem: "npm"
+    directory: "/goldeouro-player"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "indesconectavel"
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "player"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Admin Panel dependencies
+  - package-ecosystem: "npm"
+    directory: "/goldeouro-admin"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "indesconectavel"
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "admin"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # GitHub Actions updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "github-actions"
+
