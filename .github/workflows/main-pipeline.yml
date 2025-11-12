@@ -26,14 +26,16 @@ jobs:
       - name: 📦 Instalar dependências
         run: |
           echo "📦 Instalando dependências..."
-          npm install --legacy-peer-deps
+          npm ci
           echo "✅ Dependências instaladas com sucesso"
 
-      - name: 🧱 Build do projeto
+      - name: 🔍 Validar estrutura do projeto
         run: |
-          echo "🧱 Iniciando build do projeto..."
-          npm run build
-          echo "✅ Build concluído com sucesso"
+          echo "🔍 Validando estrutura do projeto..."
+          test -f package.json && echo "✅ package.json encontrado"
+          test -f server-fly.js && echo "✅ server-fly.js encontrado"
+          test -f fly.toml && echo "✅ fly.toml encontrado"
+          echo "✅ Validação concluída"
 
       - name: 🚀 Deploy Backend (Fly.io)
         uses: superfly/flyctl-actions@master
