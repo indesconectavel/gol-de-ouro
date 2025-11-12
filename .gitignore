@@ -188,6 +188,15 @@ alerts.log
 *.temp.ps1
 *.temp.sh
 
+# Arquivos com secrets expostos (CRÍTICO - NUNCA COMMITAR)
+implementar-credenciais-supabase-recentes.js
+implementar-credenciais-reais.js
+implementar-credenciais-reais-final.js
+implementar-todas-credenciais-reais.js
+configurar-flyio-secrets.ps1
+configurar-credenciais-supabase*.ps1
+configurar-credenciais-supabase*.js
+
 # Arquivos de evidência
 release-evidence-*/
 *.zip

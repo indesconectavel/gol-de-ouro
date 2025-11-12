@@ -1,5 +1,5 @@
-# fly.toml para Gol de Ouro Backend v1.1.1
-app = "goldeouro-backend"
+# fly.toml para Gol de Ouro Backend v1.2.0
+app = "goldeouro-backend-v2"  # ✅ CORRIGIDO: Consistente com workflows GitHub Actions
 primary_region = "gru"
 
 [build]
@@ -8,6 +8,12 @@ primary_region = "gru"
 
 [env]
   NODE_ENV = "production"
+
+# ✅ ADICIONADO: Configuração de recursos (CPU/RAM)
+[compute]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
 
 [[services]]
   protocol = "tcp"
@@ -31,3 +37,4 @@ primary_region = "gru"
     interval = "30s"
     timeout = "10s"
     method = "get"
+    grace_period = "10s"  # ✅ ADICIONADO: Período de graça antes de marcar como falha

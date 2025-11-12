@@ -38,7 +38,7 @@ try {
 # 3. Criar app (se não existir)
 Write-Host "3. Criando app no Fly.io..." -NoNewline
 try {
-    flyctl apps create goldeouro-backend --no-deploy
+    flyctl apps create goldeouro-backend-v2 --no-deploy  # ✅ CORRIGIDO: Consistente com fly.toml e workflows
     if ($LASTEXITCODE -eq 0) {
         Write-Host " OK" -ForegroundColor Green
     } else {
@@ -52,29 +52,29 @@ try {
 Write-Host "4. Configurando secrets..." -NoNewline
 try {
     # DATABASE_URL (Supabase pooler)
-    flyctl secrets set DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST].supabase.co:6543/postgres" --app goldeouro-backend
+    flyctl secrets set DATABASE_URL="postgresql://postgres:[PASSWORD]@[HOST].supabase.co:6543/postgres" --app goldeouro-backend-v2
     
     # Mercado Pago (produção)
-    flyctl secrets set MP_ACCESS_TOKEN="[SEU_ACCESS_TOKEN_PROD]" --app goldeouro-backend
-    flyctl secrets set MP_PUBLIC_KEY="[SUA_PUBLIC_KEY_PROD]" --app goldeouro-backend
+    flyctl secrets set MP_ACCESS_TOKEN="[SEU_ACCESS_TOKEN_PROD]" --app goldeouro-backend-v2
+    flyctl secrets set MP_PUBLIC_KEY="[SUA_PUBLIC_KEY_PROD]" --app goldeouro-backend-v2
     
     # Admin token
-    flyctl secrets set ADMIN_TOKEN_PROD="admin-prod-token-2025" --app goldeouro-backend
+    flyctl secrets set ADMIN_TOKEN_PROD="admin-prod-token-2025" --app goldeouro-backend-v2
     
     # Ambiente
-    flyctl secrets set NODE_ENV="production" --app goldeouro-backend
+    flyctl secrets set NODE_ENV="production" --app goldeouro-backend-v2
     
     Write-Host " OK" -ForegroundColor Green
     Write-Host "   ⚠️  IMPORTANTE: Configure as credenciais reais de produção!" -ForegroundColor Yellow
 } catch {
     Write-Host " FALHA" -ForegroundColor Red
-    Write-Host "   Configure manualmente: flyctl secrets set KEY=value --app goldeouro-backend" -ForegroundColor Yellow
+    Write-Host "   Configure manualmente: flyctl secrets set KEY=value --app goldeouro-backend-v2" -ForegroundColor Yellow
 }
 
 # 5. Deploy
 Write-Host "5. Fazendo deploy..." -NoNewline
 try {
-    flyctl deploy --app goldeouro-backend
+    flyctl deploy --app goldeouro-backend-v2  # ✅ CORRIGIDO: Consistente com fly.toml
     if ($LASTEXITCODE -eq 0) {
         Write-Host " OK" -ForegroundColor Green
     } else {
@@ -89,7 +89,7 @@ try {
 # 6. Verificar status
 Write-Host "6. Verificando status..." -NoNewline
 try {
-    flyctl status --app goldeouro-backend
+    flyctl status --app goldeouro-backend-v2  # ✅ CORRIGIDO: Consistente com fly.toml
     Write-Host " OK" -ForegroundColor Green
 } catch {
     Write-Host " FALHA" -ForegroundColor Red
@@ -98,7 +98,7 @@ try {
 # 7. Testar health check
 Write-Host "7. Testando health check..." -NoNewline
 try {
-    $appUrl = "https://goldeouro-backend.fly.dev"
+    $appUrl = "https://goldeouro-backend-v2.fly.dev"  # ✅ CORRIGIDO: URL correta de produção
     $response = Invoke-WebRequest -Uri "$appUrl/health" -UseBasicParsing -TimeoutSec 10
     if ($response.StatusCode -eq 200) {
         Write-Host " OK" -ForegroundColor Green
@@ -112,10 +112,10 @@ try {
 
 Write-Host ""
 Write-Host "=== DEPLOY CONCLUÍDO ===" -ForegroundColor Green
-Write-Host "URL do Backend: https://goldeouro-backend.fly.dev" -ForegroundColor White
-Write-Host "Health Check: https://goldeouro-backend.fly.dev/health" -ForegroundColor White
+Write-Host "URL do Backend: https://goldeouro-backend-v2.fly.dev" -ForegroundColor White
+Write-Host "Health Check: https://goldeouro-backend-v2.fly.dev/health" -ForegroundColor White
 Write-Host ""
 Write-Host "PRÓXIMOS PASSOS:" -ForegroundColor Yellow
-Write-Host "1. Atualizar VITE_API_URL no Admin Panel para: https://goldeouro-backend.fly.dev" -ForegroundColor White
-Write-Host "2. Atualizar VITE_API_URL no Player Mode para: https://goldeouro-backend.fly.dev" -ForegroundColor White
+Write-Host "1. Atualizar VITE_API_URL no Admin Panel para: https://goldeouro-backend-v2.fly.dev" -ForegroundColor White
+Write-Host "2. Atualizar VITE_API_URL no Player Mode para: https://goldeouro-backend-v2.fly.dev" -ForegroundColor White
 Write-Host "3. Testar funcionalidades completas" -ForegroundColor White

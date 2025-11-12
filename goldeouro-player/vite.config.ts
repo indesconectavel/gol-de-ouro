@@ -44,6 +44,14 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    // ✅ ADICIONADO: Configuração explícita de build output
+    build: {
+      outDir: 'dist',
+      emptyOutDir: true,
+      rollupOptions: {
+        input: resolve(__dirname, 'index.html')
+      }
+    },
     define: {
       // Injetar variáveis de build no código
       'import.meta.env.VITE_BUILD_VERSION': JSON.stringify(buildVersion),
