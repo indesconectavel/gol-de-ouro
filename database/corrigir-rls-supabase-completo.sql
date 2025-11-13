@@ -39,8 +39,8 @@ ALTER TABLE public.fila_jogadores ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "fila_jogadores_user_policy" 
 ON public.fila_jogadores 
 FOR ALL 
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING (auth.uid() = usuario_id)
+WITH CHECK (auth.uid() = usuario_id);
 
 -- Política: Service role tem acesso total
 CREATE POLICY "fila_jogadores_admin_policy" 
@@ -58,20 +58,20 @@ ALTER TABLE public.notificacoes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "notificacoes_user_policy" 
 ON public.notificacoes 
 FOR SELECT 
-USING (auth.uid() = user_id);
+USING (auth.uid() = usuario_id);
 
 -- Política: Usuários podem atualizar suas próprias notificações
 CREATE POLICY "notificacoes_update_policy" 
 ON public.notificacoes 
 FOR UPDATE 
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING (auth.uid() = usuario_id)
+WITH CHECK (auth.uid() = usuario_id);
 
 -- Política: Service role pode inserir notificações
 CREATE POLICY "notificacoes_insert_policy" 
 ON public.notificacoes 
 FOR INSERT 
-WITH CHECK (auth.role() = 'service_role' OR auth.uid() = user_id);
+WITH CHECK (auth.role() = 'service_role' OR auth.uid() = usuario_id);
 
 -- =====================================================
 -- 4. PARTIDA_JOGADORES (Acesso por partida)
@@ -136,8 +136,8 @@ ALTER TABLE public.sessoes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "sessoes_user_policy" 
 ON public.sessoes 
 FOR ALL 
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
+USING (auth.uid() = usuario_id)
+WITH CHECK (auth.uid() = usuario_id);
 
 -- Política: Service role tem acesso total
 CREATE POLICY "sessoes_admin_policy" 
@@ -155,7 +155,7 @@ ALTER TABLE public.usuario_conquistas ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "usuario_conquistas_user_policy" 
 ON public.usuario_conquistas 
 FOR SELECT 
-USING (auth.uid() = user_id);
+USING (auth.uid() = usuario_id);
 
 -- Política: Service role pode inserir/atualizar
 CREATE POLICY "usuario_conquistas_admin_policy" 
