@@ -30,17 +30,17 @@ if (fs.existsSync(envLocalPath)) {
 }
 
 const MCPs_TO_VERIFY = [
-  { name: 'vercel', command: 'npx vercel --version', env: ['VERCEL_TOKEN', 'VERCEL_ORG_ID', 'VERCEL_PROJECT_ID'] },
-  { name: 'flyio', command: 'flyctl version', env: ['FLY_API_TOKEN'] },
-  { name: 'supabase', command: 'node test-supabase.js', env: ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'] },
-  { name: 'github-actions', command: 'gh --version', env: ['GITHUB_TOKEN'] },
-  { name: 'lighthouse', command: 'npx lighthouse --version', env: [] },
-  { name: 'docker', command: 'docker --version', env: [] },
-  { name: 'sentry', command: 'npx @sentry/cli --version', env: ['SENTRY_AUTH_TOKEN', 'SENTRY_ORG', 'SENTRY_PROJECT'] },
-  { name: 'postgres', command: 'psql --version', env: ['DATABASE_URL'] },
-  { name: 'jest', command: 'npx jest --version', env: [] },
-  { name: 'eslint', command: 'npx eslint --version', env: [] }
-];
+          { name: 'vercel', command: 'npx vercel --version', env: ['VERCEL_TOKEN', 'VERCEL_ORG_ID', 'VERCEL_PROJECT_ID'], timeout: 10000 },
+          { name: 'flyio', command: 'flyctl version', env: ['FLY_API_TOKEN'], timeout: 10000 },
+          { name: 'supabase', command: 'node test-supabase.js', env: ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_ANON_KEY'], timeout: 15000 },
+          { name: 'github-actions', command: 'gh --version', env: ['GITHUB_TOKEN'], timeout: 10000 },
+          { name: 'lighthouse', command: 'npx lighthouse --version', env: [], timeout: 30000 },
+          { name: 'docker', command: 'docker --version', env: [], timeout: 10000 },
+          { name: 'sentry', command: 'npx @sentry/cli --version', env: ['SENTRY_AUTH_TOKEN', 'SENTRY_ORG', 'SENTRY_PROJECT'], timeout: 10000 },
+          { name: 'postgres', command: 'psql --version', env: ['DATABASE_URL'], timeout: 10000 },
+          { name: 'jest', command: 'npx jest --version', env: [], timeout: 30000 },
+          { name: 'eslint', command: 'npx eslint --version', env: [] }
+        ];
 
 class MCPVerifier {
   constructor() {
