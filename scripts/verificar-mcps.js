@@ -114,10 +114,11 @@ class MCPVerifier {
 
     // Testar comando
     try {
+      const timeout = mcp.timeout || 10000;
       const output = execSync(mcp.command, { 
         encoding: 'utf8', 
         stdio: 'pipe',
-        timeout: 10000 
+        timeout: timeout 
       });
       result.commandWorking = true;
       result.status = 'working';
