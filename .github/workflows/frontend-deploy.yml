@@ -100,6 +100,20 @@ jobs:
           npm ci
           echo "✅ Dependências instaladas"
           
+      - name: 🏗️ Build para produção
+        run: |
+          cd goldeouro-player
+          npm run build
+          echo "✅ Build concluído"
+          ls -la dist/
+          
+      - name: 🔍 Verificar arquivos críticos
+        run: |
+          cd goldeouro-player
+          test -f dist/index.html && echo "✅ index.html encontrado" || (echo "❌ index.html não encontrado" && exit 1)
+          test -f dist/favicon.png && echo "✅ favicon.png encontrado" || echo "⚠️ favicon.png não encontrado"
+          echo "✅ Verificação concluída"
+          
       - name: 🔐 Configurar Vercel
         uses: amondnet/vercel-action@v25
         with:
@@ -107,7 +121,7 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: goldeouro-player
-          vercel-args: '--prod'
+          vercel-args: '--prod --yes'
           
       - name: 🧪 Teste de produção
         run: |
