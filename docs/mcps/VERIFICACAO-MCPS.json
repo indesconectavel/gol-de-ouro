@@ -1,0 +1,165 @@
+{
+  "timestamp": "2025-11-13T18:48:48.360Z",
+  "mcps": [
+    {
+      "name": "vercel",
+      "command": "npx vercel --version",
+      "commandWorking": false,
+      "envVars": {
+        "VERCEL_TOKEN": false,
+        "VERCEL_ORG_ID": false,
+        "VERCEL_PROJECT_ID": false
+      },
+      "status": "missing_env",
+      "error": "Variáveis de ambiente faltando: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID"
+    },
+    {
+      "name": "flyio",
+      "command": "flyctl version",
+      "commandWorking": false,
+      "envVars": {
+        "FLY_API_TOKEN": false
+      },
+      "status": "missing_env",
+      "error": "Variáveis de ambiente faltando: FLY_API_TOKEN"
+    },
+    {
+      "name": "supabase",
+      "command": "node test-supabase.js",
+      "commandWorking": false,
+      "envVars": {
+        "SUPABASE_URL": false,
+        "SUPABASE_SERVICE_ROLE_KEY": false
+      },
+      "status": "missing_env",
+      "error": "Variáveis de ambiente faltando: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY"
+    },
+    {
+      "name": "github-actions",
+      "command": "gh --version",
+      "commandWorking": false,
+      "envVars": {
+        "GITHUB_TOKEN": false
+      },
+      "status": "missing_env",
+      "error": "Variáveis de ambiente faltando: GITHUB_TOKEN"
+    },
+    {
+      "name": "lighthouse",
+      "command": "npx lighthouse --version",
+      "commandWorking": false,
+      "envVars": {},
+      "status": "failed",
+      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ETIMEDOUT"
+    },
+    {
+      "name": "docker",
+      "command": "docker --version",
+      "commandWorking": false,
+      "envVars": {},
+      "status": "failed",
+      "error": "Command failed: docker --version\n'docker' n�o � reconhecido como um comando interno\r\nou externo, um programa oper�vel ou um arquivo em lotes.\r\n"
+    },
+    {
+      "name": "sentry",
+      "command": "npx @sentry/cli --version",
+      "commandWorking": false,
+      "envVars": {
+        "SENTRY_AUTH_TOKEN": false,
+        "SENTRY_ORG": false,
+        "SENTRY_PROJECT": false
+      },
+      "status": "missing_env",
+      "error": "Variáveis de ambiente faltando: SENTRY_AUTH_TOKEN, SENTRY_ORG, SENTRY_PROJECT"
+    },
+    {
+      "name": "postgres",
+      "command": "psql --version",
+      "commandWorking": false,
+      "envVars": {
+        "DATABASE_URL": false
+      },
+      "status": "missing_env",
+      "error": "Variáveis de ambiente faltando: DATABASE_URL"
+    },
+    {
+      "name": "jest",
+      "command": "npx jest --version",
+      "commandWorking": false,
+      "envVars": {},
+      "status": "failed",
+      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ETIMEDOUT"
+    },
+    {
+      "name": "eslint",
+      "command": "npx eslint --version",
+      "commandWorking": false,
+      "envVars": {},
+      "status": "failed",
+      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ETIMEDOUT"
+    }
+  ],
+  "env": {
+    "VERCEL_TOKEN": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "VERCEL_ORG_ID": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "VERCEL_PROJECT_ID": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "FLY_API_TOKEN": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "SUPABASE_URL": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "SUPABASE_SERVICE_ROLE_KEY": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "GITHUB_TOKEN": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "SENTRY_AUTH_TOKEN": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "SENTRY_ORG": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "SENTRY_PROJECT": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    },
+    "DATABASE_URL": {
+      "set": false,
+      "length": 0,
+      "preview": "não definida"
+    }
+  },
+  "summary": {
+    "total": 10,
+    "working": 0,
+    "failed": 4,
+    "missingEnv": 6
+  }
+}
