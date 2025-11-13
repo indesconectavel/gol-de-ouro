@@ -1,0 +1,17 @@
+# Cursor Rules - Gol de Ouro Backend
+
+## MCPs Configurados
+
+Os seguintes MCPs estão disponíveis para uso:
+- Vercel MCP
+- Fly.io MCP
+- Supabase MCP
+- GitHub Actions MCP
+- Lighthouse MCP
+- Docker MCP
+- Sentry MCP
+- Postgres MCP
+- Mercado Pago MCP
+- Jest MCP
+- ESLint MCP
+
