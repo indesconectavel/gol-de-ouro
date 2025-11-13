@@ -420,15 +420,28 @@ router.get('/api/games/history', authenticatePlayer, async (req, res) => {
   try {
     const user_id = req.user.id;
     
+    // ✅ CORRIGIDO: Usar tabela 'chutes' que existe e usa 'usuario_id'
     const { data, error } = await supabase
-      .from('games')
-      .select('id, game_type, result, bet_amount, prize, is_golden_goal, created_at')
-      .eq('user_id', user_id)
+      .from('chutes')
+      .select('id, valor_aposta as bet_amount, result, premio as prize, created_at')
+      .eq('usuario_id', user_id)  // ✅ CORRIGIDO: usar usuario_id ao invés de user_id
       .order('created_at', { ascending: false })
       .limit(50);
 
     if (error) throw error;
-    res.status(200).json(data || []);
+    
+    // Transformar dados para formato esperado pelo frontend
+    const formattedData = (data || []).map(chute => ({
+      id: chute.id,
+      game_type: 'chute',
+      result: chute.result,
+      bet_amount: chute.bet_amount || chute.valor_aposta,
+      prize: chute.prize || chute.premio || 0,
+      is_golden_goal: chute.result === 'goal' && chute.premio > 0,
+      created_at: chute.created_at
+    }));
+    
+    res.status(200).json(formattedData);
   } catch (error) {
     console.error('Erro ao buscar histórico:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
