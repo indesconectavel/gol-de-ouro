@@ -1,48 +1,51 @@
 {
-  "timestamp": "2025-11-13T18:48:48.360Z",
+  "timestamp": "2025-11-13T20:12:27.457Z",
   "mcps": [
     {
       "name": "vercel",
       "command": "npx vercel --version",
-      "commandWorking": false,
+      "commandWorking": true,
       "envVars": {
-        "VERCEL_TOKEN": false,
-        "VERCEL_ORG_ID": false,
-        "VERCEL_PROJECT_ID": false
+        "VERCEL_TOKEN": true,
+        "VERCEL_ORG_ID": true,
+        "VERCEL_PROJECT_ID": true
       },
-      "status": "missing_env",
-      "error": "Variáveis de ambiente faltando: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID"
+      "status": "working",
+      "error": null,
+      "output": "48.6.6\n"
     },
     {
       "name": "flyio",
       "command": "flyctl version",
-      "commandWorking": false,
+      "commandWorking": true,
       "envVars": {
-        "FLY_API_TOKEN": false
+        "FLY_API_TOKEN": true
       },
-      "status": "missing_env",
-      "error": "Variáveis de ambiente faltando: FLY_API_TOKEN"
+      "status": "working",
+      "error": null,
+      "output": "flyctl.exe v0.3.209 windows/amd64 Commit: 9383e01c8cc7e0482b2bd81d093eb6652d92dc76 BuildDate: 2025-1"
     },
     {
       "name": "supabase",
       "command": "node test-supabase.js",
-      "commandWorking": false,
+      "commandWorking": true,
       "envVars": {
-        "SUPABASE_URL": false,
-        "SUPABASE_SERVICE_ROLE_KEY": false
+        "SUPABASE_URL": true,
+        "SUPABASE_SERVICE_ROLE_KEY": true
       },
-      "status": "missing_env",
-      "error": "Variáveis de ambiente faltando: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY"
+      "status": "working",
+      "error": null,
+      "output": "🔍 Testando conexão com Supabase...\n✅ Supabase OK: [ { count: 64 } ]\n"
     },
     {
       "name": "github-actions",
       "command": "gh --version",
       "commandWorking": false,
       "envVars": {
-        "GITHUB_TOKEN": false
+        "GITHUB_TOKEN": true
       },
-      "status": "missing_env",
-      "error": "Variáveis de ambiente faltando: GITHUB_TOKEN"
+      "status": "failed",
+      "error": "Command failed: gh --version\n'gh' não é reconhecido como um comando interno\r\nou externo, um programa operável ou um arquivo em lotes.\r\n"
     },
     {
       "name": "lighthouse",
@@ -58,7 +61,7 @@
       "commandWorking": false,
       "envVars": {},
       "status": "failed",
-      "error": "Command failed: docker --version\n'docker' n�o � reconhecido como um comando interno\r\nou externo, um programa oper�vel ou um arquivo em lotes.\r\n"
+      "error": "Command failed: docker --version\n'docker' não é reconhecido como um comando interno\r\nou externo, um programa operável ou um arquivo em lotes.\r\n"
     },
     {
       "name": "sentry",
@@ -93,47 +96,48 @@
     {
       "name": "eslint",
       "command": "npx eslint --version",
-      "commandWorking": false,
+      "commandWorking": true,
       "envVars": {},
-      "status": "failed",
-      "error": "spawnSync C:\\WINDOWS\\system32\\cmd.exe ETIMEDOUT"
+      "status": "working",
+      "error": null,
+      "output": "v9.39.1\n"
     }
   ],
   "env": {
     "VERCEL_TOKEN": {
-      "set": false,
-      "length": 0,
-      "preview": "não definida"
+      "set": true,
+      "length": 24,
+      "preview": "QY1Vu9z3Ky..."
     },
     "VERCEL_ORG_ID": {
-      "set": false,
-      "length": 0,
-      "preview": "não definida"
+      "set": true,
+      "length": 25,
+      "preview": "goldeouro-..."
     },
     "VERCEL_PROJECT_ID": {
-      "set": false,
-      "length": 0,
-      "preview": "não definida"
+      "set": true,
+      "length": 16,
+      "preview": "goldeouro-..."
     },
     "FLY_API_TOKEN": {
-      "set": false,
-      "length": 0,
-      "preview": "não definida"
+      "set": true,
+      "length": 691,
+      "preview": "FlyV1 fm2_..."
     },
     "SUPABASE_URL": {
-      "set": false,
-      "length": 0,
-      "preview": "não definida"
+      "set": true,
+      "length": 40,
+      "preview": "https://ga..."
     },
     "SUPABASE_SERVICE_ROLE_KEY": {
-      "set": false,
-      "length": 0,
-      "preview": "não definida"
+      "set": true,
+      "length": 219,
+      "preview": "eyJhbGciOi..."
     },
     "GITHUB_TOKEN": {
-      "set": false,
-      "length": 0,
-      "preview": "não definida"
+      "set": true,
+      "length": 93,
+      "preview": "github_pat..."
     },
     "SENTRY_AUTH_TOKEN": {
       "set": false,
@@ -158,8 +162,8 @@
   },
   "summary": {
     "total": 10,
-    "working": 0,
+    "working": 4,
     "failed": 4,
-    "missingEnv": 6
+    "missingEnv": 2
   }
 }

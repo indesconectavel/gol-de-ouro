@@ -1,6 +1,6 @@
 # 🔍 VERIFICAÇÃO DE MCPs - GOL DE OURO
 
-**Data:** 13/11/2025, 15:49:18  
+**Data:** 13/11/2025, 17:13:00  
 **Versão:** 1.2.0  
 **Status:** ✅ **VERIFICAÇÃO COMPLETA REALIZADA**
 
@@ -9,8 +9,8 @@
 ## 📊 RESUMO EXECUTIVO
 
 - **Total de MCPs:** 10
-- **✅ Funcionando:** 0
-- **⚠️ Faltando Variáveis:** 6
+- **✅ Funcionando:** 4
+- **⚠️ Faltando Variáveis:** 2
 - **❌ Com Erros:** 4
 
 ---
@@ -20,52 +20,55 @@
 
 ### vercel
 
-- **Status:** ⚠️ Faltando Variáveis
+- **Status:** ✅ Funcionando
 - **Comando:** `npx vercel --version`
-- **Comando Funcionando:** ❌ Não
-- **Erro:** Variáveis de ambiente faltando: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+- **Comando Funcionando:** ✅ Sim
+
 
 **Variáveis de Ambiente:**
-- VERCEL_TOKEN: ❌ Não definida
-- VERCEL_ORG_ID: ❌ Não definida
-- VERCEL_PROJECT_ID: ❌ Não definida
+- VERCEL_TOKEN: ✅ Definida
+- VERCEL_ORG_ID: ✅ Definida
+- VERCEL_PROJECT_ID: ✅ Definida
 
 
 
 ### flyio
 
-- **Status:** ⚠️ Faltando Variáveis
+- **Status:** ✅ Funcionando
 - **Comando:** `flyctl version`
-- **Comando Funcionando:** ❌ Não
-- **Erro:** Variáveis de ambiente faltando: FLY_API_TOKEN
+- **Comando Funcionando:** ✅ Sim
+
 
 **Variáveis de Ambiente:**
-- FLY_API_TOKEN: ❌ Não definida
+- FLY_API_TOKEN: ✅ Definida
 
 
 
 ### supabase
 
-- **Status:** ⚠️ Faltando Variáveis
+- **Status:** ✅ Funcionando
 - **Comando:** `node test-supabase.js`
-- **Comando Funcionando:** ❌ Não
-- **Erro:** Variáveis de ambiente faltando: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
+- **Comando Funcionando:** ✅ Sim
+
 
 **Variáveis de Ambiente:**
-- SUPABASE_URL: ❌ Não definida
-- SUPABASE_SERVICE_ROLE_KEY: ❌ Não definida
+- SUPABASE_URL: ✅ Definida
+- SUPABASE_SERVICE_ROLE_KEY: ✅ Definida
 
 
 
 ### github-actions
 
-- **Status:** ⚠️ Faltando Variáveis
+- **Status:** ❌ Erro
 - **Comando:** `gh --version`
 - **Comando Funcionando:** ❌ Não
-- **Erro:** Variáveis de ambiente faltando: GITHUB_TOKEN
+- **Erro:** Command failed: gh --version
+'gh' não é reconhecido como um comando interno
+ou externo, um programa operável ou um arquivo em lotes.
+
 
 **Variáveis de Ambiente:**
-- GITHUB_TOKEN: ❌ Não definida
+- GITHUB_TOKEN: ✅ Definida
 
 
 
@@ -84,8 +87,8 @@
 - **Comando:** `docker --version`
 - **Comando Funcionando:** ❌ Não
 - **Erro:** Command failed: docker --version
-'docker' n�o � reconhecido como um comando interno
-ou externo, um programa oper�vel ou um arquivo em lotes.
+'docker' não é reconhecido como um comando interno
+ou externo, um programa operável ou um arquivo em lotes.
 
 
 
@@ -127,10 +130,10 @@ ou externo, um programa oper�vel ou um arquivo em lotes.
 
 ### eslint
 
-- **Status:** ❌ Erro
+- **Status:** ✅ Funcionando
 - **Comando:** `npx eslint --version`
-- **Comando Funcionando:** ❌ Não
-- **Erro:** spawnSync C:\WINDOWS\system32\cmd.exe ETIMEDOUT
+- **Comando Funcionando:** ✅ Sim
+
 
 
 
@@ -140,45 +143,45 @@ ou externo, um programa oper�vel ou um arquivo em lotes.
 
 
 ### VERCEL_TOKEN
-- **Status:** ❌ Não definida
-- **Tamanho:** 0 caracteres
-- **Preview:** não definida
+- **Status:** ✅ Definida
+- **Tamanho:** 24 caracteres
+- **Preview:** QY1Vu9z3Ky...
 
 
 ### VERCEL_ORG_ID
-- **Status:** ❌ Não definida
-- **Tamanho:** 0 caracteres
-- **Preview:** não definida
+- **Status:** ✅ Definida
+- **Tamanho:** 25 caracteres
+- **Preview:** goldeouro-...
 
 
 ### VERCEL_PROJECT_ID
-- **Status:** ❌ Não definida
-- **Tamanho:** 0 caracteres
-- **Preview:** não definida
+- **Status:** ✅ Definida
+- **Tamanho:** 16 caracteres
+- **Preview:** goldeouro-...
 
 
 ### FLY_API_TOKEN
-- **Status:** ❌ Não definida
-- **Tamanho:** 0 caracteres
-- **Preview:** não definida
+- **Status:** ✅ Definida
+- **Tamanho:** 691 caracteres
+- **Preview:** FlyV1 fm2_...
 
 
 ### SUPABASE_URL
-- **Status:** ❌ Não definida
-- **Tamanho:** 0 caracteres
-- **Preview:** não definida
+- **Status:** ✅ Definida
+- **Tamanho:** 40 caracteres
+- **Preview:** https://ga...
 
 
 ### SUPABASE_SERVICE_ROLE_KEY
-- **Status:** ❌ Não definida
-- **Tamanho:** 0 caracteres
-- **Preview:** não definida
+- **Status:** ✅ Definida
+- **Tamanho:** 219 caracteres
+- **Preview:** eyJhbGciOi...
 
 
 ### GITHUB_TOKEN
-- **Status:** ❌ Não definida
-- **Tamanho:** 0 caracteres
-- **Preview:** não definida
+- **Status:** ✅ Definida
+- **Tamanho:** 93 caracteres
+- **Preview:** github_pat...
 
 
 ### SENTRY_AUTH_TOKEN
@@ -213,10 +216,6 @@ ou externo, um programa oper�vel ou um arquivo em lotes.
 ### 1. Configurar Variáveis de Ambiente Faltando
 
 As seguintes variáveis precisam ser configuradas:
-- **vercel:** VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
-- **flyio:** FLY_API_TOKEN
-- **supabase:** SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
-- **github-actions:** GITHUB_TOKEN
 - **sentry:** SENTRY_AUTH_TOKEN, SENTRY_ORG, SENTRY_PROJECT
 - **postgres:** DATABASE_URL
 
@@ -225,13 +224,16 @@ As seguintes variáveis precisam ser configuradas:
 ### 2. Corrigir MCPs com Erros
 
 Os seguintes MCPs precisam de correção:
+- **github-actions:** Command failed: gh --version
+'gh' não é reconhecido como um comando interno
+ou externo, um programa operável ou um arquivo em lotes.
+
 - **lighthouse:** spawnSync C:\WINDOWS\system32\cmd.exe ETIMEDOUT
 - **docker:** Command failed: docker --version
-'docker' n�o � reconhecido como um comando interno
-ou externo, um programa oper�vel ou um arquivo em lotes.
+'docker' não é reconhecido como um comando interno
+ou externo, um programa operável ou um arquivo em lotes.
 
 - **jest:** spawnSync C:\WINDOWS\system32\cmd.exe ETIMEDOUT
-- **eslint:** spawnSync C:\WINDOWS\system32\cmd.exe ETIMEDOUT
 
 
 ### 3. Testar MCPs Individualmente
