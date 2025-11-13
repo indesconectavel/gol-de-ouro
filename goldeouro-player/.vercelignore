@@ -27,5 +27,4 @@ backups/
 
 # Arquivos de desenvolvimento (mas NÃO src/)
 cypress/
-scripts/
 *.md

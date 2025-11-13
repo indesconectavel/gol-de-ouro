@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/inject-build-info.js",
+    "prebuild": "node scripts/inject-build-info.js || echo 'Script opcional ignorado'",
     "build": "vite build",
     "preview": "vite preview",
     "test": "jest",
