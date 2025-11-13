@@ -1,0 +1,532 @@
+{
+  "timestamp": "2025-11-13T16:16:14.514Z",
+  "endpoints": [
+    {
+      "method": "POST",
+      "route": "/api/auth/forgot-password",
+      "fullPath": "POST /api/auth/forgot-password",
+      "authenticated": true,
+      "validated": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/auth/reset-password",
+      "fullPath": "POST /api/auth/reset-password",
+      "authenticated": true,
+      "validated": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/auth/verify-email",
+      "fullPath": "POST /api/auth/verify-email",
+      "authenticated": true,
+      "validated": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/auth/register",
+      "fullPath": "POST /api/auth/register",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "POST",
+      "route": "/api/auth/login",
+      "fullPath": "POST /api/auth/login",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/api/user/profile",
+      "fullPath": "GET /api/user/profile",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "PUT",
+      "route": "/api/user/profile",
+      "fullPath": "PUT /api/user/profile",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "POST",
+      "route": "/api/games/shoot",
+      "fullPath": "POST /api/games/shoot",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "POST",
+      "route": "/api/withdraw/request",
+      "fullPath": "POST /api/withdraw/request",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/api/withdraw/history",
+      "fullPath": "GET /api/withdraw/history",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "POST",
+      "route": "/api/payments/pix/criar",
+      "fullPath": "POST /api/payments/pix/criar",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/api/payments/pix/usuario",
+      "fullPath": "GET /api/payments/pix/usuario",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "POST",
+      "route": "/api/payments/webhook",
+      "fullPath": "POST /api/payments/webhook",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/health",
+      "fullPath": "GET /health",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/api/metrics",
+      "fullPath": "GET /api/metrics",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/api/monitoring/metrics",
+      "fullPath": "GET /api/monitoring/metrics",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/api/monitoring/health",
+      "fullPath": "GET /api/monitoring/health",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/meta",
+      "fullPath": "GET /meta",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "PUT",
+      "route": "/api/auth/change-password",
+      "fullPath": "PUT /api/auth/change-password",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "POST",
+      "route": "/auth/login",
+      "fullPath": "POST /auth/login",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/bootstrap",
+      "fullPath": "POST /api/admin/bootstrap",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/api/production-status",
+      "fullPath": "GET /api/production-status",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/api/debug/token",
+      "fullPath": "GET /api/debug/token",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/usuario/perfil",
+      "fullPath": "GET /usuario/perfil",
+      "authenticated": true,
+      "validated": false
+    },
+    {
+      "method": "GET",
+      "route": "/api/fila/entrar",
+      "fullPath": "GET /api/fila/entrar",
+      "authenticated": true,
+      "validated": false
+    }
+  ],
+  "functionalities": [
+    {
+      "name": "Autenticação",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/api/auth/forgot-password",
+          "fullPath": "POST /api/auth/forgot-password",
+          "authenticated": true,
+          "validated": true
+        },
+        {
+          "method": "POST",
+          "route": "/api/auth/reset-password",
+          "fullPath": "POST /api/auth/reset-password",
+          "authenticated": true,
+          "validated": true
+        },
+        {
+          "method": "POST",
+          "route": "/api/auth/verify-email",
+          "fullPath": "POST /api/auth/verify-email",
+          "authenticated": true,
+          "validated": true
+        },
+        {
+          "method": "POST",
+          "route": "/api/auth/register",
+          "fullPath": "POST /api/auth/register",
+          "authenticated": true,
+          "validated": false
+        },
+        {
+          "method": "POST",
+          "route": "/api/auth/login",
+          "fullPath": "POST /api/auth/login",
+          "authenticated": true,
+          "validated": false
+        },
+        {
+          "method": "PUT",
+          "route": "/api/auth/change-password",
+          "fullPath": "PUT /api/auth/change-password",
+          "authenticated": true,
+          "validated": false
+        },
+        {
+          "method": "POST",
+          "route": "/auth/login",
+          "fullPath": "POST /auth/login",
+          "authenticated": true,
+          "validated": false
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "name": "Pagamentos PIX",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/api/payments/pix/criar",
+          "fullPath": "POST /api/payments/pix/criar",
+          "authenticated": true,
+          "validated": false
+        },
+        {
+          "method": "GET",
+          "route": "/api/payments/pix/usuario",
+          "fullPath": "GET /api/payments/pix/usuario",
+          "authenticated": true,
+          "validated": false
+        },
+        {
+          "method": "POST",
+          "route": "/api/payments/webhook",
+          "fullPath": "POST /api/payments/webhook",
+          "authenticated": true,
+          "validated": false
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "name": "Jogo",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/api/games/shoot",
+          "fullPath": "POST /api/games/shoot",
+          "authenticated": true,
+          "validated": false
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "name": "Saques",
+      "endpoints": [
+        {
+          "method": "POST",
+          "route": "/api/withdraw/request",
+          "fullPath": "POST /api/withdraw/request",
+          "authenticated": true,
+          "validated": false
+        },
+        {
+          "method": "GET",
+          "route": "/api/withdraw/history",
+          "fullPath": "GET /api/withdraw/history",
+          "authenticated": true,
+          "validated": false
+        }
+      ],
+      "status": "implemented"
+    },
+    {
+      "name": "Perfil",
+      "endpoints": [
+        {
+          "method": "GET",
+          "route": "/api/user/profile",
+          "fullPath": "GET /api/user/profile",
+          "authenticated": true,
+          "validated": false
+        },
+        {
+          "method": "PUT",
+          "route": "/api/user/profile",
+          "fullPath": "PUT /api/user/profile",
+          "authenticated": true,
+          "validated": false
+        }
+      ],
+      "status": "implemented"
+    }
+  ],
+  "security": [
+    {
+      "type": "sanitization",
+      "severity": "medium",
+      "message": "Sanitização de entrada pode estar faltando",
+      "recommendation": "Implementar sanitização de todas as entradas do usuário"
+    }
+  ],
+  "performance": [
+    {
+      "type": "cache",
+      "severity": "medium",
+      "message": "Sistema de cache não identificado",
+      "recommendation": "Implementar cache (Redis) para melhorar performance"
+    },
+    {
+      "type": "queries",
+      "severity": "medium",
+      "message": "Muitas queries identificadas (51)",
+      "recommendation": "Otimizar queries e considerar batch operations"
+    }
+  ],
+  "deployment": {
+    "frontend": {
+      "url": "https://goldeouro.lol",
+      "status": 404,
+      "working": false,
+      "timestamp": "2025-11-13T16:16:15.543Z"
+    }
+  },
+  "logs": [],
+  "tests": [
+    {
+      "name": "Test POST /api/auth/forgot-password",
+      "endpoint": "/api/auth/forgot-password",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/auth/forgot-password', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/auth/forgot-password')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/auth/forgot-password')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /api/auth/reset-password",
+      "endpoint": "/api/auth/reset-password",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/auth/reset-password', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/auth/reset-password')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/auth/reset-password')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /api/auth/verify-email",
+      "endpoint": "/api/auth/verify-email",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/auth/verify-email', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/auth/verify-email')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/auth/verify-email')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /api/auth/register",
+      "endpoint": "/api/auth/register",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/auth/register', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/auth/register')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/auth/register')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /api/auth/login",
+      "endpoint": "/api/auth/login",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/auth/login', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/auth/login')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/auth/login')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /api/user/profile",
+      "endpoint": "/api/user/profile",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /api/user/profile', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/api/user/profile')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/api/user/profile')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test PUT /api/user/profile",
+      "endpoint": "/api/user/profile",
+      "method": "PUT",
+      "authenticated": true,
+      "testCode": "\ndescribe('PUT /api/user/profile', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .put('/api/user/profile')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .put('/api/user/profile')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /api/games/shoot",
+      "endpoint": "/api/games/shoot",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/games/shoot', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/games/shoot')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/games/shoot')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /api/withdraw/request",
+      "endpoint": "/api/withdraw/request",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/withdraw/request', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/withdraw/request')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/withdraw/request')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /api/withdraw/history",
+      "endpoint": "/api/withdraw/history",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /api/withdraw/history', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/api/withdraw/history')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/api/withdraw/history')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /api/payments/pix/criar",
+      "endpoint": "/api/payments/pix/criar",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/payments/pix/criar', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/payments/pix/criar')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/payments/pix/criar')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /api/payments/pix/usuario",
+      "endpoint": "/api/payments/pix/usuario",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /api/payments/pix/usuario', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/api/payments/pix/usuario')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/api/payments/pix/usuario')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /api/payments/webhook",
+      "endpoint": "/api/payments/webhook",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/payments/webhook', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/payments/webhook')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/payments/webhook')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /health",
+      "endpoint": "/health",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /health', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/health')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/health')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /api/metrics",
+      "endpoint": "/api/metrics",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /api/metrics', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/api/metrics')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/api/metrics')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /api/monitoring/metrics",
+      "endpoint": "/api/monitoring/metrics",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /api/monitoring/metrics', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/api/monitoring/metrics')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/api/monitoring/metrics')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /api/monitoring/health",
+      "endpoint": "/api/monitoring/health",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /api/monitoring/health', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/api/monitoring/health')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/api/monitoring/health')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /meta",
+      "endpoint": "/meta",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /meta', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/meta')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/meta')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test PUT /api/auth/change-password",
+      "endpoint": "/api/auth/change-password",
+      "method": "PUT",
+      "authenticated": true,
+      "testCode": "\ndescribe('PUT /api/auth/change-password', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .put('/api/auth/change-password')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .put('/api/auth/change-password')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /auth/login",
+      "endpoint": "/auth/login",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /auth/login', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/auth/login')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/auth/login')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test POST /api/admin/bootstrap",
+      "endpoint": "/api/admin/bootstrap",
+      "method": "POST",
+      "authenticated": true,
+      "testCode": "\ndescribe('POST /api/admin/bootstrap', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .post('/api/admin/bootstrap')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .post('/api/admin/bootstrap')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /api/production-status",
+      "endpoint": "/api/production-status",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /api/production-status', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/api/production-status')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/api/production-status')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /api/debug/token",
+      "endpoint": "/api/debug/token",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /api/debug/token', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/api/debug/token')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/api/debug/token')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /usuario/perfil",
+      "endpoint": "/usuario/perfil",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /usuario/perfil', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/usuario/perfil')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/usuario/perfil')\n      .expect(401);\n  });\n});\n"
+    },
+    {
+      "name": "Test GET /api/fila/entrar",
+      "endpoint": "/api/fila/entrar",
+      "method": "GET",
+      "authenticated": true,
+      "testCode": "\ndescribe('GET /api/fila/entrar', () => {\n  it('should respond with status 200', async () => {\n    const response = await request(app)\n      .get('/api/fila/entrar')\n      .set('Authorization', `Bearer ${token}`)\n      .expect(200);\n    \n    expect(response.body).toBeDefined();\n  });\n  \n  \n  it('should require authentication', async () => {\n    const response = await request(app)\n      .get('/api/fila/entrar')\n      .expect(401);\n  });\n});\n"
+    }
+  ],
+  "summary": {
+    "totalEndpoints": 25,
+    "totalSecurityIssues": 1,
+    "totalPerformanceIssues": 2,
+    "totalTests": 25,
+    "functionalities": 5
+  }
+}
