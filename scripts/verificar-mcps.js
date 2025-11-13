@@ -9,6 +9,26 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Carregar variáveis de ambiente do .env.local se existir
+const envLocalPath = path.join(__dirname, '..', '.env.local');
+if (fs.existsSync(envLocalPath)) {
+  console.log('📄 Carregando variáveis de ambiente de .env.local...\n');
+  const envContent = fs.readFileSync(envLocalPath, 'utf8');
+  envContent.split('\n').forEach(line => {
+    const trimmedLine = line.trim();
+    if (trimmedLine && !trimmedLine.startsWith('#')) {
+      const equalIndex = trimmedLine.indexOf('=');
+      if (equalIndex > 0) {
+        const key = trimmedLine.substring(0, equalIndex).trim();
+        const value = trimmedLine.substring(equalIndex + 1).trim();
+        if (key && value && !process.env[key]) {
+          process.env[key] = value;
+        }
+      }
+    }
+  });
+}
+
 const MCPs_TO_VERIFY = [
   { name: 'vercel', command: 'npx vercel --version', env: ['VERCEL_TOKEN', 'VERCEL_ORG_ID', 'VERCEL_PROJECT_ID'] },
   { name: 'flyio', command: 'flyctl version', env: ['FLY_API_TOKEN'] },
