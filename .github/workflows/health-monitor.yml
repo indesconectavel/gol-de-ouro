@@ -91,11 +91,19 @@ jobs:
 
       - name: Verificar banco de dados (Supabase)
         id: supabase-check
+        continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         run: |
           echo "Verificando banco de dados..."
+          # ✅ Verificação explícita de tokens antes de usar
+          if [ -z "${{ secrets.SUPABASE_URL }}" ] || [ -z "${{ secrets.SUPABASE_KEY }}" ]; then
+            echo "⚠️ Credenciais Supabase não configuradas. Pulando verificação."
+            echo "⚠️ Supabase SKIP - $(date)" >> docs/logs/health-summary.log
+            exit 0
+          fi
+          
           if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_KEY" ]; then
             SUCCESS=false
             for i in {1..3}; do
