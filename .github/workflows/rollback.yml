@@ -59,9 +59,39 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
       - name: 🔁 Rollback Frontend (Vercel)
+        continue-on-error: true
         run: |
           echo "⚠️ Deploy do frontend falhou. Revertendo para versão anterior..."
-          npx vercel rollback ${{ secrets.VERCEL_PROJECT_ID }} --token=${{ secrets.VERCEL_TOKEN }}
+          
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "⚠️ VERCEL_TOKEN ou VERCEL_PROJECT_ID não configurado. Pulando rollback do frontend."
+            exit 0
+          fi
+          
+          # Listar deployments recentes
+          DEPLOYMENTS=$(npx vercel ls ${{ secrets.VERCEL_PROJECT_ID }} --token=${{ secrets.VERCEL_TOKEN }} --json 2>/dev/null || echo "[]")
+          
+          if [ "$DEPLOYMENTS" = "[]" ] || [ -z "$DEPLOYMENTS" ]; then
+            echo "⚠️ Nenhum deployment anterior encontrado. Rollback não possível."
+            exit 0
+          fi
+          
+          # Obter penúltimo deployment (último é o que falhou)
+          PREVIOUS_DEPLOYMENT=$(echo "$DEPLOYMENTS" | jq -r '.[1].uid // .[0].uid' 2>/dev/null || echo "")
+          
+          if [ -z "$PREVIOUS_DEPLOYMENT" ] || [ "$PREVIOUS_DEPLOYMENT" = "null" ]; then
+            echo "⚠️ Não foi possível determinar deployment anterior. Rollback não possível."
+            exit 0
+          fi
+          
+          echo "🔄 Fazendo rollback para deployment: $PREVIOUS_DEPLOYMENT"
+          
+          # Promover deployment anterior para produção
+          npx vercel promote $PREVIOUS_DEPLOYMENT --token=${{ secrets.VERCEL_TOKEN }} --yes 2>/dev/null || {
+            echo "⚠️ Rollback automático do frontend falhou. Verificar manualmente no Vercel Dashboard."
+            exit 0
+          }
+          
           echo "✅ Rollback do frontend concluído com sucesso."
 
       - name: 🧾 Registrar logs
@@ -74,6 +104,7 @@ jobs:
 
       - name: 📢 Notificar via Slack/Discord (opcional)
         if: env.SLACK_WEBHOOK_URL != ''
+        continue-on-error: true
         run: |
           echo "📢 Enviando notificação de rollback..."
           curl -X POST -H 'Content-type: application/json' \
@@ -82,6 +113,7 @@ jobs:
           
       - name: 📢 Notificar via Discord (opcional)
         if: env.DISCORD_WEBHOOK_URL != ''
+        continue-on-error: true
         run: |
           echo "📢 Enviando notificação Discord..."
           curl -X POST -H 'Content-type: application/json' \
@@ -91,7 +123,9 @@ jobs:
       - name: 📊 Upload logs de rollback
         uses: actions/upload-artifact@v4
         if: always()
+        continue-on-error: true
         with:
           name: rollback-logs-${{ github.run_number }}
           path: docs/logs/rollback-history.log
           retention-days: 30
+          if-no-files-found: ignore  # ✅ Não falhar se arquivo não existir
