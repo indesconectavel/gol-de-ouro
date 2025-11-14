@@ -95,12 +95,17 @@ jobs:
           echo "✅ Rollback do frontend concluído com sucesso."
 
       - name: 🧾 Registrar logs
+        continue-on-error: true
         run: |
           mkdir -p docs/logs
-          echo "Rollback executado em $(date)" >> docs/logs/rollback-history.log
+          touch docs/logs/rollback-history.log
+          echo "Rollback executado em $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> docs/logs/rollback-history.log
           echo "Workflow com falha: ${{ github.event.workflow_run.name }}" >> docs/logs/rollback-history.log
           echo "Conclusão: ${{ github.event.workflow_run.conclusion }}" >> docs/logs/rollback-history.log
+          echo "Commit: ${{ github.event.workflow_run.head_sha }}" >> docs/logs/rollback-history.log
+          echo "Branch: ${{ github.event.workflow_run.head_branch }}" >> docs/logs/rollback-history.log
           echo "---" >> docs/logs/rollback-history.log
+          echo "✅ Logs registrados com sucesso"
 
       - name: 📢 Notificar via Slack/Discord (opcional)
         if: env.SLACK_WEBHOOK_URL != ''
