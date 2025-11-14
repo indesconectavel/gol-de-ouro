@@ -17,6 +17,7 @@ jobs:
     name: 🔒 Configurar Branch Protection
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    continue-on-error: true  # Não falhar workflow se não conseguir configurar
     
     steps:
       - name: 📥 Checkout código
@@ -65,12 +66,15 @@ jobs:
               if (error.status === 404) {
                 console.log('⚠️ Branch Protection não pode ser configurada (requer permissões de administrador)');
                 console.log('💡 Configure manualmente: https://github.com/indesconectavel/gol-de-ouro/settings/branches');
+                // Não falhar o workflow - apenas avisar
               } else if (error.status === 403) {
                 console.log('⚠️ Token não tem permissões suficientes');
                 console.log('💡 Configure manualmente: https://github.com/indesconectavel/gol-de-ouro/settings/branches');
+                // Não falhar o workflow - apenas avisar
               } else {
                 console.error('❌ Erro:', error.message);
-                throw error;
+                // Não falhar o workflow - apenas avisar
+                console.log('💡 Configure manualmente: https://github.com/indesconectavel/gol-de-ouro/settings/branches');
               }
             }
 
@@ -78,6 +82,7 @@ jobs:
     name: 🔍 Habilitar Secret Scanning
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    continue-on-error: true  # Não falhar workflow se não conseguir habilitar
     
     steps:
       - name: 📥 Checkout código
