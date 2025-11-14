@@ -474,15 +474,20 @@ app.post('/api/auth/forgot-password', [
     const sanitizedEmail = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
     const sanitizedToken = typeof resetToken === 'string' ? resetToken.substring(0, 20) + '...' : '***';
     
+    // ✅ CORREÇÃO FORMAT STRING: Combinar mensagem e variáveis em string única antes de logar
     if (emailResult.success) {
-      console.log(`📧 [FORGOT-PASSWORD] Email enviado para ${sanitizedEmail}:`, emailResult.messageId);
+      const logMessage = `📧 [FORGOT-PASSWORD] Email enviado para ${sanitizedEmail}: ${emailResult.messageId}`;
+      console.log(logMessage);
     } else {
-      console.log(`⚠️ [FORGOT-PASSWORD] Falha ao enviar email para ${sanitizedEmail}:`, emailResult.error);
+      const logMessage = `⚠️ [FORGOT-PASSWORD] Falha ao enviar email para ${sanitizedEmail}: ${emailResult.error}`;
+      console.log(logMessage);
       // Logar token como fallback (truncado por segurança)
-      console.log(`🔗 [FORGOT-PASSWORD] Link de recuperação: https://goldeouro.lol/reset-password?token=${sanitizedToken}`);
+      const tokenMessage = `🔗 [FORGOT-PASSWORD] Link de recuperação: https://goldeouro.lol/reset-password?token=${sanitizedToken}`;
+      console.log(tokenMessage);
     }
 
-    console.log(`✅ [FORGOT-PASSWORD] Token de recuperação gerado para: ${sanitizedEmail}`);
+    const successMessage = `✅ [FORGOT-PASSWORD] Token de recuperação gerado para: ${sanitizedEmail}`;
+    console.log(successMessage);
     
     res.status(200).json({
       success: true,
