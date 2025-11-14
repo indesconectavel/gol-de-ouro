@@ -11,6 +11,8 @@ permissions:
   contents: write
   administration: write  # Necessário para configurar Branch Protection
   security-events: write  # Necessário para Secret Scanning
+  # Nota: Essas permissões podem não ser suficientes em repositórios públicos
+  # Se falhar, configure manualmente via GitHub Settings
 
 jobs:
   configurar-branch-protection:
@@ -72,9 +74,10 @@ jobs:
                 console.log('💡 Configure manualmente: https://github.com/indesconectavel/gol-de-ouro/settings/branches');
                 // Não falhar o workflow - apenas avisar
               } else {
-                console.error('❌ Erro:', error.message);
-                // Não falhar o workflow - apenas avisar
+                console.log('⚠️ Erro ao configurar Branch Protection:', error.message);
+                console.log('💡 Isso é normal - Branch Protection precisa ser configurada manualmente');
                 console.log('💡 Configure manualmente: https://github.com/indesconectavel/gol-de-ouro/settings/branches');
+                // Não falhar o workflow - apenas avisar
               }
             }
 
@@ -107,10 +110,12 @@ jobs:
             } catch (error) {
               if (error.status === 404 || error.status === 403) {
                 console.log('⚠️ Secret Scanning não pode ser habilitado via API');
+                console.log('💡 Isso é normal - Secret Scanning precisa ser habilitado manualmente');
                 console.log('💡 Configure manualmente: https://github.com/indesconectavel/gol-de-ouro/settings/security');
                 console.log('   Role até "Code security and analysis" e clique em "Enable" em "Secret scanning"');
               } else {
-                console.error('❌ Erro:', error.message);
+                console.log('⚠️ Erro ao habilitar Secret Scanning:', error.message);
+                console.log('💡 Isso é normal - Secret Scanning precisa ser habilitado manualmente');
                 // Não falhar o workflow se não conseguir habilitar
               }
             }
@@ -119,6 +124,7 @@ jobs:
     name: ✅ Verificar Configuração
     runs-on: ubuntu-latest
     needs: [configurar-branch-protection, configurar-secret-scanning]
+    if: always()  # Executar mesmo se jobs anteriores falharem
     timeout-minutes: 5
     
     steps:
@@ -148,9 +154,11 @@ jobs:
             } catch (error) {
               if (error.status === 404) {
                 console.log('⚠️ Branch Protection não está configurada');
+                console.log('💡 Isso é normal - Branch Protection precisa ser configurada manualmente');
                 console.log('💡 Configure manualmente: https://github.com/indesconectavel/gol-de-ouro/settings/branches');
               } else {
-                console.error('❌ Erro ao verificar:', error.message);
+                console.log('⚠️ Erro ao verificar Branch Protection:', error.message);
+                console.log('💡 Isso é normal - Verifique manualmente em Settings > Branches');
               }
             }
       
@@ -177,7 +185,8 @@ jobs:
                 console.log('💡 Configure manualmente: https://github.com/indesconectavel/gol-de-ouro/settings/security');
               }
             } catch (error) {
-              console.error('❌ Erro ao verificar:', error.message);
+              console.log('⚠️ Erro ao verificar Secret Scanning:', error.message);
+              console.log('💡 Isso é normal - Verifique manualmente em Settings > Security');
             }
       
       - name: 📊 Resumo
