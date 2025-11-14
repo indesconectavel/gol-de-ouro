@@ -430,7 +430,10 @@ app.post('/api/auth/forgot-password', [
 
     if (userError || !user) {
       // Por segurança, sempre retornar sucesso mesmo se email não existir
-      console.log(`📧 [FORGOT-PASSWORD] Email não encontrado: ${email}`);
+      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+      const sanitizedEmailNotFound = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
+      const logMessageNotFound = `📧 [FORGOT-PASSWORD] Email não encontrado: ${sanitizedEmailNotFound}`;
+      console.log(logMessageNotFound);
       return res.status(200).json({
         success: true,
         message: 'Se o email existir, você receberá um link de recuperação'
@@ -699,7 +702,10 @@ app.post('/api/auth/register', async (req, res) => {
     }
 
     if (existingUser) {
-      console.log(`⚠️ [REGISTER] Tentativa de registro com email existente: ${email}`);
+      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+      const sanitizedEmailRegister = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
+      const logMessageRegister = `⚠️ [REGISTER] Tentativa de registro com email existente: ${sanitizedEmailRegister}`;
+      console.log(logMessageRegister);
       
       // Tentar fazer login automaticamente se email já existe
       try {
@@ -725,7 +731,9 @@ app.post('/api/auth/register', async (req, res) => {
         { expiresIn: '24h' }
       );
 
-            console.log(`✅ [REGISTER] Login automático realizado para email existente: ${email}`);
+            // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+            const logMessageAutoLogin = `✅ [REGISTER] Login automático realizado para email existente: ${sanitizedEmailRegister}`;
+            console.log(logMessageAutoLogin);
 
             return res.status(200).json({
         success: true,
@@ -798,7 +806,10 @@ app.post('/api/auth/register', async (req, res) => {
         { expiresIn: '24h' }
       );
 
-    console.log(`✅ [REGISTER] Usuário criado: ${email} com saldo inicial de R$ ${calculateInitialBalance('regular')}`);
+    // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+    const sanitizedEmailCreated = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
+    const logMessageCreated = `✅ [REGISTER] Usuário criado: ${sanitizedEmailCreated} com saldo inicial de R$ ${calculateInitialBalance('regular')}`;
+    console.log(logMessageCreated);
 
     res.status(201).json({
         success: true,
@@ -844,7 +855,10 @@ app.post('/api/auth/login', async (req, res) => {
       .single();
 
     if (userError || !user) {
-      console.log(`❌ [LOGIN] Usuário não encontrado: ${email}`);
+      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+      const sanitizedEmailLogin = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
+      const logMessageLoginNotFound = `❌ [LOGIN] Usuário não encontrado: ${sanitizedEmailLogin}`;
+      console.log(logMessageLoginNotFound);
       return res.status(401).json({
         success: false,
         message: 'Credenciais inválidas'
@@ -854,7 +868,9 @@ app.post('/api/auth/login', async (req, res) => {
     // Verificar senha
     const senhaValida = await bcrypt.compare(password, user.senha_hash);
     if (!senhaValida) {
-      console.log(`❌ [LOGIN] Senha inválida para: ${email}`);
+      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+      const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
+      console.log(logMessageInvalidPassword);
       return res.status(401).json({
         success: false,
         message: 'Credenciais inválidas'
@@ -871,7 +887,9 @@ app.post('/api/auth/login', async (req, res) => {
         
         if (!updateError) {
           user.saldo = calculateInitialBalance('regular');
-          console.log(`💰 [LOGIN] Saldo inicial de R$ ${calculateInitialBalance('regular')} adicionado para usuário ${email}`);
+          // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+          const logMessageBalance = `💰 [LOGIN] Saldo inicial de R$ ${calculateInitialBalance('regular')} adicionado para usuário ${sanitizedEmailLogin}`;
+          console.log(logMessageBalance);
         }
       } catch (saldoError) {
         console.log('⚠️ [LOGIN] Erro ao adicionar saldo inicial:', saldoError.message);
@@ -889,7 +907,9 @@ app.post('/api/auth/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
-    console.log(`✅ [LOGIN] Login realizado: ${email}`);
+    // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+    const logMessageLoginSuccess = `✅ [LOGIN] Login realizado: ${sanitizedEmailLogin}`;
+    console.log(logMessageLoginSuccess);
 
     res.json({
       success: true,
@@ -2322,7 +2342,10 @@ app.put('/api/auth/change-password', authenticateToken, async (req, res) => {
       });
     }
 
-    console.log(`✅ [CHANGE-PASSWORD] Senha alterada para usuário: ${user.email}`);
+    // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+    const sanitizedEmailChangePassword = typeof user.email === 'string' ? user.email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(user.email);
+    const logMessageChangePassword = `✅ [CHANGE-PASSWORD] Senha alterada para usuário: ${sanitizedEmailChangePassword}`;
+    console.log(logMessageChangePassword);
     
     res.json({
       success: true,
