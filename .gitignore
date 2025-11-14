@@ -10,6 +10,9 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env.production
+*.env.production
+.env.*.production
 
 # Build outputs
 dist/
@@ -204,7 +207,14 @@ release-evidence-*/
 # Configurações específicas do projeto
 config-temp.js
 config-producao.js
+config-*.js
 env-producao-real.env
+*.secrets.json
+secrets.json
+*.key
+*.pem
+*.cert
+*.crt
 
 # Arquivos de auditoria temporários
 auditoria-*.js
