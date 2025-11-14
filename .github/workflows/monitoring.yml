@@ -1,11 +1,8 @@
-name: 📊 Monitoramento e Alertas
+name: 📊 Monitoramento Avançado (Manual)
 
 on:
-  push:
-    branches: [ main ]
-  # Desabilitado para evitar monitores duplicados (mantemos apenas o Health Monitor agendado)
-  # schedule:
-  #   - cron: '*/30 * * * *'
+  # ⚠️ ATENÇÃO: Este workflow é apenas para análises manuais avançadas
+  # O monitoramento automático é feito pelo health-monitor.yml (executa a cada 30min)
   workflow_dispatch:  # Execução manual quando necessário
 
 env:
@@ -14,72 +11,11 @@ env:
   BACKEND_URL: https://goldeouro-backend-v2.fly.dev
 
 jobs:
-  # 📊 Monitoramento de Saúde
-  health-monitoring:
-    name: 📊 Monitoramento de Saúde
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: 📥 Checkout código
-        uses: actions/checkout@v4
-        
-      - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          
-      - name: 🔍 Verificar saúde do backend (não-fatal, com retry)
-        run: |
-          echo "🔍 Verificando saúde do backend..."
-          ATTEMPTS=3
-          SUCCESS=0
-          for i in $(seq 1 $ATTEMPTS); do
-            echo "Tentativa $i de $ATTEMPTS..."
-            response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${BACKEND_URL}/health")
-            echo "HTTP: $response"
-            if [ "$response" = "200" ]; then
-              SUCCESS=1
-              break
-            fi
-            sleep 5
-          done
-          if [ "$SUCCESS" = "1" ]; then
-            echo "✅ Backend saudável"
-          else
-            echo "❗ Backend com instabilidade (não-fatal aqui; Health Monitor é o monitor oficial)"
-          fi
-          
-      - name: 🔍 Verificar saúde do frontend (não-fatal)
-        run: |
-          echo "🔍 Verificando saúde do frontend..."
-          response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 https://goldeouro.lol)
-          if [ "$response" = "200" ]; then
-            echo "✅ Frontend saudável"
-          else
-            echo "❗ Frontend com instabilidade: HTTP $response (não-fatal)"
-          fi
-          
-      - name: 🔍 Verificar tempo de resposta
-        run: |
-          echo "🔍 Verificando tempo de resposta..."
-          backend_time=$(curl -s -o /dev/null -w "%{time_total}" ${BACKEND_URL}/health)
-          frontend_time=$(curl -s -o /dev/null -w "%{time_total}" https://goldeouro.lol)
-          
-          echo "Backend: ${backend_time}s"
-          echo "Frontend: ${frontend_time}s"
-          
-          # Alertar se tempo > 5s
-          if (( $(echo "$backend_time > 5" | bc -l) )); then
-            echo "⚠️ Backend lento: ${backend_time}s"
-          fi
-          if (( $(echo "$frontend_time > 5" | bc -l) )); then
-            echo "⚠️ Frontend lento: ${frontend_time}s"
-          fi
-
-  # 📊 Monitoramento de Performance
+  # 📊 Monitoramento de Performance (Análise Profunda)
   performance-monitoring:
     name: 📊 Monitoramento de Performance
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     
     steps:
       - name: 📥 Checkout código
@@ -91,43 +27,54 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           
       - name: 📊 Análise de performance frontend
+        continue-on-error: true
         run: |
           echo "📊 Analisando performance do frontend..."
           if command -v lighthouse &> /dev/null; then
-            lighthouse https://goldeouro.lol --output=json --output-path=./lighthouse-report.json --chrome-flags="--headless"
+            lighthouse https://goldeouro.lol --output=json --output-path=./lighthouse-report.json --chrome-flags="--headless" || echo "⚠️ Lighthouse falhou"
             
-            # Extrair métricas principais
-            performance=$(cat lighthouse-report.json | jq '.categories.performance.score * 100')
-            accessibility=$(cat lighthouse-report.json | jq '.categories.accessibility.score * 100')
-            best_practices=$(cat lighthouse-report.json | jq '.categories."best-practices".score * 100')
-            seo=$(cat lighthouse-report.json | jq '.categories.seo.score * 100')
-            
-            echo "Performance: ${performance}%"
-            echo "Accessibility: ${accessibility}%"
-            echo "Best Practices: ${best_practices}%"
-            echo "SEO: ${seo}%"
-            
-            # Alertar se performance < 80
-            if (( $(echo "$performance < 80" | bc -l) )); then
-              echo "⚠️ Performance baixa: ${performance}%"
+            # Extrair métricas principais (se arquivo existe)
+            if [ -f "lighthouse-report.json" ]; then
+              performance=$(cat lighthouse-report.json | jq -r '.categories.performance.score * 100 // 0' 2>/dev/null || echo "0")
+              accessibility=$(cat lighthouse-report.json | jq -r '.categories.accessibility.score * 100 // 0' 2>/dev/null || echo "0")
+              best_practices=$(cat lighthouse-report.json | jq -r '.categories."best-practices".score * 100 // 0' 2>/dev/null || echo "0")
+              seo=$(cat lighthouse-report.json | jq -r '.categories.seo.score * 100 // 0' 2>/dev/null || echo "0")
+              
+              echo "Performance: ${performance}%"
+              echo "Accessibility: ${accessibility}%"
+              echo "Best Practices: ${best_practices}%"
+              echo "SEO: ${seo}%"
+              
+              # Alertar se performance < 80
+              if command -v bc &> /dev/null && (( $(echo "$performance < 80" | bc -l 2>/dev/null || echo "0") )); then
+                echo "⚠️ Performance baixa: ${performance}%"
+              fi
             fi
           else
-            echo "⚠️ Lighthouse não instalado"
+            echo "⚠️ Lighthouse não instalado. Instalando..."
+            npm install -g lighthouse || echo "⚠️ Falha ao instalar Lighthouse"
           fi
           
       - name: 📊 Monitoramento de recursos
+        continue-on-error: true
         run: |
           echo "📊 Monitorando recursos do backend..."
+          if [ -z "${{ secrets.FLY_API_TOKEN }}" ]; then
+            echo "⚠️ FLY_API_TOKEN não configurado. Pulando verificação de recursos."
+            exit 0
+          fi
+          
           if command -v flyctl &> /dev/null; then
             flyctl status --app ${{ env.FLY_APP_NAME }} || echo "⚠️ Não foi possível obter status"
           else
             echo "⚠️ Flyctl não instalado"
           fi
 
-  # 📊 Monitoramento de Logs
+  # 📊 Monitoramento de Logs (Análise Profunda)
   log-monitoring:
     name: 📊 Monitoramento de Logs
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - name: 📥 Checkout código
@@ -139,51 +86,63 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           
       - name: 📊 Coletar logs do backend
+        continue-on-error: true
         run: |
           echo "📊 Coletando logs do backend..."
+          if [ -z "${{ secrets.FLY_API_TOKEN }}" ]; then
+            echo "⚠️ FLY_API_TOKEN não configurado. Pulando coleta de logs."
+            exit 0
+          fi
+          
           if command -v flyctl &> /dev/null; then
-            flyctl logs --app ${{ env.FLY_APP_NAME }} --lines 100 > backend-logs.txt
+            flyctl logs --app ${{ env.FLY_APP_NAME }} --lines 100 > backend-logs.txt 2>&1 || echo "⚠️ Falha ao coletar logs"
             echo "✅ Logs coletados"
             
-            # Verificar erros
-            error_count=$(grep -i "error\|exception\|failed" backend-logs.txt | wc -l)
-            echo "Erros encontrados: $error_count"
-            
-            if [ "$error_count" -gt 10 ]; then
-              echo "⚠️ Muitos erros encontrados: $error_count"
+            # Verificar erros (se arquivo existe)
+            if [ -f "backend-logs.txt" ]; then
+              error_count=$(grep -i "error\|exception\|failed" backend-logs.txt | wc -l || echo "0")
+              echo "Erros encontrados: $error_count"
+              
+              if [ "$error_count" -gt 10 ]; then
+                echo "⚠️ Muitos erros encontrados: $error_count"
+              fi
             fi
           else
             echo "⚠️ Flyctl não instalado"
           fi
           
       - name: 📊 Análise de logs
+        continue-on-error: true
         run: |
           echo "📊 Analisando logs..."
           if [ -f "backend-logs.txt" ]; then
             echo "Total de linhas: $(wc -l < backend-logs.txt)"
-            echo "Erros: $(grep -i "error" backend-logs.txt | wc -l)"
-            echo "Warnings: $(grep -i "warning" backend-logs.txt | wc -l)"
-            echo "Info: $(grep -i "info" backend-logs.txt | wc -l)"
+            echo "Erros: $(grep -i "error" backend-logs.txt | wc -l || echo "0")"
+            echo "Warnings: $(grep -i "warning" backend-logs.txt | wc -l || echo "0")"
+            echo "Info: $(grep -i "info" backend-logs.txt | wc -l || echo "0")"
+          else
+            echo "⚠️ Arquivo de logs não encontrado"
           fi
 
-  # 📊 Relatório de Monitoramento
+  # 📊 Relatório de Monitoramento Avançado
   monitoring-report:
     name: 📊 Relatório de Monitoramento
     runs-on: ubuntu-latest
-    needs: [health-monitoring, performance-monitoring, log-monitoring]
+    needs: [performance-monitoring, log-monitoring]
     if: always()
+    timeout-minutes: 10
     
     steps:
       - name: 📥 Checkout código
         uses: actions/checkout@v4
         
       - name: 📊 Gerar relatório
+        continue-on-error: true
         run: |
-          echo "📊 Gerando relatório de monitoramento..."
-          echo "## 📊 Relatório de Monitoramento - $(date)" >> monitoring-report.md
+          echo "📊 Gerando relatório de monitoramento avançado..."
+          echo "## 📊 Relatório de Monitoramento Avançado - $(date)" >> monitoring-report.md
           echo "" >> monitoring-report.md
-          echo "### 🔍 Status dos Serviços:" >> monitoring-report.md
-          echo "- Monitoramento de Saúde: ${{ needs.health-monitoring.result }}" >> monitoring-report.md
+          echo "### 🔍 Status das Análises:" >> monitoring-report.md
           echo "- Monitoramento de Performance: ${{ needs.performance-monitoring.result }}" >> monitoring-report.md
           echo "- Monitoramento de Logs: ${{ needs.log-monitoring.result }}" >> monitoring-report.md
           echo "" >> monitoring-report.md
@@ -193,39 +152,20 @@ jobs:
           echo "- Commit: ${{ github.sha }}" >> monitoring-report.md
           echo "- Backend: https://${{ env.FLY_APP_NAME }}.fly.dev" >> monitoring-report.md
           echo "- Frontend: https://goldeouro.lol" >> monitoring-report.md
+          echo "" >> monitoring-report.md
+          echo "### ⚠️ NOTA:" >> monitoring-report.md
+          echo "Este é um relatório de análise avançada manual." >> monitoring-report.md
+          echo "Para monitoramento automático contínuo, veja o workflow 'Health Monitor'." >> monitoring-report.md
           
       - name: 📤 Upload relatório
         uses: actions/upload-artifact@v4
-        with:
-          name: monitoring-report
-          path: monitoring-report.md
-          retention-days: 7
-          
-      - name: 📤 Upload logs
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-logs
-          path: backend-logs.txt
-          retention-days: 7
         if: always()
-
-  # 🚨 Alertas
-  alerts:
-    name: 🚨 Alertas
-    runs-on: ubuntu-latest
-    needs: [health-monitoring, performance-monitoring, log-monitoring]
-    if: failure()
-    
-    steps:
-      - name: 🚨 Enviar alerta
-        run: |
-          echo "🚨 ALERTA: Problemas detectados no sistema!"
-          echo "Verifique os logs acima para mais detalhes."
-          echo "Serviços afetados:"
-          echo "- Backend: https://${{ env.FLY_APP_NAME }}.fly.dev"
-          echo "- Frontend: https://goldeouro.lol"
-          
-          # Aqui você pode adicionar integração com Slack, Discord, etc.
-          # curl -X POST -H 'Content-type: application/json' \
-          #   --data '{"text":"🚨 Alerta: Problemas no Gol de Ouro"}' \
-          #   ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
+        with:
+          name: monitoring-report-advanced-${{ github.run_number }}
+          path: |
+            monitoring-report.md
+            lighthouse-report.json
+            backend-logs.txt
+          retention-days: 7
+          if-no-files-found: ignore
