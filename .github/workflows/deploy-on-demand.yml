@@ -18,6 +18,7 @@ jobs:
   deploy-backend-flyio:
     name: Backend (Fly.io)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash
@@ -58,6 +59,7 @@ jobs:
     name: Player (Vercel)
     runs-on: ubuntu-latest
     needs: deploy-backend-flyio
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash

@@ -16,6 +16,7 @@ jobs:
   test-backend:
     name: 🧪 Testes Backend
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     
     steps:
       - name: 📥 Checkout código
@@ -86,6 +87,7 @@ jobs:
   test-frontend:
     name: 🧪 Testes Frontend
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     
     steps:
       - name: 📥 Checkout código
@@ -99,7 +101,6 @@ jobs:
           cache-dependency-path: |
             package-lock.json
             goldeouro-player/package-lock.json
-          cache-dependency-path: goldeouro-player/package-lock.json
           
       - name: 📦 Instalar dependências
         run: |
@@ -141,6 +142,7 @@ jobs:
   security-tests:
     name: 🔒 Testes de Segurança
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     
     steps:
       - name: 📥 Checkout código
@@ -188,6 +190,7 @@ jobs:
   performance-tests:
     name: ⚡ Testes de Performance
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     
     steps:
       - name: 📥 Checkout código
@@ -238,6 +241,7 @@ jobs:
   test-report:
     name: 📊 Relatório de Testes
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [test-backend, test-frontend, security-tests, performance-tests]
     if: always()
     
