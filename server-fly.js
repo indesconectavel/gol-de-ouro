@@ -15,6 +15,7 @@ const bcrypt = require('bcryptjs');
 const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
 const http = require('http');
+const crypto = require('crypto'); // ✅ Adicionado para geração segura de números aleatórios
 // Logger opcional - fallback para console se não disponível
 let logger;
 try {
@@ -373,7 +374,9 @@ function getOrCreateLoteByValue(amount) {
 
   // Se não existe lote ativo, criar novo
   if (!loteAtivo) {
-    const loteId = `lote_${amount}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomBytes ao invés de Math.random()
+    const randomBytes = crypto.randomBytes(6).toString('hex');
+    const loteId = `lote_${amount}_${Date.now()}_${randomBytes}`;
     loteAtivo = {
       id: loteId,
       // Campos esperados pelo validador de integridade
@@ -385,7 +388,8 @@ function getOrCreateLoteByValue(amount) {
       config: config,
       chutes: [],
       status: 'active',
-      winnerIndex: Math.floor(Math.random() * config.size), // CORRIGIDO: Aleatório por lote
+      // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomInt ao invés de Math.random()
+      winnerIndex: crypto.randomInt(0, config.size), // CORRIGIDO: Aleatório seguro por lote
       createdAt: new Date().toISOString(),
       totalArrecadado: 0,
       premioTotal: 0
@@ -1502,7 +1506,9 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
       };
 
       // Gerar X-Idempotency-Key único
-      const idempotencyKey = `pix_${req.user.userId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomBytes ao invés de Math.random()
+      const randomBytes = crypto.randomBytes(6).toString('hex');
+      const idempotencyKey = `pix_${req.user.userId}_${Date.now()}_${randomBytes}`;
       
       const response = await axios.post(
         'https://api.mercadopago.com/v1/payments',
@@ -2595,8 +2601,9 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
       success: true,
       data: {
         message: 'Entrada na fila realizada com sucesso',
-        position: Math.floor(Math.random() * 10) + 1,
-        estimatedWait: Math.floor(Math.random() * 5) + 1
+        // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomInt ao invés de Math.random()
+        position: crypto.randomInt(1, 11), // 1 a 10
+        estimatedWait: crypto.randomInt(1, 6) // 1 a 5
       }
     });
   } catch (error) {
