@@ -68,27 +68,33 @@ jobs:
             exit 0
           fi
           
-          # Listar deployments recentes
-          DEPLOYMENTS=$(npx vercel ls ${{ secrets.VERCEL_PROJECT_ID }} --token=${{ secrets.VERCEL_TOKEN }} --json 2>/dev/null || echo "[]")
+          # Listar deployments recentes (apenas produção)
+          DEPLOYMENTS=$(npx vercel ls ${{ secrets.VERCEL_PROJECT_ID }} --token=${{ secrets.VERCEL_TOKEN }} --prod --json 2>/dev/null || echo "[]")
           
           if [ "$DEPLOYMENTS" = "[]" ] || [ -z "$DEPLOYMENTS" ]; then
             echo "⚠️ Nenhum deployment anterior encontrado. Rollback não possível."
             exit 0
           fi
           
-          # Obter penúltimo deployment (último é o que falhou)
-          PREVIOUS_DEPLOYMENT=$(echo "$DEPLOYMENTS" | jq -r '.[1].uid // .[0].uid' 2>/dev/null || echo "")
+          # Obter penúltimo deployment de produção (último é o que falhou)
+          PREVIOUS_DEPLOYMENT=$(echo "$DEPLOYMENTS" | jq -r 'if length > 1 then .[1].uid else .[0].uid end' 2>/dev/null || echo "")
           
           if [ -z "$PREVIOUS_DEPLOYMENT" ] || [ "$PREVIOUS_DEPLOYMENT" = "null" ]; then
             echo "⚠️ Não foi possível determinar deployment anterior. Rollback não possível."
+            echo "💡 Sugestão: Fazer rollback manualmente no Vercel Dashboard"
             exit 0
           fi
           
           echo "🔄 Fazendo rollback para deployment: $PREVIOUS_DEPLOYMENT"
           
-          # Promover deployment anterior para produção
+          # Promover deployment anterior para produção usando vercel promote
+          # Nota: vercel promote promove um deployment específico para produção
           npx vercel promote $PREVIOUS_DEPLOYMENT --token=${{ secrets.VERCEL_TOKEN }} --yes 2>/dev/null || {
-            echo "⚠️ Rollback automático do frontend falhou. Verificar manualmente no Vercel Dashboard."
+            echo "⚠️ Rollback automático do frontend falhou."
+            echo "💡 Fazer rollback manualmente:"
+            echo "   1. Acessar: https://vercel.com/goldeouro-admins-projects/goldeouro-player/deployments"
+            echo "   2. Encontrar deployment anterior funcional"
+            echo "   3. Clicar em 'Promote to Production'"
             exit 0
           }
           
