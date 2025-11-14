@@ -1741,9 +1741,21 @@ app.post('/api/payments/webhook', async (req, res, next) => {
         return;
       }
       
+      // ✅ CORREÇÃO SSRF: Validar data.id antes de usar na URL
+      if (!data.id || typeof data.id !== 'string' || !/^\d+$/.test(data.id)) {
+        console.error('❌ [WEBHOOK] ID de pagamento inválido:', data.id);
+        return;
+      }
+      
+      const paymentId = parseInt(data.id, 10);
+      if (isNaN(paymentId) || paymentId <= 0) {
+        console.error('❌ [WEBHOOK] ID de pagamento inválido (não é número positivo):', data.id);
+        return;
+      }
+      
       // Verificar pagamento no Mercado Pago
       const payment = await axios.get(
-        `https://api.mercadopago.com/v1/payments/${data.id}`,
+        `https://api.mercadopago.com/v1/payments/${paymentId}`,
         { 
           headers: { 
             'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
@@ -1893,8 +1905,20 @@ async function reconcilePendingPayments() {
       const mpId = String(p.external_id || p.payment_id || '').trim();
       if (!mpId) continue;
 
+      // ✅ CORREÇÃO SSRF: Validar mpId antes de usar na URL
+      if (!/^\d+$/.test(mpId)) {
+        console.error('❌ [RECON] ID de pagamento inválido (não é número):', mpId);
+        continue;
+      }
+      
+      const paymentId = parseInt(mpId, 10);
+      if (isNaN(paymentId) || paymentId <= 0) {
+        console.error('❌ [RECON] ID de pagamento inválido (não é número positivo):', mpId);
+        continue;
+      }
+
       try {
-        const resp = await axios.get(`https://api.mercadopago.com/v1/payments/${mpId}`, {
+        const resp = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
           headers: { Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}` },
           timeout: 5000
         });
