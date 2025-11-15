@@ -375,15 +375,35 @@ const performanceMonitor = (req, res, next) => {
 // =====================================================
 
 const sanitizeInput = (req, res, next) => {
-  // Função para sanitizar strings
+  // ✅ CORREÇÃO HTML FILTERING: Sanitização mais completa e robusta com aplicação RECURSIVA
   const sanitizeString = (str) => {
     if (typeof str !== 'string') return str;
     
-    return str
-      .replace(/[<>]/g, '') // Remover < e >
-      .replace(/javascript:/gi, '') // Remover javascript:
-      .replace(/on\w+=/gi, '') // Remover event handlers
-      .trim();
+    // ✅ Remover caracteres de controle e normalizar
+    let sanitized = str.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+    
+    // ✅ CORREÇÃO: Repetidamente aplicar filtros até string estabilizar
+    // Isso garante que padrões perigosos revelados após uma substituição sejam removidos
+    let previous;
+    do {
+      previous = sanitized;
+      sanitized = sanitized
+        .replace(/<[^>]*>/g, '') // Remover todas as tags HTML
+        .replace(/[<>\"'`]/g, '') // Remover caracteres perigosos
+        .replace(/javascript:/gi, '') // Remover javascript:
+        .replace(/data:/gi, '') // Remover data: URLs
+        .replace(/vbscript:/gi, '') // Remover vbscript:
+        .replace(/on\w+\s*=/gi, '') // Remover event handlers (onclick=, onerror=, etc.)
+        .replace(/&#x?[0-9a-f]+;/gi, '') // Remover entidades HTML
+        .trim();
+    } while (sanitized !== previous);
+    
+    // ✅ Limitar tamanho para prevenir DoS
+    if (sanitized.length > 10000) {
+      sanitized = sanitized.substring(0, 10000);
+    }
+    
+    return sanitized;
   };
   
   // Sanitizar body

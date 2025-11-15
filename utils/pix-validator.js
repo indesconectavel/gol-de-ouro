@@ -163,22 +163,52 @@ class PixValidator {
 
   // Normalizar chave PIX
   normalizeKey(key, type) {
+    // ✅ CORREÇÃO SANITIZAÇÃO INCOMPLETA: Validar entrada antes de processar
+    if (!key || typeof key !== 'string') {
+      return '';
+    }
+    
+    // ✅ Remover caracteres de controle e normalizar
+    let normalized = key.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+    
     switch (type) {
       case 'cpf':
       case 'cnpj':
-        return key.replace(/[^\d]/g, '');
+        // ✅ CORREÇÃO: Remover apenas caracteres não numéricos, validar comprimento
+        normalized = normalized.replace(/[^\d]/g, '');
+        if (normalized.length > 20) normalized = normalized.substring(0, 20); // Limitar tamanho
+        return normalized;
       
       case 'email':
-        return key.toLowerCase().trim();
+        // ✅ CORREÇÃO: Normalizar email de forma mais segura
+        normalized = normalized.toLowerCase().trim();
+        // Remover caracteres perigosos
+        normalized = normalized.replace(/[<>\"'`]/g, '');
+        // Limitar tamanho
+        if (normalized.length > 254) normalized = normalized.substring(0, 254);
+        return normalized;
       
       case 'phone':
-        return key.replace(/[^\d+]/g, '');
+        // ✅ CORREÇÃO: Validar telefone de forma mais segura
+        normalized = normalized.replace(/[^\d+]/g, '');
+        // Limitar tamanho e garantir formato válido
+        if (normalized.length > 20) normalized = normalized.substring(0, 20);
+        return normalized;
       
       case 'random':
-        return key.toLowerCase().trim();
+        // ✅ CORREÇÃO: Normalizar chave aleatória de forma segura
+        normalized = normalized.toLowerCase().trim();
+        // Remover caracteres perigosos
+        normalized = normalized.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '');
+        // Limitar tamanho
+        if (normalized.length > 77) normalized = normalized.substring(0, 77); // Tamanho máximo UUID
+        return normalized;
       
       default:
-        return key.trim();
+        // ✅ CORREÇÃO: Sanitização padrão mais robusta
+        normalized = normalized.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '');
+        if (normalized.length > 200) normalized = normalized.substring(0, 200);
+        return normalized;
     }
   }
 

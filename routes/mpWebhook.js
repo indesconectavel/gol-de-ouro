@@ -133,7 +133,23 @@ async function processPlan(client, planId) {
 // Buscar detalhes do pagamento
 async function fetchPaymentDetails(paymentId) {
   try {
-    const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+    // ✅ CORREÇÃO SSRF/FORMAT STRING: Validar paymentId antes de usar na URL
+    if (!paymentId || typeof paymentId !== 'string' && typeof paymentId !== 'number') {
+      throw new Error('ID de pagamento inválido: tipo inválido');
+    }
+    
+    const paymentIdStr = String(paymentId).trim();
+    if (!/^\d+$/.test(paymentIdStr)) {
+      throw new Error('ID de pagamento inválido: deve conter apenas dígitos');
+    }
+    
+    const paymentIdNum = parseInt(paymentIdStr, 10);
+    if (isNaN(paymentIdNum) || paymentIdNum <= 0) {
+      throw new Error('ID de pagamento inválido: deve ser um número positivo');
+    }
+    
+    // ✅ CORREÇÃO FORMAT STRING: Usar template string de forma segura (paymentIdNum já validado)
+    const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentIdNum}`, {
       headers: {
         'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`,
         'Content-Type': 'application/json'
@@ -141,7 +157,9 @@ async function fetchPaymentDetails(paymentId) {
     });
     
     if (!response.ok) {
-      throw new Error(`Erro na API do MP: ${response.status}`);
+      // ✅ CORREÇÃO FORMAT STRING: response.status é número HTTP válido, mas vamos ser explícitos
+      const statusCode = Number(response.status);
+      throw new Error(`Erro na API do MP: ${statusCode}`);
     }
     
     return await response.json();

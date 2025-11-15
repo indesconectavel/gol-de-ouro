@@ -783,9 +783,21 @@ app.post('/api/payments/webhook', async (req, res) => {
         return;
       }
       
+      // ✅ CORREÇÃO SSRF: Validar data.id antes de usar na URL
+      if (!data.id || typeof data.id !== 'string' || !/^\d+$/.test(data.id)) {
+        console.error('❌ [WEBHOOK] ID de pagamento inválido:', data.id);
+        return;
+      }
+      
+      const paymentId = parseInt(data.id, 10);
+      if (isNaN(paymentId) || paymentId <= 0) {
+        console.error('❌ [WEBHOOK] ID de pagamento inválido (não é número positivo):', data.id);
+        return;
+      }
+      
       // Verificar pagamento no Mercado Pago
       const payment = await axios.get(
-        `https://api.mercadopago.com/v1/payments/${data.id}`,
+        `https://api.mercadopago.com/v1/payments/${paymentId}`,
         { 
           headers: { 
             'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
