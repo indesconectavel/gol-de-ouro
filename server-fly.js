@@ -2018,6 +2018,24 @@ if (process.env.MP_RECONCILE_ENABLED !== 'false') {
 // =====================================================
 
 // Health check (com verificação ativa do banco)
+// ✅ CORREÇÃO 404: Rotas para robots.txt e raiz
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain');
+  res.send('User-agent: *\nAllow: /');
+});
+
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    service: 'Gol de Ouro Backend API',
+    version: '1.2.0',
+    endpoints: {
+      health: '/health',
+      api: '/api'
+    }
+  });
+});
+
 app.get('/health', async (req, res) => {
   let dbStatus = dbConnected;
   try {
