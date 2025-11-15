@@ -2,6 +2,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/(.*)",
@@ -101,7 +103,7 @@
       "destination": "/download.html"
     },
     {
-      "source": "/((?!favicon\\.ico|favicon\\.png|apple-touch-icon\\.png|robots\\.txt|sw\\.js|.*\\.(ico|png|jpg|jpeg|gif|svg|js|css|woff|woff2|ttf|eot|mp3|wav|ogg|webp|json|xml|pdf|zip|apk|txt|html)).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
