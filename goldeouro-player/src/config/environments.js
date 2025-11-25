@@ -7,7 +7,7 @@ const environments = {
     LOG_LEVEL: 'debug'
   },
   staging: {
-    API_BASE_URL: 'https://goldeouro-backend.fly.dev', // BACKEND STAGING
+    API_BASE_URL: 'https://goldeouro-backend-v2.fly.dev', // BACKEND STAGING (atualizado para v2)
     USE_MOCKS: false,
     USE_SANDBOX: true,
     LOG_LEVEL: 'info'

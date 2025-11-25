@@ -403,27 +403,56 @@ class AdminController {
       let userMap = {};
       
       if (userIds.length > 0) {
-        const { data: users, error: usersError } = await supabaseAdmin
-          .from('usuarios')
-          .select('id, email, username')
-          .in('id', userIds);
+        try {
+          const { data: users, error: usersError } = await supabaseAdmin
+            .from('usuarios')
+            .select('id, email, username')
+            .in('id', userIds);
 
-        if (!usersError && users) {
-          users.forEach(user => {
-            userMap[user.id] = user;
-          });
+          if (usersError) {
+            console.error('❌ [ADMIN] Erro ao buscar usuários:', usersError);
+            // Continuar mesmo com erro - usar dados básicos
+          } else if (users) {
+            users.forEach(user => {
+              userMap[user.id] = user;
+            });
+          }
+        } catch (usersException) {
+          console.error('❌ [ADMIN] Exceção ao buscar usuários:', usersException);
+          // Continuar mesmo com erro - usar dados básicos
         }
       }
       
-      const enrichedShots = shotsArray.map(shot => ({
-        id: shot.id,
-        usuario_id: shot.usuario_id,
-        direcao: shot.direcao || null,
-        valor_aposta: shot.valor_aposta || null,
-        gol_marcado: shot.gol_marcado || false,
-        created_at: shot.created_at,
-        user: userMap[shot.usuario_id] || { id: shot.usuario_id, email: 'N/A', username: 'N/A' }
-      }));
+      // Enriquecer chutes com informações dos usuários de forma segura
+      const enrichedShots = shotsArray.map(shot => {
+        try {
+          return {
+            id: shot.id || null,
+            usuario_id: shot.usuario_id || null,
+            direcao: shot.direcao || null,
+            valor_aposta: shot.valor_aposta || null,
+            gol_marcado: shot.gol_marcado || false,
+            created_at: shot.created_at || null,
+            user: userMap[shot.usuario_id] || { 
+              id: shot.usuario_id || null, 
+              email: 'N/A', 
+              username: 'N/A' 
+            }
+          };
+        } catch (mapError) {
+          console.error('❌ [ADMIN] Erro ao mapear chute:', mapError, shot);
+          // Retornar objeto básico em caso de erro
+          return {
+            id: shot.id || null,
+            usuario_id: shot.usuario_id || null,
+            direcao: null,
+            valor_aposta: null,
+            gol_marcado: false,
+            created_at: shot.created_at || null,
+            user: { id: shot.usuario_id || null, email: 'N/A', username: 'N/A' }
+          };
+        }
+      });
 
       return response.success(
         res,
