@@ -1,0 +1,124 @@
+{
+  "timestamp": "2025-11-26T14:00:00.000Z",
+  "version": "1.2.0",
+  "score_final": 63,
+  "status": "QUASE_APTO",
+  "recomendacao": "NAO_APTO_PARA_GO_LIVE",
+  "criticos": [
+    {
+      "id": "PIX_CREATION_FAIL",
+      "descricao": "PIX Creation está retornando erro de conexão/timeout",
+      "severidade": "CRITICA",
+      "impacto": "Sistema de pagamentos não funcional",
+      "acao": "Investigar timeout e verificar logs do Fly.io"
+    }
+  ],
+  "medios": [
+    {
+      "id": "USER_PROFILE_404",
+      "descricao": "Rota /api/user/profile retornando 404",
+      "severidade": "MEDIA",
+      "impacto": "Funcionalidade básica do usuário afetada",
+      "acao": "Verificar middleware verifyToken e registro de rotas"
+    },
+    {
+      "id": "USER_STATS_404",
+      "descricao": "Rota /api/user/stats retornando 404",
+      "severidade": "MEDIA",
+      "impacto": "Funcionalidade básica do usuário afetada",
+      "acao": "Verificar middleware verifyToken e registro de rotas"
+    },
+    {
+      "id": "WEBSOCKET_TIMEOUT",
+      "descricao": "WebSocket não está respondendo (timeout após 10s)",
+      "severidade": "MEDIA",
+      "impacto": "Funcionalidades em tempo real não funcionam",
+      "acao": "Verificar configuração do WebSocket e rota /ws"
+    }
+  ],
+  "baixos": [],
+  "pendencias": [
+    {
+      "categoria": "CRITICO",
+      "itens": [
+        "Corrigir PIX Creation (timeout/erro de conexão)",
+        "Investigar logs do Fly.io para erros de PIX",
+        "Validar endpoint de PIX em produção"
+      ]
+    },
+    {
+      "categoria": "MEDIO",
+      "itens": [
+        "Corrigir rotas protegidas (404 em profile/stats)",
+        "Verificar middleware verifyToken",
+        "Corrigir WebSocket (timeout)",
+        "Verificar configuração do WebSocket no servidor"
+      ]
+    },
+    {
+      "categoria": "MONITORAMENTO",
+      "itens": [
+        "Configurar alertas básicos",
+        "Configurar logs centralizados",
+        "Configurar dashboard de métricas"
+      ]
+    },
+    {
+      "categoria": "TESTES",
+      "itens": [
+        "Realizar teste de PIX real",
+        "Testar WebSocket em produção",
+        "Validar todas as rotas protegidas"
+      ]
+    }
+  ],
+  "testes": {
+    "total": 8,
+    "passou": 5,
+    "falhou": 3,
+    "detalhes": {
+      "Health Check": "PASS",
+      "User Registration": "PASS",
+      "User Login": "PASS",
+      "Protected Endpoints": "FAIL (1/3)",
+      "PIX Creation": "FAIL",
+      "WebSocket Connection": "FAIL",
+      "Admin Endpoints": "PASS (3/3)",
+      "CORS Configuration": "PASS"
+    }
+  },
+  "componentes": {
+    "backend": {
+      "status": "FUNCIONANDO",
+      "health_check": "PASSING",
+      "maquinas": "2/2",
+      "versao": "v245"
+    },
+    "frontend_admin": {
+      "status": "DEPLOYED",
+      "url": "https://admin.goldeouro.lol"
+    },
+    "frontend_player": {
+      "status": "DEPLOYED",
+      "url": "https://goldeouro.lol"
+    },
+    "pix": {
+      "status": "PROBLEMAS",
+      "criacao": "FAIL",
+      "webhook": "UNKNOWN"
+    },
+    "websocket": {
+      "status": "PROBLEMAS",
+      "conexao": "TIMEOUT"
+    }
+  },
+  "proximos_passos": [
+    "1. Corrigir PIX Creation (investigar timeout)",
+    "2. Corrigir rotas protegidas (verificar middleware)",
+    "3. Corrigir WebSocket (verificar configuração)",
+    "4. Re-executar testes após correções",
+    "5. Validar score >= 80% antes de aprovar Go-Live"
+  ],
+  "prazo_estimado": "1-2 dias após correções aplicadas"
+}
+

@@ -1,0 +1,80 @@
+{
+  "timestamp": "2025-11-26T14:12:09.924Z",
+  "tests": {
+    "Health Check": {
+      "status": "PASS",
+      "details": {
+        "success": true,
+        "timestamp": "2025-11-26T14:12:08.578Z",
+        "data": {
+          "status": "ok",
+          "timestamp": "2025-11-26T14:12:08.578Z",
+          "version": "1.2.0",
+          "database": "connected",
+          "mercadoPago": "connected",
+          "contadorChutes": 61,
+          "ultimoGolDeOuro": 0
+        },
+        "message": "Sistema funcionando"
+      }
+    },
+    "User Registration": {
+      "status": "PASS",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYWIwYmVkZi1kMTczLTQ3MmItOGU1Yy00YTVmZmQ4NDk1MjIiLCJlbWFpbCI6InRlc3RfMTc2NDE2NjMzMDMwN0Bnb2xkZW91cm8udGVzdCIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0MTY2MzI5LCJleHAiOjE3NjQyNTI3Mjl9.GmSyAJlrVRbz3wltj2HmUAKt9eWffQuRRxho9vj_YfA",
+      "user": {
+        "id": "cab0bedf-d173-472b-8e5c-4a5ffd849522",
+        "email": "test_1764166330307@goldeouro.test",
+        "username": "testuser_1764166330307",
+        "saldo": 0,
+        "tipo": "jogador"
+      }
+    },
+    "User Login": {
+      "status": "PASS",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYWIwYmVkZi1kMTczLTQ3MmItOGU1Yy00YTVmZmQ4NDk1MjIiLCJlbWFpbCI6InRlc3RfMTc2NDE2NjMzMDMwN0Bnb2xkZW91cm8udGVzdCIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0MTY2MzI5LCJleHAiOjE3NjQyNTI3Mjl9.GmSyAJlrVRbz3wltj2HmUAKt9eWffQuRRxho9vj_YfA"
+    },
+    "Protected Endpoints": {
+      "status": "FAIL",
+      "passed": 1,
+      "failed": 2,
+      "total": 3
+    },
+    "PIX Creation": {
+      "status": "FAIL",
+      "error": "timeout of 10000ms exceeded"
+    },
+    "WebSocket Connection": {
+      "status": "FAIL",
+      "reason": "Timeout"
+    },
+    "Admin Endpoints": {
+      "status": "PASS",
+      "passed": 3,
+      "failed": 0,
+      "total": 3
+    },
+    "CORS Configuration": {
+      "status": "PASS",
+      "headers": {
+        "access-control-allow-origin": "https://goldeouro.lol",
+        "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
+        "access-control-allow-credentials": "true"
+      }
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "score": 63,
+  "totalTests": 8,
+  "passedTests": 5,
+  "failedTests": 3,
+  "critical": [
+    "PIX Creation: Falhou (Status: 0)"
+  ],
+  "medium": [
+    "User Profile: Retornou 404 (rota não encontrada)",
+    "User Stats: Retornou 404 (rota não encontrada)",
+    "WebSocket Connection: Timeout"
+  ],
+  "low": []
+}

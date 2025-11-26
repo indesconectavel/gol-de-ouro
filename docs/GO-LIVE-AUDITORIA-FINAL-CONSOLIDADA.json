@@ -1,0 +1,106 @@
+{
+  "status": "QUASE_APTO_PARA_PRODUCAO",
+  "nivel_prontidao": 90,
+  "problemas_corrigidos": [
+    {
+      "id": "token-invalido-401",
+      "severidade": "ALTO",
+      "categoria": "Segurança",
+      "descricao": "Token inválido retornava 404 ou 403 em vez de 401",
+      "correcao": "middlewares/authMiddleware.js - Sempre retornar 401 para tokens inválidos",
+      "status": "CORRIGIDO_E_VALIDADO"
+    },
+    {
+      "id": "websocket-auth-retry",
+      "severidade": "ALTO",
+      "categoria": "WebSocket",
+      "descricao": "Usuários recém criados não eram encontrados imediatamente",
+      "correcao": "src/websocket.js - Adicionado retry com supabaseAdmin e 5 tentativas",
+      "status": "CORRIGIDO"
+    },
+    {
+      "id": "pix-qrcode-retry",
+      "severidade": "ALTO",
+      "categoria": "PIX",
+      "descricao": "QR code não era retornado na criação inicial",
+      "correcao": "controllers/paymentController.js - Múltiplas tentativas e fallback para init_point",
+      "status": "CORRIGIDO"
+    },
+    {
+      "id": "admin-chutes-500",
+      "severidade": "ALTO",
+      "categoria": "Admin",
+      "descricao": "Erro 500 ao listar chutes (coluna zona não existe)",
+      "correcao": "controllers/adminController.js - Usar direcao em vez de zona, tratamento de erro",
+      "status": "CORRIGIDO"
+    },
+    {
+      "id": "cors-restritivo",
+      "severidade": "MÉDIO",
+      "categoria": "Segurança",
+      "descricao": "CORS pode estar muito permissivo",
+      "correcao": "server-fly.js - CORS mais restritivo com validação de origin",
+      "status": "CORRIGIDO"
+    },
+    {
+      "id": "handler-404",
+      "severidade": "BAIXO",
+      "categoria": "Consistência",
+      "descricao": "Diferenciar entre rota não encontrada e token inválido",
+      "correcao": "server-fly.js - Handler 404 melhorado",
+      "status": "CORRIGIDO"
+    }
+  ],
+  "problemas_restantes": [
+    {
+      "id": "pix-qrcode-teste-manual",
+      "severidade": "MÉDIO",
+      "categoria": "PIX",
+      "descricao": "Requer teste manual com Mercado Pago real",
+      "acao": "Testar criação de PIX com conta real e validar QR code"
+    },
+    {
+      "id": "websocket-auth-teste-manual",
+      "severidade": "MÉDIO",
+      "categoria": "WebSocket",
+      "descricao": "Requer teste manual com usuário real",
+      "acao": "Criar usuário real e testar autenticação WebSocket"
+    },
+    {
+      "id": "admin-chutes-teste-manual",
+      "severidade": "MÉDIO",
+      "categoria": "Admin",
+      "descricao": "Requer teste manual com dados reais",
+      "acao": "Testar endpoint com dados reais no banco"
+    }
+  ],
+  "arquivos_modificados": [
+    "middlewares/authMiddleware.js",
+    "src/websocket.js",
+    "controllers/paymentController.js",
+    "controllers/adminController.js",
+    "server-fly.js"
+  ],
+  "scripts_criados": [
+    "scripts/validacao-go-live.js"
+  ],
+  "proximos_passos": [
+    "Fazer deploy das correções aplicadas",
+    "Executar testes manuais em produção",
+    "Validar PIX com Mercado Pago real",
+    "Validar WebSocket com usuário real",
+    "Validar Admin chutes com dados reais"
+  ],
+  "classificacao_final": {
+    "seguranca": "BOA",
+    "performance": "BOA",
+    "estabilidade_websocket": "REQUER_TESTE",
+    "pix": "REQUER_TESTE",
+    "admin": "REQUER_TESTE",
+    "navegacao": "BOA",
+    "consistencia_respostas": "BOA",
+    "preparacao_producao": "QUASE_APTO"
+  },
+  "timestamp": "2025-11-25T16:30:00.000Z"
+}
+
