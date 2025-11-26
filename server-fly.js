@@ -756,10 +756,31 @@ async function startServer() {
       process.exit(1);
     }
 
-    // Conectar Supabase
+    // ✅ CORREÇÃO: Iniciar servidor ANTES de conectar ao banco para health check rápido
+    // O Fly.io precisa que o servidor esteja escutando imediatamente
+    const server = http.createServer(app);
+    const wss = new WebSocketManager(server);
+    
+    // Escutar imediatamente na porta correta
+    server.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 [SERVER] Servidor iniciado na porta ${PORT}`);
+      console.log(`🌐 [SERVER] Ambiente: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`✅ [SERVER] Health check disponível em http://0.0.0.0:${PORT}/health`);
+    });
+    
+    // Tratamento de erro no servidor
+    server.on('error', (error) => {
+      console.error('❌ [SERVER] Erro no servidor HTTP:', error);
+      if (error.code === 'EADDRINUSE') {
+        console.error(`❌ [SERVER] Porta ${PORT} já está em uso`);
+        process.exit(1);
+      }
+    });
+
+    // Conectar Supabase (após servidor iniciar)
     await connectSupabase();
     
-    // Testar Mercado Pago
+    // Testar Mercado Pago (após servidor iniciar)
     await testMercadoPago();
     
     // ✅ Validar e expirar pagamentos PIX stale no boot
@@ -957,28 +978,11 @@ app.use((req, res, next) => {
       });
     });
     
-    // Iniciar servidor HTTP e WebSocket
-    const server = http.createServer(app);
-    const wss = new WebSocketManager(server);
-    
-    // ✅ CORREÇÃO: Escutar em 0.0.0.0 para aceitar conexões externas (Fly.io)
-    server.listen(PORT, '0.0.0.0', () => {
-      console.log(`🚀 [SERVER] Servidor iniciado na porta ${PORT}`);
-      console.log(`🌐 [SERVER] Ambiente: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`📊 [SERVER] Supabase: ${dbConnected ? 'Conectado' : 'Desconectado'}`);
-      console.log(`💳 [SERVER] Mercado Pago: ${mercadoPagoConnected ? 'Conectado' : 'Desconectado'}`);
-      console.log('✅ [SERVER] Sistema de monitoramento desabilitado temporariamente');
-      console.log(`✅ [SERVER] Health check disponível em http://0.0.0.0:${PORT}/health`);
-    });
-    
-    // ✅ CORREÇÃO: Tratamento de erro no servidor
-    server.on('error', (error) => {
-      console.error('❌ [SERVER] Erro no servidor HTTP:', error);
-      if (error.code === 'EADDRINUSE') {
-        console.error(`❌ [SERVER] Porta ${PORT} já está em uso`);
-        process.exit(1);
-      }
-    });
+    // ✅ CORREÇÃO: Servidor já foi iniciado no início da função
+    // Apenas atualizar logs com status final
+    console.log(`📊 [SERVER] Supabase: ${dbConnected ? 'Conectado' : 'Desconectado'}`);
+    console.log(`💳 [SERVER] Mercado Pago: ${mercadoPagoConnected ? 'Conectado' : 'Desconectado'}`);
+    console.log('✅ [SERVER] Sistema de monitoramento desabilitado temporariamente');
     
   } catch (error) {
     console.error('❌ [SERVER] Erro ao iniciar servidor:', error);
