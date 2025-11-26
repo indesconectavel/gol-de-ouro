@@ -146,11 +146,6 @@ class PaymentController {
         return response.serverError(res, lastError, 'Erro ao criar pagamento no Mercado Pago após múltiplas tentativas.');
       }
 
-      if (!result || !result.id) {
-        console.error('❌ [PIX] Resposta inválida do Mercado Pago:', result);
-        return response.serverError(res, null, 'Resposta inválida do Mercado Pago.');
-      }
-
       // ✅ CORREÇÃO: Extrair dados do PIX da resposta com múltiplas tentativas
       let pixData = result.point_of_interaction?.transaction_data;
       let qrCode = pixData?.qr_code;
