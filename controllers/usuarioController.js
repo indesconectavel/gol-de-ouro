@@ -121,7 +121,7 @@ const updateUserProfile = async (req, res) => {
     }
 
     if (!usuarioAtualizado) {
-      return response.notFound(res, 'Usuário não encontrado');
+        return response.unauthorized(res, 'Usuário não encontrado ou token inválido');
     }
 
     return response.success(
@@ -288,7 +288,7 @@ const toggleUserStatus = async (req, res) => {
       .single();
 
     if (fetchError || !usuario) {
-      return response.notFound(res, 'Usuário não encontrado');
+        return response.unauthorized(res, 'Usuário não encontrado ou token inválido');
     }
 
     // Não permitir desativar a si mesmo

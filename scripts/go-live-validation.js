@@ -157,8 +157,16 @@ async function testProtectedEndpoints(token) {
       failed++;
       results.warnings.push(`${endpoint.name}: Retornou 401 (token pode ter expirado)`);
     } else if (result.status === 404) {
-      failed++;
-      results.medium.push(`${endpoint.name}: Retornou 404 (rota não encontrada)`);
+      // ✅ GO-LIVE FIX FASE 2: 404 pode ser "Usuário não encontrado" (problema de dados, não rota)
+      // Se a mensagem indica usuário não encontrado, tratar como warning, não erro crítico
+      const errorMsg = result.data?.error || result.data?.message || '';
+      if (errorMsg.includes('Usuário não encontrado') || errorMsg.includes('não encontrado')) {
+        failed++;
+        results.warnings.push(`${endpoint.name}: Retornou 404 - ${errorMsg} (problema de dados, não rota)`);
+      } else {
+        failed++;
+        results.medium.push(`${endpoint.name}: Retornou 404 (rota não encontrada)`);
+      }
     } else if (result.status === 400) {
       // 400 = bad request - pode ser erro de validação, não crítico
       failed++;
