@@ -289,10 +289,16 @@ const parseCorsOrigins = () => {
 app.use(cors({
   origin: (origin, callback) => {
     const allowedOrigins = parseCorsOrigins();
-    // Permitir requisições sem origin (mobile apps, Postman, etc) apenas em desenvolvimento
-    if (!origin && process.env.NODE_ENV === 'development') {
+    
+    // ✅ CORREÇÃO: Permitir health check do Fly.io sem origin
+    // O Fly.io faz health check sem origin header, então precisamos permitir
+    const isHealthCheck = !origin || origin === '';
+    
+    // Permitir requisições sem origin (mobile apps, Postman, health checks, etc)
+    if (!origin) {
       return callback(null, true);
     }
+    
     // Verificar se origin está na lista permitida
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
