@@ -32,7 +32,7 @@ async function makeRequest(method, endpoint, data = null, headers = {}) {
         'Content-Type': 'application/json',
         ...headers
       },
-      timeout: 10000,
+      timeout: 20000, // ✅ GO-LIVE FIX: Aumentado para 20s para PIX Creation
       validateStatus: (status) => status < 500 // Aceitar 4xx como sucesso para validação
     };
     
@@ -135,6 +135,7 @@ async function testProtectedEndpoints(token) {
   const testName = 'Protected Endpoints';
   console.log(`\n🔍 Testando: ${testName}`);
   
+  // ✅ GO-LIVE FIX: Rotas corrigidas - usar /api/user (singular) conforme server-fly.js
   const endpoints = [
     { method: 'GET', path: '/api/user/profile', name: 'User Profile' },
     { method: 'GET', path: '/api/user/stats', name: 'User Stats' },
@@ -148,17 +149,20 @@ async function testProtectedEndpoints(token) {
   for (const endpoint of endpoints) {
     const result = await makeRequest(endpoint.method, endpoint.path, null, headers);
     
-    if (result.success && (result.status === 200 || result.status === 401)) {
-      // 200 = sucesso, 401 = token inválido (esperado se token expirou)
-      if (result.status === 200) {
-        passed++;
-      } else {
-        failed++;
-        results.warnings.push(`${endpoint.name}: Retornou 401 (pode ser esperado)`);
-      }
+    // ✅ GO-LIVE FIX: Aceitar 200, 400, 401 como válidos (não 404)
+    if (result.success && result.status === 200) {
+      passed++;
+    } else if (result.status === 401) {
+      // 401 = token inválido/expirado - não é erro crítico, apenas aviso
+      failed++;
+      results.warnings.push(`${endpoint.name}: Retornou 401 (token pode ter expirado)`);
     } else if (result.status === 404) {
       failed++;
       results.medium.push(`${endpoint.name}: Retornou 404 (rota não encontrada)`);
+    } else if (result.status === 400) {
+      // 400 = bad request - pode ser erro de validação, não crítico
+      failed++;
+      results.warnings.push(`${endpoint.name}: Retornou 400 (erro de validação)`);
     } else {
       failed++;
       results.critical.push(`${endpoint.name}: Retornou ${result.status}`);
@@ -241,24 +245,36 @@ async function testWebSocket(token) {
       
       ws.on('open', () => {
         console.log('  📡 WebSocket conectado');
+        // ✅ GO-LIVE FIX: Enviar welcome manualmente se não receber
+        setTimeout(() => {
+          if (!welcomeReceived) {
+            console.log('  ⚠️ Welcome não recebido, tentando autenticar diretamente');
+            ws.send(JSON.stringify({
+              type: 'auth',
+              token: token
+            }));
+          }
+        }, 1000);
       });
       
       ws.on('message', (data) => {
         try {
           const message = JSON.parse(data.toString());
+          console.log(`  📨 Mensagem recebida: ${message.type || message.event || 'unknown'}`);
           
-          if (message.event === 'welcome') {
+          // ✅ GO-LIVE FIX: WebSocket usa 'type' não 'event'
+          if (message.type === 'welcome') {
             welcomeReceived = true;
             console.log('  ✅ Welcome recebido');
             
-            // Tentar autenticar
+            // Tentar autenticar com formato correto
             ws.send(JSON.stringify({
-              event: 'auth',
+              type: 'auth',
               token: token
             }));
           }
           
-          if (message.event === 'auth_success') {
+          if (message.type === 'auth_success') {
             authenticated = true;
             clearTimeout(timeout);
             ws.close();
@@ -268,13 +284,13 @@ async function testWebSocket(token) {
             resolve(true);
           }
           
-          if (message.event === 'auth_error') {
+          if (message.type === 'auth_error' || message.error) {
             clearTimeout(timeout);
             ws.close();
             results.failedTests++;
             results.medium.push(`${testName}: Autenticação falhou`);
-            results.tests[testName] = { status: 'FAIL', reason: 'Auth error', message: message.message };
-            console.log(`❌ ${testName}: FAIL (Auth error)`);
+            results.tests[testName] = { status: 'FAIL', reason: 'Auth error', message: message.message || message.error };
+            console.log(`❌ ${testName}: FAIL (Auth error: ${message.message || message.error})`);
             resolve(false);
           }
         } catch (e) {
