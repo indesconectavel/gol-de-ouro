@@ -369,16 +369,36 @@ class AdminController {
       const { limit = 50 } = req.query;
 
       // ✅ CORREÇÃO: Usar direcao em vez de zona (coluna antiga removida)
-      const { data: shots, error } = await supabaseAdmin
-        .from('chutes')
-        .select('id, usuario_id, direcao, valor_aposta, gol_marcado, created_at')
-        .order('created_at', { ascending: false })
-        .limit(parseInt(limit));
+      // ✅ CORREÇÃO: Adicionar tratamento de erro mais robusto na query inicial
+      let shots = [];
+      let queryError = null;
+      
+      try {
+        const result = await supabaseAdmin
+          .from('chutes')
+          .select('id, usuario_id, direcao, valor_aposta, gol_marcado, created_at')
+          .order('created_at', { ascending: false })
+          .limit(parseInt(limit));
+        
+        if (result.error) {
+          queryError = result.error;
+          console.error('❌ [ADMIN] Erro ao buscar chutes:', result.error);
+          console.error('❌ [ADMIN] Detalhes do erro:', JSON.stringify(result.error, null, 2));
+          console.error('❌ [ADMIN] Código do erro:', result.error.code);
+          console.error('❌ [ADMIN] Mensagem do erro:', result.error.message);
+          console.error('❌ [ADMIN] Detalhes do erro:', result.error.details);
+          console.error('❌ [ADMIN] Hint do erro:', result.error.hint);
+        } else {
+          shots = result.data || [];
+        }
+      } catch (queryException) {
+        console.error('❌ [ADMIN] Exceção ao buscar chutes:', queryException);
+        console.error('❌ [ADMIN] Stack:', queryException.stack);
+        queryError = queryException;
+      }
 
-      if (error) {
-        console.error('❌ [ADMIN] Erro ao buscar chutes:', error);
-        console.error('❌ [ADMIN] Detalhes do erro:', JSON.stringify(error, null, 2));
-        // Retornar array vazio em vez de lançar erro
+      // Se houve erro na query, retornar array vazio
+      if (queryError) {
         return response.success(
           res,
           [],
