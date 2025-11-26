@@ -15,14 +15,61 @@ const WebhookService = require('../services/webhookService');
 const WebhookSignatureValidator = require('../utils/webhook-signature-validator');
 const axios = require('axios');
 
-// ✅ GO-LIVE FIX: Configuração do Mercado Pago com timeout aumentado
+// ✅ GO-LIVE FIX FASE 3: Configuração do Mercado Pago com timeout aumentado e retry robusto
 const client = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
   options: {
-    timeout: 15000, // ✅ CORRIGIDO: Aumentado de 5s para 15s para evitar timeout
+    timeout: 25000, // ✅ FASE 3: Aumentado para 25s para evitar timeout em conexões lentas
     idempotencyKey: 'goldeouro-' + Date.now()
   }
 });
+
+// ✅ FASE 3: Cliente Axios customizado com retry exponencial para chamadas diretas à API MP
+const mpAxios = axios.create({
+  baseURL: 'https://api.mercadopago.com',
+  timeout: 25000, // 25 segundos
+  headers: {
+    'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+    'Content-Type': 'application/json'
+  }
+});
+
+// ✅ FASE 3: Interceptor de retry para Axios
+mpAxios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const config = error.config;
+    
+    // Não retry se já tentou 3 vezes
+    if (!config || config.__retryCount >= 3) {
+      return Promise.reject(error);
+    }
+    
+    config.__retryCount = config.__retryCount || 0;
+    
+    // Retry apenas para erros de rede/timeout
+    const shouldRetry = 
+      error.code === 'ECONNABORTED' ||
+      error.code === 'ETIMEDOUT' ||
+      error.code === 'ENETUNREACH' ||
+      error.code === 'ECONNREFUSED' ||
+      error.response?.status === 502 ||
+      error.response?.status === 503 ||
+      error.response?.status === 504;
+    
+    if (shouldRetry) {
+      config.__retryCount += 1;
+      const delay = Math.pow(2, config.__retryCount) * 1000; // Exponential backoff: 2s, 4s, 8s
+      
+      console.log(`🔄 [PIX-AXIOS] Retry ${config.__retryCount}/3 após ${delay}ms para ${config.url}`);
+      
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return mpAxios(config);
+    }
+    
+    return Promise.reject(error);
+  }
+);
 
 const payment = new Payment(client);
 const preference = new Preference(client);
@@ -107,71 +154,130 @@ class PaymentController {
         return response.serverError(res, null, 'Configuração do Mercado Pago não encontrada.');
       }
 
-      // ✅ GO-LIVE FIX: Retry exponencial para criação de preferência
+      // ✅ GO-LIVE FIX FASE 3: Retry exponencial robusto para criação de preferência
       let result;
-      const maxRetriesCreate = 3;
+      const maxRetriesCreate = 4; // ✅ FASE 3: Aumentado para 4 tentativas
       let lastError = null;
+      let lastErrorDetails = null;
       
       for (let attempt = 0; attempt < maxRetriesCreate; attempt++) {
         try {
           if (attempt > 0) {
-            // Exponential backoff: 1s, 2s, 4s
+            // Exponential backoff: 1s, 2s, 4s, 8s
             const delay = Math.pow(2, attempt - 1) * 1000;
             console.log(`🔄 [PIX] Tentativa ${attempt + 1}/${maxRetriesCreate} após ${delay}ms`);
             await new Promise(resolve => setTimeout(resolve, delay));
           }
           
+          const startTime = Date.now();
           result = await preference.create({ body: preferenceData });
+          const duration = Date.now() - startTime;
           
           if (result && result.id) {
-            console.log(`✅ [PIX] Preferência criada com sucesso na tentativa ${attempt + 1}`);
+            console.log(`✅ [PIX] Preferência criada com sucesso na tentativa ${attempt + 1} (${duration}ms)`);
             break;
           }
         } catch (mpError) {
           lastError = mpError;
-          console.error(`❌ [PIX] Tentativa ${attempt + 1}/${maxRetriesCreate} falhou:`, mpError.message || mpError);
+          lastErrorDetails = {
+            code: mpError.code,
+            message: mpError.message,
+            status: mpError.response?.status,
+            statusText: mpError.response?.statusText,
+            data: mpError.response?.data
+          };
           
-          // Se não for timeout ou erro de rede, não tentar novamente
-          if (mpError.code !== 'ECONNABORTED' && mpError.code !== 'ETIMEDOUT' && mpError.response?.status !== 408) {
-            console.error('❌ [PIX] Erro não recuperável, abortando retry');
+          console.error(`❌ [PIX] Tentativa ${attempt + 1}/${maxRetriesCreate} falhou:`, {
+            code: mpError.code,
+            message: mpError.message,
+            status: mpError.response?.status
+          });
+          
+          // ✅ FASE 3: Retry para mais tipos de erro de rede
+          const isRetryable = 
+            mpError.code === 'ECONNABORTED' ||
+            mpError.code === 'ETIMEDOUT' ||
+            mpError.code === 'ENETUNREACH' ||
+            mpError.code === 'ECONNREFUSED' ||
+            mpError.code === 'EAI_AGAIN' ||
+            mpError.response?.status === 408 ||
+            mpError.response?.status === 502 ||
+            mpError.response?.status === 503 ||
+            mpError.response?.status === 504;
+          
+          if (!isRetryable) {
+            console.error('❌ [PIX] Erro não recuperável, abortando retry:', lastErrorDetails);
             break;
+          }
+          
+          // Se é última tentativa, logar detalhes completos
+          if (attempt === maxRetriesCreate - 1) {
+            console.error('❌ [PIX] Última tentativa falhou. Detalhes completos:', JSON.stringify(lastErrorDetails, null, 2));
           }
         }
       }
       
       if (!result || !result.id) {
-        console.error('❌ [PIX] Erro ao criar preferência após todas as tentativas:', lastError);
-        console.error('❌ [PIX] Detalhes do erro:', JSON.stringify(lastError, null, 2));
+        console.error('❌ [PIX] Erro ao criar preferência após todas as tentativas');
+        console.error('❌ [PIX] Último erro:', JSON.stringify(lastErrorDetails, null, 2));
         console.error('❌ [PIX] Preference data enviada:', JSON.stringify(preferenceData, null, 2));
-        return response.serverError(res, lastError, 'Erro ao criar pagamento no Mercado Pago após múltiplas tentativas.');
+        
+        // ✅ FASE 3: Retornar erro mais descritivo
+        const errorMessage = lastErrorDetails?.code === 'ETIMEDOUT' || lastErrorDetails?.code === 'ECONNABORTED'
+          ? 'Timeout ao conectar com Mercado Pago. Tente novamente em alguns instantes.'
+          : lastErrorDetails?.status === 502 || lastErrorDetails?.status === 503 || lastErrorDetails?.status === 504
+          ? 'Serviço do Mercado Pago temporariamente indisponível. Tente novamente em alguns instantes.'
+          : 'Erro ao criar pagamento no Mercado Pago. Verifique sua conexão e tente novamente.';
+        
+        return response.serverError(res, lastError, errorMessage);
       }
 
-      // ✅ CORREÇÃO: Extrair dados do PIX da resposta com múltiplas tentativas
+      // ✅ GO-LIVE FIX FASE 3: Extrair dados do PIX com múltiplas fontes e tentativas robustas
       let pixData = result.point_of_interaction?.transaction_data;
       let qrCode = pixData?.qr_code;
       let qrCodeBase64 = pixData?.qr_code_base64;
       
-      // Se código PIX não veio na resposta inicial, tentar consultar a preferência novamente
-      if (!qrCode && result.id) {
-        const maxRetries = 5;
-        for (let retry = 0; retry < maxRetries && !qrCode; retry++) {
-          try {
-            // Aguardar progressivamente: 2s, 3s, 4s, 5s, 6s
-            await new Promise(resolve => setTimeout(resolve, 2000 + (retry * 1000)));
-            const preferenceData = await preference.get({ id: result.id });
-            
-            if (preferenceData?.point_of_interaction?.transaction_data) {
-              pixData = preferenceData.point_of_interaction.transaction_data;
-              qrCode = pixData.qr_code;
-              qrCodeBase64 = pixData.qr_code_base64;
+      // ✅ FASE 3: Tentar múltiplas fontes de QR code
+      if (!qrCode) {
+        // Tentar 1: point_of_interaction.transaction_data.qr_code_base64
+        if (pixData?.qr_code_base64) {
+          qrCode = pixData.qr_code_base64;
+          console.log('✅ [PIX] QR code obtido de qr_code_base64');
+        }
+        // Tentar 2: point_of_interaction.transaction_data.qr_code
+        else if (pixData?.qr_code) {
+          qrCode = pixData.qr_code;
+          console.log('✅ [PIX] QR code obtido de qr_code');
+        }
+        // Tentar 3: Consultar preferência novamente
+        else if (result.id) {
+          const maxRetries = 6; // ✅ FASE 3: Aumentado para 6 tentativas
+          for (let retry = 0; retry < maxRetries && !qrCode; retry++) {
+            try {
+              // Aguardar progressivamente: 1s, 2s, 3s, 4s, 5s, 6s
+              const delay = 1000 + (retry * 1000);
+              await new Promise(resolve => setTimeout(resolve, delay));
               
-              if (qrCode) {
-                console.log(`✅ [PIX] QR code obtido após ${retry + 1} tentativa(s)`);
+              const preferenceData = await preference.get({ id: result.id });
+              
+              if (preferenceData?.point_of_interaction?.transaction_data) {
+                pixData = preferenceData.point_of_interaction.transaction_data;
+                qrCode = pixData.qr_code_base64 || pixData.qr_code;
+                qrCodeBase64 = pixData.qr_code_base64 || qrCodeBase64;
+                
+                if (qrCode) {
+                  console.log(`✅ [PIX] QR code obtido após ${retry + 1} tentativa(s) de consulta`);
+                  break;
+                }
+              }
+            } catch (prefError) {
+              console.log(`⚠️ [PIX] Consulta ${retry + 1}/${maxRetries} falhou:`, prefError.code || prefError.message);
+              
+              // Se não for erro de rede, não continuar tentando
+              if (prefError.code !== 'ECONNABORTED' && prefError.code !== 'ETIMEDOUT' && prefError.response?.status !== 502) {
                 break;
               }
             }
-          } catch (prefError) {
-            console.log(`⚠️ [PIX] Tentativa ${retry + 1}/${maxRetries} falhou:`, prefError.message || prefError);
           }
         }
       }
@@ -211,45 +317,74 @@ class PaymentController {
         return response.serverError(res, error, 'Erro ao salvar pagamento no banco de dados.');
       }
 
-      // ✅ CORREÇÃO: Garantir que sempre retorna QR code ou copy-paste
-      // Se ainda não temos código PIX, consultar preferência novamente após salvar
+      // ✅ GO-LIVE FIX FASE 3: Garantir que sempre retorna QR code ou copy-paste com fallbacks robustos
       let pixCopyPasteFinal = pagamento.pix_copy_paste || qrCode || pagamento.qr_code;
       let qrCodeFinal = pagamento.qr_code || qrCode;
       let qrCodeBase64Final = pagamento.qr_code_base64 || qrCodeBase64;
       
+      // ✅ FASE 3: Se ainda não temos código, tentar mais vezes após salvar
       if (!pixCopyPasteFinal && result.id) {
-        try {
-          // Aguardar mais 3 segundos e consultar novamente
-          await new Promise(resolve => setTimeout(resolve, 3000));
-          const preferenceRetry = await preference.get({ id: result.id });
-          
-          if (preferenceRetry?.point_of_interaction?.transaction_data) {
-            const pixDataRetry = preferenceRetry.point_of_interaction.transaction_data;
-            pixCopyPasteFinal = pixDataRetry.qr_code || pixCopyPasteFinal;
-            qrCodeFinal = pixDataRetry.qr_code || qrCodeFinal;
-            qrCodeBase64Final = pixDataRetry.qr_code_base64 || qrCodeBase64Final;
+        const maxFinalRetries = 4; // ✅ FASE 3: Aumentado para 4 tentativas finais
+        for (let finalRetry = 0; finalRetry < maxFinalRetries && !pixCopyPasteFinal; finalRetry++) {
+          try {
+            // Aguardar progressivamente: 2s, 4s, 6s, 8s
+            const delay = 2000 * (finalRetry + 1);
+            await new Promise(resolve => setTimeout(resolve, delay));
             
-            // Atualizar no banco se encontramos agora
-            if (pixCopyPasteFinal) {
-              await supabaseAdmin
-                .from('pagamentos_pix')
-                .update({
-                  pix_copy_paste: pixCopyPasteFinal,
-                  qr_code: qrCodeFinal,
-                  qr_code_base64: qrCodeBase64Final,
-                  updated_at: new Date().toISOString()
-                })
-                .eq('payment_id', result.id);
+            const preferenceRetry = await preference.get({ id: result.id });
+            
+            if (preferenceRetry?.point_of_interaction?.transaction_data) {
+              const pixDataRetry = preferenceRetry.point_of_interaction.transaction_data;
+              pixCopyPasteFinal = pixDataRetry.qr_code_base64 || pixDataRetry.qr_code || pixCopyPasteFinal;
+              qrCodeFinal = pixDataRetry.qr_code || qrCodeFinal;
+              qrCodeBase64Final = pixDataRetry.qr_code_base64 || qrCodeBase64Final;
+              
+              // Atualizar no banco se encontramos agora
+              if (pixCopyPasteFinal) {
+                await supabaseAdmin
+                  .from('pagamentos_pix')
+                  .update({
+                    pix_copy_paste: pixCopyPasteFinal,
+                    qr_code: qrCodeFinal,
+                    qr_code_base64: qrCodeBase64Final,
+                    updated_at: new Date().toISOString()
+                  })
+                  .eq('payment_id', result.id);
+                console.log(`✅ [PIX] QR code obtido no retry final ${finalRetry + 1} e atualizado no banco`);
+                break;
+              }
+            }
+          } catch (retryError) {
+            console.log(`⚠️ [PIX] Retry final ${finalRetry + 1}/${maxFinalRetries} falhou:`, retryError.code || retryError.message);
+            
+            // Se não for erro de rede, não continuar tentando
+            if (retryError.code !== 'ECONNABORTED' && retryError.code !== 'ETIMEDOUT' && retryError.response?.status !== 502) {
+              break;
             }
           }
-        } catch (retryError) {
-          console.log('⚠️ [PIX] Não foi possível obter código PIX após retry:', retryError.message || retryError);
         }
       }
       
-      // ✅ CORREÇÃO: Se ainda não temos código, usar init_point como fallback
-      if (!pixCopyPasteFinal && result.init_point) {
-        pixCopyPasteFinal = `Use o link: ${result.init_point}`;
+      // ✅ FASE 3: Fallbacks múltiplos em ordem de prioridade
+      if (!pixCopyPasteFinal) {
+        // Fallback 1: init_point (link de pagamento)
+        if (result.init_point) {
+          pixCopyPasteFinal = result.init_point;
+          console.log('⚠️ [PIX] Usando init_point como fallback para copy-paste');
+        }
+        // Fallback 2: payment_id (para consulta posterior)
+        else if (result.id) {
+          pixCopyPasteFinal = `PIX-${result.id}`;
+          console.log('⚠️ [PIX] Usando payment_id como fallback temporário');
+        }
+      }
+      
+      // ✅ FASE 3: Garantir que sempre temos algo para retornar
+      if (!qrCodeFinal) {
+        qrCodeFinal = pixCopyPasteFinal;
+      }
+      if (!qrCodeBase64Final && qrCodeFinal) {
+        qrCodeBase64Final = qrCodeFinal;
       }
 
       return response.success(
