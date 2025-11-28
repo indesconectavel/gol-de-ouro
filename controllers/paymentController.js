@@ -156,7 +156,13 @@ class PaymentController {
           const startTime = Date.now();
           
           // ✅ PIX V6: Usar API Payments diretamente via axios
-          const paymentResponse = await mpAxios.post('/v1/payments', paymentData);
+          // Gerar idempotency key único para cada tentativa
+          const idempotencyKey = `pix_${userId}_${Date.now()}_${attempt}`;
+          const paymentResponse = await mpAxios.post('/v1/payments', paymentData, {
+            headers: {
+              'X-Idempotency-Key': idempotencyKey
+            }
+          });
           const duration = Date.now() - startTime;
           
           result = paymentResponse.data;
@@ -212,11 +218,18 @@ class PaymentController {
         console.error('❌ [PIX-V6] Último erro:', JSON.stringify(lastErrorDetails, null, 2));
         console.error('❌ [PIX-V6] Payment data enviada:', JSON.stringify(paymentData, null, 2));
         
+        // Se é erro da API do Mercado Pago (400, 401, etc), retornar erro mais específico
+        if (lastErrorDetails?.status && lastErrorDetails.status >= 400 && lastErrorDetails.status < 500) {
+          const mpErrorMessage = lastErrorDetails?.data?.message || lastErrorDetails?.data?.error || 'Erro ao criar pagamento no Mercado Pago';
+          console.error('❌ [PIX-V6] Erro da API Mercado Pago:', mpErrorMessage);
+          return response.serverError(res, lastError, mpErrorMessage);
+        }
+        
         const errorMessage = lastErrorDetails?.code === 'ETIMEDOUT' || lastErrorDetails?.code === 'ECONNABORTED'
           ? 'Timeout ao conectar com Mercado Pago. Tente novamente em alguns instantes.'
           : lastErrorDetails?.status === 502 || lastErrorDetails?.status === 503 || lastErrorDetails?.status === 504
           ? 'Serviço do Mercado Pago temporariamente indisponível. Tente novamente em alguns instantes.'
-          : lastErrorDetails?.data?.message || 'Erro ao criar pagamento no Mercado Pago. Verifique sua conexão e tente novamente.';
+          : lastErrorDetails?.data?.message || lastErrorDetails?.message || 'Erro ao criar pagamento no Mercado Pago. Verifique sua conexão e tente novamente.';
         
         return response.serverError(res, lastError, errorMessage);
       }
