@@ -27,7 +27,7 @@ const config = {
   // URLs
   FRONTEND_URL: process.env.FRONTEND_URL || 'https://goldeouro.vercel.app',
   ADMIN_URL: process.env.ADMIN_URL || 'https://admin.goldeouro.vercel.app',
-  BACKEND_URL: process.env.BACKEND_URL || 'https://goldeouro-backend.fly.dev',
+  BACKEND_URL: process.env.BACKEND_URL || 'https://goldeouro-backend-v2.fly.dev',
   
   // Redis
   REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',

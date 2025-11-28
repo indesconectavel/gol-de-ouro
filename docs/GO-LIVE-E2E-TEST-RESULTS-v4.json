@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-27T14:34:30.313Z",
+  "timestamp": "2025-11-27T19:09:26.827Z",
   "version": "4.0",
   "fase": "FINAL",
   "tests": {
@@ -7,30 +7,30 @@
       "status": "PASS",
       "details": {
         "status": "ok",
-        "timestamp": "2025-11-27T14:34:30.349Z",
+        "timestamp": "2025-11-27T19:09:26.619Z",
         "version": "1.2.0",
         "database": "connected",
         "mercadoPago": "connected",
         "contadorChutes": 61,
         "ultimoGolDeOuro": 0
       },
-      "latency": 181
+      "latency": 254
     },
     "User Registration Advanced": {
       "status": "PASS",
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhN2JkY2Q3Mi02NGRlLTRkYzAtOTAwMy0zZTIwNmI1MjFiYjIiLCJlbWFpbCI6InRlc3RfdjRfMTc2NDI1NDA3MDQ5OUBnb2xkZW91cm8udGVzdCIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0MjU0MDcwLCJleHAiOjE3NjQzNDA0NzB9.vFJIHOuG_t4Z0jDXph5O288JAnvQiZ7q9IcFMP0wLiw",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNjI3ODFjOS1lZjE5LTRlZDctOGM5YS0wODdkNTk1NzZlMzQiLCJlbWFpbCI6InRlc3RfdjRfMTc2NDI3MDU2NzA5MEBnb2xkZW91cm8udGVzdCIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0MjcwNTY3LCJleHAiOjE3NjQzNTY5Njd9.upEsx9-mrdqojlW_b4ZSKu51WWCWWyULH2VpT5mdueo",
       "user": {
-        "id": "a7bdcd72-64de-4dc0-9003-3e206b521bb2",
-        "email": "test_v4_1764254070499@goldeouro.test",
-        "username": "testuser_v4_1764254070499",
+        "id": "362781c9-ef19-4ed7-8c9a-087d59576e34",
+        "email": "test_v4_1764270567090@goldeouro.test",
+        "username": "testuser_v4_1764270567090",
         "saldo": 0,
         "tipo": "jogador"
       },
-      "latency": 255
+      "latency": 495
     },
     "PIX Creation Advanced": {
       "status": "PASS",
-      "payment_id": "468718642-774d659f-950b-434f-b220-73b093132ee3",
+      "payment_id": "468718642-f4b92299-7a36-4c02-a546-459dc8f86c3f",
       "methods": {
         "qr_code": true,
         "qr_code_base64": false,
@@ -38,15 +38,15 @@
         "init_point": true,
         "payment_id": true
       },
-      "latency": 25090
+      "latency": 25388
     },
     "WebSocket Advanced": {
       "status": "PASS",
       "authenticated": true,
       "welcomeReceived": true,
       "pongReceived": true,
-      "handshakeTime": 96,
-      "totalTime": 174
+      "handshakeTime": 112,
+      "totalTime": 218
     },
     "Security Audit": {
       "status": "PASS",
@@ -70,17 +70,17 @@
         {
           "endpoint": "User Profile",
           "status": "404_USER_NOT_FOUND",
-          "latency": 1025
+          "latency": 51
         },
         {
           "endpoint": "User Stats",
           "status": "404_USER_NOT_FOUND",
-          "latency": 50
+          "latency": 69
         },
         {
           "endpoint": "Game History",
           "status": "PASS",
-          "latency": 56
+          "latency": 68
         }
       ]
     },
@@ -93,17 +93,17 @@
         {
           "endpoint": "Admin Users",
           "status": "PASS",
-          "latency": 69
+          "latency": 94
         },
         {
           "endpoint": "Admin Chutes",
           "status": "PASS",
-          "latency": 64
+          "latency": 59
         },
         {
           "endpoint": "Admin Transactions",
           "status": "PASS",
-          "latency": 94
+          "latency": 133
         }
       ]
     },
@@ -136,8 +136,8 @@
     "Performance Validation": {
       "status": "PASS",
       "metrics": {
-        "avg_pix_latency": 25090,
-        "avg_ws_latency": 174,
+        "avg_pix_latency": 25388,
+        "avg_ws_latency": 218,
         "pix_acceptable": true,
         "ws_acceptable": true
       }
@@ -146,7 +146,7 @@
   "metrics": {
     "pix": {
       "latencies": [
-        25090
+        25388
       ],
       "methods": [
         {
@@ -160,7 +160,7 @@
     },
     "websocket": {
       "latencies": [
-        174
+        218
       ],
       "reconnections": 0
     },
@@ -184,17 +184,17 @@
         {
           "endpoint": "Admin Users",
           "status": "PASS",
-          "latency": 69
+          "latency": 94
         },
         {
           "endpoint": "Admin Chutes",
           "status": "PASS",
-          "latency": 64
+          "latency": 59
         },
         {
           "endpoint": "Admin Transactions",
           "status": "PASS",
-          "latency": 94
+          "latency": 133
         }
       ]
     },

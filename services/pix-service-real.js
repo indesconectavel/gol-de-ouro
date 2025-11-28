@@ -19,7 +19,7 @@ class PixService {
     this.pixConfig = {
       minAmount: parseFloat(process.env.PIX_MIN_AMOUNT) || 1.00,
       maxAmount: parseFloat(process.env.PIX_MAX_AMOUNT) || 1000.00,
-      webhookUrl: process.env.PIX_WEBHOOK_URL || 'https://goldeouro-backend.fly.dev/api/payments/pix/webhook'
+      webhookUrl: process.env.PIX_WEBHOOK_URL || 'https://goldeouro-backend-v2.fly.dev/api/payments/webhook'
     };
   }
 
