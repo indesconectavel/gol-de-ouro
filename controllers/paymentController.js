@@ -75,7 +75,7 @@ const payment = new Payment(client);
 const preference = new Preference(client);
 
 class PaymentController {
-  // Criar pagamento PIX
+  // ✅ PIX V6: Criar pagamento PIX usando API Payments (QR Code EMV Real)
   static async criarPagamentoPix(req, res) {
     try {
       const { valor, descricao = 'Depósito Gol de Ouro' } = req.body;
@@ -100,63 +100,47 @@ class PaymentController {
             .single();
           
           if (userError) {
-            console.error('❌ [PIX] Erro ao buscar email do usuário:', userError);
+            console.error('❌ [PIX-V6] Erro ao buscar email do usuário:', userError);
             return response.serverError(res, userError, 'Erro ao buscar dados do usuário.');
           }
           
           if (!userData || !userData.email) {
-            console.error('❌ [PIX] Usuário não encontrado ou sem email:', userId);
+            console.error('❌ [PIX-V6] Usuário não encontrado ou sem email:', userId);
             return response.serverError(res, null, 'Usuário não encontrado ou sem email cadastrado.');
           }
           
           userEmail = userData.email;
         } catch (emailError) {
-          console.error('❌ [PIX] Erro ao buscar email:', emailError);
+          console.error('❌ [PIX-V6] Erro ao buscar email:', emailError);
           return response.serverError(res, emailError, 'Erro ao buscar email do usuário.');
         }
       }
 
-      // Criar preferência de pagamento
-      const preferenceData = {
-        items: [
-          {
-            title: descricao,
-            quantity: 1,
-            unit_price: parseFloat(valor),
-            currency_id: 'BRL'
-          }
-        ],
-        payer: {
-          email: userEmail,
-          identification: {
-            type: 'CPF',
-            number: '00000000000' // Será preenchido pelo usuário
-          }
-        },
-        payment_methods: {
-          excluded_payment_methods: [],
-          excluded_payment_types: [],
-          installments: 1
-        },
-        back_urls: {
-          success: process.env.PLAYER_URL ? `${process.env.PLAYER_URL}/deposito/sucesso` : 'https://goldeouro.lol/deposito/sucesso',
-          failure: process.env.PLAYER_URL ? `${process.env.PLAYER_URL}/deposito/erro` : 'https://goldeouro.lol/deposito/erro',
-          pending: process.env.PLAYER_URL ? `${process.env.PLAYER_URL}/deposito/pendente` : 'https://goldeouro.lol/deposito/pendente'
-        },
-        auto_return: 'approved',
-        notification_url: process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/payments/webhook` : 'https://goldeouro-backend-v2.fly.dev/api/payments/webhook',
-        external_reference: `deposito_${userId}_${Date.now()}`
-      };
-
       // Verificar se MERCADOPAGO_ACCESS_TOKEN está configurado
       if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
-        console.error('❌ [PIX] MERCADOPAGO_ACCESS_TOKEN não configurado');
+        console.error('❌ [PIX-V6] MERCADOPAGO_ACCESS_TOKEN não configurado');
         return response.serverError(res, null, 'Configuração do Mercado Pago não encontrada.');
       }
 
-      // ✅ GO-LIVE FIX FASE 3: Retry exponencial robusto para criação de preferência
+      // ✅ PIX V6: Payload para API Payments (PIX EMV Real)
+      const paymentData = {
+        transaction_amount: parseFloat(valor),
+        description: descricao,
+        payment_method_id: 'pix',
+        payer: {
+          email: userEmail
+        },
+        external_reference: `deposito_${userId}_${Date.now()}`,
+        notification_url: process.env.BACKEND_URL 
+          ? `${process.env.BACKEND_URL}/api/payments/webhook` 
+          : 'https://goldeouro-backend-v2.fly.dev/api/payments/webhook'
+      };
+
+      console.log('💰 [PIX-V6] Criando pagamento PIX via API Payments...');
+
+      // ✅ PIX V6: Retry exponencial robusto para criação de pagamento
       let result;
-      const maxRetriesCreate = 4; // ✅ FASE 3: Aumentado para 4 tentativas
+      const maxRetriesCreate = 4;
       let lastError = null;
       let lastErrorDetails = null;
       
@@ -165,16 +149,21 @@ class PaymentController {
           if (attempt > 0) {
             // Exponential backoff: 1s, 2s, 4s, 8s
             const delay = Math.pow(2, attempt - 1) * 1000;
-            console.log(`🔄 [PIX] Tentativa ${attempt + 1}/${maxRetriesCreate} após ${delay}ms`);
+            console.log(`🔄 [PIX-V6] Tentativa ${attempt + 1}/${maxRetriesCreate} após ${delay}ms`);
             await new Promise(resolve => setTimeout(resolve, delay));
           }
           
           const startTime = Date.now();
-          result = await preference.create({ body: preferenceData });
+          
+          // ✅ PIX V6: Usar API Payments diretamente via axios
+          const paymentResponse = await mpAxios.post('/v1/payments', paymentData);
           const duration = Date.now() - startTime;
           
+          result = paymentResponse.data;
+          
           if (result && result.id) {
-            console.log(`✅ [PIX] Preferência criada com sucesso na tentativa ${attempt + 1} (${duration}ms)`);
+            console.log(`✅ [PIX-V6] Pagamento criado com sucesso na tentativa ${attempt + 1} (${duration}ms)`);
+            console.log(`✅ [PIX-V6] Payment ID: ${result.id}, Status: ${result.status}`);
             break;
           }
         } catch (mpError) {
@@ -187,13 +176,14 @@ class PaymentController {
             data: mpError.response?.data
           };
           
-          console.error(`❌ [PIX] Tentativa ${attempt + 1}/${maxRetriesCreate} falhou:`, {
+          console.error(`❌ [PIX-V6] Tentativa ${attempt + 1}/${maxRetriesCreate} falhou:`, {
             code: mpError.code,
             message: mpError.message,
-            status: mpError.response?.status
+            status: mpError.response?.status,
+            data: mpError.response?.data
           });
           
-          // ✅ FASE 3: Retry para mais tipos de erro de rede
+          // Retry para erros de rede/timeout
           const isRetryable = 
             mpError.code === 'ECONNABORTED' ||
             mpError.code === 'ETIMEDOUT' ||
@@ -206,203 +196,167 @@ class PaymentController {
             mpError.response?.status === 504;
           
           if (!isRetryable) {
-            console.error('❌ [PIX] Erro não recuperável, abortando retry:', lastErrorDetails);
+            console.error('❌ [PIX-V6] Erro não recuperável, abortando retry:', lastErrorDetails);
             break;
           }
           
           // Se é última tentativa, logar detalhes completos
           if (attempt === maxRetriesCreate - 1) {
-            console.error('❌ [PIX] Última tentativa falhou. Detalhes completos:', JSON.stringify(lastErrorDetails, null, 2));
+            console.error('❌ [PIX-V6] Última tentativa falhou. Detalhes completos:', JSON.stringify(lastErrorDetails, null, 2));
           }
         }
       }
       
       if (!result || !result.id) {
-        console.error('❌ [PIX] Erro ao criar preferência após todas as tentativas');
-        console.error('❌ [PIX] Último erro:', JSON.stringify(lastErrorDetails, null, 2));
-        console.error('❌ [PIX] Preference data enviada:', JSON.stringify(preferenceData, null, 2));
+        console.error('❌ [PIX-V6] Erro ao criar pagamento após todas as tentativas');
+        console.error('❌ [PIX-V6] Último erro:', JSON.stringify(lastErrorDetails, null, 2));
+        console.error('❌ [PIX-V6] Payment data enviada:', JSON.stringify(paymentData, null, 2));
         
-        // ✅ FASE 3: Retornar erro mais descritivo
         const errorMessage = lastErrorDetails?.code === 'ETIMEDOUT' || lastErrorDetails?.code === 'ECONNABORTED'
           ? 'Timeout ao conectar com Mercado Pago. Tente novamente em alguns instantes.'
           : lastErrorDetails?.status === 502 || lastErrorDetails?.status === 503 || lastErrorDetails?.status === 504
           ? 'Serviço do Mercado Pago temporariamente indisponível. Tente novamente em alguns instantes.'
-          : 'Erro ao criar pagamento no Mercado Pago. Verifique sua conexão e tente novamente.';
+          : lastErrorDetails?.data?.message || 'Erro ao criar pagamento no Mercado Pago. Verifique sua conexão e tente novamente.';
         
         return response.serverError(res, lastError, errorMessage);
       }
 
-      // ✅ GO-LIVE FIX FASE 3: Extrair dados do PIX com múltiplas fontes e tentativas robustas
+      // ✅ PIX V6: Extrair dados do QR Code EMV
+      console.log('🔍 [PIX-V6] Estrutura da resposta:', JSON.stringify({
+        hasPointOfInteraction: !!result.point_of_interaction,
+        pointOfInteraction: result.point_of_interaction ? Object.keys(result.point_of_interaction) : [],
+        status: result.status,
+        payment_method_id: result.payment_method_id
+      }, null, 2));
+
       let pixData = result.point_of_interaction?.transaction_data;
-      let qrCode = pixData?.qr_code;
-      let qrCodeBase64 = pixData?.qr_code_base64;
+      let qrCode = null;
+      let qrCodeBase64 = null;
+      let ticketUrl = null;
       
-      // ✅ FASE 3: Tentar múltiplas fontes de QR code
-      if (!qrCode) {
-        // Tentar 1: point_of_interaction.transaction_data.qr_code_base64
-        if (pixData?.qr_code_base64) {
-          qrCode = pixData.qr_code_base64;
-          console.log('✅ [PIX] QR code obtido de qr_code_base64');
-        }
-        // Tentar 2: point_of_interaction.transaction_data.qr_code
-        else if (pixData?.qr_code) {
-          qrCode = pixData.qr_code;
-          console.log('✅ [PIX] QR code obtido de qr_code');
-        }
-        // Tentar 3: Consultar preferência novamente
-        else if (result.id) {
-          const maxRetries = 6; // ✅ FASE 3: Aumentado para 6 tentativas
-          for (let retry = 0; retry < maxRetries && !qrCode; retry++) {
-            try {
-              // Aguardar progressivamente: 1s, 2s, 3s, 4s, 5s, 6s
-              const delay = 1000 + (retry * 1000);
-              await new Promise(resolve => setTimeout(resolve, delay));
+      // Tentar múltiplas fontes para obter QR Code EMV
+      if (pixData) {
+        qrCode = pixData.qr_code || pixData.qr_code_base64;
+        qrCodeBase64 = pixData.qr_code_base64 || pixData.qr_code;
+        ticketUrl = pixData.ticket_url;
+        console.log('🔍 [PIX-V6] Dados do transaction_data:', {
+          hasQrCode: !!pixData.qr_code,
+          hasQrCodeBase64: !!pixData.qr_code_base64,
+          qrCodePreview: qrCode ? qrCode.substring(0, 50) + '...' : 'ausente'
+        });
+      }
+      
+      // Se não temos QR Code EMV, tentar consultar pagamento após alguns segundos
+      if (!qrCode || !qrCode.startsWith('000201')) {
+        console.log('🔄 [PIX-V6] QR Code EMV não disponível imediatamente. Consultando pagamento...');
+        
+        // Tentar múltiplas consultas com delays progressivos
+        const maxRetries = 5;
+        for (let retry = 0; retry < maxRetries; retry++) {
+          const delay = 2000 + (retry * 1000); // 2s, 3s, 4s, 5s, 6s
+          await new Promise(resolve => setTimeout(resolve, delay));
+          
+          try {
+            console.log(`🔄 [PIX-V6] Consulta ${retry + 1}/${maxRetries} do pagamento ${result.id}...`);
+            const paymentCheck = await mpAxios.get(`/v1/payments/${result.id}`);
+            const checkResult = paymentCheck.data;
+            
+            console.log('🔍 [PIX-V6] Resposta da consulta:', {
+              status: checkResult.status,
+              payment_method_id: checkResult.payment_method_id,
+              hasPointOfInteraction: !!checkResult.point_of_interaction
+            });
+            
+            const checkPixData = checkResult.point_of_interaction?.transaction_data;
+            if (checkPixData) {
+              const checkQrCode = checkPixData.qr_code || checkPixData.qr_code_base64;
               
-              const preferenceData = await preference.get({ id: result.id });
-              
-              if (preferenceData?.point_of_interaction?.transaction_data) {
-                pixData = preferenceData.point_of_interaction.transaction_data;
-                qrCode = pixData.qr_code_base64 || pixData.qr_code;
-                qrCodeBase64 = pixData.qr_code_base64 || qrCodeBase64;
-                
-                if (qrCode) {
-                  console.log(`✅ [PIX] QR code obtido após ${retry + 1} tentativa(s) de consulta`);
-                  break;
-                }
-              }
-            } catch (prefError) {
-              console.log(`⚠️ [PIX] Consulta ${retry + 1}/${maxRetries} falhou:`, prefError.code || prefError.message);
-              
-              // Se não for erro de rede, não continuar tentando
-              if (prefError.code !== 'ECONNABORTED' && prefError.code !== 'ETIMEDOUT' && prefError.response?.status !== 502) {
+              if (checkQrCode && checkQrCode.startsWith('000201')) {
+                console.log(`✅ [PIX-V6] QR Code EMV obtido na consulta ${retry + 1}`);
+                qrCode = checkQrCode;
+                qrCodeBase64 = checkPixData.qr_code_base64 || checkQrCode;
+                ticketUrl = checkPixData.ticket_url;
+                pixData = checkPixData;
                 break;
+              } else if (checkQrCode) {
+                console.log(`⚠️ [PIX-V6] QR Code encontrado mas não é EMV: ${checkQrCode.substring(0, 50)}...`);
               }
+            }
+          } catch (checkError) {
+            console.error(`⚠️ [PIX-V6] Erro na consulta ${retry + 1}:`, checkError.message);
+            if (checkError.response?.status === 404) {
+              console.error('❌ [PIX-V6] Pagamento não encontrado');
+              break;
             }
           }
         }
       }
+
+      // Validar formato EMV final
+      const finalQrCode = qrCode;
+      const finalQrCodeBase64 = qrCodeBase64;
       
-      // Log para debug (apenas em desenvolvimento)
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('🔍 [PIX] Dados da resposta do Mercado Pago:', {
-          hasPointOfInteraction: !!result.point_of_interaction,
-          hasTransactionData: !!pixData,
-          qrCode: qrCode ? 'presente' : 'ausente',
-          qrCodeBase64: qrCodeBase64 ? 'presente' : 'ausente'
-        });
+      if (!finalQrCode || !finalQrCode.startsWith('000201')) {
+        console.error('❌ [PIX-V6] QR Code EMV não disponível após todas as tentativas');
+        console.error('🔍 [PIX-V6] Dados finais:', JSON.stringify({
+          hasPixData: !!pixData,
+          qrCode: finalQrCode ? finalQrCode.substring(0, 100) : 'ausente',
+          status: result.status,
+          payment_method_id: result.payment_method_id
+        }, null, 2));
+        
+        // Retornar erro informativo
+        return response.serverError(res, null, 'QR Code PIX EMV não está disponível no momento. O pagamento foi criado, mas o QR Code precisa ser consultado posteriormente.');
       }
 
-      // Salvar pagamento no banco (usar supabaseAdmin para bypass de RLS)
+      console.log('✅ [PIX-V6] QR Code EMV válido gerado:', finalQrCode.substring(0, 50) + '...');
+
+      // Salvar pagamento no banco
       const valorFloat = parseFloat(valor);
       const externalReference = `deposito_${userId}_${Date.now()}`;
       const { data: pagamento, error } = await supabaseAdmin
         .from('pagamentos_pix')
         .insert({
           usuario_id: userId,
-          payment_id: result.id,
-          external_id: externalReference, // Campo obrigatório na tabela
+          payment_id: result.id.toString(),
+          external_id: externalReference,
           valor: valorFloat,
-          amount: valorFloat, // Campo obrigatório na tabela
-          status: 'pending',
-          qr_code: qrCode,
-          qr_code_base64: qrCodeBase64,
-          pix_copy_paste: qrCode,
+          amount: valorFloat,
+          status: result.status || 'pending',
+          qr_code: finalQrCode,
+          qr_code_base64: finalQrCodeBase64,
+          pix_copy_paste: finalQrCode, // EMV real
           expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutos
         })
         .select()
         .single();
 
       if (error) {
-        console.error('❌ [PIX] Erro ao salvar pagamento:', error);
+        console.error('❌ [PIX-V6] Erro ao salvar pagamento:', error);
         return response.serverError(res, error, 'Erro ao salvar pagamento no banco de dados.');
       }
 
-      // ✅ GO-LIVE FIX FASE 3: Garantir que sempre retorna QR code ou copy-paste com fallbacks robustos
-      let pixCopyPasteFinal = pagamento.pix_copy_paste || qrCode || pagamento.qr_code;
-      let qrCodeFinal = pagamento.qr_code || qrCode;
-      let qrCodeBase64Final = pagamento.qr_code_base64 || qrCodeBase64;
-      
-      // ✅ FASE 3: Se ainda não temos código, tentar mais vezes após salvar
-      if (!pixCopyPasteFinal && result.id) {
-        const maxFinalRetries = 4; // ✅ FASE 3: Aumentado para 4 tentativas finais
-        for (let finalRetry = 0; finalRetry < maxFinalRetries && !pixCopyPasteFinal; finalRetry++) {
-          try {
-            // Aguardar progressivamente: 2s, 4s, 6s, 8s
-            const delay = 2000 * (finalRetry + 1);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            
-            const preferenceRetry = await preference.get({ id: result.id });
-            
-            if (preferenceRetry?.point_of_interaction?.transaction_data) {
-              const pixDataRetry = preferenceRetry.point_of_interaction.transaction_data;
-              pixCopyPasteFinal = pixDataRetry.qr_code_base64 || pixDataRetry.qr_code || pixCopyPasteFinal;
-              qrCodeFinal = pixDataRetry.qr_code || qrCodeFinal;
-              qrCodeBase64Final = pixDataRetry.qr_code_base64 || qrCodeBase64Final;
-              
-              // Atualizar no banco se encontramos agora
-              if (pixCopyPasteFinal) {
-                await supabaseAdmin
-                  .from('pagamentos_pix')
-                  .update({
-                    pix_copy_paste: pixCopyPasteFinal,
-                    qr_code: qrCodeFinal,
-                    qr_code_base64: qrCodeBase64Final,
-                    updated_at: new Date().toISOString()
-                  })
-                  .eq('payment_id', result.id);
-                console.log(`✅ [PIX] QR code obtido no retry final ${finalRetry + 1} e atualizado no banco`);
-                break;
-              }
-            }
-          } catch (retryError) {
-            console.log(`⚠️ [PIX] Retry final ${finalRetry + 1}/${maxFinalRetries} falhou:`, retryError.code || retryError.message);
-            
-            // Se não for erro de rede, não continuar tentando
-            if (retryError.code !== 'ECONNABORTED' && retryError.code !== 'ETIMEDOUT' && retryError.response?.status !== 502) {
-              break;
-            }
-          }
-        }
-      }
-      
-      // ✅ FASE 3: Fallbacks múltiplos em ordem de prioridade
-      if (!pixCopyPasteFinal) {
-        // Fallback 1: init_point (link de pagamento)
-        if (result.init_point) {
-          pixCopyPasteFinal = result.init_point;
-          console.log('⚠️ [PIX] Usando init_point como fallback para copy-paste');
-        }
-        // Fallback 2: payment_id (para consulta posterior)
-        else if (result.id) {
-          pixCopyPasteFinal = `PIX-${result.id}`;
-          console.log('⚠️ [PIX] Usando payment_id como fallback temporário');
-        }
-      }
-      
-      // ✅ FASE 3: Garantir que sempre temos algo para retornar
-      if (!qrCodeFinal) {
-        qrCodeFinal = pixCopyPasteFinal;
-      }
-      if (!qrCodeBase64Final && qrCodeFinal) {
-        qrCodeBase64Final = qrCodeFinal;
-      }
+      console.log('✅ [PIX-V6] Pagamento salvo no banco:', pagamento.id);
 
+      // ✅ PIX V6: Retornar dados completos do PIX EMV
       return response.success(
         res,
         {
-        payment_id: result.id,
-        qr_code: qrCodeFinal || pixCopyPasteFinal,
-        qr_code_base64: qrCodeBase64Final,
-        pix_copy_paste: pixCopyPasteFinal,
-        expires_at: pagamento.expires_at,
-        init_point: result.init_point
+          payment_id: result.id.toString(),
+          transaction_id: result.id.toString(),
+          qr_code: finalQrCode,
+          qr_code_base64: finalQrCodeBase64,
+          copy_and_paste: finalQrCode, // EMV real para copiar e colar
+          ticket_url: ticketUrl,
+          status: result.status || 'pending',
+          expires_at: pagamento.expires_at
         },
         'Pagamento PIX criado com sucesso!',
         201
       );
 
     } catch (error) {
-      console.error('Erro ao criar pagamento PIX:', error);
+      console.error('❌ [PIX-V6] Erro ao criar pagamento PIX:', error);
       return response.serverError(res, error, 'Erro ao processar pagamento.');
     }
   }
