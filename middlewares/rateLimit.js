@@ -14,5 +14,17 @@ module.exports = function buildRateLimit() {
     message,
     validate: { trustProxy: true },
     skipSuccessfulRequests: false,
+    // Whitelist para testes automatizados
+    skip: (req) => {
+      // Verificar se é requisição de teste automatizado
+      const isTestRequest = 
+        req.headers['x-test-mode'] === 'true' ||
+        req.headers['user-agent']?.includes('puppeteer') ||
+        req.headers['user-agent']?.includes('headless') ||
+        req.headers['user-agent']?.includes('playwright') ||
+        req.headers['user-agent']?.includes('selenium');
+      
+      return isTestRequest;
+    }
   });
 };

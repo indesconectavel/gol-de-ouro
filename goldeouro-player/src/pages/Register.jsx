@@ -99,6 +99,8 @@ const Register = () => {
                 </div>
                 <input
                   type="text"
+                  name="username"
+                  data-testid="username-input"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
@@ -119,6 +121,8 @@ const Register = () => {
                 </div>
                 <input
                   type="email"
+                  name="email"
+                  data-testid="email-input"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                   className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
@@ -139,6 +143,8 @@ const Register = () => {
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  data-testid="password-input"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                   className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
@@ -171,6 +177,8 @@ const Register = () => {
                 </div>
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  data-testid="confirm-password-input"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                   className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
@@ -221,6 +229,7 @@ const Register = () => {
             {/* Botão de Registro */}
             <button
               type="submit"
+              data-testid="submit-button"
               disabled={isSubmitting}
               className={`w-full font-bold py-3 px-6 rounded-lg transition-all duration-200 transform ${
                 isSubmitting 

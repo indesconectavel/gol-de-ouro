@@ -271,6 +271,8 @@ const Withdraw = () => {
                 </div>
                 <input
                   type="number"
+                  name="valor"
+                  data-testid="valor-input"
                   value={formData.amount}
                   onChange={(e) => handleAmountChange(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent backdrop-blur-lg"
@@ -384,6 +386,7 @@ const Withdraw = () => {
             {/* Botão de Envio */}
             <button
               type="submit"
+              data-testid="submit-button"
               disabled={isSubmitting || !formData.amount || !formData.pixKey}
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed backdrop-blur-lg border border-green-400/50"
             >
