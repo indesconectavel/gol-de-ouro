@@ -24,7 +24,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: 🔒 Configurar Branch Protection Rules
         uses: actions/github-script@v7
@@ -90,7 +90,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: 🔍 Habilitar Secret Scanning
         uses: actions/github-script@v7
@@ -130,7 +130,7 @@ jobs:
     
     steps:
       - name: 📥 Checkout código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: ✅ Verificar Branch Protection
         uses: actions/github-script@v7
