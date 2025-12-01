@@ -70,41 +70,48 @@ class PaymentService {
     }
   }
 
-  // Criar PIX
-  async createPix(amount, pixKey, description = 'Saque Gol de Ouro') {
+  // Criar PIX (PIX V6 - QR Code EMV Real)
+  async createPix(valor, descricao = 'Depósito Gol de Ouro') {
     try {
       // Validações
-      if (amount < this.config.minAmount) {
+      if (valor < this.config.minAmount) {
         throw new Error(`Valor mínimo é R$ ${this.config.minAmount.toFixed(2)}`);
       }
       
-      if (amount > this.config.maxAmount) {
+      if (valor > this.config.maxAmount) {
         throw new Error(`Valor máximo é R$ ${this.config.maxAmount.toFixed(2)}`);
       }
 
-      // Validar chave PIX
-      if (!this.validatePixKey(pixKey)) {
-        throw new Error('Chave PIX inválida');
-      }
-
       const payload = {
-        amount: parseFloat(amount),
-        pixKey: pixKey,
-        description: description,
-        environment: this.config.pixProvider,
-        currency: this.config.currency,
-        timeout: this.config.timeout
+        valor: parseFloat(valor),
+        descricao: descricao
       };
 
-      console.log(`[PaymentService] Criando PIX ${this.config.pixProvider}:`, payload);
+      console.log(`[PaymentService] Criando PIX V6 (EMV Real):`, payload);
 
       const response = await apiClient.post(this.config.pixEndpoint, payload, {
         timeout: this.config.timeout
       });
 
+      // Validar resposta PIX V6
+      const pixData = response.data?.data || response.data;
+      
+      if (!pixData.copy_and_paste || !pixData.copy_and_paste.startsWith('000201')) {
+        console.warn('⚠️ [PaymentService] QR Code não está no formato EMV');
+      }
+
       return {
         success: true,
-        data: response.data,
+        data: {
+          payment_id: pixData.payment_id || pixData.transaction_id,
+          transaction_id: pixData.transaction_id || pixData.payment_id,
+          qr_code: pixData.qr_code,
+          qr_code_base64: pixData.qr_code_base64,
+          copy_and_paste: pixData.copy_and_paste,
+          ticket_url: pixData.ticket_url,
+          status: pixData.status || 'pending',
+          expires_at: pixData.expires_at
+        },
         environment: this.config.pixProvider
       };
 
@@ -112,7 +119,7 @@ class PaymentService {
       console.error('[PaymentService] Erro ao criar PIX:', error);
       return {
         success: false,
-        error: error.message || 'Erro ao processar pagamento',
+        error: error.response?.data?.message || error.message || 'Erro ao processar pagamento',
         environment: this.config.pixProvider
       };
     }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { connectChatWebSocket } from '../config/websocket'
 
 const Chat = () => {
   const [messages, setMessages] = useState([])
@@ -14,7 +15,7 @@ const Chat = () => {
   // Conectar ao WebSocket
   useEffect(() => {
     const connectWebSocket = () => {
-      const ws = new WebSocket(`${import.meta.env.VITE_WS_URL || 'wss://goldeouro-backend.onrender.com'}/chat`)
+      const ws = connectChatWebSocket()
       wsRef.current = ws
 
       ws.onopen = () => {

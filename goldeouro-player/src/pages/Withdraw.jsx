@@ -105,10 +105,9 @@ const Withdraw = () => {
         throw new Error('Saldo insuficiente')
       }
 
-      // Criar PIX usando o serviço
+      // Criar PIX usando o serviço (PIX V6)
       const result = await paymentService.createPix(
         amount,
-        formData.pixKey,
         `Saque Gol de Ouro - ${formData.pixType}`
       )
 

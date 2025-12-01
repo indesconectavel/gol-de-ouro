@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { connectAnalyticsWebSocket } from '../config/websocket'
 import { useCachedAPI } from '../hooks/useCachedAPI'
 
 const AnalyticsDashboard = () => {
@@ -20,7 +21,7 @@ const AnalyticsDashboard = () => {
   // WebSocket para dados em tempo real
   useEffect(() => {
     if (isRealTime) {
-      const ws = new WebSocket(`${import.meta.env.VITE_WS_URL || 'wss://goldeouro-backend.onrender.com'}/analytics`)
+      const ws = connectAnalyticsWebSocket()
       wsRef.current = ws
 
       ws.onopen = () => {
