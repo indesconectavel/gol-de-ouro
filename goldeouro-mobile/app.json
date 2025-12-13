@@ -23,8 +23,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1e293b"
       },
-      "package": "com.goldeouro.mobile",
-      "versionCode": 1
+      "package": "com.goldeouro.app",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -57,7 +57,8 @@
       },
       "eas": {
         "projectId": "gol-de-ouro-mobile"
-      }
+      },
+      "apiUrl": "https://goldeouro-backend-v2.fly.dev"
     }
   }
 }
