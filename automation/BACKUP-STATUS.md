@@ -1,8 +1,8 @@
 # 📦 STATUS DE BACKUPS - PRÉ APK REAL TEST
 
-**Data:** 2025-01-12  
+**Data:** 2025-12-12  
 **Tag Git:** pre_apk_real_test  
-**Timestamp:** Gerando...
+**Timestamp:** 2025-12-13 01:04:08
 
 ---
 
@@ -10,43 +10,47 @@
 
 ### 1. Backup do Repositório Git
 
-**Status:** ⏳ Pendente  
-**Ação:** Criar commit e tag `pre_apk_real_test`
+**Status:** ✅ CONCLUÍDO  
+**Commit:** `84820dc`  
+**Tag:** `pre_apk_real_test`  
+**Mensagem:** "chore: Preparação para teste APK real - Corrigir package Android e criar estrutura de backup"
 
-**Comandos executados:**
-```bash
-# Será executado após validação
-```
+**Arquivos modificados:**
+- `goldeouro-mobile/app.json` (package corrigido para `com.goldeouro.app`, versionCode atualizado para 2)
+- `automation/BACKUP-STATUS.md` (criado)
 
 ---
 
 ### 2. Backup Supabase
 
-**Status:** ⏳ Pendente  
-**Ação:** Criar dumps completos do schema e tabelas críticas
+**Status:** ✅ CONCLUÍDO  
+**Ambiente:** PROD  
+**Duração:** 1465ms  
+**Timestamp:** 2025-12-13T01:04:08
 
 **Tabelas críticas para backup:**
-- [ ] users
-- [ ] balances
-- [ ] transactions
-- [ ] lotes
-- [ ] rewards
-- [ ] webhook_events
+- [x] usuarios
+- [x] transacoes
+- [x] lotes
+- [x] rewards
+- [x] webhook_events
+- [x] system_heartbeat
 
-**Localização dos dumps:**
-- `backup/dumps/PROD/pre_apk_real_test/`
+**Arquivos gerados:**
+- Schema: `backup/schema/PROD/schema_PROD_2025-12-13T01-04-08-342Z.sql`
+- Dados: `backup/data/PROD/data_PROD_2025-12-13T01-04-09-748Z.sql`
 
 ---
 
 ### 3. Variáveis de Ambiente
 
-**Status:** ⏳ Verificando...
+**Status:** ✅ VERIFICADO
 
 **Variáveis críticas:**
-- [ ] `SUPABASE_URL_PROD`
-- [ ] `SUPABASE_SERVICE_ROLE_KEY_PROD`
-- [ ] `SUPABASE_ANON_KEY_PROD`
-- [ ] PIX credentials (produção)
+- [x] `SUPABASE_URL_PROD` - Configurado e funcional
+- [x] `SUPABASE_SERVICE_ROLE_KEY_PROD` - Configurado e funcional
+- [x] `SUPABASE_ANON_KEY_PROD` - Verificado (não usado diretamente no backup)
+- [x] PIX credentials (produção) - Configuradas no backend
 
 **Nota:** Variáveis sensíveis NÃO serão documentadas aqui por segurança.
 
