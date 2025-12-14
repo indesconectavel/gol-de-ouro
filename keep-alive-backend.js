@@ -6,7 +6,7 @@ const https = require('https');
 
 const keepAlive = () => {
   const options = {
-    hostname: 'goldeouro-backend.fly.dev',
+    hostname: 'goldeouro-backend-v2.fly.dev',
     port: 443,
     path: '/health',
     method: 'GET',

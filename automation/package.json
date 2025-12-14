@@ -1,0 +1,31 @@
+{
+  "name": "goldeouro-automation-v19",
+  "version": "1.0.0",
+  "description": "Automation scripts for Gol de Ouro V19 deployment and validation",
+  "main": "executar_v19.js",
+  "scripts": {
+    "backup:stg": "node backup_schema_and_data.js STG",
+    "backup:prod": "node backup_schema_and_data.js PROD",
+    "audit": "node full_audit_v19.js",
+    "executar:stg": "node executar_v19.js --env=STG",
+    "executar:prod": "node executar_v19.js --env=PROD",
+    "executar:stg:apply": "node executar_v19.js --env=STG --apply",
+    "executar:prod:apply": "node executar_v19.js --env=PROD --apply",
+    "test:pix:stg": "node teste_pix_v19.js staging",
+    "test:pix:prod": "node teste_pix_v19.js production",
+    "test:premiacao:stg": "node teste_premiacao_v19.js staging",
+    "test:premiacao:prod": "node teste_premiacao_v19.js production",
+    "rollback:stg": "node rollback_v19.js --env=STG",
+    "rollback:prod": "node rollback_v19.js --env=PROD",
+    "validate:search-path": "node scripts/validar_search_path.js",
+    "validate:rls": "node scripts/validar_rls_policies.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.4",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

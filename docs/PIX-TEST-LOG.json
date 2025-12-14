@@ -1,0 +1,281 @@
+{
+  "timestamp": "2025-11-28T19:29:50.638Z",
+  "version": "PIX-AUDIT-V5",
+  "tests": {
+    "test1_QRCodePixReal": {
+      "request": {
+        "url": "https://goldeouro-backend-v2.fly.dev/api/payments/pix/criar",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer [TOKEN]"
+        },
+        "body": {
+          "valor": 1
+        }
+      },
+      "response": {
+        "status": 201,
+        "data": {
+          "success": true,
+          "timestamp": "2025-11-28T19:29:55.162Z",
+          "data": {
+            "payment_id": "468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+            "qr_code": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+            "qr_code_base64": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+            "pix_copy_paste": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+            "expires_at": "2025-11-28T19:59:52.937+00:00",
+            "init_point": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-e5c24873-79fc-4c58-b330-b2df82b072bc"
+          },
+          "message": "Pagamento PIX criado com sucesso!"
+        },
+        "latency": 3996
+      },
+      "qrCode": {
+        "qr_code_base64": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+        "qr_code": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+        "copy_and_paste": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+        "id": "468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+        "status": "pending",
+        "imagePath": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\QR-CODE-PIX-1764358197268.png"
+      },
+      "latency": 3996,
+      "passed": true
+    },
+    "test2_CodigoCopiaECola": {
+      "copyPaste": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+      "emv": {},
+      "validation": {},
+      "passed": false
+    },
+    "test3_CallbackWebhook": {
+      "webhookEndpoint": "https://goldeouro-backend-v2.fly.dev/api/payments/webhook",
+      "tested": true,
+      "passed": false,
+      "response": {
+        "status": 401,
+        "data": {
+          "success": false,
+          "error": "Webhook signature inválida",
+          "message": "Header X-Signature não encontrado"
+        }
+      }
+    },
+    "test4_FluxoPixCompletoE2E": {
+      "steps": [
+        {
+          "name": "user_registration",
+          "status": "PASS"
+        },
+        {
+          "name": "login",
+          "status": "PASS"
+        },
+        {
+          "name": "pix_creation",
+          "status": "PASS"
+        },
+        {
+          "name": "status_check",
+          "status": "FAIL"
+        }
+      ],
+      "score": 75,
+      "completed": false,
+      "pixId": "468718642-aed9489b-420a-4a48-9ebc-eb778e8f80f7",
+      "qrCode": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-aed9489b-420a-4a48-9ebc-eb778e8f80f7",
+      "copyPaste": "https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=468718642-aed9489b-420a-4a48-9ebc-eb778e8f80f7"
+    },
+    "test5_ResilienciaPix": {
+      "requests": [
+        {
+          "attempt": 1,
+          "status": 201,
+          "latency": 3869,
+          "success": true
+        },
+        {
+          "attempt": 2,
+          "status": 201,
+          "latency": 3877,
+          "success": true
+        },
+        {
+          "attempt": 3,
+          "status": 201,
+          "latency": 3634,
+          "success": true
+        },
+        {
+          "attempt": 4,
+          "status": 201,
+          "latency": 3652,
+          "success": true
+        },
+        {
+          "attempt": 5,
+          "status": 201,
+          "latency": 3659,
+          "success": true
+        },
+        {
+          "attempt": 6,
+          "status": 201,
+          "latency": 3627,
+          "success": true
+        },
+        {
+          "attempt": 7,
+          "status": 201,
+          "latency": 3872,
+          "success": true
+        },
+        {
+          "attempt": 8,
+          "status": 201,
+          "latency": 3614,
+          "success": true
+        },
+        {
+          "attempt": 9,
+          "status": 201,
+          "latency": 3862,
+          "success": true
+        },
+        {
+          "attempt": 10,
+          "status": 201,
+          "latency": 3832,
+          "success": true
+        }
+      ],
+      "latencies": [
+        3614,
+        3627,
+        3634,
+        3652,
+        3659,
+        3832,
+        3862,
+        3869,
+        3872,
+        3877
+      ],
+      "errors": [],
+      "rateLimitHit": false,
+      "averageLatency": 3750,
+      "p95Latency": 3877,
+      "errorRate": 0
+    },
+    "test6_AuditoriaMercadoPago": {
+      "credentials": {
+        "connected": false
+      },
+      "token": {
+        "valid": true
+      },
+      "permissions": {},
+      "webhook": {}
+    }
+  },
+  "metrics": {
+    "resilience": {
+      "requests": [
+        {
+          "attempt": 1,
+          "status": 201,
+          "latency": 3869,
+          "success": true
+        },
+        {
+          "attempt": 2,
+          "status": 201,
+          "latency": 3877,
+          "success": true
+        },
+        {
+          "attempt": 3,
+          "status": 201,
+          "latency": 3634,
+          "success": true
+        },
+        {
+          "attempt": 4,
+          "status": 201,
+          "latency": 3652,
+          "success": true
+        },
+        {
+          "attempt": 5,
+          "status": 201,
+          "latency": 3659,
+          "success": true
+        },
+        {
+          "attempt": 6,
+          "status": 201,
+          "latency": 3627,
+          "success": true
+        },
+        {
+          "attempt": 7,
+          "status": 201,
+          "latency": 3872,
+          "success": true
+        },
+        {
+          "attempt": 8,
+          "status": 201,
+          "latency": 3614,
+          "success": true
+        },
+        {
+          "attempt": 9,
+          "status": 201,
+          "latency": 3862,
+          "success": true
+        },
+        {
+          "attempt": 10,
+          "status": 201,
+          "latency": 3832,
+          "success": true
+        }
+      ],
+      "latencies": [
+        3614,
+        3627,
+        3634,
+        3652,
+        3659,
+        3832,
+        3862,
+        3869,
+        3872,
+        3877
+      ],
+      "errors": [],
+      "rateLimitHit": false,
+      "averageLatency": 3750,
+      "p95Latency": 3877,
+      "errorRate": 0
+    }
+  },
+  "errors": [
+    "Copy/Paste não está no formato EMV"
+  ],
+  "warnings": [
+    "Webhook retornou 401",
+    "Mercado Pago pode estar desconectado"
+  ],
+  "corrections": [],
+  "score": 65,
+  "decision": "BLOQUEADO",
+  "qrCodes": [
+    {
+      "id": "468718642-e5c24873-79fc-4c58-b330-b2df82b072bc",
+      "imagePath": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\QR-CODE-PIX-1764358197268.png",
+      "timestamp": "2025-11-28T19:29:57.335Z"
+    }
+  ],
+  "emvCodes": []
+}

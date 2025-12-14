@@ -16,15 +16,23 @@ const VersionWarning = () => {
     
     // Verificar periodicamente se há avisos
     const interval = setInterval(() => {
-      if (versionService.shouldShowWarning()) {
-        setShowWarning(true);
-        setWarningMessage(versionService.getWarningMessage());
-        setVersionInfo(versionService.getVersionInfo());
-      } else {
-        setShowWarning(false);
-        setWarningMessage('');
+      try {
+        // Verificar se o método existe antes de chamar
+        if (versionService && typeof versionService.shouldShowWarning === 'function') {
+          if (versionService.shouldShowWarning()) {
+            setShowWarning(true);
+            setWarningMessage(versionService.getWarningMessage() || '');
+            setVersionInfo(versionService.getVersionInfo());
+          } else {
+            setShowWarning(false);
+            setWarningMessage('');
+          }
+        }
+      } catch (error) {
+        // Silenciar erro se método não existir
+        console.warn('[VersionWarning] Erro ao verificar aviso:', error);
       }
-    }, 1000);
+    }, 5000); // Reduzir frequência para 5 segundos em vez de 1 segundo
 
     return () => clearInterval(interval);
   }, []);

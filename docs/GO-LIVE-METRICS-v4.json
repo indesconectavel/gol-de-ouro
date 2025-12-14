@@ -1,0 +1,119 @@
+{
+  "timestamp": "2025-11-27T14:34:30.313Z",
+  "version": "4.0",
+  "metricas_detalhadas": {
+    "pix": {
+      "latencias": [25090],
+      "latencia_media": 25090,
+      "latencia_min": 25090,
+      "latencia_max": 25090,
+      "metodos": [
+        {
+          "qr_code": true,
+          "qr_code_base64": false,
+          "pix_copy_paste": true,
+          "init_point": true,
+          "payment_id": true
+        }
+      ],
+      "metodos_disponiveis": 4,
+      "taxa_sucesso": 100,
+      "retry_robusto": true,
+      "timeout_configurado": 25000,
+      "tentativas_retry": 4
+    },
+    "websocket": {
+      "latencias": [174],
+      "latencia_media": 174,
+      "latencia_min": 174,
+      "latencia_max": 174,
+      "handshake_times": [96],
+      "handshake_medio": 96,
+      "autenticacao_times": [151],
+      "autenticacao_medio": 151,
+      "reconexoes": 0,
+      "taxa_sucesso": 100,
+      "ping_pong_funcionando": true,
+      "tempo_maximo_aceitavel": 2000,
+      "status": "EXCELENTE"
+    },
+    "security": {
+      "jwt_tests": {
+        "jwt_expiration": true,
+        "jwt_invalid": true,
+        "jwt_missing": true,
+        "rate_limiting": true,
+        "cors": true,
+        "protected_routes": true
+      },
+      "total_tests": 6,
+      "passed_tests": 6,
+      "taxa_sucesso": 100,
+      "rate_limit_tests": []
+    },
+    "database": {
+      "constraints": [],
+      "triggers": [],
+      "status": "VALIDADO"
+    },
+    "admin": {
+      "endpoints": [
+        {
+          "endpoint": "Admin Users",
+          "status": "PASS",
+          "latency": 69
+        },
+        {
+          "endpoint": "Admin Chutes",
+          "status": "PASS",
+          "latency": 64
+        },
+        {
+          "endpoint": "Admin Transactions",
+          "status": "PASS",
+          "latency": 94
+        }
+      ],
+      "latencia_media": 75.67,
+      "taxa_sucesso": 100,
+      "endpoints_funcionais": 3,
+      "total_endpoints": 3
+    },
+    "game_flow": {
+      "steps": [
+        {
+          "step": "check_balance",
+          "status": "PASS"
+        },
+        {
+          "step": "create_pix",
+          "status": "PASS"
+        },
+        {
+          "step": "check_history",
+          "status": "PASS"
+        }
+      ],
+      "steps_completos": 3,
+      "taxa_sucesso": 100
+    },
+    "performance": {
+      "overall": "EXCELENTE",
+      "pix_aceitavel": true,
+      "ws_aceitavel": true,
+      "health_check_latency": 181,
+      "registration_latency": 255,
+      "admin_latency_media": 75.67
+    }
+  },
+  "resumo": {
+    "score_total": 100,
+    "testes_passando": 10,
+    "testes_falhando": 0,
+    "problemas_criticos": 0,
+    "problemas_medios": 0,
+    "warnings_baixos": 2,
+    "status_geral": "APROVADO_PARA_GO_LIVE"
+  }
+}
+

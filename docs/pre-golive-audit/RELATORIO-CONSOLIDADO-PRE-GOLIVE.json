@@ -1,0 +1,151 @@
+{
+  "timestamp": "2025-12-01T15:42:55.170Z",
+  "version": "PRE-GOLIVE-V12",
+  "modules": {
+    "module1_infra": {
+      "dns": {
+        "hostname": "www.goldeouro.lol",
+        "resolved": true
+      },
+      "ssl": {
+        "protocol": true,
+        "valid": true
+      },
+      "redirects": null,
+      "headers": {
+        "csp": null,
+        "cors": null,
+        "hsts": null,
+        "xFrameOptions": null,
+        "xContentTypeOptions": null
+      },
+      "errors": [],
+      "screenshots": [
+        "E:\\Chute de Ouro\\goldeouro-backend\\docs\\pre-golive-audit\\screenshots\\01-home-desktop.png",
+        "E:\\Chute de Ouro\\goldeouro-backend\\docs\\pre-golive-audit\\screenshots\\01-login-desktop.png"
+      ],
+      "score": 30,
+      "warnings": [
+        "2 recursos externos não resolvidos (não crítico)"
+      ]
+    },
+    "module2_auth": {
+      "register": {
+        "success": false,
+        "token": null,
+        "redirect": "https://www.goldeouro.lol/register",
+        "hasUser": false
+      },
+      "login": null,
+      "tokenValidation": null,
+      "logout": {
+        "success": true
+      },
+      "persistence": null,
+      "score": 0,
+      "errors": [
+        "Token não salvo após registro - pode ser que o registro tenha falhado",
+        "Erro no módulo 2: No element found for selector: input[type=\"email\"]"
+      ],
+      "testCredentials": null
+    },
+    "module3_pix": {
+      "create": null,
+      "emvValidation": null,
+      "qrCodeRender": null,
+      "stressTest": null,
+      "latencies": [],
+      "score": 0,
+      "errors": [
+        "Token não disponível"
+      ]
+    },
+    "module4_websocket": {
+      "connection": null,
+      "authentication": null,
+      "heartbeat": null,
+      "gameFlow": null,
+      "score": 0,
+      "errors": [
+        "Token não disponível"
+      ]
+    },
+    "module5_mobile": {
+      "iPhone12": {
+        "screenshot": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\pre-golive-audit\\screenshots\\05-iphone12-home.png",
+        "layout": "OK",
+        "assets": "OK"
+      },
+      "android": {
+        "screenshot": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\pre-golive-audit\\screenshots\\05-android-home.png",
+        "layout": "OK",
+        "assets": "OK"
+      },
+      "pwa": {
+        "hasManifest": true,
+        "hasIcons": true,
+        "iconsCount": 1
+      },
+      "score": 40,
+      "errors": []
+    },
+    "module6_performance": {
+      "firstLoad": {
+        "totalTime": 6759,
+        "ttfb": 21,
+        "domContentLoaded": 5976,
+        "loadComplete": 5979
+      },
+      "reloads": {
+        "avgTime": 712.1,
+        "improvement": 89.46441781328598,
+        "cached": true
+      },
+      "caching": {
+        "totalAssets": 10,
+        "cachedAssets": 10,
+        "cacheRate": 100
+      },
+      "score": 30,
+      "errors": []
+    },
+    "module7_security": {
+      "cors": {
+        "valid": false
+      },
+      "hsts": {
+        "header": "max-age=31536000; includeSubDomains; preload",
+        "valid": true
+      },
+      "csp": {
+        "header": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+        "valid": true
+      },
+      "headers": {
+        "xFrameOptions": "DENY",
+        "xContentTypeOptions": "nosniff"
+      },
+      "websocket": {
+        "secure": true,
+        "valid": true
+      },
+      "score": 45,
+      "errors": []
+    }
+  },
+  "finalScore": 36,
+  "finalStatus": "BLOQUEADO_PARA_PROD",
+  "blockers": [],
+  "warnings": [
+    "Token não salvo após registro - pode ser que o registro tenha falhado",
+    "Erro no módulo 2: No element found for selector: input[type=\"email\"]",
+    "Token não disponível",
+    "Token não disponível"
+  ],
+  "approvals": [
+    "Módulo com score 30",
+    "Módulo com score 40",
+    "Módulo com score 30",
+    "Módulo com score 45"
+  ]
+}

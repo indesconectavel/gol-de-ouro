@@ -84,10 +84,12 @@ const Login = () => {
                 </div>
                 <input
                   type="email"
+                  name="email"
+                  data-testid="email-input"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                          className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                        placeholder="seu@e-mail.com"
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  placeholder="seu@e-mail.com"
                   required
                 />
               </div>
@@ -104,10 +106,12 @@ const Login = () => {
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  data-testid="password-input"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
-                                          className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
-                        placeholder="Sua senha"
+                  className="w-full pl-10 pr-12 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  placeholder="Sua senha"
                   required
                 />
                 <button
@@ -141,6 +145,7 @@ const Login = () => {
             {/* Botão de Login */}
             <button
               type="submit"
+              data-testid="submit-button"
               disabled={loading}
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 group disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >

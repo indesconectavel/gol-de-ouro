@@ -1,0 +1,263 @@
+{
+  "timestamp": "2025-11-27T22:24:36.922Z",
+  "version": "SUPREMA-AGENT-BROWSER",
+  "urls": {
+    "player": "https://goldeouro.lol",
+    "admin": "https://admin.goldeouro.lol",
+    "api": "https://goldeouro-backend-v2.fly.dev"
+  },
+  "tests": {
+    "preparation": {
+      "urls": {
+        "player": {
+          "accessible": true,
+          "status": 200,
+          "latency": 0
+        },
+        "admin": {
+          "accessible": true,
+          "status": 200,
+          "latency": 0
+        },
+        "api": {
+          "accessible": true,
+          "status": 200,
+          "latency": 0
+        }
+      },
+      "health": {
+        "status": 200,
+        "data": {
+          "success": true,
+          "timestamp": "2025-11-27T22:24:39.841Z",
+          "data": {
+            "status": "ok",
+            "timestamp": "2025-11-27T22:24:39.841Z",
+            "version": "1.2.0",
+            "database": "connected",
+            "mercadoPago": "connected",
+            "contadorChutes": 61,
+            "ultimoGolDeOuro": 0
+          },
+          "message": "Sistema funcionando"
+        },
+        "latency": 0
+      },
+      "structure": {}
+    },
+    "player": {
+      "pages": {
+        "/": {
+          "accessible": true,
+          "status": 200,
+          "latency": 0
+        },
+        "/login": {
+          "accessible": true,
+          "status": 404,
+          "latency": 0
+        },
+        "/registro": {
+          "accessible": true,
+          "status": 404,
+          "latency": 0
+        },
+        "/jogo": {
+          "accessible": true,
+          "status": 404,
+          "latency": 0
+        },
+        "/deposito": {
+          "accessible": true,
+          "status": 404,
+          "latency": 0
+        },
+        "/historico": {
+          "accessible": true,
+          "status": 404,
+          "latency": 0
+        }
+      },
+      "api": {
+        "/api/auth/register": {
+          "status": 400,
+          "latency": 0
+        },
+        "/api/auth/login": {
+          "status": 400,
+          "latency": 0
+        },
+        "/api/system/health": {
+          "status": 404,
+          "latency": 0
+        }
+      },
+      "console": [],
+      "network": []
+    },
+    "pix": {
+      "creation": {
+        "success": true,
+        "latency": 0
+      },
+      "qrCode": null,
+      "webhook": null,
+      "validation": null
+    },
+    "game": {
+      "websocket": {
+        "connected": true,
+        "authenticated": true,
+        "handshakeTime": 195,
+        "messages": [
+          {
+            "type": "welcome",
+            "message": "Conectado ao Gol de Ouro WebSocket",
+            "connectionId": "conn_1764282329875_yrhg6shyb",
+            "timestamp": "2025-11-27T22:25:29.875Z"
+          },
+          {
+            "type": "auth_success",
+            "userId": "31b805fa-4b77-4367-a349-0be49af0bf56",
+            "user": {
+              "id": "31b805fa-4b77-4367-a349-0be49af0bf56",
+              "email": "test_game_1764282328033@goldeouro.test",
+              "username": "game_test_1764282328033",
+              "saldo": 0
+            },
+            "reconnectToken": "reconnect_1764282330158_z48vzwlfo"
+          }
+        ]
+      },
+      "chutes": [],
+      "balance": null,
+      "history": null
+    },
+    "admin": {
+      "pages": {
+        "/": {
+          "accessible": true,
+          "status": 200
+        },
+        "/login": {
+          "accessible": true,
+          "status": 200
+        },
+        "/dashboard": {
+          "accessible": true,
+          "status": 200
+        },
+        "/usuarios": {
+          "accessible": true,
+          "status": 200
+        },
+        "/transacoes": {
+          "accessible": true,
+          "status": 200
+        },
+        "/chutes": {
+          "accessible": true,
+          "status": 200
+        }
+      },
+      "endpoints": {},
+      "protection": {
+        "/api/admin/users": {
+          "withoutToken": true,
+          "withInvalidToken": true
+        },
+        "/api/admin/chutes": {
+          "withoutToken": false,
+          "withInvalidToken": false
+        },
+        "/api/admin/transactions": {
+          "withoutToken": false,
+          "withInvalidToken": false
+        }
+      }
+    },
+    "security": {
+      "cors": {
+        "headers": {
+          "content-security-policy": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "DENY",
+          "x-permitted-cross-domain-policies": "none",
+          "x-xss-protection": "0",
+          "access-control-allow-origin": "https://goldeouro.lol",
+          "vary": "Origin",
+          "access-control-allow-credentials": "true",
+          "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
+          "access-control-allow-headers": "Content-Type,Authorization,X-Requested-With,X-Idempotency-Key,x-admin-token",
+          "access-control-max-age": "86400",
+          "access-control-expose-headers": "X-Total-Count,X-Page,X-Limit",
+          "date": "Thu, 27 Nov 2025 22:25:49 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "server": "Fly/b85a5c74 (2025-11-26)",
+          "via": "1.1 fly.io",
+          "fly-request-id": "01KB3PRED7TBJWCMJN84XWKS4R-gru"
+        },
+        "allowedOrigin": true,
+        "allowedMethods": true
+      },
+      "https": {
+        "player": true,
+        "admin": true,
+        "api": true
+      },
+      "jwt": {
+        "expired": false,
+        "invalid": false,
+        "missing": false
+      },
+      "headers": {
+        "xFrameOptions": "DENY",
+        "xContentTypeOptions": "nosniff"
+      },
+      "sqlInjection": {}
+    },
+    "performance": {
+      "apiLatency": {
+        "/health": {
+          "min": 26,
+          "max": 71,
+          "avg": 36.2
+        },
+        "/api/system/health": {
+          "min": 25,
+          "max": 28,
+          "avg": 26.4
+        }
+      },
+      "pageLoad": {
+        "https://goldeouro.lol": 69,
+        "https://admin.goldeouro.lol": 75
+      },
+      "websocketLatency": null
+    }
+  },
+  "metrics": {
+    "totalScore": 85,
+    "maxScore": 100
+  },
+  "errors": [],
+  "warnings": [
+    "Página /login retornou status 404",
+    "Página /registro retornou status 404",
+    "Página /jogo retornou status 404",
+    "Página /deposito retornou status 404",
+    "Página /historico retornou status 404",
+    "QR Code não disponível após criação do PIX"
+  ],
+  "screenshots": [],
+  "score": 85,
+  "decision": "APTO_COM_RESSALVAS"
+}

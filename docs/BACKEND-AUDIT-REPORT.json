@@ -1,0 +1,334 @@
+{
+  "timestamp": "2025-12-01T15:17:27.716Z",
+  "version": "BACKEND-AUDIT-COMPLETE",
+  "backendUrl": "https://goldeouro-backend-v2.fly.dev",
+  "wsUrl": "wss://goldeouro-backend-v2.fly.dev",
+  "tests": {
+    "test1_health": {
+      "health": {
+        "status": 200,
+        "latency": 264,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-01T15:17:27.253Z",
+          "data": {
+            "status": "ok",
+            "timestamp": "2025-12-01T15:17:27.253Z",
+            "version": "1.2.0",
+            "database": "connected",
+            "mercadoPago": "connected",
+            "contadorChutes": 61,
+            "ultimoGolDeOuro": 0
+          },
+          "message": "Sistema funcionando"
+        },
+        "headers": {
+          "csp": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+          "hsts": "max-age=31536000; includeSubDomains; preload"
+        },
+        "passed": true
+      },
+      "meta": {
+        "status": 200,
+        "latency": 29,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-01T15:17:27.295Z",
+          "data": {
+            "name": "Gol de Ouro Backend API",
+            "version": "1.2.0",
+            "description": "API do jogo Gol de Ouro",
+            "environment": "production",
+            "compatibility": {
+              "minVersion": "1.0.0",
+              "supported": true
+            },
+            "features": {
+              "pix": true,
+              "goldenGoal": true,
+              "monitoring": true
+            }
+          },
+          "message": "Informações do sistema"
+        },
+        "hasVersion": true,
+        "hasDatabase": false,
+        "hasMercadoPago": false,
+        "hasContadorChutes": false,
+        "passed": true
+      },
+      "score": 20,
+      "errors": [],
+      "warnings": []
+    },
+    "test2_auth": {
+      "register": {
+        "status": 201,
+        "latency": 233,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-01T15:17:27.530Z",
+          "data": {
+            "token": "***MASKED***",
+            "user": {
+              "id": "2ff6c625-cf12-4950-baf4-fc3994195dad",
+              "email": "test_audit_1764602248014@example.com",
+              "username": "testuser_1764602248014",
+              "saldo": 0,
+              "tipo": "jogador"
+            }
+          },
+          "message": "Usuário registrado com sucesso!"
+        },
+        "hasToken": true,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyZmY2YzYyNS1jZjEyLTQ5NTAtYmFmNC1mYzM5OTQxOTVkYWQiLCJlbWFpbCI6InRlc3RfYXVkaXRfMTc2NDYwMjI0ODAxNEBleGFtcGxlLmNvbSIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0NjAyMjQ3LCJleHAiOjE3NjQ2ODg2NDd9.S1sD_m0xpUOSqifyut3GuV2XuNmFJWNC8-4jtbN-aig",
+        "passed": true
+      },
+      "login": {
+        "status": 200,
+        "latency": 182,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-01T15:17:30.729Z",
+          "data": {
+            "token": "***MASKED***",
+            "user": {
+              "id": "2ff6c625-cf12-4950-baf4-fc3994195dad",
+              "email": "test_audit_1764602248014@example.com",
+              "username": "testuser_1764602248014",
+              "saldo": 0,
+              "tipo": "jogador"
+            }
+          },
+          "message": "Login realizado com sucesso!"
+        },
+        "hasToken": true,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyZmY2YzYyNS1jZjEyLTQ5NTAtYmFmNC1mYzM5OTQxOTVkYWQiLCJlbWFpbCI6InRlc3RfYXVkaXRfMTc2NDYwMjI0ODAxNEBleGFtcGxlLmNvbSIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0NjAyMjUwLCJleHAiOjE3NjQ2ODg2NTB9.FZhxXAAnhjWrYUFbvM0Lt4O8-10tYqdiMW662w3YAyk",
+        "passed": true
+      },
+      "tokenValidation": {
+        "hasExp": true,
+        "hasIat": true,
+        "hasUserId": true,
+        "exp": 1764688650,
+        "iat": 1764602250,
+        "passed": true
+      },
+      "refreshToken": null,
+      "errorHandling": {
+        "status": 401,
+        "passed": true,
+        "message": "Credenciais inválidas."
+      },
+      "score": 20,
+      "errors": [],
+      "warnings": [],
+      "testCredentials": {
+        "email": "test_audit_1764602248014@example.com",
+        "password": "Test123456!"
+      }
+    },
+    "test3_admin": {
+      "users": {
+        "status": 429,
+        "latency": 28,
+        "data": {
+          "success": false,
+          "message": "Muitas tentativas. Tente novamente em 15 minutos.",
+          "retryAfter": 900
+        },
+        "passed": false
+      },
+      "chutes": {
+        "status": 429,
+        "latency": 27,
+        "passed": false
+      },
+      "fixExpiredPix": null,
+      "rbac": {
+        "status": 429,
+        "passed": true
+      },
+      "score": 10,
+      "errors": [],
+      "warnings": []
+    },
+    "test4_pix": {
+      "create": {
+        "status": 429,
+        "latency": 90,
+        "data": {
+          "success": false,
+          "message": "Muitas tentativas. Tente novamente em 15 minutos.",
+          "retryAfter": 900
+        },
+        "hasQrCode": false,
+        "hasQrCodeBase64": false,
+        "hasCopyPaste": false,
+        "hasPaymentId": false,
+        "passed": false
+      },
+      "idempotency": {
+        "status": 429,
+        "latency": 71,
+        "passed": false
+      },
+      "webhook": {
+        "status": 429,
+        "latency": 26,
+        "passed": false
+      },
+      "score": 0,
+      "errors": [
+        "PIX create falhou: status=429, EMV=undefined"
+      ],
+      "warnings": [
+        "Idempotency pode não estar implementado corretamente"
+      ]
+    },
+    "test5_websocket": {
+      "connection": {
+        "passed": true,
+        "latency": 83
+      },
+      "authentication": {
+        "passed": true
+      },
+      "heartbeat": {
+        "passed": false
+      },
+      "score": 10,
+      "errors": [],
+      "warnings": [
+        "Heartbeat não recebido"
+      ]
+    },
+    "test6_rateLimiting": {
+      "floodTest": {
+        "totalRequests": 50,
+        "status429": 50,
+        "status200": 0,
+        "statusOther": 0,
+        "duration": 370,
+        "rateLimitDetected": true,
+        "passed": true
+      },
+      "score": 10,
+      "errors": [],
+      "warnings": []
+    },
+    "test7_security": {
+      "cors": {
+        "allowedOrigin": "https://goldeouro.lol",
+        "allowedCredentials": "true",
+        "passed": true
+      },
+      "csp": {
+        "header": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+        "passed": true
+      },
+      "hsts": {
+        "header": "max-age=31536000; includeSubDomains; preload",
+        "passed": true
+      },
+      "xPoweredBy": {
+        "passed": true
+      },
+      "sqlInjection": {
+        "status": 401,
+        "passed": true
+      },
+      "score": 15,
+      "errors": [],
+      "warnings": []
+    },
+    "test8_logging": {
+      "error500": {
+        "status": 429,
+        "hasMessage": true,
+        "message": "Muitas tentativas. Tente novamente em 15 minutos.",
+        "sanitized": true
+      },
+      "sanitizedMessage": {
+        "passed": true
+      },
+      "score": 10,
+      "errors": [],
+      "warnings": []
+    },
+    "test9_dependencies": {
+      "mercadoPago": {
+        "passed": false
+      },
+      "supabase": {
+        "status": "connected",
+        "passed": true
+      },
+      "secrets": {
+        "passed": true
+      },
+      "score": 7,
+      "errors": [],
+      "warnings": [
+        "Mercado Pago pode estar desconectado"
+      ]
+    },
+    "test10_performance": {
+      "metaConcurrent": {
+        "avgLatency": 40.9,
+        "p95Latency": 48,
+        "totalDuration": 48,
+        "passed": true
+      },
+      "pixConcurrent": {
+        "avgLatency": 41,
+        "p95Latency": 45,
+        "totalDuration": 46,
+        "passed": true
+      },
+      "score": 10,
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "metrics": {
+    "health": {
+      "score": 20,
+      "max": 20
+    },
+    "auth": {
+      "score": 20,
+      "max": 20
+    },
+    "pix": {
+      "score": 0,
+      "max": 20
+    },
+    "websocket": {
+      "score": 10,
+      "max": 15
+    },
+    "security": {
+      "score": 15,
+      "max": 15
+    },
+    "performance": {
+      "score": 10,
+      "max": 10
+    }
+  },
+  "errors": [
+    "PIX create falhou: status=429, EMV=undefined"
+  ],
+  "warnings": [],
+  "corrections": [
+    {
+      "file": "controllers/paymentController.js",
+      "issue": "QR Code não está no formato EMV",
+      "fix": "Garantir que point_of_interaction.transaction_data.qr_code retorna string começando com 000201",
+      "code": "// No método criarPagamentoPix, após criar payment:\nconst qrCode = result.point_of_interaction?.transaction_data?.qr_code;\nif (!qrCode || !qrCode.startsWith('000201')) {\n  // Aguardar e reconsultar ou retornar erro\n}"
+    }
+  ],
+  "totalScore": 75,
+  "decision": "BLOQUEADO"
+}

@@ -1,5 +1,7 @@
-// 🔄 VERSIONSERVICE OTIMIZADO - GOL DE OURO v1.2.0
-// Sistema de verificação de versão com cache para evitar chamadas duplicadas
+// 🔄 VERSIONSERVICE CORRIGIDO - GOL DE OURO v1.2.0
+// Sistema de verificação de versão com chamadas reais ao backend
+
+import apiClient from './apiClient';
 
 class VersionService {
   constructor() {
@@ -37,16 +39,22 @@ class VersionService {
     console.log('🔄 [VersionService] Verificando compatibilidade de versão...');
 
     try {
-      // Simular verificação de versão (pode ser substituído por chamada real)
+      // Chamada real ao backend
+      const response = await apiClient.get('/meta');
+      const metaData = response.data?.data || response.data;
+      
       const versionInfo = {
-        current: '1.2.0',
+        current: metaData?.version || '1.2.0',
         compatible: true,
         lastCheck: now,
+        backendVersion: metaData?.version,
         features: {
           audio: true,
           cache: true,
-          notifications: true
-        }
+          notifications: true,
+          pix: true
+        },
+        meta: metaData
       };
 
       // Armazenar no cache
@@ -116,6 +124,28 @@ class VersionService {
       this.periodicCheckInterval = null;
       console.log('⏹️ [VersionService] Verificação periódica parada');
     }
+  }
+
+  // Verificar se deve mostrar aviso (método usado por VersionWarning)
+  shouldShowWarning() {
+    const cached = this.cache.get('version');
+    if (!cached) {
+      return false;
+    }
+    // Retornar false se compatível, true se houver problema
+    return !cached.compatible || (cached.warningMessage && cached.warningMessage.length > 0);
+  }
+
+  // Obter mensagem de aviso
+  getWarningMessage() {
+    const cached = this.cache.get('version');
+    return cached?.warningMessage || '';
+  }
+
+  // Obter informações de versão
+  getVersionInfo() {
+    const cached = this.cache.get('version');
+    return cached || null;
   }
 }
 

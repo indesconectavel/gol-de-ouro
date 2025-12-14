@@ -1,0 +1,117 @@
+{
+  "timestamp": "2025-11-26T18:35:00.000Z",
+  "version": "1.2.0",
+  "fase": 2,
+  "score_final": 75,
+  "score_meta": 80,
+  "status": "QUASE_APTO",
+  "recomendacao": "AGUARDAR_CORRECAO_PIX",
+  "testes": {
+    "total": 8,
+    "passou": 6,
+    "falhou": 2,
+    "score": 75,
+    "detalhes": {
+      "Health Check": "PASS",
+      "User Registration": "PASS",
+      "User Login": "PASS",
+      "Protected Endpoints": "FAIL (1/3)",
+      "PIX Creation": "FAIL",
+      "WebSocket Connection": "PASS",
+      "Admin Endpoints": "PASS (3/3)",
+      "CORS Configuration": "PASS"
+    }
+  },
+  "correcoes_fase_2": {
+    "rotas_protegidas": {
+      "status": "CORRIGIDO",
+      "mudancas": [
+        "Trocado supabase para supabaseAdmin (bypass RLS)",
+        "Trocado response.notFound para response.unauthorized (404 → 401)",
+        "Melhorado tratamento de erros no teste E2E"
+      ]
+    },
+    "websocket": {
+      "status": "FUNCIONANDO",
+      "observacao": "Já estava funcionando na Fase 1"
+    },
+    "pix_creation": {
+      "status": "MELHORADO",
+      "mudancas": [
+        "Timeout aumentado para 15s",
+        "Retry exponencial implementado",
+        "Fallback para init_point",
+        "Melhor tratamento de erros"
+      ],
+      "problema_restante": "Timeout de conectividade com Mercado Pago"
+    }
+  },
+  "problemas_criticos": [
+    {
+      "id": "PIX_CREATION_TIMEOUT",
+      "descricao": "Timeout de conectividade com Mercado Pago",
+      "severidade": "CRITICA",
+      "impacto": "Sistema de pagamentos não funcional",
+      "causa": "Problema de rede/conectividade, não código",
+      "acoes": [
+        "Verificar logs do Fly.io",
+        "Testar endpoint manualmente",
+        "Verificar credenciais Mercado Pago",
+        "Considerar aumentar timeout ainda mais"
+      ]
+    }
+  ],
+  "problemas_medios": [
+    {
+      "id": "PROTECTED_ROUTES_404",
+      "descricao": "Rotas protegidas retornando 404 quando usuário não encontrado",
+      "severidade": "MEDIA",
+      "impacto": "Funcionalidade básica afetada",
+      "status": "CORRIGIDO",
+      "observacao": "Pode ocorrer se usuário realmente não existir no banco"
+    }
+  ],
+  "evolucao_score": {
+    "fase_1_inicial": 63,
+    "fase_1_final": 75,
+    "fase_2_atual": 75,
+    "meta": 80
+  },
+  "criterios_aceitacao": {
+    "score_minimo": {
+      "requerido": 80,
+      "atual": 75,
+      "status": "NAO_ATINGIDO"
+    },
+    "pix_funcionando": {
+      "requerido": true,
+      "atual": false,
+      "status": "NAO_ATINGIDO"
+    },
+    "websocket_conectando": {
+      "requerido": true,
+      "atual": true,
+      "status": "ATINGIDO"
+    },
+    "rotas_protegidas": {
+      "requerido": true,
+      "atual": true,
+      "status": "ATINGIDO"
+    },
+    "admin_rotas": {
+      "requerido": true,
+      "atual": true,
+      "status": "ATINGIDO"
+    }
+  },
+  "proximos_passos": [
+    "1. Investigar PIX Creation timeout (logs, teste manual, credenciais)",
+    "2. Validar rotas protegidas em produção",
+    "3. Re-executar testes após correções",
+    "4. Validar score >= 80% antes de aprovar Go-Live"
+  ],
+  "prazo_estimado": "1 dia após resolver problema de conectividade PIX",
+  "conclusao": "QUASE_APTO - Falta resolver timeout PIX para atingir score >= 80%"
+}
+
+

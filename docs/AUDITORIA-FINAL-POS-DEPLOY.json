@@ -1,0 +1,319 @@
+{
+  "timestamp": "2025-11-28T18:17:03.527Z",
+  "version": "FINAL-POS-DEPLOY",
+  "environment": "PRODUCTION",
+  "urls": {
+    "backend": "https://goldeouro-backend-v2.fly.dev",
+    "player": "https://goldeouro.lol",
+    "admin": "https://admin.goldeouro.lol",
+    "websocket": "wss://goldeouro-backend-v2.fly.dev"
+  },
+  "tests": {
+    "backend": {
+      "healthCheck": {
+        "status": 200,
+        "data": {
+          "success": true,
+          "timestamp": "2025-11-28T18:17:02.172Z",
+          "data": {
+            "status": "ok",
+            "timestamp": "2025-11-28T18:17:02.172Z",
+            "version": "1.2.0",
+            "database": "connected",
+            "mercadoPago": "connected",
+            "contadorChutes": 61,
+            "ultimoGolDeOuro": 0
+          },
+          "message": "Sistema funcionando"
+        },
+        "latency": 675,
+        "passed": true
+      },
+      "registration": {
+        "status": 201,
+        "latency": 452,
+        "passed": true,
+        "userId": "f2e9d8fa-91b2-471b-9b04-1a3ce78f51da"
+      },
+      "login": {
+        "status": 200,
+        "latency": 203,
+        "passed": true
+      },
+      "protectedEndpoints": {
+        "User Profile": {
+          "withToken": {
+            "status": 200,
+            "latency": 113,
+            "passed": true
+          },
+          "withoutToken": {
+            "status": 401,
+            "latency": 45,
+            "passed": true
+          }
+        },
+        "User Stats": {
+          "withToken": {
+            "status": 200,
+            "latency": 598,
+            "passed": true
+          },
+          "withoutToken": {
+            "status": 401,
+            "latency": 23,
+            "passed": true
+          }
+        },
+        "User History": {
+          "withToken": {
+            "status": 404,
+            "latency": 28,
+            "passed": true
+          },
+          "withoutToken": {
+            "status": 401,
+            "latency": 28,
+            "passed": true
+          }
+        }
+      },
+      "pix": {
+        "status": 201,
+        "latency": 3993,
+        "passed": true,
+        "hasQRCode": true,
+        "hasCopyPaste": true,
+        "methods": {
+          "qrCode": true,
+          "pixCopyPaste": true,
+          "initPoint": true
+        },
+        "paymentId": "468718642-8c2f8f4f-9735-4725-993b-35edb1f049f1"
+      },
+      "websocket": null
+    },
+    "websocket": {
+      "connected": true,
+      "authenticated": true,
+      "handshakeTime": 84,
+      "latency": 354,
+      "pingPong": false,
+      "messages": [
+        {
+          "type": "welcome",
+          "message": "Conectado ao Gol de Ouro WebSocket",
+          "connectionId": "conn_1764353835364_dxawz4oj0",
+          "timestamp": "2025-11-28T18:17:15.364Z"
+        },
+        {
+          "type": "auth_success",
+          "userId": "f2e9d8fa-91b2-471b-9b04-1a3ce78f51da",
+          "user": {
+            "id": "f2e9d8fa-91b2-471b-9b04-1a3ce78f51da",
+            "email": "test_audit_1764353825225@goldeouro.test",
+            "username": "testuser_1764353825225",
+            "saldo": 0
+          },
+          "reconnectToken": "reconnect_1764353835634_mmfxzhcji"
+        }
+      ]
+    },
+    "gameFlow": {
+      "steps": [
+        {
+          "name": "user_registration",
+          "status": "PASS"
+        },
+        {
+          "name": "pix_creation",
+          "status": "PASS"
+        },
+        {
+          "name": "balance_check",
+          "status": "PASS"
+        },
+        {
+          "name": "websocket_connection",
+          "status": "PASS"
+        },
+        {
+          "name": "game_history",
+          "status": "PASS"
+        },
+        {
+          "name": "admin_reflection",
+          "status": "PENDING"
+        }
+      ],
+      "completed": true,
+      "score": 88
+    },
+    "admin": {
+      "pages": {
+        "/": {
+          "accessible": true,
+          "status": 200,
+          "latency": 275
+        },
+        "/login": {
+          "accessible": false,
+          "status": 404,
+          "latency": 175
+        },
+        "/dashboard": {
+          "accessible": false,
+          "status": 404,
+          "latency": 210
+        },
+        "/usuarios": {
+          "accessible": false,
+          "status": 404,
+          "latency": 200
+        },
+        "/transacoes": {
+          "accessible": false,
+          "status": 404,
+          "latency": 28
+        },
+        "/chutes": {
+          "accessible": false,
+          "status": 404,
+          "latency": 26
+        }
+      },
+      "endpoints": {},
+      "protection": {
+        "/api/admin/users": {
+          "withoutToken": true,
+          "status": 401
+        },
+        "/api/admin/chutes": {
+          "withoutToken": false,
+          "status": 404
+        },
+        "/api/admin/transactions": {
+          "withoutToken": false,
+          "status": 404
+        }
+      }
+    },
+    "security": {
+      "cors": {
+        "headers": {
+          "content-security-policy": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "DENY",
+          "x-permitted-cross-domain-policies": "none",
+          "x-xss-protection": "0",
+          "access-control-allow-origin": "https://goldeouro.lol",
+          "vary": "Origin",
+          "access-control-allow-credentials": "true",
+          "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
+          "access-control-allow-headers": "Content-Type,Authorization,X-Requested-With,X-Idempotency-Key,x-admin-token",
+          "access-control-max-age": "86400",
+          "access-control-expose-headers": "X-Total-Count,X-Page,X-Limit",
+          "date": "Fri, 28 Nov 2025 18:17:32 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "server": "Fly/b85a5c74 (2025-11-26)",
+          "via": "1.1 fly.io",
+          "fly-request-id": "01KB5TYGRBCBCHQS056KYSHW10-gru"
+        },
+        "allowedOrigin": true,
+        "allowedMethods": true
+      },
+      "jwt": {
+        "invalid": true,
+        "missing": true
+      },
+      "rateLimiting": {},
+      "headers": {
+        "xFrameOptions": "DENY",
+        "xContentTypeOptions": "nosniff",
+        "strictTransportSecurity": "max-age=63072000"
+      }
+    },
+    "performance": {
+      "backend": {
+        "min": 25,
+        "max": 34,
+        "avg": 27.8,
+        "p95": 34
+      },
+      "player": {
+        "latency": 185
+      },
+      "admin": {
+        "latency": 66
+      },
+      "websocket": 84
+    }
+  },
+  "metrics": {
+    "performance": {
+      "backend": {
+        "min": 25,
+        "max": 34,
+        "avg": 27.8,
+        "p95": 34
+      },
+      "player": {
+        "latency": 185
+      },
+      "admin": {
+        "latency": 66
+      },
+      "websocket": 84
+    },
+    "totalScore": 85.1,
+    "maxScore": 100
+  },
+  "errors": [],
+  "warnings": [
+    "User History retornou 404 com token válido",
+    "PIX latência alta: 3993ms"
+  ],
+  "score": 85,
+  "decision": "APTO_COM_RESSALVAS",
+  "checklist": {
+    "backend": {
+      "healthCheck": true,
+      "registration": true,
+      "login": true,
+      "protectedEndpoints": true,
+      "pix": true
+    },
+    "websocket": {
+      "connection": true,
+      "authentication": true,
+      "handshakeTime": true
+    },
+    "gameFlow": {
+      "completed": true,
+      "score": 88
+    },
+    "admin": {
+      "accessible": true,
+      "protection": true
+    },
+    "security": {
+      "cors": true,
+      "jwt": true,
+      "headers": true
+    },
+    "performance": {
+      "backend": true,
+      "player": true,
+      "admin": true,
+      "websocket": true
+    }
+  }
+}
