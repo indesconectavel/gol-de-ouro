@@ -1,3 +1,33 @@
+# 🚀 CRIAR WORKFLOW NO GITHUB AGORA
+
+**Data:** 2025-12-14  
+**Situação:** Workflow não aparece porque está em branch diferente
+
+---
+
+## ✅ SOLUÇÃO: Criar Diretamente no GitHub
+
+O workflow está commitado na branch `test/branch-protection-config`, mas precisa estar na branch `main` para aparecer. Vamos criar diretamente no GitHub:
+
+---
+
+## 📋 PASSO A PASSO
+
+### 1. Acessar Criação de Workflow
+
+1. Acesse: https://github.com/indesconectavel/gol-de-ouro
+2. Clique na aba **"Actions"**
+3. Clique em **"New workflow"** (ou **"Skip this and set up a workflow yourself →"**)
+4. Clique em **"set up a workflow yourself"**
+
+---
+
+### 2. Criar Arquivo
+
+1. No campo de nome do arquivo, digite: `.github/workflows/build-android-apk.yml`
+2. Cole o conteúdo abaixo:
+
+```yaml
 name: Build Android APK
 
 on:
@@ -48,63 +78,26 @@ jobs:
           npm install --legacy-peer-deps
           npm install @expo/config-plugins@latest --legacy-peer-deps
 
-      - name: Initialize EAS project
-        working-directory: ./goldeouro-mobile
-        run: |
-          echo "Checking EAS project configuration..."
-          if ! eas project:info > /dev/null 2>&1; then
-            echo "EAS project not initialized, initializing..."
-            eas init --id --non-interactive || echo "Init failed, continuing..."
-          fi
-
       - name: Build APK
         working-directory: ./goldeouro-mobile
         run: |
-          echo "Starting EAS build..."
           eas build --platform android \
             --profile ${{ github.event.inputs.profile || 'production' }} \
             --non-interactive \
-            --no-wait || {
-              echo "Build submission failed, checking status..."
-              eas build:list --platform android --limit 5
-              exit 1
-            }
-          echo "Build submitted successfully"
+            --no-wait
 
       - name: Wait for build to complete
         working-directory: ./goldeouro-mobile
         run: |
-          echo "Waiting for build to complete..."
           BUILD_ID=$(eas build:list --platform android --limit 1 --json | jq -r '.[0].id')
-          if [ -z "$BUILD_ID" ] || [ "$BUILD_ID" = "null" ]; then
-            echo "Error: Could not get build ID"
-            exit 1
-          fi
           echo "Build ID: $BUILD_ID"
           echo "BUILD_ID=$BUILD_ID" >> $GITHUB_ENV
-          eas build:wait --id $BUILD_ID || {
-            echo "Build wait failed, but continuing to check status..."
-            eas build:list --platform android --limit 1
-            exit 1
-          }
+          eas build:wait --id $BUILD_ID
 
       - name: Download APK
         working-directory: ./goldeouro-mobile
         run: |
-          echo "Downloading APK..."
-          if [ -n "$BUILD_ID" ]; then
-            eas build:download --platform android --id $BUILD_ID --output ./build.apk || {
-              echo "Download by ID failed, trying latest..."
-              eas build:download --platform android --latest --output ./build.apk
-            }
-          else
-            eas build:download --platform android --latest --output ./build.apk
-          fi
-          if [ ! -f ./build.apk ]; then
-            echo "Error: APK file not found after download"
-            exit 1
-          fi
-          echo "APK downloaded successfully: $(ls -lh ./build.apk)"
+          eas build:download --platform android --latest --output ./build.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -124,4 +117,49 @@ jobs:
         with:
           name: build-info
           path: goldeouro-mobile/build-info.json
+```
+
+---
+
+### 3. Salvar Arquivo
+
+1. Role até o final da página
+2. Clique em **"Start commit"**
+3. Mensagem: `feat: Adicionar workflow Build Android APK`
+4. Selecione: **"Commit directly to the main branch"**
+5. Clique em **"Commit new file"**
+
+---
+
+### 4. Adicionar Secret (OBRIGATÓRIO)
+
+1. Acesse: https://github.com/indesconectavel/gol-de-ouro/settings/secrets/actions
+2. Clique em **"New repository secret"**
+3. Preencha:
+   - **Name:** `EXPO_TOKEN`
+   - **Secret:** `fGr2EHaOgPjlMWxwSp6IkEp3HTHa2dJo8OJncLK4`
+4. Clique em **"Add secret"**
+
+---
+
+### 5. Executar Workflow
+
+1. Acesse: https://github.com/indesconectavel/gol-de-ouro/actions
+2. Você deve ver **"Build Android APK"** na lista
+3. Clique nele
+4. Clique em **"Run workflow"**
+5. Selecione:
+   - **Branch:** `main`
+   - **Profile:** `production`
+6. Clique em **"Run workflow"**
+
+---
+
+## ✅ PRONTO!
+
+Após esses passos, o workflow estará disponível e você poderá executá-lo.
+
+---
+
+**Última atualização:** 2025-12-14
 
