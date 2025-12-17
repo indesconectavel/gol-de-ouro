@@ -338,9 +338,15 @@ const authenticateToken = (req, res, next) => {
 };
 
 // =====================================================
-// SISTEMA DE LOTES CORRIGIDO
+// SISTEMA DE LOTES COM PERSISTÊNCIA NO BANCO
 // =====================================================
+// ✅ HARDENING FINAL: Lotes agora são persistidos no PostgreSQL
+// ✅ Garante recuperação após restart do servidor
+// ✅ Elimina risco de perda de dados
 
+const LoteService = require('./services/loteService');
+
+// Cache em memória para performance (sincronizado com banco)
 let lotesAtivos = new Map();
 // Variáveis globais para métricas - ZERADAS para produção real
 let contadorChutesGlobal = 0; // Zerado - sem dados simulados
@@ -354,16 +360,16 @@ const batchConfigs = {
   10: { size: 1, totalValue: 10, winChance: 1.0, description: "100% chance" }
 };
 
-function getOrCreateLoteByValue(amount) {
+// ✅ FUNÇÃO REFATORADA: Usa persistência no banco
+async function getOrCreateLoteByValue(amount) {
   const config = batchConfigs[amount];
   if (!config) {
     throw new Error(`Valor de aposta inválido: ${amount}`);
   }
 
-  // Verificar se existe lote ativo para este valor
+  // Verificar cache em memória primeiro (performance)
   let loteAtivo = null;
   for (const [loteId, lote] of lotesAtivos.entries()) {
-    // Compatível com validador: usa lote.valor e booleano lote.ativo
     const valorLote = typeof lote.valor !== 'undefined' ? lote.valor : lote.valorAposta;
     const ativo = typeof lote.ativo === 'boolean' ? lote.ativo : lote.status === 'active';
     if (valorLote === amount && ativo && lote.chutes.length < config.size) {
@@ -372,30 +378,39 @@ function getOrCreateLoteByValue(amount) {
     }
   }
 
-  // Se não existe lote ativo, criar novo
+  // Se não existe em cache, buscar/criar no banco
   if (!loteAtivo) {
-    // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomBytes ao invés de Math.random()
     const randomBytes = crypto.randomBytes(6).toString('hex');
     const loteId = `lote_${amount}_${Date.now()}_${randomBytes}`;
-    loteAtivo = {
-      id: loteId,
-      // Campos esperados pelo validador de integridade
-      valor: amount,
-      ativo: true,
+    const winnerIndex = crypto.randomInt(0, config.size);
 
-      // Mantém compatibilidade com código existente
+    // ✅ PERSISTIR NO BANCO
+    const result = await LoteService.getOrCreateLote(loteId, amount, config.size, winnerIndex);
+    
+    if (!result.success) {
+      throw new Error(`Erro ao criar lote: ${result.error}`);
+    }
+
+    const loteDb = result.lote;
+
+    // Criar objeto em memória sincronizado com banco
+    loteAtivo = {
+      id: loteDb.id,
+      valor: amount,
+      ativo: loteDb.status === 'ativo',
       valorAposta: amount,
       config: config,
-      chutes: [],
-      status: 'active',
-      // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomInt ao invés de Math.random()
-      winnerIndex: crypto.randomInt(0, config.size), // CORRIGIDO: Aleatório seguro por lote
+      chutes: [], // Array vazio inicialmente (será populado conforme chutes chegam)
+      status: loteDb.status === 'ativo' ? 'active' : 'completed',
+      winnerIndex: loteDb.indice_vencedor,
+      posicaoAtual: loteDb.posicao_atual || 0,
       createdAt: new Date().toISOString(),
-      totalArrecadado: 0,
-      premioTotal: 0
+      totalArrecadado: parseFloat(loteDb.total_arrecadado || 0),
+      premioTotal: parseFloat(loteDb.premio_total || 0)
     };
+    
     lotesAtivos.set(loteId, loteAtivo);
-    console.log(`🎮 [LOTE] Novo lote criado: ${loteId} (R$${amount})`);
+    console.log(`🎮 [LOTE] Novo lote criado e persistido: ${loteId} (R$${amount})`);
   }
 
   return loteAtivo;
@@ -878,23 +893,50 @@ app.post('/api/auth/login', async (req, res) => {
       }
     }
 
-    // Gerar token JWT
-    const token = jwt.sign(
+    // ✅ HARDENING FINAL: Gerar access token e refresh token
+    const accessToken = jwt.sign(
       { 
         userId: user.id, 
         email: user.email,
-        username: user.username
+        username: user.username,
+        type: 'access'
       },
       process.env.JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '1h' } // Access token: 1 hora
     );
+
+    const refreshToken = jwt.sign(
+      { 
+        userId: user.id,
+        type: 'refresh'
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' } // Refresh token: 7 dias
+    );
+
+    // Salvar refresh token no banco (para revogação futura)
+    // ✅ Tratamento seguro: coluna pode não existir ainda
+    try {
+      await supabase
+        .from('usuarios')
+        .update({ 
+          refresh_token: refreshToken,
+          last_login: new Date().toISOString()
+        })
+        .eq('id', user.id);
+    } catch (refreshTokenError) {
+      // Se coluna não existir, apenas logar (não bloquear login)
+      console.warn('⚠️ [LOGIN] Coluna refresh_token pode não existir:', refreshTokenError.message);
+    }
 
     console.log(`✅ [LOGIN] Login realizado: ${email}`);
 
     res.json({
       success: true,
       message: 'Login realizado com sucesso',
-      token: token,
+      token: accessToken, // Mantém compatibilidade com código existente
+      accessToken: accessToken, // Novo formato explícito
+      refreshToken: refreshToken, // Novo refresh token
       user: {
         id: user.id,
         email: user.email,
@@ -1225,13 +1267,33 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       console.error('❌ [SHOOT] Erro ao salvar chute:', chuteError);
     }
 
-    // Verificar se lote está completo
-    // Já encerrado em caso de gol, mas mantém fechamento por tamanho para consistência
+    // ✅ ATUALIZAR LOTE NO BANCO (persistência)
+    const updateResult = await LoteService.updateLoteAfterShot(
+      lote.id,
+      amount,
+      premio,
+      premioGolDeOuro,
+      isGoal
+    );
+
+    if (updateResult.success && updateResult.lote.is_complete) {
+      // Lote foi finalizado no banco
+      lote.status = 'completed';
+      lote.ativo = false;
+      console.log(`🏆 [LOTE] Lote ${lote.id} completado e persistido: ${lote.chutes.length} chutes, R$${lote.totalArrecadado} arrecadado, R$${lote.premioTotal} em prêmios`);
+    } else if (updateResult.success) {
+      // Atualizar posição atual do cache
+      lote.posicaoAtual = updateResult.lote.posicao_atual;
+      lote.totalArrecadado = parseFloat(updateResult.lote.total_arrecadado);
+      lote.premioTotal = parseFloat(updateResult.lote.premio_total);
+    } else {
+      console.error('❌ [SHOOT] Erro ao atualizar lote no banco:', updateResult.error);
+    }
+
+    // Verificar se lote está completo (fallback)
     if (lote.chutes.length >= lote.config.size && lote.status !== 'completed') {
       lote.status = 'completed';
-      // Desativar para o validador entender que não aceita mais chutes
       lote.ativo = false;
-      console.log(`🏆 [LOTE] Lote ${lote.id} completado: ${lote.chutes.length} chutes, R$${lote.totalArrecadado} arrecadado, R$${lote.premioTotal} em prêmios`);
     }
     
     const shootResult = {
@@ -1280,6 +1342,94 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
 
   } catch (error) {
     console.error('❌ [SHOOT] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// =====================================================
+// REFRESH TOKEN ENDPOINT
+// =====================================================
+
+// ✅ HARDENING FINAL: Endpoint para renovar access token
+app.post('/api/auth/refresh', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Refresh token é obrigatório'
+      });
+    }
+
+    // Verificar refresh token
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token inválido ou expirado'
+      });
+    }
+
+    // Verificar se é refresh token
+    if (decoded.type !== 'refresh') {
+      return res.status(401).json({
+        success: false,
+        message: 'Token inválido'
+      });
+    }
+
+    // Buscar usuário e verificar se refresh token está no banco
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('id, email, username, refresh_token, ativo')
+      .eq('id', decoded.userId)
+      .eq('ativo', true)
+      .single();
+
+    if (userError || !user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Usuário não encontrado ou inativo'
+      });
+    }
+
+    // Verificar se refresh token corresponde ao do banco (se coluna existir)
+    if (user.refresh_token && user.refresh_token !== refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: 'Refresh token inválido'
+      });
+    }
+
+    // Gerar novo access token
+    const newAccessToken = jwt.sign(
+      { 
+        userId: user.id, 
+        email: user.email,
+        username: user.username,
+        type: 'access'
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    console.log(`✅ [REFRESH] Token renovado para usuário: ${user.email}`);
+
+    res.json({
+      success: true,
+      message: 'Token renovado com sucesso',
+      token: newAccessToken, // Compatibilidade
+      accessToken: newAccessToken
+    });
+
+  } catch (error) {
+    console.error('❌ [REFRESH] Erro:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor'
@@ -2600,20 +2750,17 @@ app.get('/usuario/perfil', authenticateToken, async (req, res) => {
   }
 });
 
-// Endpoint /api/fila/entrar para compatibilidade
+// ✅ HARDENING FINAL: Endpoint de fila DEPRECATED
+// Sistema de jogo usa REST API exclusivamente (/api/games/shoot)
 app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
-  console.log('🔄 [COMPATIBILITY] Endpoint /api/fila/entrar chamado');
+  console.log('⚠️ [DEPRECATED] Endpoint /api/fila/entrar chamado (não mais usado)');
   
   try {
     // Simular entrada na fila (implementação básica)
     res.json({
-      success: true,
-      data: {
-        message: 'Entrada na fila realizada com sucesso',
-        // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomInt ao invés de Math.random()
-        position: crypto.randomInt(1, 11), // 1 a 10
-        estimatedWait: crypto.randomInt(1, 6) // 1 a 5
-      }
+      success: false,
+      message: 'Sistema de fila não está mais disponível. Use POST /api/games/shoot para jogar.',
+      deprecated: true
     });
   } catch (error) {
     console.error('❌ [COMPATIBILITY] Erro no endpoint fila:', error.message);
@@ -2676,9 +2823,48 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
       });
     });
     
+    // ✅ SINCRONIZAR LOTES ATIVOS DO BANCO AO INICIAR
+    async function syncLotesOnStartup() {
+      try {
+        const syncResult = await LoteService.syncActiveLotes();
+        if (syncResult.success && syncResult.count > 0) {
+          console.log(`✅ [STARTUP] ${syncResult.count} lotes ativos recuperados do banco`);
+          // Popular cache em memória com lotes do banco
+          for (const loteDb of syncResult.lotes) {
+            const config = batchConfigs[loteDb.valor_aposta];
+            if (config) {
+              const lote = {
+                id: loteDb.id,
+                valor: loteDb.valor_aposta,
+                ativo: loteDb.status === 'ativo',
+                valorAposta: loteDb.valor_aposta,
+                config: config,
+                chutes: [], // Será populado conforme necessário
+                status: loteDb.status === 'ativo' ? 'active' : 'completed',
+                winnerIndex: loteDb.indice_vencedor,
+                posicaoAtual: loteDb.posicao_atual || 0,
+                createdAt: loteDb.created_at,
+                totalArrecadado: parseFloat(loteDb.total_arrecadado || 0),
+                premioTotal: parseFloat(loteDb.premio_total || 0)
+              };
+              lotesAtivos.set(loteDb.id, lote);
+            }
+          }
+        } else {
+          console.log('✅ [STARTUP] Nenhum lote ativo encontrado no banco');
+        }
+      } catch (error) {
+        console.error('❌ [STARTUP] Erro ao sincronizar lotes:', error);
+      }
+    }
+
     // Iniciar servidor HTTP e WebSocket
     const server = http.createServer(app);
     const wss = new WebSocketManager(server);
+    
+    // Sincronizar lotes antes de iniciar servidor
+    await syncLotesOnStartup();
+    
     server.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 [SERVER] Servidor iniciado na porta ${PORT}`);
       console.log(`🌐 [SERVER] Ambiente: ${process.env.NODE_ENV || 'development'}`);

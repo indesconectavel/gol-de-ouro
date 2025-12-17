@@ -1,5 +1,7 @@
+// ✅ HARDENING FINAL: Migrado para SecureStore e Refresh Token
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -21,14 +23,33 @@ export const AuthProvider = ({ children }) => {
     loadStoredAuth();
   }, []);
 
+  // ✅ HARDENING FINAL: Carregar tokens do SecureStore
   const loadStoredAuth = async () => {
     try {
-      const storedToken = await AsyncStorage.getItem('authToken');
+      // Migrar tokens antigos do AsyncStorage para SecureStore (se existirem)
+      const oldToken = await AsyncStorage.getItem('authToken');
+      if (oldToken) {
+        await SecureStore.setItemAsync('accessToken', oldToken);
+        await AsyncStorage.removeItem('authToken');
+      }
+
+      // Carregar do SecureStore
+      const accessToken = await SecureStore.getItemAsync('accessToken');
+      const refreshToken = await SecureStore.getItemAsync('refreshToken');
       const storedUser = await AsyncStorage.getItem('userData');
       
-      if (storedToken && storedUser) {
-        setToken(storedToken);
+      if (accessToken && storedUser) {
+        setToken(accessToken);
         setUser(JSON.parse(storedUser));
+        
+        // Tentar renovar token se refresh token existir
+        if (refreshToken) {
+          try {
+            await refreshAccessToken(refreshToken);
+          } catch (error) {
+            console.log('Token expirado, usuário precisa fazer login novamente');
+          }
+        }
       }
     } catch (error) {
       console.error('Erro ao carregar autenticação:', error);
@@ -37,23 +58,57 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ✅ HARDENING FINAL: Renovar access token usando refresh token
+  const refreshAccessToken = async (refreshTokenToUse = null) => {
+    try {
+      const refreshTokenValue = refreshTokenToUse || await SecureStore.getItemAsync('refreshToken');
+      if (!refreshTokenValue) {
+        throw new Error('Refresh token não encontrado');
+      }
+
+      const response = await axios.post('https://goldeouro-backend-v2.fly.dev/api/auth/refresh', {
+        refreshToken: refreshTokenValue
+      });
+
+      const { token: newAccessToken, accessToken } = response.data;
+      const finalToken = accessToken || newAccessToken;
+
+      await SecureStore.setItemAsync('accessToken', finalToken);
+      setToken(finalToken);
+
+      return { success: true, token: finalToken };
+    } catch (error) {
+      console.error('Erro ao renovar token:', error);
+      // Se refresh falhar, limpar tudo
+      await logout();
+      throw error;
+    }
+  };
+
   const login = async (email, password) => {
     try {
       setLoading(true);
       
-      // Simular chamada para API
-      const response = await axios.post('http://localhost:3000/auth/login', {
+      // Chamada para API de produção
+      const response = await axios.post('https://goldeouro-backend-v2.fly.dev/api/auth/login', {
         email,
         password,
       });
 
-      const { token: authToken, user: userData } = response.data;
+      // ✅ HARDENING FINAL: Armazenar tokens no SecureStore
+      const { token: authToken, accessToken, refreshToken, user: userData } = response.data;
+      const finalAccessToken = accessToken || authToken;
 
-      // Armazenar dados localmente
-      await AsyncStorage.setItem('authToken', authToken);
+      // Armazenar tokens seguros no SecureStore
+      await SecureStore.setItemAsync('accessToken', finalAccessToken);
+      if (refreshToken) {
+        await SecureStore.setItemAsync('refreshToken', refreshToken);
+      }
+      
+      // Armazenar dados do usuário no AsyncStorage (não sensível)
       await AsyncStorage.setItem('userData', JSON.stringify(userData));
 
-      setToken(authToken);
+      setToken(finalAccessToken);
       setUser(userData);
 
       return { success: true };
@@ -72,20 +127,27 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       
-      // Simular chamada para API
-      const response = await axios.post('http://localhost:3000/auth/register', {
+      // Chamada para API de produção
+      const response = await axios.post('https://goldeouro-backend-v2.fly.dev/api/auth/register', {
         name,
         email,
         password,
       });
 
-      const { token: authToken, user: userData } = response.data;
+      // ✅ HARDENING FINAL: Armazenar tokens no SecureStore
+      const { token: authToken, accessToken, refreshToken, user: userData } = response.data;
+      const finalAccessToken = accessToken || authToken;
 
-      // Armazenar dados localmente
-      await AsyncStorage.setItem('authToken', authToken);
+      // Armazenar tokens seguros no SecureStore
+      await SecureStore.setItemAsync('accessToken', finalAccessToken);
+      if (refreshToken) {
+        await SecureStore.setItemAsync('refreshToken', refreshToken);
+      }
+      
+      // Armazenar dados do usuário no AsyncStorage (não sensível)
       await AsyncStorage.setItem('userData', JSON.stringify(userData));
 
-      setToken(authToken);
+      setToken(finalAccessToken);
       setUser(userData);
 
       return { success: true };
@@ -100,9 +162,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ✅ HARDENING FINAL: Limpar tokens do SecureStore
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('authToken');
+      await SecureStore.deleteItemAsync('accessToken');
+      await SecureStore.deleteItemAsync('refreshToken');
       await AsyncStorage.removeItem('userData');
       setToken(null);
       setUser(null);
@@ -115,9 +179,9 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       
-      // Simular chamada para API
+      // Chamada para API de produção
       const response = await axios.put(
-        'http://localhost:3000/auth/profile',
+        'https://goldeouro-backend-v2.fly.dev/api/auth/profile',
         profileData,
         {
           headers: {
@@ -152,6 +216,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateProfile,
+    refreshAccessToken, // ✅ HARDENING FINAL: Expor método de refresh
     isAuthenticated: !!user,
   };
 

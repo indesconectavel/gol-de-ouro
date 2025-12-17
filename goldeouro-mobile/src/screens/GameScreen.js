@@ -1,133 +1,99 @@
-import React, { useState, useEffect, useRef } from 'react';
+// ✅ HARDENING FINAL: GameScreen adaptado para REST API
+// Sistema de jogo usa REST API exclusivamente (/api/games/shoot)
+// Removido código de WebSocket/fila/partidas
+
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
-  Animated,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import GameService from '../services/GameService';
+import { useAuth } from '../services/AuthService';
 
-const { width, height } = Dimensions.get('window');
+const zones = [
+  { id: 1, name: 'Esquerda', color: '#FF6B6B' },
+  { id: 2, name: 'Centro-Esquerda', color: '#4ECDC4' },
+  { id: 3, name: 'Centro', color: '#45B7D1' },
+  { id: 4, name: 'Centro-Direita', color: '#96CEB4' },
+  { id: 5, name: 'Direita', color: '#FFEAA7' },
+];
+
+const betAmounts = [1, 2, 5, 10];
 
 export default function GameScreen() {
-  const [score, setScore] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30);
-  const [selectedZone, setSelectedZone] = useState(null);
-  const [ballPosition, setBallPosition] = useState({ x: width / 2, y: height * 0.7 });
-  const [targetPosition, setTargetPosition] = useState({ x: width / 2, y: height * 0.3 });
+  const { user, token } = useAuth();
+  const [selectedZone, setSelectedZone] = useState(3); // Centro por padrão
+  const [selectedAmount, setSelectedAmount] = useState(1);
   const [isShooting, setIsShooting] = useState(false);
+  const [lastResult, setLastResult] = useState(null);
   const [gameHistory, setGameHistory] = useState([]);
 
-  const ballAnimation = useRef(new Animated.ValueXY({ x: width / 2, y: height * 0.7 })).current;
-  const targetAnimation = useRef(new Animated.ValueXY({ x: width / 2, y: height * 0.3 })).current;
-
-  const zones = [
-    { id: 'left', name: 'Esquerda', x: width * 0.2, color: '#FF6B6B' },
-    { id: 'center', name: 'Centro', x: width * 0.5, color: '#4ECDC4' },
-    { id: 'right', name: 'Direita', x: width * 0.8, color: '#45B7D1' },
-  ];
-
-  useEffect(() => {
-    let timer;
-    if (gameStarted && timeLeft > 0) {
-      timer = setTimeout(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-    } else if (timeLeft === 0) {
-      endGame();
+  const handleShoot = async () => {
+    if (!user || !token) {
+      Alert.alert('Erro', 'Você precisa estar logado para jogar');
+      return;
     }
-    return () => clearTimeout(timer);
-  }, [gameStarted, timeLeft]);
 
-  const startGame = () => {
-    setGameStarted(true);
-    setTimeLeft(30);
-    setScore(0);
-    setGameHistory([]);
-    generateNewTarget();
-  };
-
-  const endGame = () => {
-    setGameStarted(false);
-    const finalScore = score;
-    const newGame = {
-      id: Date.now(),
-      score: finalScore,
-      zone: selectedZone || 'center',
-      date: new Date().toISOString().split('T')[0],
-    };
-    setGameHistory([...gameHistory, newGame]);
-    
-    Alert.alert(
-      'Fim do Jogo!',
-      `Sua pontuação: ${finalScore} pontos`,
-      [
-        { text: 'Jogar Novamente', onPress: startGame },
-        { text: 'OK', style: 'cancel' }
-      ]
-    );
-  };
-
-  const generateNewTarget = () => {
-    const randomZone = zones[Math.floor(Math.random() * zones.length)];
-    setSelectedZone(randomZone.id);
-    setTargetPosition({ x: randomZone.x, y: height * 0.3 });
-    targetAnimation.setValue({ x: randomZone.x, y: height * 0.3 });
-  };
-
-  const shootBall = () => {
-    if (!gameStarted || isShooting) return;
+    if (isShooting) return;
 
     setIsShooting(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    const targetZone = zones.find(zone => zone.id === selectedZone);
-    const accuracy = calculateAccuracy();
-    const points = calculatePoints(accuracy);
+    try {
+      // ✅ HARDENING FINAL: Usar REST API exclusivamente
+      const result = await GameService.shoot(selectedZone, selectedAmount);
 
-    setScore(score + points);
+      if (result.success && result.data?.data) {
+        const shootData = result.data.data;
+        const isGoal = shootData.result === 'goal';
+        const premio = shootData.premio || 0;
+        const premioGolDeOuro = shootData.premioGolDeOuro || 0;
 
-    // Animação da bola
-    Animated.sequence([
-      Animated.timing(ballAnimation, {
-        toValue: { x: targetZone.x, y: height * 0.3 },
-        duration: 800,
-        useNativeDriver: false,
-      }),
-      Animated.timing(ballAnimation, {
-        toValue: { x: width / 2, y: height * 0.7 },
-        duration: 200,
-        useNativeDriver: false,
-      }),
-    ]).start(() => {
+        setLastResult({
+          isGoal,
+          premio,
+          premioGolDeOuro,
+          loteProgress: shootData.loteProgress,
+          isLoteComplete: shootData.isLoteComplete
+        });
+
+        // Adicionar ao histórico
+        setGameHistory(prev => [{
+          id: Date.now(),
+          zone: selectedZone,
+          amount: selectedAmount,
+          result: isGoal ? 'Gol!' : 'Errou',
+          premio: premio + premioGolDeOuro,
+          timestamp: new Date().toISOString()
+        }, ...prev].slice(0, 10));
+
+        // Feedback visual
+        if (isGoal) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          Alert.alert(
+            '⚽ GOL!',
+            `Parabéns! Você ganhou R$ ${(premio + premioGolDeOuro).toFixed(2)}${premioGolDeOuro > 0 ? ' (incluindo Gol de Ouro!)' : ''}`
+          );
+        } else {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+          Alert.alert('Errou', 'Tente novamente!');
+        }
+      } else {
+        Alert.alert('Erro', result.error || 'Erro ao realizar chute');
+      }
+    } catch (error) {
+      console.error('Erro ao chutar:', error);
+      Alert.alert('Erro', 'Erro ao realizar chute. Tente novamente.');
+    } finally {
       setIsShooting(false);
-      generateNewTarget();
-    });
-  };
-
-  const calculateAccuracy = () => {
-    // Simular precisão baseada na posição do toque
-    return Math.random() * 100;
-  };
-
-  const calculatePoints = (accuracy) => {
-    if (accuracy >= 90) return 100;
-    if (accuracy >= 80) return 80;
-    if (accuracy >= 70) return 60;
-    if (accuracy >= 60) return 40;
-    if (accuracy >= 50) return 20;
-    return 10;
-  };
-
-  const getZoneColor = (zoneId) => {
-    const zone = zones.find(z => z.id === zoneId);
-    return zone ? zone.color : '#666';
+    }
   };
 
   return (
@@ -138,107 +104,116 @@ export default function GameScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.scoreContainer}>
-            <Text style={styles.scoreLabel}>Pontuação</Text>
-            <Text style={styles.scoreValue}>{score}</Text>
-          </View>
-          <View style={styles.timeContainer}>
-            <Ionicons name="time" size={20} color="#FFD700" />
-            <Text style={styles.timeValue}>{timeLeft}s</Text>
+          <View style={styles.balanceContainer}>
+            <Text style={styles.balanceLabel}>Saldo</Text>
+            <Text style={styles.balanceValue}>R$ {user?.saldo?.toFixed(2) || '0.00'}</Text>
           </View>
         </View>
 
-        {/* Campo de Jogo */}
-        <View style={styles.gameField}>
-          {/* Gol */}
-          <View style={styles.goal}>
-            <View style={styles.goalPost} />
-            <View style={styles.goalPost} />
-            <View style={styles.goalBar} />
-          </View>
-
-          {/* Zonas de Chute */}
-          <View style={styles.zonesContainer}>
+        {/* Zonas do Gol */}
+        <View style={styles.zonesContainer}>
+          <Text style={styles.zonesTitle}>Escolha a zona do gol:</Text>
+          <View style={styles.zonesGrid}>
             {zones.map((zone) => (
               <TouchableOpacity
                 key={zone.id}
                 style={[
-                  styles.zone,
+                  styles.zoneButton,
                   {
-                    left: zone.x - 30,
-                    backgroundColor: selectedZone === zone.id ? zone.color : 'rgba(255,255,255,0.2)',
+                    backgroundColor: selectedZone === zone.id ? zone.color : 'rgba(255,255,255,0.1)',
+                    borderColor: selectedZone === zone.id ? zone.color : 'rgba(255,255,255,0.3)',
                   }
                 ]}
                 onPress={() => setSelectedZone(zone.id)}
-                disabled={!gameStarted}
+                disabled={isShooting}
               >
-                <Text style={styles.zoneText}>{zone.name}</Text>
+                <Text style={styles.zoneButtonText}>{zone.name}</Text>
+                <Text style={styles.zoneButtonId}>{zone.id}</Text>
               </TouchableOpacity>
             ))}
           </View>
-
-          {/* Bola */}
-          <Animated.View
-            style={[
-              styles.ball,
-              {
-                left: ballAnimation.x,
-                top: ballAnimation.y,
-              }
-            ]}
-          />
-
-          {/* Alvo */}
-          <Animated.View
-            style={[
-              styles.target,
-              {
-                left: targetAnimation.x - 15,
-                top: targetAnimation.y - 15,
-                backgroundColor: getZoneColor(selectedZone),
-              }
-            ]}
-          />
         </View>
 
-        {/* Controles */}
-        <View style={styles.controls}>
-          {!gameStarted ? (
-            <TouchableOpacity style={styles.startButton} onPress={startGame}>
-              <LinearGradient
-                colors={['#FFD700', '#FFA500']}
-                style={styles.startButtonGradient}
+        {/* Valores de Aposta */}
+        <View style={styles.betContainer}>
+          <Text style={styles.betTitle}>Valor da aposta:</Text>
+          <View style={styles.betGrid}>
+            {betAmounts.map((amount) => (
+              <TouchableOpacity
+                key={amount}
+                style={[
+                  styles.betButton,
+                  {
+                    backgroundColor: selectedAmount === amount ? '#FFD700' : 'rgba(255,255,255,0.1)',
+                    borderColor: selectedAmount === amount ? '#FFD700' : 'rgba(255,255,255,0.3)',
+                  }
+                ]}
+                onPress={() => setSelectedAmount(amount)}
+                disabled={isShooting}
               >
-                <Ionicons name="play" size={24} color="#000" />
-                <Text style={styles.startButtonText}>INICIAR JOGO</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.shootButton}
-              onPress={shootBall}
-              disabled={isShooting}
+                <Text style={styles.betButtonText}>R$ {amount}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Botão de Chute */}
+        <View style={styles.shootContainer}>
+          <TouchableOpacity
+            style={styles.shootButton}
+            onPress={handleShoot}
+            disabled={isShooting || !user}
+          >
+            <LinearGradient
+              colors={isShooting ? ['#666', '#888'] : ['#FF6B6B', '#FF8E8E']}
+              style={styles.shootButtonGradient}
             >
-              <LinearGradient
-                colors={['#FF6B6B', '#FF8E8E']}
-                style={styles.shootButtonGradient}
-              >
-                <Ionicons name="football" size={24} color="#fff" />
-                <Text style={styles.shootButtonText}>CHUTAR</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          )}
+              {isShooting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <>
+                  <Ionicons name="football" size={24} color="#fff" />
+                  <Text style={styles.shootButtonText}>CHUTAR</Text>
+                </>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
 
-        {/* Histórico de Jogos */}
+        {/* Último Resultado */}
+        {lastResult && (
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultTitle}>Último Resultado:</Text>
+            <Text style={[
+              styles.resultText,
+              { color: lastResult.isGoal ? '#4ECDC4' : '#FF6B6B' }
+            ]}>
+              {lastResult.isGoal ? '⚽ GOL!' : '❌ Errou'}
+            </Text>
+            {lastResult.isGoal && (
+              <Text style={styles.premioText}>
+                Prêmio: R$ {(lastResult.premio + lastResult.premioGolDeOuro).toFixed(2)}
+                {lastResult.premioGolDeOuro > 0 && ' 🏆 Gol de Ouro!'}
+              </Text>
+            )}
+            {lastResult.loteProgress && (
+              <Text style={styles.loteProgressText}>
+                Lote: {lastResult.loteProgress.current}/{lastResult.loteProgress.total}
+              </Text>
+            )}
+          </View>
+        )}
+
+        {/* Histórico */}
         {gameHistory.length > 0 && (
           <View style={styles.historyContainer}>
-            <Text style={styles.historyTitle}>Últimos Jogos</Text>
-            {gameHistory.slice(-3).map((game) => (
+            <Text style={styles.historyTitle}>Histórico Recente</Text>
+            {gameHistory.slice(0, 5).map((game) => (
               <View key={game.id} style={styles.historyItem}>
-                <Text style={styles.historyScore}>{game.score} pts</Text>
-                <Text style={styles.historyZone}>{game.zone}</Text>
-                <Text style={styles.historyDate}>{game.date}</Text>
+                <Text style={styles.historyResult}>{game.result}</Text>
+                <Text style={styles.historyDetails}>
+                  Zona {game.zone} • R$ {game.amount} • {game.premio > 0 ? `R$ ${game.premio.toFixed(2)}` : '-'}
+                </Text>
               </View>
             ))}
           </View>
@@ -255,121 +230,89 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
+    padding: 20,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
     paddingTop: 50,
     paddingBottom: 20,
   },
-  scoreContainer: {
+  balanceContainer: {
     alignItems: 'center',
   },
-  scoreLabel: {
+  balanceLabel: {
     color: '#ccc',
     fontSize: 14,
   },
-  scoreValue: {
+  balanceValue: {
     color: '#FFD700',
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-  },
-  timeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  timeValue: {
-    color: '#FFD700',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 5,
-  },
-  gameField: {
-    flex: 1,
-    position: 'relative',
-  },
-  goal: {
-    position: 'absolute',
-    top: 50,
-    left: width / 2 - 50,
-    width: 100,
-    height: 80,
-  },
-  goalPost: {
-    position: 'absolute',
-    width: 4,
-    height: 60,
-    backgroundColor: '#fff',
-    top: 0,
-  },
-  goalBar: {
-    position: 'absolute',
-    width: 100,
-    height: 4,
-    backgroundColor: '#fff',
-    top: 60,
   },
   zonesContainer: {
-    position: 'absolute',
-    top: 150,
-    left: 0,
-    right: 0,
-    height: 60,
+    marginBottom: 30,
   },
-  zone: {
-    position: 'absolute',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#fff',
-  },
-  zoneText: {
+  zonesTitle: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
   },
-  ball: {
-    position: 'absolute',
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#fff',
-    borderWidth: 2,
-    borderColor: '#000',
-  },
-  target: {
-    position: 'absolute',
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    borderWidth: 2,
-    borderColor: '#fff',
-  },
-  controls: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-  },
-  startButton: {
-    borderRadius: 15,
-    overflow: 'hidden',
-  },
-  startButtonGradient: {
+  zonesGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
-  startButtonText: {
-    color: '#000',
+  zoneButton: {
+    width: '18%',
+    aspectRatio: 1,
+    borderRadius: 10,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  zoneButtonText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  zoneButtonId: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    marginLeft: 10,
+    marginTop: 5,
+  },
+  betContainer: {
+    marginBottom: 30,
+  },
+  betTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  betGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  betButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    minWidth: 80,
+    alignItems: 'center',
+  },
+  betButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  shootContainer: {
+    marginBottom: 30,
   },
   shootButton: {
     borderRadius: 15,
@@ -379,18 +322,47 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 15,
+    paddingVertical: 18,
     paddingHorizontal: 30,
   },
   shootButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     marginLeft: 10,
   },
+  resultContainer: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  resultTitle: {
+    color: '#ccc',
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  resultText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  premioText: {
+    color: '#FFD700',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 5,
+  },
+  loteProgressText: {
+    color: '#ccc',
+    fontSize: 12,
+    marginTop: 5,
+  },
   historyContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: 10,
+    padding: 15,
   },
   historyTitle: {
     color: '#FFD700',
@@ -399,24 +371,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   historyItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
   },
-  historyScore: {
-    color: '#FFD700',
+  historyResult: {
+    color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
   },
-  historyZone: {
+  historyDetails: {
     color: '#ccc',
     fontSize: 12,
-  },
-  historyDate: {
-    color: '#999',
-    fontSize: 12,
+    marginTop: 2,
   },
 });

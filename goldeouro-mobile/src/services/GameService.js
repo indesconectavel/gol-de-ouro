@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://goldeouro-backend-v2.fly.dev/api';
 
 class GameService {
   constructor() {
@@ -24,14 +24,31 @@ class GameService {
     );
   }
 
+  // ✅ HARDENING FINAL: Obter token do SecureStore
   getStoredToken = async () => {
     try {
-      const AsyncStorage = require('@react-native-async-storage/async-storage').default;
-      return await AsyncStorage.getItem('authToken');
+      const SecureStore = require('expo-secure-store').default;
+      return await SecureStore.getItemAsync('accessToken');
     } catch (error) {
       return null;
     }
   };
+
+  // ✅ HARDENING FINAL: Método para realizar chute (REST API exclusivamente)
+  async shoot(direction, amount) {
+    try {
+      const response = await this.api.post('/games/shoot', {
+        direction,
+        amount
+      });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.message || error.message 
+      };
+    }
+  }
 
   // Jogos
   async getGames() {
