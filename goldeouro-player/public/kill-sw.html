@@ -1,135 +1,182 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kill Service Worker - Gol de Ouro</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-            color: white;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            text-align: center;
-            max-width: 500px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-        h1 {
-            color: #ffd700;
-            margin-bottom: 20px;
-        }
-        .status {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 8px;
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid #00ff00;
-        }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #ffd700;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .success {
-            color: #00ff00;
-        }
-        .error {
-            color: #ff4444;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atualizando Gol de Ouro...</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #001a33 0%, #003366 100%);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #ffd700;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 2rem auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .log {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+      font-family: monospace;
+      font-size: 0.875rem;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .log-item {
+      margin: 0.25rem 0;
+      color: #ffd700;
+    }
+    .log-item.success {
+      color: #4ade80;
+    }
+    .log-item.error {
+      color: #f87171;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔄 Kill Service Worker</h1>
-        <p>Limpando cache e service workers...</p>
-        
-        <div id="status" class="status">
-            <div class="loading"></div>
-            <span>Processando...</span>
-        </div>
-        
-        <p><small>Esta página limpa o cache e desregistra service workers para resolver problemas de cache.</small></p>
-    </div>
+  <div class="container">
+    <h1>⚽ Atualizando Gol de Ouro...</h1>
+    <div class="spinner"></div>
+    <p>Removendo versões antigas e carregando a versão mais recente...</p>
+    <div id="log" class="log"></div>
+  </div>
 
-    <script>
-        async function killServiceWorkers() {
-            const statusEl = document.getElementById('status');
+  <script>
+    (function() {
+      'use strict';
+      
+      const log = document.getElementById('log');
+      let logCount = 0;
+      
+      function addLog(message, type = 'info') {
+        logCount++;
+        const item = document.createElement('div');
+        item.className = `log-item ${type}`;
+        item.textContent = `[${logCount}] ${message}`;
+        log.appendChild(item);
+        log.scrollTop = log.scrollHeight;
+      }
+      
+      addLog('Iniciando remoção forçada de Service Workers...', 'info');
+      
+      // Função para limpar tudo
+      async function cleanupEverything() {
+        try {
+          // 1. Desregistrar todos os Service Workers
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            addLog(`Encontrados ${registrations.length} Service Workers`, 'info');
             
-            try {
-                // 1. Desregistrar todos os service workers
-                if ('serviceWorker' in navigator) {
-                    const registrations = await navigator.serviceWorker.getRegistrations();
-                    console.log(`Encontrados ${registrations.length} service workers`);
-                    
-                    for (let registration of registrations) {
-                        await registration.unregister();
-                        console.log('Service worker desregistrado:', registration.scope);
-                    }
-                    
-                    statusEl.innerHTML = `<span class="success">✅ ${registrations.length} Service Workers desregistrados</span>`;
-                } else {
-                    statusEl.innerHTML = '<span class="success">✅ Nenhum Service Worker encontrado</span>';
-                }
-                
-                // 2. Limpar todos os caches
-                if ('caches' in window) {
-                    const cacheNames = await caches.keys();
-                    console.log(`Encontrados ${cacheNames.length} caches`);
-                    
-                    for (let cacheName of cacheNames) {
-                        await caches.delete(cacheName);
-                        console.log('Cache deletado:', cacheName);
-                    }
-                    
-                    statusEl.innerHTML += `<br><span class="success">✅ ${cacheNames.length} Caches limpos</span>`;
-                } else {
-                    statusEl.innerHTML += '<br><span class="success">✅ Nenhum cache encontrado</span>';
-                }
-                
-                // 3. Limpar localStorage e sessionStorage
-                localStorage.clear();
-                sessionStorage.clear();
-                console.log('Storage limpo');
-                
-                statusEl.innerHTML += '<br><span class="success">✅ Storage limpo</span>';
-                
-                // 4. Aguardar e redirecionar
-                statusEl.innerHTML += '<br><span class="success">✅ Limpeza completa! Redirecionando...</span>';
-                
-                setTimeout(() => {
-                    window.location.replace('/');
-                }, 2000);
-                
-            } catch (error) {
-                console.error('Erro ao limpar:', error);
-                statusEl.innerHTML = `<span class="error">❌ Erro: ${error.message}</span>`;
-                
-                // Mesmo com erro, tentar redirecionar
-                setTimeout(() => {
-                    window.location.replace('/');
-                }, 3000);
+            for (const registration of registrations) {
+              addLog(`Desregistrando: ${registration.scope}`, 'info');
+              const success = await registration.unregister();
+              if (success) {
+                addLog(`✅ Service Worker desregistrado: ${registration.scope}`, 'success');
+              } else {
+                addLog(`⚠️ Falha ao desregistrar: ${registration.scope}`, 'error');
+              }
             }
+          }
+          
+          // 2. Limpar todos os caches
+          if (caches && caches.keys) {
+            const cacheNames = await caches.keys();
+            addLog(`Encontrados ${cacheNames.length} caches`, 'info');
+            
+            for (const cacheName of cacheNames) {
+              addLog(`Deletando cache: ${cacheName}`, 'info');
+              const deleted = await caches.delete(cacheName);
+              if (deleted) {
+                addLog(`✅ Cache deletado: ${cacheName}`, 'success');
+              }
+            }
+          }
+          
+          // 3. Limpar storage
+          try {
+            sessionStorage.clear();
+            localStorage.clear();
+            addLog('✅ Storage limpo', 'success');
+          } catch (e) {
+            addLog(`⚠️ Erro ao limpar storage: ${e.message}`, 'error');
+          }
+          
+          // 4. Forçar backend correto
+          try {
+            sessionStorage.setItem('API_BASE_URL', 'https://goldeouro-backend-v2.fly.dev');
+            localStorage.setItem('API_BASE_URL', 'https://goldeouro-backend-v2.fly.dev');
+            addLog('✅ Backend forçado para produção', 'success');
+          } catch (e) {
+            addLog(`⚠️ Erro ao forçar backend: ${e.message}`, 'error');
+          }
+          
+          addLog('✅ Limpeza completa!', 'success');
+          return true;
+        } catch (error) {
+          addLog(`❌ Erro durante limpeza: ${error.message}`, 'error');
+          return false;
         }
+      }
+      
+      // Executar limpeza e redirecionar
+      cleanupEverything().then((success) => {
+        addLog('Redirecionando para a página principal...', 'info');
         
-        // Executar quando a página carregar
-        document.addEventListener('DOMContentLoaded', killServiceWorkers);
-    </script>
+        // Aguardar um pouco para garantir que tudo foi limpo
+        setTimeout(() => {
+          // ✅ CORREÇÃO: Verificar se está em desenvolvimento local
+          const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const timestamp = Date.now();
+          
+          if (isLocalhost) {
+            // Em desenvolvimento, redirecionar sem parâmetros desnecessários
+            console.log('[KILL-SW] ✅ Desenvolvimento local - redirecionando sem parâmetros');
+            window.location.replace('/');
+          } else {
+            // Em produção, usar parâmetros para garantir bypass de cache
+            console.log('[KILL-SW] 🚨 Produção - redirecionando com bypass de cache');
+            window.location.replace(`/?nocache=${timestamp}&sw-cleared=true&t=${timestamp}`);
+          }
+          
+          // ✅ FALLBACK: Se não redirecionar em 3 segundos, forçar reload completo
+          setTimeout(() => {
+            if (isLocalhost) {
+              window.location.href = '/';
+            } else {
+              window.location.href = `/?nocache=${Date.now()}&force-reload=true`;
+            }
+          }, 3000);
+        }, 2000);
+      });
+    })();
+  </script>
 </body>
 </html>

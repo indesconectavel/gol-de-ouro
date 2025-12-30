@@ -1,0 +1,53 @@
+{
+  "timestamp": "2025-12-09T21:24:51.855Z",
+  "variaveis": {
+    "USE_ENGINE_V19": {
+      "definida": false,
+      "obrigatoria": true,
+      "valor_esperado": "true",
+      "correta": false
+    },
+    "USE_DB_QUEUE": {
+      "definida": false,
+      "obrigatoria": false,
+      "valor_esperado": "false",
+      "correta": false
+    },
+    "ENGINE_HEARTBEAT_ENABLED": {
+      "definida": false,
+      "obrigatoria": true,
+      "valor_esperado": "true",
+      "correta": false
+    },
+    "ENGINE_MONITOR_ENABLED": {
+      "definida": false,
+      "obrigatoria": true,
+      "valor_esperado": "true",
+      "correta": false
+    },
+    "SUPABASE_URL": {
+      "definida": true,
+      "valor": "https://gayopagjdrkcmkirmfvy.supabase.co",
+      "obrigatoria": true,
+      "correta": true
+    },
+    "SUPABASE_SERVICE_ROLE_KEY": {
+      "definida": true,
+      "valor": "***",
+      "obrigatoria": true,
+      "correta": true
+    },
+    "JWT_SECRET": {
+      "definida": true,
+      "valor": "***",
+      "obrigatoria": true,
+      "correta": true
+    }
+  },
+  "resumo": {
+    "definidas": 3,
+    "faltando": 4,
+    "corretas": 3,
+    "incorretas": 0
+  }
+}

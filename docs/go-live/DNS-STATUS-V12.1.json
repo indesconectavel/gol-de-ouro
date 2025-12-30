@@ -1,0 +1,19 @@
+{
+  "dominios": {
+    "player": "OK",
+    "admin": "OK",
+    "backend": "OK"
+  },
+  "nameservers": {
+    "count": 2,
+    "valid": true
+  },
+  "dnssec": {
+    "configured": false
+  },
+  "reverso": {
+    "tested": false
+  },
+  "score": 100,
+  "errors": []
+}

@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-12-01T12:56:14.379Z",
+  "version": "FRONTEND-AUDIT-COMPLETE",
+  "errors": [
+    "API Base URL: 2 arquivo(s) com URLs incorretas"
+  ],
+  "warnings": [
+    "src\\config\\environments.js: URL incorreta encontrada: /localhost:8080/g",
+    "src\\config\\websocket.js: URL incorreta encontrada: /localhost:8080/g"
+  ],
+  "corrections": [
+    "API Base URL: 0 arquivo(s) corrigido(s)",
+    "WebSocket URLs: 0 arquivo(s) corrigido(s)",
+    "Arquivo de configuração WebSocket criado",
+    "Componentes WebSocket atualizados para usar config centralizado"
+  ],
+  "filesModified": [
+    "E:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\config\\websocket.js",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\RELATORIO-AUDITORIA-FRONTEND.md"
+  ],
+  "score": 86,
+  "decision": "APROVADO_COM_RESSALVAS"
+}

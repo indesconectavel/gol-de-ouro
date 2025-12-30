@@ -34,7 +34,7 @@ export const preloadCriticalModules = () => {
 // Função para carregar módulos baseado em rota
 export const loadRouteModule = (route) => {
   const routeModules = {
-    '/game': () => import('../pages/Game'),
+    '/game': () => import('../pages/Jogo'),
     '/dashboard': () => import('../pages/Dashboard'),
     '/profile': () => import('../pages/Profile'),
     '/withdraw': () => import('../pages/Withdraw'),

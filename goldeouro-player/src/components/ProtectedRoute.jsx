@@ -1,8 +1,13 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()
+  const location = useLocation()
+  
+  // ✅ PERMITIR ACESSO DIRETO A /game EM DESENVOLVIMENTO (GameFinal usa backend simulado)
+  const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost'
+  const isGameRoute = location.pathname === '/game'
 
   // Mostrar loading enquanto verifica autenticação
   if (loading) {
@@ -14,6 +19,11 @@ const ProtectedRoute = ({ children }) => {
         </div>
       </div>
     )
+  }
+
+  // ✅ PERMITIR ACESSO A /game SEM AUTENTICAÇÃO EM DESENVOLVIMENTO
+  if (!user && isDevelopment && isGameRoute) {
+    return children
   }
 
   // Se não estiver autenticado, redirecionar para login

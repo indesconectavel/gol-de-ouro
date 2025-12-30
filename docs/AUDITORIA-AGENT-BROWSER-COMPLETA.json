@@ -1,0 +1,538 @@
+{
+  "inicio": "2025-11-25T16:23:19.809Z",
+  "rotasPublicas": [
+    {
+      "rota": "/",
+      "status": 200,
+      "latencia": "32.37",
+      "headers": {
+        "content-security-policy": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "DENY",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "vary": "Origin, Accept-Encoding",
+        "access-control-allow-credentials": "true",
+        "ratelimit-policy": "100;w=900",
+        "ratelimit-limit": "100",
+        "ratelimit-remaining": "88",
+        "ratelimit-reset": "157",
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"ce-MtK1YTt7BtEDgFv2eoQaSGQkDb4\"",
+        "date": "Tue, 25 Nov 2025 16:23:20 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "server": "Fly/0dffd420 (2025-11-24)",
+        "via": "1.1 fly.io",
+        "fly-request-id": "01KAXX78WW7X53KNY7CS5SB70P-gru"
+      },
+      "estrutura": "object",
+      "keys": [
+        "success",
+        "timestamp",
+        "data",
+        "message"
+      ],
+      "temJson": true,
+      "mensagem": "API funcionando"
+    },
+    {
+      "rota": "/health",
+      "status": 200,
+      "latencia": "29.22",
+      "headers": {
+        "content-security-policy": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "DENY",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "vary": "Origin, Accept-Encoding",
+        "access-control-allow-credentials": "true",
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"100-lBGo6x5TMoPpQojWgxTuuupH6Zw\"",
+        "date": "Tue, 25 Nov 2025 16:23:20 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "server": "Fly/0dffd420 (2025-11-24)",
+        "via": "1.1 fly.io",
+        "fly-request-id": "01KAXX78YDJF8JAV1CV1CR0KGR-gru"
+      },
+      "estrutura": "object",
+      "keys": [
+        "success",
+        "timestamp",
+        "data",
+        "message"
+      ],
+      "temJson": true,
+      "mensagem": "Sistema funcionando"
+    },
+    {
+      "rota": "/status",
+      "status": 404,
+      "latencia": "40.13",
+      "headers": {
+        "content-security-policy": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "DENY",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "vary": "Origin, Accept-Encoding",
+        "access-control-allow-credentials": "true",
+        "ratelimit-policy": "100;w=900",
+        "ratelimit-limit": "100",
+        "ratelimit-remaining": "84",
+        "ratelimit-reset": "157",
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"52-LE3G6JN2bzVQjRr3qV9Bx82w3yk\"",
+        "date": "Tue, 25 Nov 2025 16:23:20 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "server": "Fly/0dffd420 (2025-11-24)",
+        "via": "1.1 fly.io",
+        "fly-request-id": "01KAXX78ZEYNDXZ9F0J3CP9VJG-gru"
+      },
+      "estrutura": "object",
+      "keys": [
+        "success",
+        "message",
+        "path",
+        "method"
+      ],
+      "temJson": true,
+      "mensagem": "Rota não encontrada"
+    },
+    {
+      "rota": "/meta",
+      "status": 200,
+      "latencia": "33.02",
+      "headers": {
+        "content-security-policy": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+        "cross-origin-opener-policy": "same-origin",
+        "cross-origin-resource-policy": "same-origin",
+        "origin-agent-cluster": "?1",
+        "referrer-policy": "no-referrer",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "x-content-type-options": "nosniff",
+        "x-dns-prefetch-control": "off",
+        "x-download-options": "noopen",
+        "x-frame-options": "DENY",
+        "x-permitted-cross-domain-policies": "none",
+        "x-xss-protection": "0",
+        "vary": "Origin, Accept-Encoding",
+        "access-control-allow-credentials": "true",
+        "content-type": "application/json; charset=utf-8",
+        "etag": "W/\"14f-7Sw3YI1BvOY/nK0pmG4qgkHNY/Q\"",
+        "date": "Tue, 25 Nov 2025 16:23:20 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "server": "Fly/0dffd420 (2025-11-24)",
+        "via": "1.1 fly.io",
+        "fly-request-id": "01KAXX791K8DAS7HPH1RVG1Y5K-gru"
+      },
+      "estrutura": "object",
+      "keys": [
+        "success",
+        "timestamp",
+        "data",
+        "message"
+      ],
+      "temJson": true,
+      "mensagem": "Informações do sistema"
+    }
+  ],
+  "autenticacao": {
+    "registro": {
+      "sucesso": true,
+      "latencia": "310.94"
+    },
+    "jwtEstrutura": {
+      "valida": true
+    }
+  },
+  "rotasProtegidas": [
+    {
+      "rota": "/users/profile",
+      "status": 404,
+      "latencia": "0.00",
+      "temJson": true,
+      "temSuccess": true,
+      "estrutura": [
+        "success",
+        "message",
+        "path",
+        "method"
+      ]
+    },
+    {
+      "rota": "/users/stats",
+      "status": 404,
+      "latencia": "0.00",
+      "temJson": true,
+      "temSuccess": true,
+      "estrutura": [
+        "success",
+        "message",
+        "path",
+        "method"
+      ]
+    },
+    {
+      "rota": "/payments/extrato/:user_id",
+      "status": 200,
+      "latencia": "0.00",
+      "temJson": true,
+      "temSuccess": true,
+      "estrutura": [
+        "success",
+        "data",
+        "pagination",
+        "timestamp",
+        "message"
+      ]
+    },
+    {
+      "rota": "/games/history",
+      "status": 200,
+      "latencia": "0.00",
+      "temJson": true,
+      "temSuccess": true,
+      "estrutura": [
+        "success",
+        "timestamp",
+        "data",
+        "message"
+      ]
+    }
+  ],
+  "pix": {
+    "criacao": {
+      "sucesso": true,
+      "latencia": "2843.53",
+      "paymentId": "468718642-f09df2fc-dd6f-47f1-a7f8-6232fa3d6a7a",
+      "temQrCode": false,
+      "temCopyPaste": false,
+      "temExpiresAt": true
+    },
+    "consultas": [
+      {
+        "status": "pending",
+        "latencia": "454.81",
+        "temValor": true,
+        "temCopyPaste": false
+      },
+      {
+        "status": "pending",
+        "latencia": "228.66",
+        "temValor": true,
+        "temCopyPaste": false
+      },
+      {
+        "status": "pending",
+        "latencia": "210.99",
+        "temValor": true,
+        "temCopyPaste": false
+      }
+    ]
+  },
+  "websocket": {
+    "conexao": {
+      "sucesso": true,
+      "latencia": "74.04"
+    }
+  },
+  "fila": {
+    "sistema": "lotes",
+    "rotasFilaRemovidas": true
+  },
+  "partida": {
+    "historico": {
+      "sucesso": true,
+      "quantidade": 0
+    }
+  },
+  "admin": {
+    "acesso": {
+      "sucesso": true
+    },
+    "listarUsuarios": {
+      "sucesso": true
+    },
+    "listarTransacoes": {
+      "sucesso": true
+    },
+    "fixExpiredPix": {
+      "sucesso": true
+    }
+  },
+  "seguranca": {
+    "headers": {
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "x-xss-protection": "0",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload"
+    },
+    "cors": {
+      "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
+      "access-control-allow-credentials": "true"
+    },
+    "rateLimiting": {
+      "ativo": false
+    }
+  },
+  "performance": {
+    "healthCheckLatencia": 1029.3224,
+    "headers": {
+      "content-security-policy": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+      "cross-origin-opener-policy": "same-origin",
+      "cross-origin-resource-policy": "same-origin",
+      "origin-agent-cluster": "?1",
+      "referrer-policy": "no-referrer",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+      "x-content-type-options": "nosniff",
+      "x-dns-prefetch-control": "off",
+      "x-download-options": "noopen",
+      "x-frame-options": "DENY",
+      "x-permitted-cross-domain-policies": "none",
+      "x-xss-protection": "0",
+      "vary": "Origin, Accept-Encoding",
+      "access-control-allow-credentials": "true",
+      "content-type": "application/json; charset=utf-8",
+      "etag": "W/\"100-zhVnzyPaez2BeRwq/qNb1/xMHpM\"",
+      "date": "Tue, 25 Nov 2025 16:23:20 GMT",
+      "connection": "keep-alive",
+      "keep-alive": "timeout=5",
+      "transfer-encoding": "chunked",
+      "server": "Fly/0dffd420 (2025-11-24)",
+      "via": "1.1 fly.io",
+      "fly-request-id": "01KAXX78QBH33GW9J43S230TV6-gru"
+    },
+    "latencias": [
+      {
+        "teste": "Health Check",
+        "min": "23.48",
+        "max": "39.92",
+        "avg": "31.63",
+        "variacao": "16.45"
+      },
+      {
+        "teste": "Login",
+        "min": "25.62",
+        "max": "157.13",
+        "avg": "77.68",
+        "variacao": "131.51"
+      }
+    ]
+  },
+  "falhas": {
+    "jsonInvalido": true,
+    "endpointInexistente": true
+  },
+  "problemas": [
+    {
+      "severidade": "MÉDIO",
+      "categoria": "Segurança",
+      "descricao": "Login inválido retorna status 429 em vez de 401",
+      "impacto": "Possível vazamento de informações",
+      "recomendacao": "Garantir que login inválido sempre retorna 401",
+      "timestamp": "2025-11-25T16:23:21.523Z"
+    },
+    {
+      "severidade": "ALTO",
+      "categoria": "Segurança",
+      "descricao": "Token inválido retorna status 404 em vez de 401",
+      "impacto": "Possível bypass de autenticação",
+      "recomendacao": "Garantir que tokens inválidos sempre retornam 401",
+      "timestamp": "2025-11-25T16:23:21.552Z"
+    },
+    {
+      "severidade": "ALTO",
+      "categoria": "PIX",
+      "descricao": "Criação não retorna QR code ou copy-paste",
+      "impacto": "Usuário não pode pagar",
+      "recomendacao": "Garantir que QR code é retornado",
+      "timestamp": "2025-11-25T16:23:24.683Z"
+    },
+    {
+      "severidade": "ALTO",
+      "categoria": "WebSocket",
+      "descricao": "Erro de autenticação: Usuário não encontrado ou inativo",
+      "impacto": "Autenticação WebSocket falha",
+      "recomendacao": "Verificar validação de token WebSocket",
+      "timestamp": "2025-11-25T16:23:28.822Z"
+    },
+    {
+      "severidade": "ALTO",
+      "categoria": "Jogo",
+      "descricao": "Chute falhou: Saldo insuficiente",
+      "impacto": "Usuários não podem jogar",
+      "recomendacao": "Corrigir endpoint de chute",
+      "timestamp": "2025-11-25T16:23:44.161Z"
+    },
+    {
+      "severidade": "MÉDIO",
+      "categoria": "Segurança",
+      "descricao": "CORS não configurado ou muito permissivo",
+      "impacto": "Possível vulnerabilidade",
+      "recomendacao": "Configurar CORS adequadamente",
+      "timestamp": "2025-11-25T16:23:44.844Z"
+    }
+  ],
+  "pontosFortes": [
+    {
+      "categoria": "Autenticação",
+      "descricao": "Registro funciona corretamente"
+    },
+    {
+      "categoria": "Segurança",
+      "descricao": "JWT tem estrutura correta"
+    },
+    {
+      "categoria": "Consistência",
+      "descricao": "Rota /payments/extrato/:user_id retorna formato padronizado"
+    },
+    {
+      "categoria": "Consistência",
+      "descricao": "Rota /games/history retorna formato padronizado"
+    },
+    {
+      "categoria": "PIX",
+      "descricao": "Criação retorna tempo de expiração"
+    },
+    {
+      "categoria": "PIX",
+      "descricao": "Consultas são idempotentes (mesmo status retornado)"
+    },
+    {
+      "categoria": "PIX",
+      "descricao": "Consultas são idempotentes (mesmo status retornado)"
+    },
+    {
+      "categoria": "WebSocket",
+      "descricao": "Evento welcome funciona corretamente"
+    },
+    {
+      "categoria": "WebSocket",
+      "descricao": "Conexão inicial não requer autenticação"
+    },
+    {
+      "categoria": "Segurança",
+      "descricao": "WebSocket rejeita token inválido"
+    },
+    {
+      "categoria": "Arquitetura",
+      "descricao": "Sistema migrado para lotes (mais eficiente)"
+    },
+    {
+      "categoria": "Jogo",
+      "descricao": "Histórico de chutes funciona"
+    },
+    {
+      "categoria": "Admin",
+      "descricao": "Acesso admin funciona"
+    },
+    {
+      "categoria": "Admin",
+      "descricao": "Endpoint de expiração de PIX funciona"
+    },
+    {
+      "categoria": "Segurança",
+      "descricao": "Header X-Content-Type-Options configurado"
+    },
+    {
+      "categoria": "Segurança",
+      "descricao": "Header X-Frame-Options configurado"
+    },
+    {
+      "categoria": "Segurança",
+      "descricao": "Header HSTS configurado"
+    },
+    {
+      "categoria": "Segurança",
+      "descricao": "JSON inválido é rejeitado"
+    },
+    {
+      "categoria": "Consistência",
+      "descricao": "Endpoints inexistentes retornam 404"
+    }
+  ],
+  "logs": [
+    {
+      "tipo": "aviso",
+      "mensagem": "Status (/status): Status 404",
+      "timestamp": "2025-11-25T16:23:21.122Z"
+    },
+    {
+      "tipo": "aviso",
+      "mensagem": "Login inválido retorna status 429 (esperado 401)",
+      "timestamp": "2025-11-25T16:23:21.523Z"
+    },
+    {
+      "tipo": "aviso",
+      "mensagem": "Token inválido retorna status 404 (esperado 401)",
+      "timestamp": "2025-11-25T16:23:21.552Z"
+    },
+    {
+      "tipo": "aviso",
+      "mensagem": "Perfil do Usuário: Status 404",
+      "timestamp": "2025-11-25T16:23:21.587Z"
+    },
+    {
+      "tipo": "aviso",
+      "mensagem": "Estatísticas do Usuário: Status 404",
+      "timestamp": "2025-11-25T16:23:21.621Z"
+    },
+    {
+      "tipo": "erro",
+      "mensagem": "Erro de autenticação: Usuário não encontrado ou inativo",
+      "timestamp": "2025-11-25T16:23:28.822Z"
+    },
+    {
+      "tipo": "aviso",
+      "mensagem": "Sistema de fila foi substituído por sistema de lotes",
+      "timestamp": "2025-11-25T16:23:43.907Z"
+    },
+    {
+      "tipo": "aviso",
+      "mensagem": "Chute falhou: Saldo insuficiente",
+      "timestamp": "2025-11-25T16:23:44.160Z"
+    },
+    {
+      "tipo": "aviso",
+      "mensagem": "Lista de chutes retornou status 500",
+      "timestamp": "2025-11-25T16:23:44.543Z"
+    },
+    {
+      "tipo": "aviso",
+      "mensagem": "Rate limiting não detectado (pode ser normal se limite for alto)",
+      "timestamp": "2025-11-25T16:23:45.043Z"
+    }
+  ],
+  "fim": "2025-11-25T16:23:47.736Z",
+  "duracao": 27927
+}

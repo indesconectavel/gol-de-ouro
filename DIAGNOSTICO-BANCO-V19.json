@@ -1,0 +1,316 @@
+{
+  "timestamp": "2025-12-07T00:00:00Z",
+  "versao": "V19.0.0",
+  "modo": "READ-ONLY",
+  "status_geral": "MIGRATION_V19_PENDENTE",
+  
+  "tabelas": {
+    "system_heartbeat": {
+      "existe": false,
+      "status": "REQUER_MIGRATION",
+      "estrutura_esperada": {
+        "id": "SERIAL PRIMARY KEY",
+        "instance_id": "VARCHAR(255) UNIQUE NOT NULL",
+        "last_seen": "TIMESTAMP WITH TIME ZONE DEFAULT NOW()",
+        "metadata": "JSONB",
+        "created_at": "TIMESTAMP WITH TIME ZONE DEFAULT NOW()"
+      },
+      "indices_esperados": [
+        "idx_system_heartbeat_last_seen",
+        "idx_system_heartbeat_instance"
+      ],
+      "sql_criacao": "logs/migration_v19/MIGRATION-V19.sql (linhas 118-127)"
+    },
+    
+    "lotes": {
+      "existe": true,
+      "colunas_faltantes": [
+        "persisted_global_counter",
+        "synced_at",
+        "posicao_atual"
+      ],
+      "status": "REQUER_MIGRATION",
+      "sql_criacao": "logs/migration_v19/MIGRATION-V19.sql (linhas 55-90)"
+    },
+    
+    "usuarios": {
+      "existe": true,
+      "rls_habilitado": false,
+      "status": "REQUER_MIGRATION",
+      "policies_esperadas": [
+        "usuarios_select_own",
+        "usuarios_insert_backend",
+        "usuarios_update_own"
+      ]
+    },
+    
+    "chutes": {
+      "existe": true,
+      "rls_habilitado": false,
+      "status": "REQUER_MIGRATION",
+      "policies_esperadas": [
+        "chutes_select_own",
+        "chutes_insert_backend"
+      ],
+      "indices_esperados": [
+        "idx_chutes_usuario_id",
+        "idx_chutes_lote_id",
+        "idx_chutes_created_at",
+        "idx_chutes_lote_created"
+      ]
+    },
+    
+    "transacoes": {
+      "existe": true,
+      "rls_habilitado": false,
+      "status": "REQUER_MIGRATION",
+      "policies_esperadas": [
+        "transacoes_select_own",
+        "transacoes_insert_backend"
+      ],
+      "indices_esperados": [
+        "idx_transacoes_usuario_id",
+        "idx_transacoes_created_at",
+        "idx_transacoes_usuario_created"
+      ]
+    },
+    
+    "pagamentos_pix": {
+      "existe": true,
+      "rls_habilitado": false,
+      "status": "REQUER_MIGRATION",
+      "policies_esperadas": [
+        "pagamentos_pix_select_own",
+        "pagamentos_pix_modify_backend"
+      ]
+    },
+    
+    "saques": {
+      "existe": true,
+      "rls_habilitado": false,
+      "status": "REQUER_MIGRATION",
+      "policies_esperadas": [
+        "saques_select_own",
+        "saques_modify_backend"
+      ]
+    },
+    
+    "webhook_events": {
+      "existe": true,
+      "rls_habilitado": false,
+      "status": "REQUER_MIGRATION",
+      "policies_esperadas": [
+        "webhook_events_backend"
+      ]
+    },
+    
+    "rewards": {
+      "existe": true,
+      "rls_habilitado": false,
+      "status": "REQUER_MIGRATION",
+      "policies_esperadas": [
+        "rewards_select_own",
+        "rewards_modify_backend"
+      ]
+    }
+  },
+  
+  "rls": {
+    "status": "NAO_HABILITADO",
+    "tabelas_requeridas": [
+      "usuarios",
+      "chutes",
+      "lotes",
+      "transacoes",
+      "pagamentos_pix",
+      "saques",
+      "webhook_events",
+      "rewards"
+    ],
+    "total_tabelas": 8,
+    "sql_habilitacao": "logs/migration_v19/MIGRATION-V19.sql (linhas 133-140)"
+  },
+  
+  "policies": {
+    "status": "NAO_CRIADAS",
+    "total_esperadas": 16,
+    "policies_por_tabela": {
+      "usuarios": 3,
+      "chutes": 2,
+      "lotes": 2,
+      "transacoes": 2,
+      "pagamentos_pix": 2,
+      "saques": 2,
+      "webhook_events": 1,
+      "rewards": 2
+    },
+    "sql_criacao": "logs/migration_v19/MIGRATION-V19.sql (linhas 143-350)"
+  },
+  
+  "roles": {
+    "status": "NAO_CRIADAS",
+    "roles_esperadas": [
+      {
+        "nome": "backend",
+        "descricao": "Operações de escrita",
+        "permissoes": "INSERT, UPDATE, DELETE"
+      },
+      {
+        "nome": "observer",
+        "descricao": "Apenas leitura de agregados",
+        "permissoes": "SELECT"
+      },
+      {
+        "nome": "admin",
+        "descricao": "Acesso total",
+        "permissoes": "ALL"
+      }
+    ],
+    "sql_criacao": "logs/migration_v19/MIGRATION-V19.sql (linhas 24-49)"
+  },
+  
+  "indices": {
+    "status": "NAO_CRIADOS",
+    "total_esperados": 12,
+    "indices_por_tabela": {
+      "chutes": [
+        "idx_chutes_usuario_id",
+        "idx_chutes_lote_id",
+        "idx_chutes_created_at",
+        "idx_chutes_lote_created"
+      ],
+      "transacoes": [
+        "idx_transacoes_usuario_id",
+        "idx_transacoes_created_at",
+        "idx_transacoes_usuario_created"
+      ],
+      "lotes": [
+        "idx_lotes_status_created",
+        "idx_lotes_valor_status"
+      ],
+      "usuarios": [
+        "idx_usuarios_email"
+      ],
+      "system_heartbeat": [
+        "idx_system_heartbeat_last_seen",
+        "idx_system_heartbeat_instance"
+      ]
+    },
+    "sql_criacao": "logs/migration_v19/MIGRATION-V19.sql (linhas 96-112)"
+  },
+  
+  "rpc_functions": {
+    "status": "REQUER_VERIFICACAO",
+    "functions_lotes": {
+      "rpc_get_or_create_lote": {
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "database/schema-lotes-persistencia.sql",
+        "linhas": "56-134"
+      },
+      "rpc_update_lote_after_shot": {
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "database/schema-lotes-persistencia.sql",
+        "linhas": "137-215"
+      },
+      "rpc_get_active_lotes": {
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "database/schema-lotes-persistencia.sql",
+        "linhas": "218-266"
+      }
+    },
+    "functions_financeiras": {
+      "rpc_add_balance": {
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "database/rpc-financial-acid.sql",
+        "linhas": "29-128"
+      },
+      "rpc_deduct_balance": {
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "database/rpc-financial-acid.sql",
+        "linhas": "148-258"
+      },
+      "rpc_transfer_balance": {
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "database/rpc-financial-acid.sql",
+        "linhas": "276-454"
+      },
+      "rpc_get_balance": {
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "database/rpc-financial-acid.sql",
+        "linhas": "470-524"
+      }
+    }
+  },
+  
+  "migration_v19": {
+    "arquivo": "logs/migration_v19/MIGRATION-V19.sql",
+    "tamanho_bytes": 22000,
+    "linhas": 589,
+    "status": "PRONTA_PARA_APLICACAO",
+    "idempotente": true,
+    "conteudo": {
+      "roles": true,
+      "colunas_lotes": true,
+      "indices": true,
+      "system_heartbeat": true,
+      "rls": true,
+      "policies": true,
+      "verificacao_rpcs": true
+    }
+  },
+  
+  "problemas_criticos": [
+    {
+      "severidade": "CRITICO",
+      "problema": "Tabela system_heartbeat não existe",
+      "impacto": "Endpoint /monitor retorna HTTP 500",
+      "solucao": "Aplicar Migration V19"
+    },
+    {
+      "severidade": "CRITICO",
+      "problema": "RLS não habilitado",
+      "impacto": "Segurança comprometida",
+      "solucao": "Aplicar Migration V19"
+    },
+    {
+      "severidade": "ALTO",
+      "problema": "Policies não criadas",
+      "impacto": "Acesso não controlado",
+      "solucao": "Aplicar Migration V19"
+    },
+    {
+      "severidade": "ALTO",
+      "problema": "Índices não criados",
+      "impacto": "Performance degradada",
+      "solucao": "Aplicar Migration V19"
+    }
+  ],
+  
+  "acoes_necessarias": [
+    {
+      "prioridade": 1,
+      "acao": "Aplicar Migration V19 no Supabase Dashboard",
+      "arquivo": "logs/migration_v19/MIGRATION-V19.sql",
+      "tempo_estimado": "5-10 minutos"
+    },
+    {
+      "prioridade": 2,
+      "acao": "Verificar se RPCs de lotes existem",
+      "arquivo": "database/schema-lotes-persistencia.sql",
+      "tempo_estimado": "2 minutos"
+    },
+    {
+      "prioridade": 3,
+      "acao": "Verificar se RPCs financeiras existem",
+      "arquivo": "database/rpc-financial-acid.sql",
+      "tempo_estimado": "2 minutos"
+    },
+    {
+      "prioridade": 4,
+      "acao": "Validar estruturas após migration",
+      "script": "src/scripts/validate_engine_v19_final.js",
+      "tempo_estimado": "1 minuto"
+    }
+  ]
+}
+

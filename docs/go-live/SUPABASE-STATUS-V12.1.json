@@ -1,0 +1,26 @@
+{
+  "estrutura": {
+    "hasLotes": true,
+    "hasChutes": true,
+    "hasUsuarios": true,
+    "hasPagamentos": true,
+    "hasIndices": true,
+    "hasConstraints": true,
+    "hasTriggers": true,
+    "hasPolicies": true
+  },
+  "conectividade": {
+    "backendConnected": true,
+    "latency": 0
+  },
+  "integridade": {
+    "hasPrimaryKeys": true,
+    "hasForeignKeys": true,
+    "hasAutoIncrement": true,
+    "hasConstraints": true,
+    "hasLotesTable": true,
+    "hasChutesTable": true
+  },
+  "score": 100,
+  "errors": []
+}

@@ -1,0 +1,16 @@
+-- =====================================================
+-- SCHEMA OBSOLETO - NÃO APLICAR
+-- =====================================================
+-- Data: 2025-01-12
+-- Status: OBSOLETO - Sistema de Fila/Partidas removido
+--
+-- Este schema foi criado para persistir fila e partidas,
+-- mas o sistema atual usa LOTES (sem fila, sem espera).
+--
+-- Este arquivo é mantido apenas para referência histórica.
+-- NÃO APLICAR este schema ao banco de dados.
+-- =====================================================
+
+-- OBSOLETO: Sistema de Fila/Partidas não é mais usado
+-- O sistema atual usa LOTES via REST API (/api/games/shoot)
+-- Ver: docs/AUDITORIA-SISTEMA-LOTES-VS-FILA-PARTIDAS.md

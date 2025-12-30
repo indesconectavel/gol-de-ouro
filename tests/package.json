@@ -1,51 +1,23 @@
 {
-  "name": "gol-de-ouro-tests",
+  "name": "goldeouro-tests",
   "version": "1.0.0",
-  "description": "Suite de Testes Automatizados - Gol de Ouro",
+  "description": "Testes automatizados - FASE 2.5",
+  "main": "runner.js",
   "scripts": {
-    "test": "node tests/automated-test-suite.js",
-    "test:unit": "jest tests/unit/",
-    "test:integration": "jest tests/integration/",
-    "test:e2e": "jest tests/e2e/",
-    "test:performance": "node tests/performance-tests.js",
-    "test:security": "node tests/security-tests.js",
-    "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch",
-    "test:ci": "jest --ci --coverage --watchAll=false"
+    "test": "node runner.js",
+    "test:auth": "node -e \"require('./api/auth.test').runAll().then(r => console.log(JSON.stringify(r, null, 2)))\"",
+    "test:game": "node -e \"require('./api/game.test').runAll().then(r => console.log(JSON.stringify(r, null, 2)))\"",
+    "test:payment": "node -e \"require('./api/payment.test').runAll().then(r => console.log(JSON.stringify(r, null, 2)))\"",
+    "test:withdraw": "node -e \"require('./api/withdraw.test').runAll().then(r => console.log(JSON.stringify(r, null, 2)))\"",
+    "test:admin": "node -e \"require('./api/admin.test').runAll().then(r => console.log(JSON.stringify(r, null, 2)))\"",
+    "test:integration": "node -e \"require('./integration/adapters.test').runAll().then(r => console.log(JSON.stringify(r, null, 2)))\"",
+    "test:stress": "node -e \"require('./stress/stress.test').runAll().then(r => console.log(JSON.stringify(r, null, 2)))\"",
+    "report": "node -e \"console.log(require('fs').readFileSync('./reports/latest-report.md', 'utf-8'))\""
   },
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "supertest": "^6.3.3",
-    "supertest-as-promised": "^4.0.2",
-    "@types/jest": "^29.5.8",
-    "jest-environment-node": "^29.7.0",
-    "artillery": "^2.0.0",
-    "k6": "^0.0.0",
-    "newman": "^6.0.0",
-    "newman-reporter-html": "^1.0.5"
+  "dependencies": {
+    "axios": "^1.6.7"
   },
-  "jest": {
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/tests/**/*.test.js",
-      "**/tests/**/*.spec.js"
-    ],
-    "collectCoverageFrom": [
-      "services/**/*.js",
-      "middleware/**/*.js",
-      "utils/**/*.js",
-      "!**/node_modules/**",
-      "!**/coverage/**"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    },
-    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
-    "testTimeout": 30000
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

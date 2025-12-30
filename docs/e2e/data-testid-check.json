@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-12-01T23:09:38.955Z",
+  "frontendUrl": "https://www.goldeouro.lol",
+  "login": {
+    "email-input": {
+      "selector": "[data-testid=\"email-input\"]",
+      "found": false,
+      "status": "NÃO ENCONTRADO"
+    },
+    "password-input": {
+      "selector": "[data-testid=\"password-input\"]",
+      "found": false,
+      "status": "NÃO ENCONTRADO"
+    },
+    "submit-button": {
+      "selector": "[data-testid=\"submit-button\"]",
+      "found": false,
+      "status": "NÃO ENCONTRADO"
+    }
+  },
+  "register": {
+    "email-input": {
+      "selector": "[data-testid=\"email-input\"]",
+      "found": false,
+      "status": "NÃO ENCONTRADO"
+    },
+    "password-input": {
+      "selector": "[data-testid=\"password-input\"]",
+      "found": false,
+      "status": "NÃO ENCONTRADO"
+    },
+    "username-input": {
+      "selector": "[data-testid=\"username-input\"]",
+      "found": false,
+      "status": "NÃO ENCONTRADO"
+    },
+    "submit-button": {
+      "selector": "[data-testid=\"submit-button\"]",
+      "found": false,
+      "status": "NÃO ENCONTRADO"
+    }
+  },
+  "status": "NENHUM_ENCONTRADO"
+}

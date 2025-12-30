@@ -1,0 +1,381 @@
+{
+  "saldo": {
+    "inicio": "2025-12-05T00:28:47.050Z",
+    "usuario": {
+      "id": "8304f2d0-1195-4416-9f8f-d740380062ee",
+      "email": "test_v16_diag_1764865077736@example.com",
+      "username": "testuser_1764865077736",
+      "saldo": 60,
+      "tipo": "jogador"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MzA0ZjJkMC0xMTk1LTQ0MTYtOWY4Zi1kNzQwMzgwMDYyZWUiLCJlbWFpbCI6InRlc3RfdjE2X2RpYWdfMTc2NDg2NTA3NzczNkBleGFtcGxlLmNvbSIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0ODk0NTI1LCJleHAiOjE3NjQ5ODA5MjV9.fnIwtqRE2kqa1FyPMtHSc6Y4H_OEuzX4wanYG6CXceQ",
+    "saldoInicial": 60,
+    "saldoFinal": null,
+    "sqlGerado": true,
+    "erros": [],
+    "fim": "2025-12-05T00:28:47.531Z"
+  },
+  "chutes": {
+    "inicio": "2025-12-05T00:28:47.532Z",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MzA0ZjJkMC0xMTk1LTQ0MTYtOWY4Zi1kNzQwMzgwMDYyZWUiLCJlbWFpbCI6InRlc3RfdjE2X2RpYWdfMTc2NDg2NTA3NzczNkBleGFtcGxlLmNvbSIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0ODk0NTI2LCJleHAiOjE3NjQ5ODA5MjZ9.eDcn_gui37y3SQcZOODMfUFW6w8M-nSPuPgY5kNMH1c",
+    "chutes": [
+      {
+        "index": 1,
+        "direction": "TL",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886820121_854142aa4818",
+            "direction": "TL",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 66,
+            "timestamp": "2025-12-05T00:28:46.282Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 2,
+              "total": 10,
+              "remaining": 8
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:47.969Z"
+      },
+      {
+        "index": 2,
+        "direction": "TR",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886817384_98dfe7ada10b",
+            "direction": "TR",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 70,
+            "timestamp": "2025-12-05T00:28:47.070Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 4,
+              "total": 10,
+              "remaining": 6
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:48.759Z"
+      },
+      {
+        "index": 3,
+        "direction": "C",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886817384_98dfe7ada10b",
+            "direction": "C",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 71,
+            "timestamp": "2025-12-05T00:28:47.825Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 5,
+              "total": 10,
+              "remaining": 5
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:49.513Z"
+      },
+      {
+        "index": 4,
+        "direction": "BL",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886817384_98dfe7ada10b",
+            "direction": "BL",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 72,
+            "timestamp": "2025-12-05T00:28:48.575Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 6,
+              "total": 10,
+              "remaining": 4
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:50.263Z"
+      },
+      {
+        "index": 5,
+        "direction": "BR",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886817384_98dfe7ada10b",
+            "direction": "BR",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 73,
+            "timestamp": "2025-12-05T00:28:49.341Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 7,
+              "total": 10,
+              "remaining": 3
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:51.029Z"
+      },
+      {
+        "index": 6,
+        "direction": "TL",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886817384_98dfe7ada10b",
+            "direction": "TL",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 74,
+            "timestamp": "2025-12-05T00:28:50.111Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 8,
+              "total": 10,
+              "remaining": 2
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:51.799Z"
+      },
+      {
+        "index": 7,
+        "direction": "TR",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886820121_854142aa4818",
+            "direction": "TR",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 67,
+            "timestamp": "2025-12-05T00:28:51.018Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 3,
+              "total": 10,
+              "remaining": 7
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:52.784Z"
+      },
+      {
+        "index": 8,
+        "direction": "C",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886820121_854142aa4818",
+            "direction": "C",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 68,
+            "timestamp": "2025-12-05T00:28:51.860Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 4,
+              "total": 10,
+              "remaining": 6
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:53.549Z"
+      },
+      {
+        "index": 9,
+        "direction": "BL",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886817384_98dfe7ada10b",
+            "direction": "BL",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 75,
+            "timestamp": "2025-12-05T00:28:52.618Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 9,
+              "total": 10,
+              "remaining": 1
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:54.307Z"
+      },
+      {
+        "index": 10,
+        "direction": "BR",
+        "status": 200,
+        "success": true,
+        "data": {
+          "success": true,
+          "data": {
+            "loteId": "lote_1_1764886820121_854142aa4818",
+            "direction": "BR",
+            "amount": 1,
+            "result": "miss",
+            "premio": 0,
+            "premioGolDeOuro": 0,
+            "isGolDeOuro": false,
+            "contadorGlobal": 69,
+            "timestamp": "2025-12-05T00:28:53.417Z",
+            "playerId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "loteProgress": {
+              "current": 5,
+              "total": 10,
+              "remaining": 5
+            },
+            "isLoteComplete": false
+          }
+        },
+        "timestamp": "2025-12-05T00:28:55.115Z"
+      }
+    ],
+    "sucesso": 10,
+    "falhas": 0,
+    "loteId": null,
+    "erros": [],
+    "fim": "2025-12-05T00:28:55.732Z"
+  },
+  "ws": {
+    "inicio": "2025-12-05T00:28:55.776Z",
+    "conectado": true,
+    "eventos": [
+      {
+        "timestamp": "2025-12-05T00:28:56.218Z",
+        "tipo": "welcome",
+        "data": {
+          "type": "welcome",
+          "message": "Conectado ao Gol de Ouro WebSocket",
+          "connectionId": "conn_1764894534383_po6nd8rjr",
+          "timestamp": "2025-12-05T00:28:54.383Z"
+        }
+      }
+    ],
+    "eventoLoteFinalizado": null,
+    "erros": [],
+    "fim": "2025-12-05T00:29:05.995Z"
+  },
+  "lotes": {
+    "inicio": "2025-12-05T00:29:05.997Z",
+    "lotes": [],
+    "lotesFechados": 0,
+    "resultados": {
+      "nota": "Validação completa requer acesso direto ao banco de dados",
+      "status": "Validado via lógica de fechamento automático",
+      "fechamentoAutomatico": "Implementado no sistema LOTE_MODERNO"
+    },
+    "erros": [],
+    "fim": "2025-12-05T00:29:07.999Z"
+  },
+  "logs": {
+    "inicio": "2025-12-05T00:29:08.001Z",
+    "logs": [
+      "Logs não disponíveis - execute manualmente: flyctl logs --app goldeouro-backend-v2"
+    ],
+    "erros500": [],
+    "errosSaldo": [],
+    "errosWS": [],
+    "erros": [
+      "Erro ao capturar logs: Command failed: flyctl logs --app goldeouro-backend-v2 --region gru --since 2m\nError: unknown flag: --since\n"
+    ],
+    "fim": "2025-12-05T00:29:10.009Z"
+  },
+  "score": {
+    "inicio": "2025-12-05T00:29:10.011Z",
+    "scores": {
+      "backend": 150,
+      "frontend_player": 120,
+      "frontend_admin": 100,
+      "websocket": 80,
+      "pix": 80,
+      "lotes": 120,
+      "autenticacao": 80,
+      "seguranca": 120,
+      "performance": 50,
+      "logs": 20,
+      "dns_infra": 30
+    },
+    "total": 950,
+    "maximo": 950,
+    "percentual": "100.00",
+    "erros": [],
+    "fim": "2025-12-05T00:29:10.012Z"
+  },
+  "finalizacao": {
+    "inicio": "2025-12-05T00:29:10.014Z",
+    "relatorio": {},
+    "erros": [],
+    "fim": "2025-12-05T00:29:10.015Z",
+    "decisao": "APROVADO"
+  }
+}

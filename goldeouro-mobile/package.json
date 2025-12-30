@@ -2,7 +2,7 @@
   "name": "gol-de-ouro-mobile",
   "version": "2.0.0",
   "description": "Gol de Ouro - Mobile App",
-  "main": "App.js",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -15,9 +15,11 @@
     "submit:ios": "eas submit --platform ios"
   },
   "dependencies": {
-    "@expo/config-plugins": "~8.0.0",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "1.23.1",
+    "@react-navigation/bottom-tabs": "^7.8.12",
+    "@react-navigation/native": "^7.1.25",
+    "@react-navigation/stack": "^7.6.12",
     "axios": "^1.6.7",
     "expo": "~51.0.0",
     "expo-av": "~14.0.7",
@@ -36,7 +38,6 @@
     "expo-secure-store": "~13.0.2",
     "expo-splash-screen": "~0.27.5",
     "expo-status-bar": "~1.12.1",
-    "metro-core": "~0.80.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",

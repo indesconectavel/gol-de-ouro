@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-12-04T19-55-52-915Z",
+  "status": "FAILED",
+  "etapa": 8,
+  "backup": {},
+  "correction": {},
+  "validation": {},
+  "rollback": {},
+  "errors": [
+    "Erro ao conectar Supabase: Request failed with status code 401",
+    "Erro crítico na etapa 0: Request failed with status code 401",
+    "Erro crítico: Request failed with status code 401"
+  ],
+  "warnings": [],
+  "artifacts": [
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-INJECTION-RESULT-2025-12-04T19-55-52-915Z.md"
+  ]
+}

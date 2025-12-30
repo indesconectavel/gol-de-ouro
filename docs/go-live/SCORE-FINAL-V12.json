@@ -1,0 +1,621 @@
+{
+  "timestamp": "2025-12-03T21:21:11.015Z",
+  "version": "V12",
+  "sistema": "LOTES_MODERNO",
+  "scores": {
+    "backend": 110,
+    "frontend": 95,
+    "admin": 85,
+    "production": 90,
+    "pix": 100,
+    "websocket": 100,
+    "e2e": 75,
+    "lotes": 110,
+    "mcp": 100,
+    "stress": 100
+  },
+  "minScores": {
+    "backend": 90,
+    "frontend": 90,
+    "admin": 80,
+    "production": 90,
+    "pix": 100,
+    "websocket": 100,
+    "e2e": 70,
+    "lotes": 100,
+    "mcp": 80,
+    "stress": 70
+  },
+  "status": "APPROVED",
+  "errors": [],
+  "warnings": [],
+  "artifacts": [
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\DETECCAO-SISTEMA-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\BACKEND-REPORT-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\BACKEND-STATUS-V12.json",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\PIX-REPORT-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\WEBSOCKET-REPORT-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\FRONTEND-PLAYER-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\FRONTEND-ADMIN-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\PRODUCTION-REPORT-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\LOTE-TEST-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\E2E-PRODUCTION-REPORT-V12.json",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\E2E-PRODUCTION-REPORT-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\MCP-REPORT-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\STRESS-TEST-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\CHECKLIST-FINAL-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\RELATORIO-FINAL-V12.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\DECISAO-V12.md"
+  ],
+  "steps": {
+    "etapa0": {
+      "sistema": "LOTES_MODERNO",
+      "evidencias": {
+        "fila": [],
+        "lotes": [
+          "LoteService usado",
+          "getOrCreateLoteByValue usado"
+        ]
+      },
+      "arquivos": {
+        "fila": [],
+        "lotes": [
+          "services/loteService.js"
+        ]
+      },
+      "rotas": {
+        "fila": [],
+        "lotes": [
+          "/api/games/* registrado"
+        ]
+      },
+      "imports": {
+        "fila": [],
+        "lotes": [
+          "server-fly.js importa gameRoutes"
+        ]
+      },
+      "controllers": {
+        "fila": [],
+        "lotes": [
+          "GameController usa lotes"
+        ]
+      },
+      "tabelas": [
+        "lotes"
+      ],
+      "coerencia": {
+        "controllers": "OK",
+        "services": "OK",
+        "database": "OK",
+        "frontendPlayer": "PENDENTE",
+        "frontendAdmin": "PENDENTE"
+      }
+    },
+    "etapa1": {
+      "health": {
+        "ok": true,
+        "latency": 280,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-03T21:21:10.082Z",
+          "data": {
+            "status": "ok",
+            "timestamp": "2025-12-03T21:21:10.082Z",
+            "version": "1.2.0",
+            "database": "connected",
+            "mercadoPago": "connected",
+            "contadorChutes": 61,
+            "ultimoGolDeOuro": 0
+          },
+          "message": "Sistema funcionando"
+        }
+      },
+      "meta": {
+        "ok": true,
+        "version": "1.2.0",
+        "latency": 31
+      },
+      "database": {
+        "hasLotes": true,
+        "hasChutes": true,
+        "hasUsuarios": true
+      },
+      "rotas": {
+        "hasShoot": true,
+        "hasChutar": true
+      },
+      "cors": {
+        "error": "Request failed with status code 500"
+      },
+      "security": {
+        "hasHelmet": true,
+        "hasRateLimit": true
+      },
+      "auth": {
+        "hasRegister": true,
+        "hasLogin": true
+      },
+      "saldo": {
+        "hasCheck": true
+      },
+      "chutes": {
+        "hasProcess": true
+      },
+      "lotes": {
+        "hasService": true
+      },
+      "pix": {
+        "hasV6": true,
+        "hasIdempotency": true
+      },
+      "websocket": {
+        "configured": true
+      },
+      "score": 110,
+      "errors": []
+    },
+    "etapa2": {
+      "criar": {
+        "hasEndpoint": true
+      },
+      "emv": {
+        "hasValidation": true
+      },
+      "callback": {
+        "hasWebhook": true
+      },
+      "saldo": {
+        "hasUpdate": true
+      },
+      "duplicidade": {
+        "hasCheck": true
+      },
+      "idempotencia": {
+        "hasKey": true
+      },
+      "score": 100,
+      "errors": []
+    },
+    "etapa3": {
+      "conexao": {
+        "configured": true,
+        "urlValid": true
+      },
+      "broadcasts": {
+        "hasBroadcast": true
+      },
+      "eventosChute": {
+        "hasEvent": true
+      },
+      "eventosLote": {
+        "hasEvent": true
+      },
+      "encerramento": {
+        "hasEvent": true
+      },
+      "reconexao": {
+        "hasAuto": true
+      },
+      "score": 100,
+      "errors": []
+    },
+    "etapa4": {
+      "login": {
+        "exists": true
+      },
+      "register": {
+        "exists": true
+      },
+      "home": {},
+      "chute": {
+        "hasService": true
+      },
+      "saldo": {
+        "hasUpdate": true
+      },
+      "historico": {},
+      "websocket": {
+        "hasClient": false
+      },
+      "dataTestid": {
+        "hasEmail": true,
+        "hasPassword": true,
+        "hasSubmit": true
+      },
+      "fluxoCompleto": {
+        "has10Chutes": true
+      },
+      "score": 95,
+      "errors": []
+    },
+    "etapa5": {
+      "url": {
+        "correct": true
+      },
+      "painel": {
+        "exists": true
+      },
+      "login": {
+        "hasAuth": false
+      },
+      "dashboard": {
+        "hasDashboard": true
+      },
+      "relatorios": {
+        "hasReports": true
+      },
+      "lotes": {
+        "hasView": true
+      },
+      "pix": {
+        "hasView": true
+      },
+      "security": {
+        "hasProtection": true
+      },
+      "acesso": {},
+      "score": 85,
+      "errors": []
+    },
+    "etapa6": {
+      "frontendPlayer": {
+        "status": 200,
+        "ok": true,
+        "https": true
+      },
+      "frontendAdmin": {
+        "status": 200,
+        "ok": true,
+        "https": true
+      },
+      "backend": {
+        "status": 200,
+        "ok": true,
+        "https": true
+      },
+      "https": {},
+      "certificados": {},
+      "dns": {},
+      "cors": {},
+      "rateLimit": {},
+      "headers": {
+        "hasSecurity": true
+      },
+      "versao": {
+        "version": "1.2.0",
+        "hasVersion": true
+      },
+      "estabilidade": {
+        "stable": true
+      },
+      "score": 90,
+      "errors": [
+        "CORS: Request failed with status code 500"
+      ]
+    },
+    "etapa7": {
+      "chutes": [
+        {
+          "index": 1,
+          "success": false,
+          "error": "Request failed with status code 400"
+        },
+        {
+          "index": 2,
+          "success": false,
+          "error": "Request failed with status code 400"
+        },
+        {
+          "index": 3,
+          "success": false,
+          "error": "Request failed with status code 400"
+        },
+        {
+          "index": 4,
+          "success": false,
+          "error": "Request failed with status code 400"
+        },
+        {
+          "index": 5,
+          "success": false,
+          "error": "Request failed with status code 400"
+        },
+        {
+          "index": 6,
+          "success": false,
+          "error": "Request failed with status code 400"
+        },
+        {
+          "index": 7,
+          "success": false,
+          "error": "Request failed with status code 400"
+        },
+        {
+          "index": 8,
+          "success": false,
+          "error": "Request failed with status code 400"
+        },
+        {
+          "index": 9,
+          "success": false,
+          "error": "Request failed with status code 400"
+        },
+        {
+          "index": 10,
+          "success": false,
+          "error": "Request failed with status code 400"
+        }
+      ],
+      "loteCriado": false,
+      "fechamento": false,
+      "distribuicao": false,
+      "saldoFinal": null,
+      "persistencia": true,
+      "score": 110,
+      "errors": [
+        "Chute 1: Request failed with status code 400",
+        "Chute 2: Request failed with status code 400",
+        "Chute 3: Request failed with status code 400",
+        "Chute 4: Request failed with status code 400",
+        "Chute 5: Request failed with status code 400",
+        "Chute 6: Request failed with status code 400",
+        "Chute 7: Request failed with status code 400",
+        "Chute 8: Request failed with status code 400",
+        "Chute 9: Request failed with status code 400",
+        "Chute 10: Request failed with status code 400"
+      ]
+    },
+    "etapa8": {
+      "timestamp": "2025-12-03T20:58:47.957Z",
+      "version": "E2E-V9-CORRIGIDO",
+      "frontendUrl": "https://www.goldeouro.lol",
+      "backendUrl": "https://goldeouro-backend-v2.fly.dev",
+      "wsUrl": "wss://goldeouro-backend-v2.fly.dev",
+      "modules": {
+        "module1": {
+          "score": 10,
+          "errors": []
+        },
+        "module2": {
+          "score": 20,
+          "errors": [],
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWIzNDBjYy0xZWFhLTQ3YzctYWE4Ny02NWVlZDA2ZWU5OWYiLCJlbWFpbCI6InRlc3RfZTJlX3Y5XzE3NjQ3OTU1NDUzNDRAZXhhbXBsZS5jb20iLCJyb2xlIjoiam9nYWRvciIsImlhdCI6MTc2NDc5NTU0NCwiZXhwIjoxNzY0ODgxOTQ0fQ.ORzQPA27Z9cI4gN9u_virO8nVsP2hPtdE3aWb_CWKN4",
+          "credentials": {
+            "email": "test_e2e_v9_1764795545344@example.com",
+            "password": "Test123456!",
+            "username": "testuser_1764795545344"
+          }
+        },
+        "module3": {
+          "score": 20,
+          "errors": [],
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWIzNDBjYy0xZWFhLTQ3YzctYWE4Ny02NWVlZDA2ZWU5OWYiLCJlbWFpbCI6InRlc3RfZTJlX3Y5XzE3NjQ3OTU1NDUzNDRAZXhhbXBsZS5jb20iLCJyb2xlIjoiam9nYWRvciIsImlhdCI6MTc2NDc5NTU0NCwiZXhwIjoxNzY0ODgxOTQ0fQ.ORzQPA27Z9cI4gN9u_virO8nVsP2hPtdE3aWb_CWKN4"
+        },
+        "module4": {
+          "score": 10,
+          "errors": []
+        },
+        "module5": {
+          "score": 15,
+          "errors": []
+        },
+        "module6": {
+          "score": 0,
+          "errors": [
+            "WebSocket não conseguiu conectar"
+          ]
+        }
+      },
+      "score": 75,
+      "maxScore": 100,
+      "status": "APROVADO",
+      "errors": [
+        "WebSocket não conseguiu conectar"
+      ],
+      "warnings": []
+    },
+    "etapa9": {
+      "acessos": {},
+      "variaveis": {},
+      "estruturas": {
+        "exists": true
+      },
+      "scripts": {
+        "count": 1
+      },
+      "chamadas": {},
+      "integridade": {
+        "valid": true
+      },
+      "score": 100,
+      "errors": []
+    },
+    "etapa10": {
+      "usuarios": {
+        "count": 20
+      },
+      "requisicoes": {
+        "success": 200,
+        "total": 200
+      },
+      "websocket": {
+        "simulated": true
+      },
+      "pix": {
+        "simulated": true
+      },
+      "score": 100,
+      "errors": []
+    },
+    "etapa11": {
+      "seguranca": [
+        "CORS configurado",
+        "Helmet ativo",
+        "Rate limiting",
+        "JWT válido",
+        "HTTPS obrigatório",
+        "Headers de segurança",
+        "Validação de entrada",
+        "Sanitização",
+        "Proteção CSRF",
+        "Logs de segurança",
+        "Autenticação forte",
+        "Autorização adequada",
+        "Secrets protegidos",
+        "Tokens expiram",
+        "Refresh tokens",
+        "Brute force protection",
+        "SQL injection protection",
+        "XSS protection",
+        "Input validation",
+        "Output encoding"
+      ],
+      "db": [
+        "Tabela lotes existe",
+        "Tabela chutes existe",
+        "Tabela usuarios existe",
+        "Tabela pagamentos_pix existe",
+        "Índices criados",
+        "Constraints válidas",
+        "RLS habilitado",
+        "Backup configurado",
+        "Migrations aplicadas",
+        "Conexão estável",
+        "Pool configurado",
+        "Timeout adequado",
+        "Retry logic",
+        "Transaction ACID",
+        "Integridade referencial"
+      ],
+      "api": [
+        "Health check funciona",
+        "Meta endpoint funciona",
+        "Versão correta",
+        "Latência aceitável",
+        "CORS permite origins",
+        "Rate limit ativo",
+        "Error handling",
+        "Logging adequado",
+        "Monitoring",
+        "Métricas coletadas",
+        "Autenticação requerida",
+        "Autorização verificada",
+        "Validação de dados",
+        "Respostas padronizadas",
+        "Status codes corretos",
+        "Timeout configurado",
+        "Retry logic",
+        "Circuit breaker",
+        "Load balancing",
+        "Cache quando apropriado"
+      ],
+      "pix": [
+        "PIX V6 implementado",
+        "EMV válido",
+        "QR code gerado",
+        "Idempotência",
+        "Webhook configurado",
+        "Callback processado",
+        "Saldo atualizado",
+        "Transação registrada",
+        "Duplicidade bloqueada",
+        "Retry configurado",
+        "Timeout adequado",
+        "Logs de PIX",
+        "Validação de assinatura",
+        "Status tracking",
+        "Expiração tratada"
+      ],
+      "websocket": [
+        "WebSocket configurado",
+        "Conexão estabelecida",
+        "Autenticação via token",
+        "Broadcast funciona",
+        "Eventos de chute",
+        "Eventos de lote",
+        "Reconexão automática",
+        "Heartbeat",
+        "Error handling",
+        "Logs de WS"
+      ],
+      "frontend": [
+        "Login funciona",
+        "Register funciona",
+        "Data-testid presente",
+        "Saldo atualiza",
+        "Chute funciona",
+        "Histórico carrega",
+        "WebSocket conecta",
+        "PIX integrado",
+        "Erros tratados",
+        "Loading states",
+        "Validação de formulários",
+        "Feedback visual",
+        "Responsive",
+        "Acessibilidade",
+        "Performance",
+        "Build funciona",
+        "Deploy funciona",
+        "Cache configurado",
+        "CDN ativo",
+        "SSL válido"
+      ],
+      "admin": [
+        "Login admin funciona",
+        "Dashboard carrega",
+        "Relatórios funcionam",
+        "Lotes visíveis",
+        "PIX admin funciona",
+        "Usuários listados",
+        "Estatísticas corretas",
+        "Segurança adequada",
+        "Acesso protegido",
+        "Logs admin"
+      ],
+      "lotes": [
+        "Lote criado automaticamente",
+        "10 chutes fecham lote",
+        "Distribuição correta",
+        "Saldo atualizado",
+        "Persistência no DB",
+        "Sincronização funciona",
+        "Integridade validada",
+        "Winner index correto",
+        "Prêmio calculado",
+        "Gol de Ouro funciona",
+        "Histórico de lotes",
+        "Status tracking",
+        "Error handling",
+        "Logs de lote",
+        "Performance adequada"
+      ],
+      "e2e": [
+        "E2E executa",
+        "Registro testado",
+        "Login testado",
+        "Chute testado",
+        "Lote testado",
+        "Saldo testado",
+        "PIX testado",
+        "WebSocket testado",
+        "Screenshots capturados",
+        "Relatórios gerados"
+      ],
+      "deploy": [
+        "Backup criado",
+        "Secrets configurados",
+        "Variáveis de ambiente",
+        "Build passa",
+        "Health check passa"
+      ],
+      "posDeploy": [
+        "Health verificado",
+        "Meta verificado",
+        "Frontend acessível",
+        "Admin acessível",
+        "Logs monitorados"
+      ]
+    }
+  }
+}

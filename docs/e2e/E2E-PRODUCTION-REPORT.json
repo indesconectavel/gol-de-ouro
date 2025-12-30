@@ -1,0 +1,1619 @@
+{
+  "timestamp": "2025-12-03T19:22:27.220Z",
+  "version": "E2E-PRODUCTION-AUDIT-v1.0",
+  "frontendUrl": "https://www.goldeouro.lol",
+  "backendUrl": "https://goldeouro-backend-v2.fly.dev",
+  "wsUrl": "wss://goldeouro-backend-v2.fly.dev",
+  "modules": {
+    "module1_dataTestID": {
+      "login": {
+        "email": {
+          "selector": "[data-testid=\"email-input\"]",
+          "found": false,
+          "status": "NÃO ENCONTRADO",
+          "usedFallback": true
+        },
+        "password": {
+          "selector": "[data-testid=\"password-input\"]",
+          "found": false,
+          "status": "NÃO ENCONTRADO",
+          "usedFallback": true
+        },
+        "submit": {
+          "selector": "[data-testid=\"submit-button\"]",
+          "found": false,
+          "status": "NÃO ENCONTRADO",
+          "usedFallback": true
+        }
+      },
+      "register": {
+        "email": {
+          "selector": "input[type=\"email\"]",
+          "found": true,
+          "status": "ENCONTRADO",
+          "usedFallback": true
+        },
+        "password": {
+          "selector": "input[type=\"password\"]",
+          "found": true,
+          "status": "ENCONTRADO",
+          "usedFallback": true
+        },
+        "username": {
+          "selector": "[data-testid=\"username-input\"]",
+          "found": false,
+          "status": "NÃO ENCONTRADO",
+          "usedFallback": true
+        },
+        "submit": {
+          "selector": "button[type=\"submit\"]",
+          "found": true,
+          "status": "ENCONTRADO",
+          "usedFallback": true
+        }
+      },
+      "score": 9,
+      "errors": [
+        "Login: email não encontrado (tentou: [data-testid=\"email-input\"], input[type=\"email\"], input[name=\"email\"])",
+        "Login: password não encontrado (tentou: [data-testid=\"password-input\"], input[type=\"password\"], input[name=\"password\"])",
+        "Login: submit não encontrado (tentou: [data-testid=\"submit-button\"], button[type=\"submit\"], form button)",
+        "Register: username não encontrado (tentou: [data-testid=\"username-input\"], input[name=\"username\"], input[name=\"name\"])"
+      ],
+      "warnings": []
+    },
+    "module2_register": {
+      "success": false,
+      "token": null,
+      "redirect": "https://www.goldeouro.lol/dashboard",
+      "score": 0,
+      "errors": [
+        "Token não salvo após registro"
+      ],
+      "testCredentials": null,
+      "tokenReal": null,
+      "networkResponse": {
+        "status": null,
+        "url": null,
+        "hasToken": false,
+        "dataKeys": null
+      }
+    },
+    "module3_login": {
+      "success": false,
+      "token": null,
+      "redirect": null,
+      "score": 0,
+      "errors": [
+        "Credenciais não disponíveis"
+      ]
+    },
+    "module4_versionService": {
+      "meta": {
+        "status": 200,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-03T19:24:26.115Z",
+          "data": {
+            "name": "Gol de Ouro Backend API",
+            "version": "1.2.0",
+            "description": "API do jogo Gol de Ouro",
+            "environment": "production",
+            "compatibility": {
+              "minVersion": "1.0.0",
+              "supported": true
+            },
+            "features": {
+              "pix": true,
+              "goldenGoal": true,
+              "monitoring": true
+            }
+          },
+          "message": "Informações do sistema"
+        },
+        "hasVersion": true,
+        "hasEnvironment": true,
+        "version": "1.2.0",
+        "environment": "production"
+      },
+      "score": 10,
+      "errors": []
+    },
+    "module5_websocket": {
+      "connection": null,
+      "authentication": null,
+      "pingPong": null,
+      "score": 0,
+      "errors": [
+        "Token não disponível"
+      ]
+    },
+    "module6_pixV6": {
+      "create": null,
+      "emvValidation": null,
+      "score": 0,
+      "errors": [
+        "Token não disponível"
+      ]
+    },
+    "module7_screenshotsNetwork": {
+      "screenshots": [],
+      "networkLogs": [
+        {
+          "name": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+          "duration": 13.699999999254942,
+          "size": 0,
+          "type": "script",
+          "startTime": 82
+        },
+        {
+          "name": "https://www.goldeouro.lol/assets/index-CJAmZYfj.css",
+          "duration": 10.5,
+          "size": 0,
+          "type": "link",
+          "startTime": 82.29999999888241
+        },
+        {
+          "name": "https://www.goldeouro.lol/registerSW.js",
+          "duration": 13.099999999627471,
+          "size": 0,
+          "type": "script",
+          "startTime": 82.69999999925494
+        },
+        {
+          "name": "https://www.goldeouro.lol/images/Gol_de_Ouro_logo.png",
+          "duration": 40.80000000074506,
+          "size": 0,
+          "type": "img",
+          "startTime": 155.89999999850988
+        },
+        {
+          "name": "https://www.goldeouro.lol/images/Gol_de_Ouro_Bg01.jpg",
+          "duration": 84.90000000037253,
+          "size": 0,
+          "type": "css",
+          "startTime": 159.39999999850988
+        },
+        {
+          "name": "https://goldeouro-backend.fly.dev/meta",
+          "duration": 107.09999999962747,
+          "size": 0,
+          "type": "xmlhttprequest",
+          "startTime": 171.59999999962747
+        },
+        {
+          "name": "https://goldeouro-backend.fly.dev/meta",
+          "duration": 139.5,
+          "size": 0,
+          "type": "xmlhttprequest",
+          "startTime": 172.39999999850988
+        },
+        {
+          "name": "https://www.goldeouro.lol/manifest.webmanifest",
+          "duration": 24.5,
+          "size": 0,
+          "type": "link",
+          "startTime": 174.89999999850988
+        },
+        {
+          "name": "https://www.goldeouro.lol/icons/icon-192.png",
+          "duration": 42.79999999888241,
+          "size": 0,
+          "type": "other",
+          "startTime": 200.5
+        },
+        {
+          "name": "https://www.goldeouro.lol/sounds/music.mp3",
+          "duration": 42.79999999888241,
+          "size": 1845,
+          "type": "audio",
+          "startTime": 478.09999999962747
+        }
+      ],
+      "consoleLogs": [
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789774915
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+          "timestamp": 1764789774916
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789774916
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789774916
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+          "timestamp": 1764789774916
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789774917
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789774917
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+          "timestamp": 1764789774917
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789774917
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789774917
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+          "timestamp": 1764789774918
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789774918
+        },
+        {
+          "type": "log",
+          "text": "🎵 MusicManager inicializado com sucesso!",
+          "timestamp": 1764789775059
+        },
+        {
+          "type": "log",
+          "text": "🎵 AudioManager inicializado com sucesso!",
+          "timestamp": 1764789775060
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789775060
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+          "timestamp": 1764789775061
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789775061
+        },
+        {
+          "type": "log",
+          "text": "[VersionService] Verificando compatibilidade de versão...",
+          "timestamp": 1764789775083
+        },
+        {
+          "type": "log",
+          "text": "[VersionService] Verificando compatibilidade de versão...",
+          "timestamp": 1764789775084
+        },
+        {
+          "type": "log",
+          "text": "🔍 API Request: JSHandle@object",
+          "timestamp": 1764789775085
+        },
+        {
+          "type": "log",
+          "text": "🔍 API Request: JSHandle@object",
+          "timestamp": 1764789775085
+        },
+        {
+          "type": "error",
+          "text": "❌ API Response Error: JSHandle@object",
+          "timestamp": 1764789775133
+        },
+        {
+          "type": "error",
+          "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+          "timestamp": 1764789775133
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+          "timestamp": 1764789775134
+        },
+        {
+          "type": "error",
+          "text": "❌ API Response Error: JSHandle@object",
+          "timestamp": 1764789775167
+        },
+        {
+          "type": "error",
+          "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+          "timestamp": 1764789775167
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+          "timestamp": 1764789775168
+        },
+        {
+          "type": "warn",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "timestamp": 1764789775173
+        },
+        {
+          "type": "warn",
+          "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+          "timestamp": 1764789775200
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789798805
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789798805
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789798805
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789798805
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789798805
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789798805
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789798805
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789798805
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789798806
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789798807
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789798807
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789798807
+        },
+        {
+          "type": "log",
+          "text": "🎵 MusicManager inicializado com sucesso!",
+          "timestamp": 1764789798825
+        },
+        {
+          "type": "log",
+          "text": "🎵 AudioManager inicializado com sucesso!",
+          "timestamp": 1764789798826
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789798826
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789798826
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789798826
+        },
+        {
+          "type": "log",
+          "text": "[VersionService] Verificando compatibilidade de versão...",
+          "timestamp": 1764789799118
+        },
+        {
+          "type": "log",
+          "text": "[VersionService] Verificando compatibilidade de versão...",
+          "timestamp": 1764789799125
+        },
+        {
+          "type": "log",
+          "text": "🔍 API Request: JSHandle@object",
+          "timestamp": 1764789799132
+        },
+        {
+          "type": "log",
+          "text": "🔍 API Request: JSHandle@object",
+          "timestamp": 1764789799135
+        },
+        {
+          "type": "verbose",
+          "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+          "timestamp": 1764789799141
+        },
+        {
+          "type": "verbose",
+          "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+          "timestamp": 1764789799142
+        },
+        {
+          "type": "warn",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "timestamp": 1764789799160
+        },
+        {
+          "type": "warn",
+          "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+          "timestamp": 1764789799371
+        },
+        {
+          "type": "error",
+          "text": "❌ API Response Error: JSHandle@object",
+          "timestamp": 1764789799408
+        },
+        {
+          "type": "error",
+          "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+          "timestamp": 1764789799410
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "timestamp": 1764789799410
+        },
+        {
+          "type": "error",
+          "text": "❌ API Response Error: JSHandle@object",
+          "timestamp": 1764789799457
+        },
+        {
+          "type": "error",
+          "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+          "timestamp": 1764789799458
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "timestamp": 1764789799459
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789815764
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789815767
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789815767
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789815768
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789815768
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789815768
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789815768
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789815768
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789815768
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789815769
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789815769
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789815769
+        },
+        {
+          "type": "log",
+          "text": "🎵 MusicManager inicializado com sucesso!",
+          "timestamp": 1764789815787
+        },
+        {
+          "type": "log",
+          "text": "🎵 AudioManager inicializado com sucesso!",
+          "timestamp": 1764789815788
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789815788
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+          "timestamp": 1764789815788
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789815788
+        },
+        {
+          "type": "log",
+          "text": "[VersionService] Verificando compatibilidade de versão...",
+          "timestamp": 1764789815796
+        },
+        {
+          "type": "log",
+          "text": "[VersionService] Verificando compatibilidade de versão...",
+          "timestamp": 1764789815796
+        },
+        {
+          "type": "log",
+          "text": "🔍 API Request: JSHandle@object",
+          "timestamp": 1764789815796
+        },
+        {
+          "type": "log",
+          "text": "🔍 API Request: JSHandle@object",
+          "timestamp": 1764789815797
+        },
+        {
+          "type": "warn",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "timestamp": 1764789815820
+        },
+        {
+          "type": "warn",
+          "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+          "timestamp": 1764789815828
+        },
+        {
+          "type": "error",
+          "text": "❌ API Response Error: JSHandle@object",
+          "timestamp": 1764789815875
+        },
+        {
+          "type": "error",
+          "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+          "timestamp": 1764789815875
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "timestamp": 1764789815876
+        },
+        {
+          "type": "error",
+          "text": "❌ API Response Error: JSHandle@object",
+          "timestamp": 1764789815885
+        },
+        {
+          "type": "error",
+          "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+          "timestamp": 1764789815886
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "timestamp": 1764789815887
+        },
+        {
+          "type": "verbose",
+          "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+          "timestamp": 1764789815914
+        },
+        {
+          "type": "verbose",
+          "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+          "timestamp": 1764789815919
+        },
+        {
+          "type": "log",
+          "text": "[REGISTER-FORM] Checkbox encontrado: true",
+          "timestamp": 1764789826043
+        },
+        {
+          "type": "log",
+          "text": "[REGISTER-FORM] Checkbox checked: false",
+          "timestamp": 1764789826044
+        },
+        {
+          "type": "log",
+          "text": "[REGISTER-FORM] Checkbox marcado",
+          "timestamp": 1764789826045
+        },
+        {
+          "type": "log",
+          "text": "[REGISTER-FORM] Formulário válido (HTML5): true",
+          "timestamp": 1764789827844
+        },
+        {
+          "type": "log",
+          "text": "🔍 API Request: JSHandle@object",
+          "timestamp": 1764789828773
+        },
+        {
+          "type": "error",
+          "text": "❌ API Response Error: JSHandle@object",
+          "timestamp": 1764789828794
+        },
+        {
+          "type": "error",
+          "text": "Erro ao carregar dados do usuário: JSHandle@object",
+          "timestamp": 1764789828794
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "timestamp": 1764789828794
+        },
+        {
+          "type": "error",
+          "text": "Connecting to 'https://goldeouro-backend-v2.fly.dev/meta' violates the following Content Security Policy directive: \"connect-src 'self' data: blob: https://goldeouro-backend.fly.dev https://api.goldeouro.lol\". The action has been blocked.",
+          "timestamp": 1764789860898
+        },
+        {
+          "type": "error",
+          "text": "Fetch API cannot load https://goldeouro-backend-v2.fly.dev/meta. Refused to connect because it violates the document's Content Security Policy.",
+          "timestamp": 1764789860899
+        },
+        {
+          "type": "error",
+          "text": "Connecting to 'https://goldeouro-backend-v2.fly.dev/meta' violates the following Content Security Policy directive: \"connect-src 'self' data: blob: https://goldeouro-backend.fly.dev https://api.goldeouro.lol\". The action has been blocked.",
+          "timestamp": 1764789862901
+        },
+        {
+          "type": "error",
+          "text": "Fetch API cannot load https://goldeouro-backend-v2.fly.dev/meta. Refused to connect because it violates the document's Content Security Policy.",
+          "timestamp": 1764789862903
+        },
+        {
+          "type": "error",
+          "text": "Connecting to 'https://goldeouro-backend-v2.fly.dev/meta' violates the following Content Security Policy directive: \"connect-src 'self' data: blob: https://goldeouro-backend.fly.dev https://api.goldeouro.lol\". The action has been blocked.",
+          "timestamp": 1764789866918
+        },
+        {
+          "type": "error",
+          "text": "Fetch API cannot load https://goldeouro-backend-v2.fly.dev/meta. Refused to connect because it violates the document's Content Security Policy.",
+          "timestamp": 1764789866920
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789867356
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/",
+          "timestamp": 1764789867356
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789867356
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789867357
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/",
+          "timestamp": 1764789867357
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789867358
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789867358
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/",
+          "timestamp": 1764789867358
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789867358
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789867358
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/",
+          "timestamp": 1764789867358
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789867358
+        },
+        {
+          "type": "log",
+          "text": "🎵 MusicManager inicializado com sucesso!",
+          "timestamp": 1764789867378
+        },
+        {
+          "type": "log",
+          "text": "🎵 AudioManager inicializado com sucesso!",
+          "timestamp": 1764789867379
+        },
+        {
+          "type": "log",
+          "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+          "timestamp": 1764789867380
+        },
+        {
+          "type": "log",
+          "text": "🔧 URL atual: https://www.goldeouro.lol/",
+          "timestamp": 1764789867380
+        },
+        {
+          "type": "log",
+          "text": "🔧 Hostname: www.goldeouro.lol",
+          "timestamp": 1764789867380
+        },
+        {
+          "type": "log",
+          "text": "[VersionService] Verificando compatibilidade de versão...",
+          "timestamp": 1764789867448
+        },
+        {
+          "type": "log",
+          "text": "[VersionService] Verificando compatibilidade de versão...",
+          "timestamp": 1764789867449
+        },
+        {
+          "type": "log",
+          "text": "🔍 API Request: JSHandle@object",
+          "timestamp": 1764789867449
+        },
+        {
+          "type": "log",
+          "text": "🔍 API Request: JSHandle@object",
+          "timestamp": 1764789867449
+        },
+        {
+          "type": "warn",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "timestamp": 1764789867474
+        },
+        {
+          "type": "warn",
+          "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+          "timestamp": 1764789867480
+        },
+        {
+          "type": "verbose",
+          "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+          "timestamp": 1764789867506
+        },
+        {
+          "type": "error",
+          "text": "❌ API Response Error: JSHandle@object",
+          "timestamp": 1764789867715
+        },
+        {
+          "type": "error",
+          "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+          "timestamp": 1764789867715
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "timestamp": 1764789867717
+        },
+        {
+          "type": "error",
+          "text": "❌ API Response Error: JSHandle@object",
+          "timestamp": 1764789867718
+        },
+        {
+          "type": "error",
+          "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+          "timestamp": 1764789867720
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: net::ERR_FAILED",
+          "timestamp": 1764789867721
+        },
+        {
+          "type": "warn",
+          "text": "Erro ao carregar áudio /sounds/music.mp3: JSHandle@object",
+          "timestamp": 1764789868158
+        }
+      ],
+      "score": 3,
+      "errors": []
+    }
+  },
+  "screenshots": [
+    {
+      "name": "01-login-data-testid",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e\\screenshots\\01-login-data-testid.png"
+    },
+    {
+      "name": "01-register-data-testid",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e\\screenshots\\01-register-data-testid.png"
+    },
+    {
+      "name": "02-register-filled",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e\\screenshots\\02-register-filled.png"
+    },
+    {
+      "name": "07-home",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e\\screenshots\\07-home.png"
+    }
+  ],
+  "networkLogs": [],
+  "consoleLogs": [
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789774915
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+      "timestamp": 1764789774916
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789774916
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789774916
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+      "timestamp": 1764789774916
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789774917
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789774917
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+      "timestamp": 1764789774917
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789774917
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789774917
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+      "timestamp": 1764789774918
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789774918
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "timestamp": 1764789775059
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "timestamp": 1764789775060
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789775060
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/login",
+      "timestamp": 1764789775061
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789775061
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "timestamp": 1764789775083
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "timestamp": 1764789775084
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "timestamp": 1764789775085
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "timestamp": 1764789775085
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "timestamp": 1764789775133
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "timestamp": 1764789775133
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+      "timestamp": 1764789775134
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "timestamp": 1764789775167
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "timestamp": 1764789775167
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+      "timestamp": 1764789775168
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "timestamp": 1764789775173
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "timestamp": 1764789775200
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789798805
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789798805
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789798805
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789798805
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789798805
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789798805
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789798805
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789798805
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789798806
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789798807
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789798807
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789798807
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "timestamp": 1764789798825
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "timestamp": 1764789798826
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789798826
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789798826
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789798826
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "timestamp": 1764789799118
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "timestamp": 1764789799125
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "timestamp": 1764789799132
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "timestamp": 1764789799135
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "timestamp": 1764789799141
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "timestamp": 1764789799142
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "timestamp": 1764789799160
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "timestamp": 1764789799371
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "timestamp": 1764789799408
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "timestamp": 1764789799410
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "timestamp": 1764789799410
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "timestamp": 1764789799457
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "timestamp": 1764789799458
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "timestamp": 1764789799459
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789815764
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789815767
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789815767
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789815768
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789815768
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789815768
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789815768
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789815768
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789815768
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789815769
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789815769
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789815769
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "timestamp": 1764789815787
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "timestamp": 1764789815788
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789815788
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "timestamp": 1764789815788
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789815788
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "timestamp": 1764789815796
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "timestamp": 1764789815796
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "timestamp": 1764789815796
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "timestamp": 1764789815797
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "timestamp": 1764789815820
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "timestamp": 1764789815828
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "timestamp": 1764789815875
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "timestamp": 1764789815875
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "timestamp": 1764789815876
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "timestamp": 1764789815885
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "timestamp": 1764789815886
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "timestamp": 1764789815887
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "timestamp": 1764789815914
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "timestamp": 1764789815919
+    },
+    {
+      "type": "log",
+      "text": "[REGISTER-FORM] Checkbox encontrado: true",
+      "timestamp": 1764789826043
+    },
+    {
+      "type": "log",
+      "text": "[REGISTER-FORM] Checkbox checked: false",
+      "timestamp": 1764789826044
+    },
+    {
+      "type": "log",
+      "text": "[REGISTER-FORM] Checkbox marcado",
+      "timestamp": 1764789826045
+    },
+    {
+      "type": "log",
+      "text": "[REGISTER-FORM] Formulário válido (HTML5): true",
+      "timestamp": 1764789827844
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "timestamp": 1764789828773
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "timestamp": 1764789828794
+    },
+    {
+      "type": "error",
+      "text": "Erro ao carregar dados do usuário: JSHandle@object",
+      "timestamp": 1764789828794
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "timestamp": 1764789828794
+    },
+    {
+      "type": "error",
+      "text": "Connecting to 'https://goldeouro-backend-v2.fly.dev/meta' violates the following Content Security Policy directive: \"connect-src 'self' data: blob: https://goldeouro-backend.fly.dev https://api.goldeouro.lol\". The action has been blocked.",
+      "timestamp": 1764789860898
+    },
+    {
+      "type": "error",
+      "text": "Fetch API cannot load https://goldeouro-backend-v2.fly.dev/meta. Refused to connect because it violates the document's Content Security Policy.",
+      "timestamp": 1764789860899
+    },
+    {
+      "type": "error",
+      "text": "Connecting to 'https://goldeouro-backend-v2.fly.dev/meta' violates the following Content Security Policy directive: \"connect-src 'self' data: blob: https://goldeouro-backend.fly.dev https://api.goldeouro.lol\". The action has been blocked.",
+      "timestamp": 1764789862901
+    },
+    {
+      "type": "error",
+      "text": "Fetch API cannot load https://goldeouro-backend-v2.fly.dev/meta. Refused to connect because it violates the document's Content Security Policy.",
+      "timestamp": 1764789862903
+    },
+    {
+      "type": "error",
+      "text": "Connecting to 'https://goldeouro-backend-v2.fly.dev/meta' violates the following Content Security Policy directive: \"connect-src 'self' data: blob: https://goldeouro-backend.fly.dev https://api.goldeouro.lol\". The action has been blocked.",
+      "timestamp": 1764789866918
+    },
+    {
+      "type": "error",
+      "text": "Fetch API cannot load https://goldeouro-backend-v2.fly.dev/meta. Refused to connect because it violates the document's Content Security Policy.",
+      "timestamp": 1764789866920
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789867356
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "timestamp": 1764789867356
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789867356
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789867357
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "timestamp": 1764789867357
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789867358
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789867358
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "timestamp": 1764789867358
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789867358
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789867358
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "timestamp": 1764789867358
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789867358
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "timestamp": 1764789867378
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "timestamp": 1764789867379
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "timestamp": 1764789867380
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "timestamp": 1764789867380
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "timestamp": 1764789867380
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "timestamp": 1764789867448
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "timestamp": 1764789867449
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "timestamp": 1764789867449
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "timestamp": 1764789867449
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "timestamp": 1764789867474
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "timestamp": 1764789867480
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "timestamp": 1764789867506
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "timestamp": 1764789867715
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "timestamp": 1764789867715
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "timestamp": 1764789867717
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "timestamp": 1764789867718
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "timestamp": 1764789867720
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "timestamp": 1764789867721
+    },
+    {
+      "type": "warn",
+      "text": "Erro ao carregar áudio /sounds/music.mp3: JSHandle@object",
+      "timestamp": 1764789868158
+    }
+  ],
+  "storage": {
+    "localStorage": {},
+    "sessionStorage": {}
+  },
+  "score": 22,
+  "maxScore": 100,
+  "status": "REPROVADO",
+  "errors": [
+    "Login: email não encontrado (tentou: [data-testid=\"email-input\"], input[type=\"email\"], input[name=\"email\"])",
+    "Login: password não encontrado (tentou: [data-testid=\"password-input\"], input[type=\"password\"], input[name=\"password\"])",
+    "Login: submit não encontrado (tentou: [data-testid=\"submit-button\"], button[type=\"submit\"], form button)",
+    "Register: username não encontrado (tentou: [data-testid=\"username-input\"], input[name=\"username\"], input[name=\"name\"])",
+    "Token não salvo após registro",
+    "Credenciais não disponíveis",
+    "Token não disponível",
+    "Token não disponível"
+  ],
+  "warnings": [
+    "Token não disponível para módulos WebSocket e PIX"
+  ]
+}

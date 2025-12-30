@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-12-04T18:03:24.619Z",
+  "version": "V16+",
+  "status": "NO-GO",
+  "scores": {
+    "chutes": 0,
+    "lote": 0,
+    "auth": 20,
+    "cors": 0,
+    "websocket": 20
+  },
+  "total": 40,
+  "errors": 0,
+  "warnings": 3,
+  "actions": [],
+  "artifacts": [
+    "health-prod.json",
+    "fly-secrets-list.txt",
+    "secrets-check.json",
+    "supabase-connection.json",
+    "fly-deploy.log",
+    "deploy-result.json",
+    "inject-check.log",
+    "balance-injection.json",
+    "test-shoots-v2.json",
+    "lotes-final.json",
+    "V16-LOTE-FINAL.md",
+    "V16-SCORE-FINAL.md",
+    "V16-FINAL-GO-LIVE.md"
+  ]
+}

@@ -1,0 +1,91 @@
+# 📝 WEBHOOK LOGS - GO-LIVE
+## Gol de Ouro - Versão 1.2.0
+## Data: 2025-12-03
+
+---
+
+## 🔍 VALIDAÇÕES REALIZADAS
+
+### **Webhook Signature Validator**
+- ✅ Arquivo: `utils/webhook-signature-validator.js`
+- ✅ Validação de assinatura Mercado Pago implementada
+- ✅ Verificação de X-Signature header
+
+### **WebhookService**
+- ✅ Arquivo: `services/webhookService.js`
+- ✅ Idempotência implementada
+- ✅ Processamento seguro de webhooks
+
+### **Controller de Webhook**
+- ✅ Endpoint: `POST /api/payments/webhook`
+- ✅ Validação de assinatura antes de processar
+- ✅ Logs de requisições webhook
+
+---
+
+## 📋 CONFIGURAÇÃO
+
+### **Mercado Pago Webhook URL**
+```
+https://goldeouro-backend-v2.fly.dev/api/payments/webhook
+```
+
+### **Eventos Processados**
+- `payment.created`
+- `payment.updated`
+- `payment.approved`
+- `payment.rejected`
+
+---
+
+## 🔒 SEGURANÇA
+
+- ✅ Validação de assinatura obrigatória
+- ✅ Idempotência para evitar processamento duplicado
+- ✅ Logs de todas as requisições
+- ✅ Rate limiting configurado
+
+---
+
+## 📊 MONITORAMENTO
+
+### **Logs Recomendados**
+```bash
+# Ver logs do Fly.io
+flyctl logs --app goldeouro-backend-v2
+
+# Filtrar webhooks
+flyctl logs --app goldeouro-backend-v2 | grep webhook
+```
+
+### **Métricas a Monitorar**
+- Taxa de sucesso de webhooks
+- Tempo de processamento
+- Erros de validação
+- Processamentos duplicados (devem ser zero)
+
+---
+
+## ⚠️ OBSERVAÇÕES
+
+1. **Idempotência:** WebhookService garante que cada pagamento é processado apenas uma vez
+2. **Reconciliação:** FinancialService garante integridade financeira
+3. **Logs:** Todas as requisições webhook são logadas
+
+---
+
+## ✅ STATUS
+
+**Status:** ✅ **CONFIGURADO E VALIDADO**
+
+O sistema de webhooks está configurado corretamente com:
+- Validação de assinatura
+- Idempotência
+- Logs completos
+- Tratamento de erros
+
+---
+
+**Data:** 2025-12-03  
+**Versão:** 1.2.0
+

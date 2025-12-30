@@ -19,7 +19,7 @@ const useSoundEffects = () => {
     // Sons de ambiente
     torcida: '/sounds/torcida.mp3',     // Torcida animada
     torcida2: '/sounds/torcida_2.mp3',  // Torcida alternativa
-    music: '/sounds/music.mp3',         // Música de fundo
+    // music: '/sounds/music.mp3',      // ✅ REMOVIDO: music.mp3 foi removido do jogo
     
     // Sons de interface
     click: '/sounds/click.mp3',         // Clique de botão
@@ -220,8 +220,9 @@ const useSoundEffects = () => {
   }
 
   const playBackgroundMusic = () => {
-    // Música de fundo (pode ser usado em momentos específicos)
-    playAudioFile('music')
+    // ✅ REMOVIDO: music.mp3 foi removido do jogo
+    // Usar torcida.mp3 como música de fundo se necessário
+    console.log('🎵 playBackgroundMusic desabilitado - music.mp3 removido');
   }
 
   const playWhistleSound = () => {

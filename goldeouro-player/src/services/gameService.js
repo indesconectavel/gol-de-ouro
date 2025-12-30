@@ -36,13 +36,26 @@ class GameService {
   async loadUserData() {
     try {
       const response = await apiClient.get('/api/user/profile');
+      console.log('🔍 [GAME] Resposta completa do /api/user/profile:', response);
+      console.log('🔍 [GAME] response.data:', response.data);
+      console.log('🔍 [GAME] response.data.data:', response.data?.data);
+      
       if (response.data.success) {
-        this.userBalance = response.data.data.saldo;
+        // Tentar ambos os campos (saldo e balance) para compatibilidade
+        const saldo = response.data.data?.saldo || response.data.data?.balance || 0;
+        console.log('💰 [GAME] Saldo encontrado no backend:', saldo);
+        this.userBalance = saldo;
         return response.data.data;
       }
       throw new Error('Falha ao carregar dados do usuário');
     } catch (error) {
       console.error('❌ [GAME] Erro ao carregar dados do usuário:', error);
+      console.error('❌ [GAME] Detalhes do erro:', {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
       throw error;
     }
   }
@@ -81,14 +94,34 @@ class GameService {
       }
 
       if (this.userBalance < amount) {
+        console.error('❌ [GAME] Saldo insuficiente:', this.userBalance, '<', amount);
         throw new Error('Saldo insuficiente');
       }
 
-      // Enviar chute para o backend
-      const response = await apiClient.post('/api/games/shoot', {
-        direction: direction,
-        amount: amount
+      // Log para debug
+      console.log('🎯 [GAME] Enviando chute:', { direction, amount, balance: this.userBalance });
+      console.log('🎯 [GAME] Tipo dos dados:', { 
+        directionType: typeof direction, 
+        amountType: typeof amount,
+        directionValue: direction,
+        amountValue: amount
       });
+
+      // Garantir que os valores estão no formato correto
+      const payload = {
+        direction: String(direction).toUpperCase().trim(), // Garantir string maiúscula
+        amount: Number(amount) // Garantir número
+      };
+      
+      console.log('🎯 [GAME] Payload final:', payload);
+
+      // Enviar chute para o backend
+      const response = await apiClient.post('/api/games/shoot', payload);
+      
+      // Log resposta
+      if (response.data) {
+        console.log('✅ [GAME] Resposta do backend:', response.data.success ? 'Sucesso' : 'Erro', response.data);
+      }
 
       if (response.data.success) {
         const result = response.data.data;
@@ -131,9 +164,32 @@ class GameService {
 
     } catch (error) {
       console.error('❌ [GAME] Erro ao processar chute:', error);
+      console.error('❌ [GAME] Detalhes completos do erro:', {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        config: error.config
+      });
+      
+      // Se for erro 400, tentar extrair mensagem mais específica
+      if (error.response?.status === 400) {
+        const errorData = error.response.data;
+        const errorMessage = errorData?.message || errorData?.error || errorData?.details || 'Dados inválidos enviados ao servidor';
+        console.error('❌ [GAME] Erro 400 detalhado:', errorMessage);
+        return {
+          success: false,
+          error: errorMessage,
+          details: errorData
+        };
+      }
+      
       return {
         success: false,
-        error: error.message
+        error: error.message || 'Erro ao processar chute',
+        status: error.response?.status,
+        details: error.response?.data
       };
     }
   }
@@ -173,8 +229,14 @@ class GameService {
   // SISTEMA GOL DE OURO CORRIGIDO
   // =====================================================
 
-  // Calcular chutes até próximo Gol de Ouro
+  // FASE 1 - CRI-004: SEMPRE usar contador global do backend
+  // NUNCA calcular localmente - usar dataAdapter para normalizar
   getShotsUntilGoldenGoal() {
+    // Usar contador global do backend (já atualizado via loadGlobalMetrics)
+    // Se não tem contador ainda, retornar valor padrão
+    if (!this.globalCounter && this.globalCounter !== 0) {
+      return 1000; // Valor padrão até carregar do backend
+    }
     const shotsUntilNext = 1000 - (this.globalCounter % 1000);
     return shotsUntilNext === 1000 ? 0 : shotsUntilNext;
   }

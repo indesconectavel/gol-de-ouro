@@ -48,10 +48,10 @@
 .hud-center{ display:flex; flex-direction:column; align-items:center; gap:12px; }
 .stats-grid{ display:flex; align-items:center; gap:24px; }
 .stat-item{ display:flex; align-items:center; gap:12px; }
-.stat-icon{ font-size:24px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
+.stat-icon{ font-size:35px !important; filter:drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
 .stat-content{ display:flex; flex-direction:column; gap:4px; }
-.stat-label{ font-size:11px; opacity:.8; text-transform:uppercase; letter-spacing:.5px; color:#a0a0a0; }
-.stat-value{ font-size:16px; font-weight:700; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.5); }
+.stat-label{ font-size:25px !important; opacity:.8; text-transform:uppercase; letter-spacing:.5px; color:#a0a0a0; }
+.stat-value{ font-size:25px !important; font-weight:700; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.5); }
 
 /* Status da Fila */
 .queue-status{ 
@@ -66,11 +66,11 @@
 .hud-right{ display:flex; align-items:center; }
 .betting-section{ display:flex; flex-direction:column; gap:12px; align-items:flex-end; }
 .bet-controls{ display:flex; flex-direction:column; gap:8px; align-items:center; }
-.bet-label{ font-size:12px; color:#a0a0a0; font-weight:600; }
+.bet-label{ font-size:25px !important; color:#a0a0a0; font-weight:600; }
 .bet-buttons{ display:flex; gap:6px; }
 .bet-btn{ 
   padding:8px 16px; border:none; border-radius:10px; 
-  font-size:12px; font-weight:600; cursor:pointer; 
+  font-size:25px !important; font-weight:600; cursor:pointer; 
   transition:all .2s ease; background:rgba(255,255,255,.1);
   color:#fff; border:1px solid rgba(255,255,255,.2);
 }
@@ -89,12 +89,12 @@
 .hud-actions{ display:flex; align-items:center; gap:12px; }
 .hud-btn{ 
   display:flex; align-items:center; gap:8px; padding:12px 20px; border:none; border-radius:12px;
-  font-size:14px; font-weight:600; cursor:pointer; transition:all .3s ease;
+  font-size:30px !important; font-weight:600; cursor:pointer; transition:all .3s ease;
   border:1px solid rgba(255,255,255,.2); position:relative; overflow:hidden;
   background:rgba(255,255,255,.1); color:#fff;
 }
 .hud-btn.primary{ 
-  background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:700;
+  background:linear-gradient(135deg,#10b981,#059669); color:#000000 !important; font-weight:700;
   box-shadow:0 4px 12px rgba(16,185,129,.3); border:1px solid rgba(16,185,129,.3);
 }
 .hud-btn.primary:hover:not(:disabled){ 
@@ -112,7 +112,9 @@
   transform:translateY(-1px);
   border:1px solid rgba(255,255,255,.3);
 }
-.btn-icon{ font-size:16px; }
+.btn-icon{ font-size:36px !important; }
+.hud-btn .btn-icon{ font-size:36px !important; }
+.hud-btn span:not(.btn-icon){ font-size:30px !important; }
 
 /* HUD Inferior Esquerdo - Controles de Partida */
 .hud-bottom-left{ 
@@ -152,7 +154,7 @@
   background:rgba(255,0,0,.2); border-color:rgba(255,0,0,.5);
   transform:translateY(-2px); box-shadow:0 4px 12px rgba(255,0,0,.3);
 }
-.debug-btn .btn-icon{ font-size:16px; }
+.debug-btn .btn-icon{ font-size:36px !important; }
 .debug-text{ font-size:12px; }
 
 /* HUD Inferior Direito - Controles e Chat */
@@ -177,7 +179,7 @@
   border:1px solid rgba(255,255,255,.3);
   box-shadow:0 4px 12px rgba(0,0,0,.3);
 }
-.control-btn .btn-icon{ font-size:16px; }
+.control-btn .btn-icon{ font-size:36px !important; }
 .control-btn .btn-text{ font-size:8px; font-weight:500; }
 
 /* Chat Panel */
@@ -477,7 +479,7 @@
   box-shadow:0 6px 20px rgba(0,0,0,.4);
 }
 .dashboard-btn .btn-icon{ font-size:18px; }
-.dashboard-btn .btn-text{ font-weight:600; font-size:14px; }
+.dashboard-btn .btn-text{ font-weight:600; font-size:25px !important; }
 
 /* Controle de Áudio */
 .audio-control-btn{
@@ -519,33 +521,60 @@
   transition: left .6s cubic-bezier(.2,.8,.2,1), top .6s cubic-bezier(.2,.8,.2,1), transform .6s ease;
 }
 
-/* gol overlay */
-.gs-goool{ position:absolute; inset:0; margin:auto;
-  width:min(49%,504px); z-index:8; pointer-events:none;
-  animation:gooolPop 1.2s ease-out forwards; }
+/* gol overlay - GameFinal usa Portal com flexbox, este CSS é fallback */
+.gs-goool{ 
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%, -50%) !important;
+  width:520px !important;
+  height:200px !important;
+  z-index:10000 !important;
+  pointer-events:none;
+  animation:gooolPop 1.2s ease-out forwards; 
+}
 
-/* defendeu overlay */
-.gs-defendeu{ position:absolute; inset:0; margin:auto;
-  width:200px; height:200px; z-index:8; pointer-events:none;
-  animation:pop .6s ease-out forwards; }
+/* defendeu overlay - GameFinal usa Portal com flexbox, este CSS é fallback */
+.gs-defendeu{ 
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%, -50%) !important;
+  width:520px !important;
+  height:200px !important;
+  z-index:10000 !important;
+  pointer-events:none;
+  animation:pop 0.8s ease-out forwards; 
+}
 
 /* ganhou overlay - aparece após o goool.png */
-.gs-ganhou{ position:absolute; inset:0; margin:auto;
-  width:200px; height:200px; z-index:9; pointer-events:none;
-  animation:ganhouPop 5s ease-out forwards; }
+.gs-ganhou{ 
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%, -50%) !important;
+  width:480px !important;
+  height:180px !important;
+  z-index:10001 !important;
+  pointer-events:none;
+  animation:ganhouPop 5s ease-out forwards; 
+}
 
-@keyframes pop{ 0%{transform:scale(.6);opacity:0;} 100%{transform:scale(1);opacity:1;} }
+@keyframes pop{ 
+  0%{transform:translate(-50%, -50%) scale(.6);opacity:0;} 
+  100%{transform:translate(-50%, -50%) scale(1);opacity:1;} 
+}
 @keyframes gooolPop{ 
-  0%{transform:scale(.6);opacity:0; filter:brightness(1.2);} 
-  30%{transform:scale(1.1);opacity:1; filter:brightness(1.5);}
-  70%{transform:scale(1);opacity:1; filter:brightness(1.2);}
-  100%{transform:scale(.8);opacity:0; filter:brightness(1);} 
+  0%{transform:translate(-50%, -50%) scale(.6);opacity:0; filter:brightness(1.2);} 
+  30%{transform:translate(-50%, -50%) scale(1.1);opacity:1; filter:brightness(1.5);}
+  70%{transform:translate(-50%, -50%) scale(1);opacity:1; filter:brightness(1.2);}
+  100%{transform:translate(-50%, -50%) scale(1);opacity:1; filter:brightness(1);}
 }
 @keyframes ganhouPop{ 
-  0%{transform:scale(.3);opacity:0; filter:brightness(1.2);} 
-  20%{transform:scale(1.1);opacity:1; filter:brightness(1.5);}
-  80%{transform:scale(1);opacity:1; filter:brightness(1.2);}
-  100%{transform:scale(1);opacity:1; filter:brightness(1);} 
+  0%{transform:translate(-50%, -50%) scale(.3);opacity:0; filter:brightness(1.2);} 
+  20%{transform:translate(-50%, -50%) scale(1.1);opacity:1; filter:brightness(1.5);}
+  80%{transform:translate(-50%, -50%) scale(1);opacity:1; filter:brightness(1.2);}
+  100%{transform:translate(-50%, -50%) scale(1);opacity:1; filter:brightness(1);} 
 }
 @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.7;} }
 

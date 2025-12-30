@@ -1,6 +1,190 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <!-- ✅ KILL SWITCH INLINE - Remove Service Workers antigos ANTES de qualquer coisa -->
+    <!-- CRÍTICO: Inline para não ser interceptado pelo Service Worker antigo -->
+    <script>
+      (function() {
+        'use strict';
+        
+        // ✅ CORREÇÃO CRÍTICA: Detectar se está usando bundle antigo e forçar atualização
+        // Este código funciona mesmo se o HTML antigo estiver sendo servido
+        const currentScript = document.currentScript || (function() {
+          const scripts = document.getElementsByTagName('script');
+          return scripts[scripts.length - 1];
+        })();
+        
+        // ✅ CORREÇÃO CRÍTICA: Detectar bundle antigo IMEDIATAMENTE e forçar atualização
+        // Verificar ANTES de qualquer código executar
+        (function checkBundleImmediately() {
+          const moduleScripts = document.querySelectorAll('script[type="module"][src*="index-"]');
+          let hasOldBundle = false;
+          
+          moduleScripts.forEach(function(script) {
+            const src = script.src || script.getAttribute('src') || '';
+            // Verificar se é bundle ANTIGO (DOXRH9LH ou qualquer outro antigo conhecido)
+            if (src.includes('index-DOXRH9LH.js') || 
+                src.includes('index-B74THvjy.js') || 
+                src.includes('index-BVaTwX4C.js') ||
+                src.includes('index-BK79O84G.js') ||
+                src.includes('index-Bvz1uanR.js') ||
+                src.includes('index-Duj1CNUZ.js') ||
+                src.includes('index-DtPXGL4e.js') ||
+                src.includes('index-sPoNFTTD.js') ||
+                src.includes('index-Hh8aXNzV.js')) {
+              hasOldBundle = true;
+              console.error('[KILL-SW-INLINE] ❌ BUNDLE ANTIGO DETECTADO:', src);
+            }
+          });
+          
+          // Se há bundle antigo, forçar limpeza IMEDIATA
+          if (hasOldBundle && !window.__REDIRECTING_TO_KILL_SW__) {
+            window.__REDIRECTING_TO_KILL_SW__ = true;
+            console.error('[KILL-SW-INLINE] 🚨 REDIRECIONANDO PARA KILL-SW POR BUNDLE ANTIGO');
+            console.error('[KILL-SW-INLINE] Bundle antigo detectado:', Array.from(moduleScripts).map(s => s.src || s.getAttribute('src')).join(', '));
+            
+            // Limpar tudo ANTES de redirecionar
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                console.log('[KILL-SW-INLINE] Encontrados', regs.length, 'Service Workers para desregistrar');
+                regs.forEach(function(reg) { 
+                  console.log('[KILL-SW-INLINE] Desregistrando SW antigo:', reg.scope);
+                  reg.unregister(); 
+                });
+                if ('caches' in window) {
+                  caches.keys().then(function(names) {
+                    console.log('[KILL-SW-INLINE] Encontrados', names.length, 'caches para deletar');
+                    names.forEach(function(name) { 
+                      console.log('[KILL-SW-INLINE] Deletando cache:', name);
+                      caches.delete(name); 
+                    });
+                    // Redirecionar para kill-sw.html
+                    console.log('[KILL-SW-INLINE] Redirecionando para /kill-sw.html');
+                    window.location.replace('/kill-sw.html?reason=bundle-antigo&t=' + Date.now());
+                  });
+                } else {
+                  window.location.replace('/kill-sw.html?reason=bundle-antigo&t=' + Date.now());
+                }
+              });
+            } else {
+              window.location.replace('/kill-sw.html?reason=bundle-antigo&t=' + Date.now());
+            }
+            return; // Não continuar execução
+          }
+          
+          // Verificar novamente após 500ms para garantir
+          setTimeout(function() {
+            const scripts = document.querySelectorAll('script[type="module"][src*="index-"]');
+            let stillOld = false;
+            scripts.forEach(function(script) {
+              const src = script.src || script.getAttribute('src') || '';
+              if (src.includes('index-DOXRH9LH.js') || 
+                  src.includes('index-B74THvjy.js') || 
+                  src.includes('index-BVaTwX4C.js') ||
+                  src.includes('index-BK79O84G.js') ||
+                  src.includes('index-Bvz1uanR.js') ||
+                  src.includes('index-Duj1CNUZ.js') ||
+                  src.includes('index-DtPXGL4e.js') ||
+                  src.includes('index-sPoNFTTD.js') ||
+                  src.includes('index-Hh8aXNzV.js')) {
+                stillOld = true;
+              }
+            });
+            
+            if (stillOld) {
+              console.error('[KILL-SW-INLINE] 🚨 BUNDLE ANTIGO AINDA PRESENTE APÓS 500ms');
+              window.location.replace('/kill-sw.html?reason=bundle-antigo-delayed');
+            }
+          }, 500);
+        })();
+        
+        console.log('[KILL-SW-INLINE] Iniciando remoção forçada de Service Workers antigos...');
+        
+        if ('serviceWorker' in navigator) {
+          // Desregistrar TODOS os Service Workers IMEDIATAMENTE
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            console.log('[KILL-SW-INLINE] Encontrados', registrations.length, 'Service Workers');
+            
+            registrations.forEach(function(registration) {
+              console.log('[KILL-SW-INLINE] Desregistrando:', registration.scope);
+              registration.unregister().then(function(success) {
+                if (success) {
+                  console.log('[KILL-SW-INLINE] ✅ Service Worker desregistrado:', registration.scope);
+                } else {
+                  console.warn('[KILL-SW-INLINE] ⚠️ Falha ao desregistrar:', registration.scope);
+                }
+              });
+            });
+            
+            // Limpar TODOS os caches IMEDIATAMENTE
+            if (caches && caches.keys) {
+              caches.keys().then(function(cacheNames) {
+                console.log('[KILL-SW-INLINE] Encontrados', cacheNames.length, 'caches');
+                
+                cacheNames.forEach(function(cacheName) {
+                  console.log('[KILL-SW-INLINE] Deletando cache:', cacheName);
+                  caches.delete(cacheName).then(function(success) {
+                    if (success) {
+                      console.log('[KILL-SW-INLINE] ✅ Cache deletado:', cacheName);
+                    }
+                  });
+                });
+              });
+            }
+            
+            // Limpar sessionStorage e localStorage
+            try {
+              sessionStorage.clear();
+              localStorage.removeItem('sw-registered');
+              localStorage.removeItem('sw-version');
+              
+              // ✅ CORREÇÃO: Só forçar backend de produção se NÃO estiver em localhost
+              const isProduction = typeof window !== 'undefined' && (
+                window.location.hostname.includes('goldeouro.lol') ||
+                window.location.hostname.includes('goldeouro.com') ||
+                window.location.hostname === 'www.goldeouro.lol' ||
+                window.location.hostname === 'goldeouro.lol'
+              );
+              
+              if (isProduction) {
+                localStorage.removeItem('API_BASE_URL');
+                sessionStorage.setItem('API_BASE_URL', 'https://goldeouro-backend-v2.fly.dev');
+                localStorage.setItem('API_BASE_URL', 'https://goldeouro-backend-v2.fly.dev');
+                console.log('[KILL-SW-INLINE] ✅ Storage limpo e backend forçado (PRODUÇÃO)');
+              } else {
+                console.log('[KILL-SW-INLINE] ✅ Storage limpo (DESENVOLVIMENTO - usando proxy)');
+              }
+            } catch (e) {
+              console.warn('[KILL-SW-INLINE] ⚠️ Erro ao limpar storage:', e);
+            }
+          });
+        }
+        
+        // ✅ CORREÇÃO: Só forçar backend de produção se NÃO estiver em localhost
+        if (typeof window !== 'undefined') {
+          const isProduction = (
+            window.location.hostname.includes('goldeouro.lol') ||
+            window.location.hostname.includes('goldeouro.com') ||
+            window.location.hostname === 'www.goldeouro.lol' ||
+            window.location.hostname === 'goldeouro.lol'
+          );
+          
+          if (isProduction) {
+            window.__API_BASE_URL__ = 'https://goldeouro-backend-v2.fly.dev';
+            window.__FORCED_BACKEND__ = true;
+            window.__BOOTSTRAP_EXECUTED__ = true;
+            console.log('[KILL-SW-INLINE] ✅ Backend forçado (PRODUÇÃO):', window.__API_BASE_URL__);
+          } else {
+            console.log('[KILL-SW-INLINE] ✅ Modo desenvolvimento - usando proxy do Vite');
+          }
+        }
+      })();
+    </script>
+    <!-- ✅ SW KILL GLOBAL - Script que SEMPRE é servido da rede (não do cache) -->
+    <!-- CRÍTICO: Este script NUNCA está no precache do SW antigo -->
+    <script src="/sw-kill-global.js?v=20250124130200"></script>
+    <!-- ✅ FORCE UPDATE - Script que SEMPRE é servido da rede (não do cache) -->
+    <script src="/force-update.js?v=20250124130000"></script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

@@ -1,0 +1,12 @@
+{
+  "resumo": {
+    "totalReferencias": 0,
+    "usuarioIdCorreto": 0,
+    "userIdIncorreto": 0,
+    "userIdCorreto": 0,
+    "arquivosAfetados": []
+  },
+  "problemas": [],
+  "correcoes": [],
+  "recomendacoes": []
+}

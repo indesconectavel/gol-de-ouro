@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-12-04T13:59:00.909Z",
+  "gitHash": "417629a06fa57170b4fad91ab562b9b8b55d892e",
+  "steps": [
+    "1. Verificar commit atual: git log -1",
+    "2. Voltar para commit anterior: git checkout <commit-hash>",
+    "3. Deploy backend: flyctl deploy --app goldeouro-backend-v2",
+    "4. Deploy player: cd goldeouro-player && vercel --prod",
+    "5. Deploy admin: cd goldeouro-admin && vercel --prod",
+    "6. Validar health checks após rollback"
+  ],
+  "backups": [
+    "backend"
+  ]
+}

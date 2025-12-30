@@ -1,9 +1,9 @@
 ﻿// Configuração CORRIGIDA - Gol de Ouro Player
 const environments = {
   development: {
-    API_BASE_URL: 'http://localhost:8080', // BACKEND LOCAL
-    USE_MOCKS: true,
-    USE_SANDBOX: true,
+    API_BASE_URL: '', // Usar proxy do Vite (relativo)
+    USE_MOCKS: false,
+    USE_SANDBOX: false,
     LOG_LEVEL: 'debug'
   },
   staging: {
@@ -26,7 +26,7 @@ let environmentCache = null;
 let lastEnvironmentCheck = 0;
 let hasLoggedOnce = false; // Flag para garantir log apenas uma vez
 let isInitialized = false; // Flag para evitar inicialização múltipla
-const ENVIRONMENT_CACHE_DURATION = 300000; // 5 minutos (aumentado drasticamente)
+const ENVIRONMENT_CACHE_DURATION = 0; // 0 = Sem cache (para desenvolvimento)
 
 // CORREÇÃO CRÍTICA: Usar sessionStorage para persistir flags entre recarregamentos
 const getSessionFlag = (key) => {
@@ -49,19 +49,74 @@ const setSessionFlag = (key, value) => {
 const getCurrentEnvironment = () => {
   const now = Date.now();
   
+  // ✅ CORREÇÃO CRÍTICA: Verificar bootstrap primeiro (última linha de defesa)
+  // MAS só usar se realmente estiver em produção
+  if (typeof window !== 'undefined' && window.__FORCED_BACKEND__) {
+    const hostname = window.location.hostname;
+    const isProductionDomain = hostname.includes('goldeouro.lol') || 
+                               hostname.includes('goldeouro.com') ||
+                               hostname === 'www.goldeouro.lol' ||
+                               hostname === 'goldeouro.lol';
+    
+    // Só usar backend forçado se estiver em produção
+    if (isProductionDomain) {
+      const forcedBackend = window.__API_BASE_URL__;
+      if (forcedBackend) {
+        console.log('[ENV] Usando backend forçado pelo bootstrap (PRODUÇÃO):', forcedBackend);
+        return {
+          ...environments.production,
+          API_BASE_URL: forcedBackend,
+          USE_MOCKS: false,
+          USE_SANDBOX: false,
+          IS_PRODUCTION: true
+        };
+      }
+    } else {
+      console.log('[ENV] Modo desenvolvimento - ignorando backend forçado, usando proxy');
+    }
+  }
+  
   // CORREÇÃO CRÍTICA: Usar sessionStorage para persistir flags
   hasLoggedOnce = getSessionFlag('env_hasLoggedOnce');
   isInitialized = getSessionFlag('env_isInitialized');
   
-  // Usar cache se ainda válido E se já foi inicializado
-  if (environmentCache && (now - lastEnvironmentCheck) < ENVIRONMENT_CACHE_DURATION && isInitialized) {
-    return environmentCache;
+  // Log apenas uma vez por sessão - ULTRA OTIMIZADO PARA PRODUÇÃO
+  const hostname = window.location.hostname;
+  const isDevelopment = hostname === 'localhost' || hostname === '127.0.0.1';
+  const isProductionDomain = hostname.includes('goldeouro.lol') || 
+                             hostname.includes('goldeouro.com') ||
+                             hostname === 'www.goldeouro.lol' ||
+                             hostname === 'goldeouro.lol';
+  const isProduction = isProductionDomain;
+  const shouldLog = isDevelopment || (!hasLoggedOnce && !isProduction);
+  
+  // CORREÇÃO CRÍTICA: SEMPRE limpar cache em produção se estiver usando backend antigo
+  // Forçar revalidação em produção para evitar cache incorreto
+  if (isProductionDomain) {
+    // SEMPRE limpar cache em produção para garantir backend correto
+    if (environmentCache && environmentCache.API_BASE_URL && 
+        environmentCache.API_BASE_URL.includes('goldeouro-backend.fly.dev') && 
+        !environmentCache.API_BASE_URL.includes('goldeouro-backend-v2.fly.dev')) {
+      // Cache inválido - forçar revalidação
+      environmentCache = null;
+      isInitialized = false;
+      // Limpar sessionStorage também
+      try {
+        sessionStorage.removeItem('env_isInitialized');
+        sessionStorage.removeItem('env_hasLoggedOnce');
+      } catch (e) {
+        // Ignorar erros
+      }
+    }
+    // Em produção, SEMPRE ignorar cache para garantir configuração correta
+    environmentCache = null;
+    isInitialized = false;
   }
   
-  // Log apenas uma vez por sessão - ULTRA OTIMIZADO PARA PRODUÇÃO
-  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  const isProduction = window.location.hostname.includes('goldeouro.lol') || window.location.hostname.includes('goldeouro.com');
-  const shouldLog = isDevelopment || (!hasLoggedOnce && !isProduction);
+  // Usar cache se ainda válido E se já foi inicializado E NÃO for produção
+  if (!isProductionDomain && environmentCache && (now - lastEnvironmentCheck) < ENVIRONMENT_CACHE_DURATION && isInitialized) {
+    return environmentCache;
+  }
   
   if (shouldLog) {
     console.log('🔧 Detectando ambiente atual...');
@@ -74,13 +129,12 @@ const getCurrentEnvironment = () => {
   let result;
   
   // Detectar ambiente baseado no hostname
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  // CORREÇÃO CRÍTICA: Verificar produção PRIMEIRO para evitar fallback incorreto
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
     if (shouldLog) console.log('🔧 Ambiente: DESENVOLVIMENTO LOCAL');
     result = environments.development;
-  } else if (window.location.hostname.includes('staging') || window.location.hostname.includes('test')) {
-    if (shouldLog) console.log('🔧 Ambiente: STAGING');
-    result = environments.staging;
-  } else {
+  } else if (isProductionDomain) {
     // PRODUÇÃO REAL - FORÇAR CONFIGURAÇÕES DE PRODUÇÃO
     if (shouldLog) console.log('🔧 Ambiente: PRODUÇÃO REAL - FORÇANDO CONFIGURAÇÕES REAIS');
     result = {
@@ -88,6 +142,18 @@ const getCurrentEnvironment = () => {
       USE_MOCKS: false, // FORÇAR SEM MOCKS
       USE_SANDBOX: false, // FORÇAR SEM SANDBOX
       IS_PRODUCTION: true // FORÇAR PRODUÇÃO
+    };
+  } else if (hostname.includes('staging') || hostname.includes('test')) {
+    if (shouldLog) console.log('🔧 Ambiente: STAGING');
+    result = environments.staging;
+  } else {
+    // FALLBACK: Se não for desenvolvimento nem staging, assumir produção
+    if (shouldLog) console.log('🔧 Ambiente: FALLBACK PARA PRODUÇÃO');
+    result = {
+      ...environments.production,
+      USE_MOCKS: false,
+      USE_SANDBOX: false,
+      IS_PRODUCTION: true
     };
   }
   

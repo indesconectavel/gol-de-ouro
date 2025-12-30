@@ -1,0 +1,119 @@
+{
+  "timestamp": "2025-12-03T18:57:48.493Z",
+  "backendUrl": "https://goldeouro-backend-v2.fly.dev",
+  "wsUrl": "wss://goldeouro-backend-v2.fly.dev",
+  "modules": {
+    "healthCheck": {
+      "success": true,
+      "response": {
+        "status": 200,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-03T18:57:50.008Z",
+          "data": {
+            "status": "ok",
+            "timestamp": "2025-12-03T18:57:50.008Z",
+            "version": "1.2.0",
+            "database": "connected",
+            "mercadoPago": "connected",
+            "contadorChutes": 61,
+            "ultimoGolDeOuro": 0
+          },
+          "message": "Sistema funcionando"
+        }
+      },
+      "score": 10,
+      "errors": []
+    },
+    "metaEndpoint": {
+      "success": true,
+      "response": {
+        "status": 200,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-03T18:57:50.258Z",
+          "data": {
+            "name": "Gol de Ouro Backend API",
+            "version": "1.2.0",
+            "description": "API do jogo Gol de Ouro",
+            "environment": "production",
+            "compatibility": {
+              "minVersion": "1.0.0",
+              "supported": true
+            },
+            "features": {
+              "pix": true,
+              "goldenGoal": true,
+              "monitoring": true
+            }
+          },
+          "message": "Informações do sistema"
+        },
+        "hasVersion": true,
+        "version": "1.2.0"
+      },
+      "score": 10,
+      "errors": []
+    },
+    "register": {
+      "success": true,
+      "response": {
+        "status": 201,
+        "hasToken": true,
+        "token": "***MASKED***"
+      },
+      "score": 15,
+      "errors": [],
+      "testCredentials": {
+        "email": "test_audit_1764788271333@example.com",
+        "password": "Test123456!",
+        "username": "testuser_1764788271333"
+      }
+    },
+    "login": {
+      "success": true,
+      "response": {
+        "status": 200,
+        "hasToken": true,
+        "token": "***MASKED***"
+      },
+      "score": 15,
+      "errors": [],
+      "tokenReal": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMmYwNzlkNy1kMWQ0LTQwNjgtYTA5My1jNTJmZGFhNDE0NzMiLCJlbWFpbCI6InRlc3RfYXVkaXRfMTc2NDc4ODI3MTMzM0BleGFtcGxlLmNvbSIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0Nzg4MjcwLCJleHAiOjE3NjQ4NzQ2NzB9.lQZWGD2YBAKuYgxv_72mh8b6KWGVOqSfY3ek5ais7rg"
+    },
+    "pixV6": {
+      "success": true,
+      "response": {
+        "status": 201,
+        "hasCopyPaste": true,
+        "hasQrCode": true,
+        "hasQrCodeBase64": true,
+        "hasTransactionId": true,
+        "emvValid": true
+      },
+      "score": 20,
+      "errors": []
+    },
+    "webSocket": {
+      "success": false,
+      "connection": true,
+      "score": 10,
+      "errors": [],
+      "warnings": [
+        "WebSocket precisa ser testado manualmente ou com biblioteca específica"
+      ]
+    },
+    "database": {
+      "success": true,
+      "score": 10,
+      "errors": []
+    }
+  },
+  "score": 90,
+  "maxScore": 100,
+  "status": "APROVADO",
+  "errors": [],
+  "warnings": [
+    "WebSocket precisa ser testado manualmente ou com biblioteca específica"
+  ]
+}

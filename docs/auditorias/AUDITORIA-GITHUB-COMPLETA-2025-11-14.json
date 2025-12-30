@@ -1,0 +1,165 @@
+{
+  "timestamp": "2025-11-14T00:23:58.343Z",
+  "versao": "1.2.0",
+  "repositorio": {
+    "remoteUrl": "https://github.com/indesconectavel/gol-de-ouro.git",
+    "branches": 56,
+    "lastCommit": "6d334d5 docs: documentar execução das recomendações pendentes",
+    "estrutura": {
+      "workflows": true,
+      "dependabot": true,
+      "issueTemplates": true,
+      "prTemplate": true,
+      "security": true,
+      "contributing": true,
+      "changelog": true
+    }
+  },
+  "workflows": [
+    {
+      "nome": "backend-deploy.yml",
+      "tamanho": 6394,
+      "temTimeout": true,
+      "temContinueOnError": true,
+      "usaSecrets": true,
+      "verificaTokens": true,
+      "problemas": []
+    },
+    {
+      "nome": "ci.yml",
+      "tamanho": 1649,
+      "temTimeout": true,
+      "temContinueOnError": false,
+      "usaSecrets": false,
+      "verificaTokens": false,
+      "problemas": []
+    },
+    {
+      "nome": "deploy-on-demand.yml",
+      "tamanho": 2522,
+      "temTimeout": true,
+      "temContinueOnError": false,
+      "usaSecrets": true,
+      "verificaTokens": true,
+      "problemas": []
+    },
+    {
+      "nome": "frontend-deploy.yml",
+      "tamanho": 8514,
+      "temTimeout": true,
+      "temContinueOnError": true,
+      "usaSecrets": true,
+      "verificaTokens": true,
+      "problemas": []
+    },
+    {
+      "nome": "health-monitor.yml",
+      "tamanho": 8833,
+      "temTimeout": true,
+      "temContinueOnError": true,
+      "usaSecrets": true,
+      "verificaTokens": false,
+      "problemas": [
+        {
+          "tipo": "secret_sem_verificacao",
+          "severidade": "media",
+          "mensagem": "Usa secrets sem verificação prévia"
+        }
+      ]
+    },
+    {
+      "nome": "main-pipeline.yml",
+      "tamanho": 3628,
+      "temTimeout": true,
+      "temContinueOnError": true,
+      "usaSecrets": true,
+      "verificaTokens": true,
+      "problemas": []
+    },
+    {
+      "nome": "monitoring.yml",
+      "tamanho": 7042,
+      "temTimeout": true,
+      "temContinueOnError": true,
+      "usaSecrets": true,
+      "verificaTokens": true,
+      "problemas": []
+    },
+    {
+      "nome": "rollback.yml",
+      "tamanho": 6445,
+      "temTimeout": false,
+      "temContinueOnError": true,
+      "usaSecrets": true,
+      "verificaTokens": true,
+      "problemas": [
+        {
+          "tipo": "sem_timeout",
+          "severidade": "media",
+          "mensagem": "Workflow sem timeout configurado"
+        }
+      ]
+    },
+    {
+      "nome": "security.yml",
+      "tamanho": 6877,
+      "temTimeout": true,
+      "temContinueOnError": true,
+      "usaSecrets": false,
+      "verificaTokens": false,
+      "problemas": []
+    },
+    {
+      "nome": "tests.yml",
+      "tamanho": 8877,
+      "temTimeout": true,
+      "temContinueOnError": true,
+      "usaSecrets": false,
+      "verificaTokens": false,
+      "problemas": []
+    }
+  ],
+  "seguranca": {
+    "arquivosSensiveis": [
+      {
+        "arquivo": "*.key",
+        "status": "nao_ignorado",
+        "severidade": "critica"
+      },
+      {
+        "arquivo": "*.pem",
+        "status": "nao_ignorado",
+        "severidade": "critica"
+      },
+      {
+        "arquivo": "secrets.json",
+        "status": "nao_ignorado",
+        "severidade": "critica"
+      }
+    ],
+    "secretsExpostos": [],
+    "gitignore": true,
+    "securityMd": true,
+    "dependabot": true
+  },
+  "dependencias": {
+    "backend": {
+      "dependencies": 16,
+      "devDependencies": 1
+    },
+    "frontend": {
+      "dependencies": 9,
+      "devDependencies": 16
+    },
+    "total": 42,
+    "vulnerabilidades": []
+  },
+  "problemas": [],
+  "recomendacoes": [],
+  "resumo": {
+    "workflows": 10,
+    "problemasCriticos": 3,
+    "problemasMedios": 2,
+    "problemasBaixos": 0
+  }
+}

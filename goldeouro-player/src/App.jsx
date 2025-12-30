@@ -15,6 +15,11 @@ import GameShoot from './pages/GameShoot'
 import GameShootFallback from './pages/GameShootFallback'
 import GameShootTest from './pages/GameShootTest'
 import GameShootSimple from './pages/GameShootSimple'
+import GameOriginalTest from './pages/GameOriginalTest'
+import GameOriginalRestored from './pages/GameOriginalRestored'
+import Jogo from './pages/Jogo'
+import GameCycle from './pages/GameCycle'
+import GameFinal from './pages/GameFinal'
 import Profile from './pages/Profile'
 import Withdraw from './pages/Withdraw'
 import Pagamentos from './pages/Pagamentos'
@@ -48,12 +53,27 @@ function App() {
                 } />
                 <Route path="/game" element={
                   <ProtectedRoute>
-                    <GameShoot />
+                    <GameFinal />
                   </ProtectedRoute>
                 } />
                 <Route path="/gameshoot" element={
                   <ProtectedRoute>
-                    <GameShoot />
+                    <Game />
+                  </ProtectedRoute>
+                } />
+                <Route path="/game-original-test" element={
+                  <ProtectedRoute>
+                    <GameOriginalTest />
+                  </ProtectedRoute>
+                } />
+                <Route path="/game-original-restored" element={
+                  <ProtectedRoute>
+                    <GameOriginalRestored />
+                  </ProtectedRoute>
+                } />
+                <Route path="/jogo" element={
+                  <ProtectedRoute>
+                    <Jogo />
                   </ProtectedRoute>
                 } />
                 <Route path="/profile" element={

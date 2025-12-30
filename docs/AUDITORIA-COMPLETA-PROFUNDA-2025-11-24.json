@@ -1,0 +1,1671 @@
+{
+  "timestamp": "2025-11-25T13:44:06.729Z",
+  "resumo": {
+    "problemasCriticos": [],
+    "problemasAltos": [
+      "adminRoutes.js: Rota get /stats sem autenticação",
+      "adminRoutes.js: Rota get /game-stats sem autenticação",
+      "adminRoutes.js: Rota get /users sem autenticação",
+      "adminRoutes.js: Rota get /financial-report sem autenticação",
+      "adminRoutes.js: Rota get /top-players sem autenticação",
+      "adminRoutes.js: Rota get /recent-transactions sem autenticação",
+      "adminRoutes.js: Rota get /recent-shots sem autenticação",
+      "adminRoutes.js: Rota get /weekly-report sem autenticação",
+      "adminRoutes.js: Rota post /relatorio-semanal sem autenticação",
+      "adminRoutes.js: Rota post /estatisticas-gerais sem autenticação",
+      "adminRoutes.js: Rota post /top-jogadores sem autenticação",
+      "adminRoutes.js: Rota post /transacoes-recentes sem autenticação",
+      "adminRoutes.js: Rota post /chutes-recentes sem autenticação",
+      "adminRoutes.js: Rota get /lista-usuarios sem autenticação",
+      "adminRoutes.js: Rota post /fix-expired-pix sem autenticação",
+      "adminRoutes.js: Rota get /fix-expired-pix sem autenticação",
+      "adminRoutes.js: Rota get /exportar/usuarios-csv sem autenticação",
+      "adminRoutes.js: Rota get /exportar/chutes-csv sem autenticação",
+      "adminRoutes.js: Rota get /exportar/transacoes-csv sem autenticação",
+      "adminRoutes.js: Rota get /exportar/saques-csv sem autenticação",
+      "adminRoutes.js: Rota get /exportar/relatorio-completo-csv sem autenticação",
+      "adminRoutes.js: Rota get /exportar/relatorio-geral-csv sem autenticação",
+      "analyticsRoutes.js: Rota get /dashboard sem autenticação",
+      "analyticsRoutes.js: Rota get /metrics sem autenticação",
+      "analyticsRoutes.js: Rota get /logs sem autenticação",
+      "analyticsRoutes.js: Rota get /events sem autenticação",
+      "analyticsRoutes.js: Rota get /bets/stats sem autenticação",
+      "analyticsRoutes.js: Rota get /alerts sem autenticação",
+      "analyticsRoutes.js: Rota get /thresholds sem autenticação",
+      "analyticsRoutes.js: Rota get /status sem autenticação",
+      "analyticsRoutes.js: Rota get /player/:userId sem autenticação",
+      "analyticsRoutes.js: Rota post /player/:userId sem autenticação",
+      "analyticsRoutes.js: Rota get /recommendations/:userId sem autenticação",
+      "analyticsRoutes.js: Rota get /patterns/:userId sem autenticação",
+      "analyticsRoutes.js: Rota get /stats/:userId sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /dashboard sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /metrics sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /logs sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /events sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /bets/stats sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /alerts sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /thresholds sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /status sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /player/:userId sem autenticação",
+      "analyticsRoutes_fixed.js: Rota post /player/:userId sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /recommendations/:userId sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /patterns/:userId sem autenticação",
+      "analyticsRoutes_fixed.js: Rota get /stats/:userId sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /dashboard sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /metrics sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /logs sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /events sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /bets/stats sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /alerts sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /thresholds sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /status sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /player/:userId sem autenticação",
+      "analyticsRoutes_optimized.js: Rota post /player/:userId sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /recommendations/:userId sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /patterns/:userId sem autenticação",
+      "analyticsRoutes_optimized.js: Rota get /stats/:userId sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /dashboard sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /metrics sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /logs sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /events sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /bets/stats sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /alerts sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /thresholds sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /status sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /player/:userId sem autenticação",
+      "analyticsRoutes_v1.js: Rota post /player/:userId sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /recommendations/:userId sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /patterns/:userId sem autenticação",
+      "analyticsRoutes_v1.js: Rota get /stats/:userId sem autenticação",
+      "authRoutes.js: Rota post /register sem autenticação",
+      "authRoutes.js: Rota post /login sem autenticação",
+      "authRoutes.js: Rota post /forgot-password sem autenticação",
+      "authRoutes.js: Rota post /reset-password sem autenticação",
+      "betRoutes.js: Rota post /create sem autenticação",
+      "filaRoutes.js: Rota post /entrar sem autenticação",
+      "filaRoutes.js: Rota post /chutar sem autenticação",
+      "filaRoutes.js: Rota post /status sem autenticação",
+      "gameRoutes.js: Rota get /status sem autenticação",
+      "gamification_integration.js: Rota post /integrate/:userId sem autenticação",
+      "gamification_integration.js: Rota get /gamification/:userId sem autenticação",
+      "gamification_integration.js: Rota get /recommendations/:userId sem autenticação",
+      "health.js: Rota get / sem autenticação",
+      "health.js: Rota get /detailed sem autenticação",
+      "health.js: Rota get /database sem autenticação",
+      "health.js: Rota get /external sem autenticação",
+      "health.js: Rota get /performance sem autenticação",
+      "health.js: Rota get /security sem autenticação",
+      "mpWebhook.js: Rota post /mercadopago sem autenticação",
+      "paymentRoutes.js: Rota post /pix/criar sem autenticação",
+      "paymentRoutes.js: Rota get /pix/status/:payment_id sem autenticação",
+      "paymentRoutes.js: Rota get /pix/usuario/:user_id sem autenticação",
+      "paymentRoutes.js: Rota post /pix/cancelar/:payment_id sem autenticação",
+      "paymentRoutes.js: Rota post /saque sem autenticação",
+      "paymentRoutes.js: Rota get /saque/:id sem autenticação",
+      "paymentRoutes.js: Rota get /saques/usuario/:user_id sem autenticação",
+      "paymentRoutes.js: Rota get /extrato/:user_id sem autenticação",
+      "paymentRoutes.js: Rota get /saldo/:user_id sem autenticação",
+      "paymentRoutes.js: Rota post /deposito sem autenticação",
+      "paymentRoutes.js: Rota get /deposito/:id sem autenticação",
+      "paymentRoutes.js: Rota get /depositos/usuario/:user_id sem autenticação",
+      "paymentRoutes.js: Rota post /deposito/:id/confirmar sem autenticação",
+      "paymentRoutes.js: Rota post /saque/:id/processar sem autenticação",
+      "paymentRoutes.js: Rota post /saque/:id/cancelar sem autenticação",
+      "paymentRoutes.js: Rota post /transferencia sem autenticação",
+      "paymentRoutes.js: Rota get /transferencias/usuario/:user_id sem autenticação",
+      "paymentRoutes.js: Rota get /transferencia/:id sem autenticação",
+      "paymentRoutes.js: Rota get /extrato/:user_id/periodo/:periodo sem autenticação",
+      "paymentRoutes.js: Rota post /extrato/exportar sem autenticação",
+      "paymentRoutes.js: Rota post /saldo/atualizar sem autenticação",
+      "paymentRoutes.js: Rota get /saldo/historico/:user_id sem autenticação",
+      "paymentRoutes.js: Rota get /admin/todos sem autenticação",
+      "paymentRoutes.js: Rota get /admin/estatisticas sem autenticação",
+      "paymentRoutes.js: Rota post /admin/processar sem autenticação",
+      "paymentRoutes.js: Rota post /admin/reverter sem autenticação",
+      "systemRoutes.js: Rota get /robots.txt sem autenticação",
+      "systemRoutes.js: Rota get / sem autenticação",
+      "systemRoutes.js: Rota get /api/metrics sem autenticação",
+      "systemRoutes.js: Rota get /api/monitoring/metrics sem autenticação",
+      "systemRoutes.js: Rota get /api/production-status sem autenticação",
+      "usuarioRoutes.js: Rota get /profile sem autenticação",
+      "usuarioRoutes.js: Rota put /profile sem autenticação",
+      "usuarioRoutes.js: Rota get /list sem autenticação",
+      "usuarioRoutes.js: Rota get /stats sem autenticação",
+      "usuarioRoutes.js: Rota put /status/:id sem autenticação"
+    ],
+    "problemasMedios": [
+      "index.js: Falta try/catch",
+      "index.js: Não usa response helper",
+      "index.js: Falta try/catch",
+      "queueService.js: Falta try/catch",
+      "WebSocket: Listeners não removidos"
+    ],
+    "problemasBaixos": [],
+    "arquivosAfetados": [],
+    "sugestoes": []
+  },
+  "backend": {
+    "controllers": {
+      "total": 8,
+      "arquivos": [
+        {
+          "arquivo": "adminController.js",
+          "problemas": [],
+          "rotas": [],
+          "autenticacao": false,
+          "tryCatch": true,
+          "validacao": true
+        },
+        {
+          "arquivo": "authController.js",
+          "problemas": [],
+          "rotas": [],
+          "autenticacao": true,
+          "tryCatch": true,
+          "validacao": true
+        },
+        {
+          "arquivo": "gameController.js",
+          "problemas": [],
+          "rotas": [],
+          "autenticacao": true,
+          "tryCatch": true,
+          "validacao": true
+        },
+        {
+          "arquivo": "index.js",
+          "problemas": [
+            "Falta try/catch em algum método",
+            "Não usa response helper padronizado"
+          ],
+          "rotas": [],
+          "autenticacao": false,
+          "tryCatch": false,
+          "validacao": false
+        },
+        {
+          "arquivo": "paymentController.js",
+          "problemas": [],
+          "rotas": [],
+          "autenticacao": true,
+          "tryCatch": true,
+          "validacao": true
+        },
+        {
+          "arquivo": "systemController.js",
+          "problemas": [],
+          "rotas": [],
+          "autenticacao": false,
+          "tryCatch": true,
+          "validacao": true
+        },
+        {
+          "arquivo": "usuarioController.js",
+          "problemas": [],
+          "rotas": [],
+          "autenticacao": true,
+          "tryCatch": true,
+          "validacao": true
+        },
+        {
+          "arquivo": "withdrawController.js",
+          "problemas": [],
+          "rotas": [],
+          "autenticacao": true,
+          "tryCatch": true,
+          "validacao": true
+        }
+      ]
+    },
+    "services": {
+      "total": 17,
+      "arquivos": [
+        {
+          "arquivo": "auth-service-unified.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "cache-service.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "cdn-service.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "emailService.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "financialService.js",
+          "problemas": [],
+          "usaACID": true,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "history-service.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "index.js",
+          "problemas": [
+            "Falta try/catch"
+          ],
+          "usaACID": false,
+          "usaTryCatch": false
+        },
+        {
+          "arquivo": "loteService.js",
+          "problemas": [],
+          "usaACID": true,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "notification-service.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "pix-mercado-pago.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "pix-service-real.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "pix-service.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "queueService.js",
+          "problemas": [
+            "Falta try/catch"
+          ],
+          "usaACID": false,
+          "usaTryCatch": false
+        },
+        {
+          "arquivo": "ranking-service.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "redisService.js",
+          "problemas": [],
+          "usaACID": false,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "rewardService.js",
+          "problemas": [],
+          "usaACID": true,
+          "usaTryCatch": true
+        },
+        {
+          "arquivo": "webhookService.js",
+          "problemas": [],
+          "usaACID": true,
+          "usaTryCatch": true
+        }
+      ]
+    },
+    "routes": {
+      "total": 21,
+      "arquivos": [
+        {
+          "arquivo": "adminRoutes.js",
+          "rotas": [
+            {
+              "metodo": "get",
+              "caminho": "/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/game-stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/users"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/financial-report"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/top-players"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recent-transactions"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recent-shots"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/weekly-report"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/relatorio-semanal"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/estatisticas-gerais"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/top-jogadores"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/transacoes-recentes"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/chutes-recentes"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/lista-usuarios"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/fix-expired-pix"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/fix-expired-pix"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/usuarios-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/chutes-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/transacoes-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/saques-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/relatorio-completo-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/relatorio-geral-csv"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "get",
+              "caminho": "/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/game-stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/users"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/financial-report"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/top-players"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recent-transactions"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recent-shots"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/weekly-report"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/relatorio-semanal"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/estatisticas-gerais"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/top-jogadores"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/transacoes-recentes"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/chutes-recentes"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/lista-usuarios"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/fix-expired-pix"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/fix-expired-pix"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/usuarios-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/chutes-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/transacoes-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/saques-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/relatorio-completo-csv"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/exportar/relatorio-geral-csv"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "analyticsRoutes.js",
+          "rotas": [
+            {
+              "metodo": "get",
+              "caminho": "/dashboard"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/health"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/logs"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/events"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/bets/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/alerts"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/thresholds"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/patterns/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats/:userId"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "get",
+              "caminho": "/dashboard"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/logs"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/events"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/bets/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/alerts"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/thresholds"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/patterns/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats/:userId"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "analyticsRoutes_fixed.js",
+          "rotas": [
+            {
+              "metodo": "get",
+              "caminho": "/dashboard"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/health"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/logs"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/events"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/bets/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/alerts"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/thresholds"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/patterns/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats/:userId"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "get",
+              "caminho": "/dashboard"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/logs"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/events"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/bets/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/alerts"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/thresholds"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/patterns/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats/:userId"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "analyticsRoutes_optimized.js",
+          "rotas": [
+            {
+              "metodo": "get",
+              "caminho": "/dashboard"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/health"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/logs"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/events"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/bets/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/alerts"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/thresholds"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/patterns/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats/:userId"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "get",
+              "caminho": "/dashboard"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/logs"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/events"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/bets/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/alerts"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/thresholds"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/patterns/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats/:userId"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "analyticsRoutes_v1.js",
+          "rotas": [
+            {
+              "metodo": "get",
+              "caminho": "/dashboard"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/health"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/logs"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/events"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/bets/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/alerts"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/thresholds"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/patterns/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats/:userId"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "get",
+              "caminho": "/dashboard"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/logs"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/events"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/bets/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/alerts"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/thresholds"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/player/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/patterns/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats/:userId"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "authRoutes.js",
+          "rotas": [
+            {
+              "metodo": "post",
+              "caminho": "/register"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/login"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/forgot-password"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/reset-password"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/verify-email"
+            },
+            {
+              "metodo": "put",
+              "caminho": "/change-password"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "post",
+              "caminho": "/register"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/login"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/forgot-password"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/reset-password"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "betRoutes.js",
+          "rotas": [
+            {
+              "metodo": "post",
+              "caminho": "/create"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "post",
+              "caminho": "/create"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "blockchainRoutes.js",
+          "rotas": [],
+          "rotasSemAuth": [],
+          "problemas": []
+        },
+        {
+          "arquivo": "filaRoutes.js",
+          "rotas": [
+            {
+              "metodo": "post",
+              "caminho": "/entrar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/chutar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/status"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "post",
+              "caminho": "/entrar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/chutar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/status"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "gameRoutes.js",
+          "rotas": [
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/chutar"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/history"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/shoot"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/health"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "get",
+              "caminho": "/status"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "gamification_integration.js",
+          "rotas": [
+            {
+              "metodo": "post",
+              "caminho": "/integrate/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/gamification/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "post",
+              "caminho": "/integrate/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/gamification/:userId"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/recommendations/:userId"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "health.js",
+          "rotas": [
+            {
+              "metodo": "get",
+              "caminho": "/"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/detailed"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/database"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/external"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/performance"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/security"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "get",
+              "caminho": "/"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/detailed"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/database"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/external"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/performance"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/security"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "index.js",
+          "rotas": [],
+          "rotasSemAuth": [],
+          "problemas": []
+        },
+        {
+          "arquivo": "monitoringDashboard.js",
+          "rotas": [],
+          "rotasSemAuth": [],
+          "problemas": []
+        },
+        {
+          "arquivo": "mpWebhook.js",
+          "rotas": [
+            {
+              "metodo": "post",
+              "caminho": "/mercadopago"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "post",
+              "caminho": "/mercadopago"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "paymentRoutes.js",
+          "rotas": [
+            {
+              "metodo": "post",
+              "caminho": "/webhook"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/pix/criar"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/pix/status/:payment_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/pix/usuario/:user_id"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/pix/cancelar/:payment_id"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/saque"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/saque/:id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/saques/usuario/:user_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/extrato/:user_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/saldo/:user_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/health"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/deposito"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/deposito/:id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/depositos/usuario/:user_id"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/deposito/:id/confirmar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/saque/:id/processar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/saque/:id/cancelar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/transferencia"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/transferencias/usuario/:user_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/transferencia/:id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/extrato/:user_id/periodo/:periodo"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/extrato/exportar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/saldo/atualizar"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/saldo/historico/:user_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/admin/todos"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/admin/estatisticas"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/admin/processar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/admin/reverter"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "post",
+              "caminho": "/pix/criar"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/pix/status/:payment_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/pix/usuario/:user_id"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/pix/cancelar/:payment_id"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/saque"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/saque/:id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/saques/usuario/:user_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/extrato/:user_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/saldo/:user_id"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/deposito"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/deposito/:id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/depositos/usuario/:user_id"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/deposito/:id/confirmar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/saque/:id/processar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/saque/:id/cancelar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/transferencia"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/transferencias/usuario/:user_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/transferencia/:id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/extrato/:user_id/periodo/:periodo"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/extrato/exportar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/saldo/atualizar"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/saldo/historico/:user_id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/admin/todos"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/admin/estatisticas"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/admin/processar"
+            },
+            {
+              "metodo": "post",
+              "caminho": "/admin/reverter"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "publicDashboard.js",
+          "rotas": [],
+          "rotasSemAuth": [],
+          "problemas": []
+        },
+        {
+          "arquivo": "systemRoutes.js",
+          "rotas": [
+            {
+              "metodo": "get",
+              "caminho": "/robots.txt"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/health"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/api/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/api/monitoring/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/api/monitoring/health"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/meta"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/api/production-status"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "get",
+              "caminho": "/robots.txt"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/api/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/api/monitoring/metrics"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/api/production-status"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "test.js",
+          "rotas": [],
+          "rotasSemAuth": [],
+          "problemas": []
+        },
+        {
+          "arquivo": "usuarioRoutes.js",
+          "rotas": [
+            {
+              "metodo": "get",
+              "caminho": "/profile"
+            },
+            {
+              "metodo": "put",
+              "caminho": "/profile"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/list"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats"
+            },
+            {
+              "metodo": "put",
+              "caminho": "/status/:id"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/health"
+            }
+          ],
+          "rotasSemAuth": [
+            {
+              "metodo": "get",
+              "caminho": "/profile"
+            },
+            {
+              "metodo": "put",
+              "caminho": "/profile"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/list"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/stats"
+            },
+            {
+              "metodo": "put",
+              "caminho": "/status/:id"
+            }
+          ],
+          "problemas": []
+        },
+        {
+          "arquivo": "withdrawRoutes.js",
+          "rotas": [
+            {
+              "metodo": "post",
+              "caminho": "/request"
+            },
+            {
+              "metodo": "get",
+              "caminho": "/history"
+            }
+          ],
+          "rotasSemAuth": [],
+          "problemas": []
+        }
+      ]
+    },
+    "middlewares": {},
+    "problemas": []
+  },
+  "database": {
+    "schema": {},
+    "problemas": []
+  },
+  "pix": {
+    "componentes": {
+      "verificacoes": {
+        "criarPix": true,
+        "statusPix": true,
+        "webhook": true,
+        "expiracao": true,
+        "reconciliacao": false,
+        "validacaoSignature": true,
+        "idempotencia": true
+      }
+    },
+    "problemas": []
+  },
+  "websocket": {
+    "componentes": {
+      "arquivo": "src/websocket.js",
+      "verificacoes": {
+        "heartbeat": true,
+        "reconexao": true,
+        "rateLimit": true,
+        "cleanup": true,
+        "gracefulShutdown": true,
+        "autenticacao": true
+      }
+    },
+    "problemas": [
+      "Possível memory leak - listeners não removidos"
+    ]
+  },
+  "admin": {
+    "componentes": {},
+    "problemas": []
+  },
+  "mobile": {
+    "componentes": {},
+    "problemas": []
+  },
+  "seguranca": {
+    "verificacoes": {},
+    "problemas": []
+  },
+  "performance": {
+    "verificacoes": {},
+    "problemas": []
+  },
+  "codigoMorto": {
+    "arquivos": [
+      "_archived_config_controllers",
+      "_archived_legacy_middlewares",
+      "_archived_legacy_routes",
+      "backup",
+      "backups",
+      "logs"
+    ],
+    "dependencias": [
+      "chalk",
+      "dayjs",
+      "fs-extra",
+      "nodemailer",
+      "pdfkit"
+    ]
+  }
+}

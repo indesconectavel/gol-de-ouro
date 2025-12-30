@@ -214,7 +214,9 @@ const parseCorsOrigins = () => {
   return list.length > 0 ? list : [
     'https://goldeouro.lol',
     'https://www.goldeouro.lol',
-    'https://admin.goldeouro.lol'
+    'https://admin.goldeouro.lol',
+    'http://localhost:5173', // Permitir localhost para desenvolvimento
+    'http://localhost:5174'
   ];
 };
 

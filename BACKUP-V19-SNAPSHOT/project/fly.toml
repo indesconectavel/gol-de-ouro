@@ -1,0 +1,41 @@
+# fly.toml para Gol de Ouro Backend v1.2.0
+app = "goldeouro-backend-v2"  # ✅ CORRIGIDO: Consistente com workflows GitHub Actions
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+  ignorefile = ".dockerignore"
+
+[env]
+  NODE_ENV = "production"
+
+# ✅ ADICIONADO: Configuração de recursos (CPU/RAM)
+[compute]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [services.concurrency]
+    type = "requests"
+    soft_limit = 100
+    hard_limit = 200
+
+  [[services.http_checks]]
+    path = "/health"
+    interval = "30s"
+    timeout = "15s"  # ✅ AUMENTADO: Mais tempo para resposta do health check
+    method = "get"
+    grace_period = "30s"  # ✅ AUMENTADO: Período de graça maior para inicialização
+    tls_skip_verify = false

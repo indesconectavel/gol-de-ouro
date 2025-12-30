@@ -44,13 +44,34 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    // ✅ ADICIONADO: Proxy para evitar CORS em desenvolvimento
+    server: {
+      hmr: {
+        overlay: true
+      },
+      watch: {
+        usePolling: true,
+        interval: 100
+      },
+      proxy: {
+        '/api': {
+          target: 'https://goldeouro-backend-v2.fly.dev',
+          changeOrigin: true,
+          secure: true,
+          rewrite: (path) => path
+        }
+      }
+    },
     // ✅ ADICIONADO: Configuração explícita de build output
     build: {
       outDir: 'dist',
       emptyOutDir: true,
       rollupOptions: {
         input: resolve(__dirname, 'index.html')
-      }
+      },
+      // ✅ CORREÇÃO CRÍTICA: Copiar kill-old-sw.js para dist
+      copyPublicDir: true,
+      publicDir: 'public'
     },
     define: {
       // Injetar variáveis de build no código
@@ -79,6 +100,8 @@ export default defineConfig(({ mode }) => {
         display: 'standalone',
         background_color: '#001a33',
         theme_color: '#ffd700',
+        // ✅ CORREÇÃO CRÍTICA: Versionamento explícito do SW
+        version: '2.0.0',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
@@ -88,29 +111,53 @@ export default defineConfig(({ mode }) => {
       },
       workbox: {
         navigateFallback: '/index.html',
-        globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
+        // ✅ CORREÇÃO CRÍTICA: NÃO cachear arquivos JS/CSS para garantir sempre versão nova
+        globPatterns: ['**/*.{html,svg,png,webp,woff2,ico,json}'],
+        // ✅ CORREÇÃO CRÍTICA: Invalidar todos os caches antigos ao ativar
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
+        // ✅ CORREÇÃO CRÍTICA: Versionamento explícito para forçar atualização
+        cacheId: 'goldeouro-sw-v2',
+        // ✅ CORREÇÃO CRÍTICA: NÃO cachear APIs - sempre usar network
         runtimeCaching: [
-          // API backend (.fly.dev)
+          // API backend - SEMPRE network, NUNCA cache
           {
-            urlPattern: ({ url }) => url.origin.includes('.fly.dev'),
-            handler: 'NetworkFirst',
+            urlPattern: ({ url }) => url.origin.includes('.fly.dev') || url.pathname.startsWith('/api'),
+            handler: 'NetworkOnly', // ✅ MUDADO de NetworkFirst para NetworkOnly
             options: {
-              cacheName: 'api-cache',
-              networkTimeoutSeconds: 5,
-              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 },
-              cacheableResponse: { statuses: [0, 200] }
+              cacheName: 'api-no-cache', // Nome para referência, mas não será usado
             }
           },
-          // Imagens
+          // Arquivos JS/CSS - SEMPRE network para garantir versão nova
+          {
+            urlPattern: ({ url }) => url.pathname.match(/\.(js|css)$/),
+            handler: 'NetworkOnly', // ✅ NUNCA cachear JS/CSS
+            options: {
+              cacheName: 'assets-no-cache',
+            }
+          },
+          // Imagens - pode cachear, mas com TTL curto
           {
             urlPattern: ({ request }) => request.destination === 'image',
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst', // ✅ MUDADO para NetworkFirst
             options: {
               cacheName: 'images-cache',
-              expiration: { maxEntries: 100, maxAgeSeconds: 7 * 24 * 60 * 60 }
+              expiration: { maxEntries: 50, maxAgeSeconds: 24 * 60 * 60 }, // ✅ Reduzido para 24h
+              cacheableResponse: { statuses: [200] } // ✅ Apenas 200, não 0
             }
           },
-        ]
+          // Arquivos de mídia (sounds) - NetworkFirst com TTL curto
+          {
+            urlPattern: ({ url }) => url.pathname.match(/\.(mp3|wav|ogg)$/),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'media-cache',
+              expiration: { maxEntries: 20, maxAgeSeconds: 12 * 60 * 60 }, // 12h
+              cacheableResponse: { statuses: [200] }
+            }
+          },
+        ],
       },
       devOptions: { enabled: false }
     })

@@ -5,6 +5,7 @@ import useSimpleSound from '../hooks/useSimpleSound'
 import usePerformance from '../hooks/usePerformance'
 
 const GameField = ({ onShoot, gameStatus, selectedZone, currentShot, totalShots }) => {
+  
   const [goalkeeperPose, setGoalkeeperPose] = useState('idle')
   const [ballPosition, setBallPosition] = useState('ready')
   const [showGoal, setShowGoal] = useState(false)

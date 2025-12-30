@@ -1,0 +1,13 @@
+{
+  "player": null,
+  "admin": {
+    "email": "admin@example.com",
+    "password": "admin123",
+    "token": "goldeouro123",
+    "exists": false,
+    "note": "Usando token fixo"
+  },
+  "errors": [
+    "Erro ao criar usuário player: Muitas tentativas de login. Tente novamente em 15 minutos."
+  ]
+}

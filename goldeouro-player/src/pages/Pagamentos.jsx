@@ -21,12 +21,6 @@ const Pagamentos = () => {
   // Valores pré-definidos para recarga
   const valoresRecarga = [10, 25, 50, 100, 200, 500];
 
-  useEffect(() => {
-
-    carregarDados();
-  
-}, [carregarDados]);
-
   const carregarDados = async () => {
     try {
       // Em desenvolvimento, usar dados simulados
@@ -43,6 +37,10 @@ const Pagamentos = () => {
       console.error('Erro ao carregar dados:', error);
     }
   };
+
+  useEffect(() => {
+    carregarDados();
+  }, []); // Executar apenas uma vez ao montar o componente
 
   const criarPagamentoPix = async () => {
     if (valorRecarga < 1) {

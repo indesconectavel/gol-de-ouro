@@ -1,0 +1,3611 @@
+{
+  "timestamp": "2025-12-01T14:07:01.519Z",
+  "version": "E2E-FRONTEND-BROWSER-AGENT",
+  "frontendUrl": "https://www.goldeouro.lol",
+  "backendUrl": "https://goldeouro-backend-v2.fly.dev",
+  "wsUrl": "wss://goldeouro-backend-v2.fly.dev",
+  "scenarios": {
+    "scenario1": {
+      "name": "Health-check visual",
+      "status": "FAIL",
+      "duration": 15543,
+      "details": {
+        "url": "https://www.goldeouro.lol/",
+        "title": "Gol de Ouro - Jogador",
+        "consoleErrors": 2,
+        "hasBackendError": false,
+        "errors": [
+          {
+            "type": "error",
+            "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+            "location": {
+              "url": "https://goldeouro-backend.fly.dev/meta"
+            },
+            "timestamp": "2025-12-01T14:07:17.835Z"
+          },
+          {
+            "type": "error",
+            "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+            "location": {
+              "url": "https://goldeouro-backend.fly.dev/meta"
+            },
+            "timestamp": "2025-12-01T14:07:17.836Z"
+          }
+        ]
+      }
+    },
+    "scenario2": {
+      "name": "Registro",
+      "status": "FAIL",
+      "duration": 32338,
+      "details": {
+        "email": "test+1764598040451@example.com",
+        "username": "testuser_1764598040451",
+        "hasToken": false,
+        "redirectedToHome": false,
+        "currentUrl": "https://www.goldeouro.lol/register",
+        "storage": {}
+      }
+    },
+    "scenario4": {
+      "name": "WebSocket realtime",
+      "status": "FAIL",
+      "duration": 16,
+      "error": "Token não encontrado no localStorage"
+    },
+    "scenario5": {
+      "name": "Criar PIX V6",
+      "status": "FAIL",
+      "duration": 3418,
+      "error": "page.$x is not a function"
+    },
+    "scenario6": {
+      "name": "Jogo (chute)",
+      "status": "FAIL",
+      "duration": 4067,
+      "error": "page.$x is not a function"
+    },
+    "scenario7": {
+      "name": "Logout & Persistence",
+      "status": "FAIL",
+      "duration": 0,
+      "error": "page.$x is not a function"
+    },
+    "scenario8": {
+      "name": "Resiliência PIX (8x)",
+      "status": "FAIL",
+      "duration": 6409,
+      "details": {
+        "successCount": 0,
+        "successRate": 0,
+        "avgLatency": 0,
+        "p95Latency": 0,
+        "attempts": [
+          {
+            "attempt": 1,
+            "status": "FAIL",
+            "latency": 708,
+            "error": "page.$x is not a function"
+          },
+          {
+            "attempt": 2,
+            "status": "FAIL",
+            "latency": 700,
+            "error": "page.$x is not a function"
+          },
+          {
+            "attempt": 3,
+            "status": "FAIL",
+            "latency": 643,
+            "error": "page.$x is not a function"
+          },
+          {
+            "attempt": 4,
+            "status": "FAIL",
+            "latency": 698,
+            "error": "page.$x is not a function"
+          },
+          {
+            "attempt": 5,
+            "status": "FAIL",
+            "latency": 714,
+            "error": "page.$x is not a function"
+          },
+          {
+            "attempt": 6,
+            "status": "FAIL",
+            "latency": 1509,
+            "error": "page.$x is not a function"
+          },
+          {
+            "attempt": 7,
+            "status": "FAIL",
+            "latency": 700,
+            "error": "page.$x is not a function"
+          },
+          {
+            "attempt": 8,
+            "status": "FAIL",
+            "latency": 734,
+            "error": "page.$x is not a function"
+          }
+        ]
+      }
+    }
+  },
+  "metrics": {
+    "totalScenarios": 7,
+    "passedScenarios": 0,
+    "failedScenarios": 7,
+    "totalDuration": 61791
+  },
+  "errors": [
+    "Health-check: 2 erros no console",
+    "Registro: token=false, redirect=false",
+    "Resiliência PIX: 0.0% sucesso"
+  ],
+  "warnings": [],
+  "screenshots": [
+    {
+      "name": "02-register-form-desktop",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e-reports\\screenshots\\02-register-form-desktop.png",
+      "viewport": "default",
+      "timestamp": "2025-12-01T14:07:21.484Z"
+    },
+    {
+      "name": "02-register-filled-desktop",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e-reports\\screenshots\\02-register-filled-desktop.png",
+      "viewport": "default",
+      "timestamp": "2025-12-01T14:07:22.421Z"
+    },
+    {
+      "name": "02-register-success-desktop",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e-reports\\screenshots\\02-register-success-desktop.png",
+      "viewport": "default",
+      "timestamp": "2025-12-01T14:07:52.769Z"
+    },
+    {
+      "name": "05-pix-form-desktop",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e-reports\\screenshots\\05-pix-form-desktop.png",
+      "viewport": "default",
+      "timestamp": "2025-12-01T14:07:54.874Z"
+    },
+    {
+      "name": "05-pix-filled-desktop",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e-reports\\screenshots\\05-pix-filled-desktop.png",
+      "viewport": "default",
+      "timestamp": "2025-12-01T14:07:56.224Z"
+    },
+    {
+      "name": "06-game-screen-desktop",
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\e2e-reports\\screenshots\\06-game-screen-desktop.png",
+      "viewport": "default",
+      "timestamp": "2025-12-01T14:07:58.292Z"
+    }
+  ],
+  "networkLogs": [],
+  "consoleLogs": [
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:16.204Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:16.204Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:16.205Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:16.205Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:16.205Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:16.205Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:16.206Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:16.206Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:16.206Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:16.206Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:16.206Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:16.206Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:07:16.431Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:07:16.432Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:16.432Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:16.432Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:16.432Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:07:17.591Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:07:17.593Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:07:17.598Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:07:17.599Z"
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"current-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "location": {
+        "url": "https://www.goldeouro.lol/"
+      },
+      "timestamp": "2025-12-01T14:07:17.607Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:07:17.834Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:07:17.834Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:07:17.835Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:07:17.836Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:07:17.836Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:07:17.836Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/"
+      },
+      "timestamp": "2025-12-01T14:07:17.931Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/"
+      },
+      "timestamp": "2025-12-01T14:07:18.002Z"
+    },
+    {
+      "type": "warn",
+      "text": "Erro ao carregar áudio /sounds/music.mp3: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 7054
+      },
+      "timestamp": "2025-12-01T14:07:18.410Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:20.580Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:20.580Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:20.580Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:20.581Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:20.581Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:20.581Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:20.581Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:20.581Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:20.581Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:20.581Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:20.581Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:20.581Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:07:20.617Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:07:20.618Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:20.618Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/register",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:20.619Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:20.619Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:07:20.671Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:07:20.671Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:07:20.672Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:07:20.672Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:07:20.718Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:07:20.718Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:07:20.718Z"
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "location": {
+        "url": "https://www.goldeouro.lol/register"
+      },
+      "timestamp": "2025-12-01T14:07:20.737Z"
+    },
+    {
+      "type": "verbose",
+      "text": "[DOM] Input elements should have autocomplete attributes (suggested: \"new-password\"): (More info: https://goo.gl/9p2vKq) %o",
+      "location": {
+        "url": "https://www.goldeouro.lol/register"
+      },
+      "timestamp": "2025-12-01T14:07:20.737Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:07:20.741Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:07:20.741Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_NAME_NOT_RESOLVED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:07:20.742Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/register"
+      },
+      "timestamp": "2025-12-01T14:07:20.768Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/register"
+      },
+      "timestamp": "2025-12-01T14:07:20.810Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:52.937Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:52.938Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:52.938Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:52.938Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:52.939Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:52.939Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:52.939Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:52.939Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:52.939Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:52.939Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:52.939Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:52.940Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:07:52.992Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:07:52.997Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:53.000Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:53.000Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:53.001Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:07:53.019Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:07:53.020Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:07:53.020Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:07:53.020Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:07:53.043Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:07:53.064Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:07:53.244Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:07:53.244Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:07:53.245Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:07:53.428Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:07:53.428Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:07:53.429Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:56.323Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/jogo",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:56.323Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:56.323Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:56.323Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/jogo",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:56.323Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:56.324Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:56.325Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/jogo",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:56.326Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:56.326Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:56.326Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/jogo",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:56.326Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:56.326Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:07:56.379Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:07:56.387Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:07:56.388Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/jogo",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:07:56.388Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:07:56.388Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:07:56.400Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:07:56.401Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:07:56.401Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:07:56.401Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/jogo"
+      },
+      "timestamp": "2025-12-01T14:07:56.423Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/jogo"
+      },
+      "timestamp": "2025-12-01T14:07:56.437Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:07:56.445Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:07:56.446Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:07:56.447Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:07:56.543Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:07:56.544Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:07:56.544Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:00.358Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:00.358Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:00.358Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:00.358Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:00.358Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:00.359Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:00.359Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:00.359Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:00.359Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:00.359Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:00.359Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:00.359Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:08:00.377Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:08:00.378Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:00.378Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:00.378Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:00.378Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:00.391Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:00.392Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:00.392Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:00.392Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:00.395Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:00.406Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:00.427Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:00.427Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:00.428Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:00.446Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:00.446Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:00.448Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.056Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.057Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.057Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.057Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.058Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.058Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.058Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.058Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.058Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.058Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.058Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.058Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:08:01.069Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:08:01.070Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.070Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.070Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.070Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:01.074Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:01.075Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:01.076Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:01.076Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:01.085Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:01.090Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:01.101Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:01.102Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:01.102Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:01.121Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:01.121Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:01.121Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.760Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.760Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.760Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.760Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.760Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.760Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.761Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.761Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.761Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.761Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.761Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.761Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:08:01.770Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:08:01.770Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:01.770Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:01.771Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:01.771Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:01.779Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:01.779Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:01.779Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:01.779Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:01.785Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:01.790Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:01.801Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:01.801Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:01.802Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:01.825Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:01.825Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:01.826Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:02.411Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:02.412Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:02.412Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:02.412Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:02.412Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:02.412Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:02.413Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:02.413Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:02.413Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:02.413Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:02.413Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:02.413Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:08:02.431Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:08:02.432Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:02.432Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:02.432Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:02.432Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:02.437Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:02.438Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:02.440Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:02.440Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:02.447Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:02.450Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:02.463Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:02.463Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:02.463Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:02.480Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:02.481Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:02.481Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:03.116Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:03.116Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:03.116Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:03.117Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:03.117Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:03.117Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:03.117Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:03.117Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:03.117Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:03.117Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:03.118Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:03.118Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:08:03.133Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:08:03.134Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:03.135Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:03.135Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:03.135Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:03.141Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:03.141Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:03.143Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:03.143Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:03.149Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:03.152Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:03.164Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:03.164Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:03.165Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:03.186Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:03.186Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:03.186Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:03.893Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:03.894Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:03.894Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:03.894Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:03.894Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:03.894Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:03.894Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:03.894Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:03.895Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:03.895Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:03.895Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:03.895Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:08:04.244Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:08:04.244Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:04.245Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:04.245Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:04.245Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:04.251Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:04.251Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:04.286Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:04.286Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:04.333Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:04.362Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:04.365Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:04.367Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:04.367Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:04.400Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:04.401Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:04.402Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:05.325Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:05.326Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:05.326Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:05.327Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:05.327Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:05.327Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:05.327Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:05.327Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:05.328Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:05.328Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:05.328Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:05.328Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:08:05.341Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:08:05.343Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:05.343Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:05.343Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:05.343Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:05.346Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:05.347Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:05.348Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:05.348Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:05.356Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:05.361Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:05.390Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:05.390Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:05.391Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:05.404Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:05.404Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:05.405Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:06.076Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:06.077Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:06.077Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:06.077Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:06.077Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:06.077Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:06.078Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:06.078Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:06.078Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:06.078Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:06.078Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:06.078Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 MusicManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 72,
+        "columnNumber": 6059
+      },
+      "timestamp": "2025-12-01T14:08:06.097Z"
+    },
+    {
+      "type": "log",
+      "text": "🎵 AudioManager inicializado com sucesso!",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 75,
+        "columnNumber": 9957
+      },
+      "timestamp": "2025-12-01T14:08:06.100Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 FORÇANDO BACKEND DIRETO EM TODOS OS AMBIENTES",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5344
+      },
+      "timestamp": "2025-12-01T14:08:06.100Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 URL atual: https://www.goldeouro.lol/deposito",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5408
+      },
+      "timestamp": "2025-12-01T14:08:06.100Z"
+    },
+    {
+      "type": "log",
+      "text": "🔧 Hostname: www.goldeouro.lol",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5458
+      },
+      "timestamp": "2025-12-01T14:08:06.100Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:06.107Z"
+    },
+    {
+      "type": "log",
+      "text": "[VersionService] Verificando compatibilidade de versão...",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10041
+      },
+      "timestamp": "2025-12-01T14:08:06.108Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:06.110Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 API Request: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 5822
+      },
+      "timestamp": "2025-12-01T14:08:06.110Z"
+    },
+    {
+      "type": "warn",
+      "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:06.120Z"
+    },
+    {
+      "type": "warn",
+      "text": "Error while trying to use the following icon from the Manifest: https://www.goldeouro.lol/icons/icon-192.png (Download error or resource isn't a valid image)",
+      "location": {
+        "url": "https://www.goldeouro.lol/deposito"
+      },
+      "timestamp": "2025-12-01T14:08:06.128Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:06.141Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:06.141Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:06.141Z"
+    },
+    {
+      "type": "error",
+      "text": "❌ API Response Error: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 6167
+      },
+      "timestamp": "2025-12-01T14:08:06.170Z"
+    },
+    {
+      "type": "error",
+      "text": "[VersionService] Erro ao verificar compatibilidade: JSHandle@object",
+      "location": {
+        "url": "https://www.goldeouro.lol/assets/index-DOXRH9LH.js",
+        "lineNumber": 71,
+        "columnNumber": 10864
+      },
+      "timestamp": "2025-12-01T14:08:06.170Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "location": {
+        "url": "https://goldeouro-backend.fly.dev/meta"
+      },
+      "timestamp": "2025-12-01T14:08:06.170Z"
+    }
+  ],
+  "localStorage": {},
+  "sessionStorage": {},
+  "score": 15,
+  "decision": "BLOQUEADO"
+}

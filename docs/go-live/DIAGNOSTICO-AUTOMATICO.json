@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-12-03T18:57:22.664Z",
+  "caminhos": [
+    {
+      "exists": true,
+      "path": "scripts/e2e/auditoria-e2e-producao.js"
+    },
+    {
+      "exists": true,
+      "path": "scripts/e2e/validate-data-testid.js"
+    },
+    {
+      "exists": true,
+      "path": "server-fly.js"
+    },
+    {
+      "exists": true,
+      "path": "package.json"
+    },
+    {
+      "exists": true,
+      "path": "goldeouro-player/package.json"
+    },
+    {
+      "exists": true,
+      "path": "goldeouro-admin/package.json"
+    },
+    {
+      "exists": true,
+      "path": "goldeouro-mobile/package.json"
+    }
+  ],
+  "scripts": [
+    {
+      "name": "test:e2e:prod",
+      "status": "OK",
+      "path": "node scripts/e2e/auditoria-e2e-producao.js"
+    }
+  ],
+  "imports": [],
+  "erros": [],
+  "correcoes": [],
+  "score": 100
+}

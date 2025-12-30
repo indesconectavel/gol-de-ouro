@@ -1,0 +1,113 @@
+{
+  "timestamp": "2025-12-03T21:06:24.029Z",
+  "version": "V11",
+  "sistema": "LOTES_MODERNO",
+  "scores": {
+    "backend": 100,
+    "frontend": 100,
+    "production": 100,
+    "pix": 100,
+    "websocket": 100,
+    "e2e": 75,
+    "lotes": 100
+  },
+  "minScores": {
+    "backend": 90,
+    "frontend": 90,
+    "production": 90,
+    "pix": 100,
+    "websocket": 100,
+    "e2e": 70,
+    "lotes": 100
+  },
+  "status": "APPROVED",
+  "errors": [],
+  "warnings": [],
+  "artifacts": [
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\RELATORIO-FINAL-V11.md"
+  ],
+  "steps": {
+    "etapa1": {
+      "sistemaDetectado": "lotes_moderno",
+      "testesConfigurados": false,
+      "errors": [
+        "Sistema incorreto detectado: LOTES_MODERNO"
+      ]
+    },
+    "etapa2": {
+      "backend": {
+        "score": 100,
+        "errors": []
+      },
+      "frontend": {
+        "score": 100,
+        "errors": []
+      },
+      "production": {
+        "score": 100,
+        "errors": []
+      },
+      "pix": {
+        "score": 100,
+        "errors": []
+      },
+      "websocket": {
+        "score": 100,
+        "errors": []
+      },
+      "lotes": {
+        "score": 100,
+        "errors": []
+      }
+    },
+    "etapa3": {
+      "timestamp": "2025-12-03T20:58:47.957Z",
+      "version": "E2E-V9-CORRIGIDO",
+      "frontendUrl": "https://www.goldeouro.lol",
+      "backendUrl": "https://goldeouro-backend-v2.fly.dev",
+      "wsUrl": "wss://goldeouro-backend-v2.fly.dev",
+      "modules": {
+        "module1": {
+          "score": 10,
+          "errors": []
+        },
+        "module2": {
+          "score": 20,
+          "errors": [],
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWIzNDBjYy0xZWFhLTQ3YzctYWE4Ny02NWVlZDA2ZWU5OWYiLCJlbWFpbCI6InRlc3RfZTJlX3Y5XzE3NjQ3OTU1NDUzNDRAZXhhbXBsZS5jb20iLCJyb2xlIjoiam9nYWRvciIsImlhdCI6MTc2NDc5NTU0NCwiZXhwIjoxNzY0ODgxOTQ0fQ.ORzQPA27Z9cI4gN9u_virO8nVsP2hPtdE3aWb_CWKN4",
+          "credentials": {
+            "email": "test_e2e_v9_1764795545344@example.com",
+            "password": "Test123456!",
+            "username": "testuser_1764795545344"
+          }
+        },
+        "module3": {
+          "score": 20,
+          "errors": [],
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWIzNDBjYy0xZWFhLTQ3YzctYWE4Ny02NWVlZDA2ZWU5OWYiLCJlbWFpbCI6InRlc3RfZTJlX3Y5XzE3NjQ3OTU1NDUzNDRAZXhhbXBsZS5jb20iLCJyb2xlIjoiam9nYWRvciIsImlhdCI6MTc2NDc5NTU0NCwiZXhwIjoxNzY0ODgxOTQ0fQ.ORzQPA27Z9cI4gN9u_virO8nVsP2hPtdE3aWb_CWKN4"
+        },
+        "module4": {
+          "score": 10,
+          "errors": []
+        },
+        "module5": {
+          "score": 15,
+          "errors": []
+        },
+        "module6": {
+          "score": 0,
+          "errors": [
+            "WebSocket não conseguiu conectar"
+          ]
+        }
+      },
+      "score": 75,
+      "maxScore": 100,
+      "status": "APROVADO",
+      "errors": [
+        "WebSocket não conseguiu conectar"
+      ],
+      "warnings": []
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "estrutura": {
+    ".": "EXISTS",
+    "goldeouro-player": "EXISTS",
+    "goldeouro-admin": "EXISTS",
+    "scripts": "EXISTS",
+    "scripts/e2e": "EXISTS",
+    "controllers": "EXISTS",
+    "routes": "EXISTS",
+    "services": "EXISTS"
+  },
+  "arquivos": {
+    "package.json": "EXISTS",
+    "server-fly.js": "EXISTS",
+    "controllers/paymentController.js": "EXISTS",
+    "scripts/e2e/auditoria-e2e-producao.js": "EXISTS"
+  },
+  "packageJsons": {
+    "package.json": {
+      "name": "goldeouro-backend",
+      "version": "1.2.0"
+    },
+    "goldeouro-player/package.json": {
+      "name": "goldeouro-player",
+      "version": "1.2.0"
+    },
+    "goldeouro-admin/package.json": {
+      "name": "goldeouro-admin",
+      "version": "1.2.0"
+    }
+  },
+  "errors": []
+}

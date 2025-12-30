@@ -1,0 +1,222 @@
+{
+  "auditoria": {
+    "versao": "V19.0.0",
+    "data": "2025-12-10",
+    "auditor": "AUDITOR SUPREMO V19",
+    "etapa": "ETAPA 1 - Auditoria de Configuração (.env)"
+  },
+  "arquivo_env_example": {
+    "caminho": "env.example",
+    "existe": true,
+    "versao": "v1.1.1",
+    "total_variaveis": 30,
+    "status": "INCOMPLETO_V19"
+  },
+  "variaveis_obrigatorias_v19": {
+    "USE_ENGINE_V19": {
+      "status": "FALTANDO",
+      "valor_esperado": "true",
+      "obrigatoria": true,
+      "presente_em_env_example": false,
+      "usada_em": [
+        "server-fly.js:822",
+        "src/modules/monitor/monitor.controller.js:255"
+      ],
+      "impacto": "CRITICO - Engine V19 não será ativada"
+    },
+    "ENGINE_HEARTBEAT_ENABLED": {
+      "status": "FALTANDO",
+      "valor_esperado": "true",
+      "obrigatoria": true,
+      "presente_em_env_example": false,
+      "usada_em": [
+        "src/modules/monitor/monitor.controller.js:256",
+        "src/scripts/heartbeat_sender.js"
+      ],
+      "impacto": "CRITICO - Heartbeat não será iniciado"
+    },
+    "ENGINE_MONITOR_ENABLED": {
+      "status": "FALTANDO",
+      "valor_esperado": "true",
+      "obrigatoria": true,
+      "presente_em_env_example": false,
+      "usada_em": [
+        "src/modules/monitor/monitor.controller.js:257"
+      ],
+      "impacto": "CRITICO - Monitoramento não será ativado"
+    },
+    "USE_DB_QUEUE": {
+      "status": "FALTANDO",
+      "valor_esperado": "false",
+      "obrigatoria": false,
+      "presente_em_env_example": false,
+      "usada_em": [
+        "server-fly.js:822"
+      ],
+      "impacto": "MEDIO - Sistema pode não usar fila de banco"
+    }
+  },
+  "variaveis_obrigatorias_gerais": {
+    "SUPABASE_URL": {
+      "status": "PRESENTE",
+      "presente_em_env_example": true,
+      "obrigatoria": true,
+      "validada_em": "config/required-env.js"
+    },
+    "SUPABASE_SERVICE_ROLE_KEY": {
+      "status": "PRESENTE",
+      "presente_em_env_example": true,
+      "obrigatoria": true,
+      "validada_em": "config/required-env.js"
+    },
+    "SUPABASE_ANON_KEY": {
+      "status": "PRESENTE",
+      "presente_em_env_example": true,
+      "obrigatoria": true,
+      "validada_em": "config/required-env.js"
+    },
+    "JWT_SECRET": {
+      "status": "PRESENTE",
+      "presente_em_env_example": true,
+      "obrigatoria": true,
+      "validada_em": "config/required-env.js",
+      "usada_em": [
+        "server-fly.js:434",
+        "server-fly.js:767"
+      ]
+    },
+    "MERCADOPAGO_ACCESS_TOKEN": {
+      "status": "PRESENTE",
+      "presente_em_env_example": true,
+      "obrigatoria": true,
+      "validada_em": "config/required-env.js (onlyInProduction)",
+      "usada_em": [
+        "server-fly.js:216",
+        "server-fly.js:672"
+      ]
+    }
+  },
+  "variaveis_opcionais_v19": {
+    "HEARTBEAT_INTERVAL_MS": {
+      "status": "FALTANDO",
+      "valor_padrao": "5000",
+      "presente_em_env_example": false,
+      "usada_em": [
+        "src/scripts/heartbeat_sender.js:7"
+      ],
+      "impacto": "BAIXO - Usa valor padrão se não definido"
+    },
+    "INSTANCE_ID": {
+      "status": "FALTANDO",
+      "geracao": "automatica",
+      "presente_em_env_example": false,
+      "usada_em": [
+        "src/scripts/heartbeat_sender.js:8"
+      ],
+      "impacto": "BAIXO - Gerado automaticamente se não definido"
+    }
+  },
+  "variaveis_mercado_pago": {
+    "MERCADOPAGO_ACCESS_TOKEN": {
+      "status": "PRESENTE",
+      "presente_em_env_example": true,
+      "obrigatoria_producao": true
+    },
+    "MERCADOPAGO_PUBLIC_KEY": {
+      "status": "PRESENTE",
+      "presente_em_env_example": true,
+      "obrigatoria": false
+    },
+    "MERCADOPAGO_WEBHOOK_SECRET": {
+      "status": "PRESENTE",
+      "presente_em_env_example": true,
+      "obrigatoria": false
+    }
+  },
+  "variaveis_servidor": {
+    "NODE_ENV": {
+      "status": "PRESENTE",
+      "valor_padrao": "production",
+      "presente_em_env_example": true
+    },
+    "PORT": {
+      "status": "PRESENTE",
+      "valor_padrao": "8080",
+      "presente_em_env_example": true,
+      "usada_em": "server-fly.js:50"
+    },
+    "HOST": {
+      "status": "PRESENTE",
+      "valor_padrao": "0.0.0.0",
+      "presente_em_env_example": true
+    }
+  },
+  "validacao_codigo": {
+    "arquivo_validacao": "config/required-env.js",
+    "valida_variaveis_v19": false,
+    "variaveis_validadas": [
+      "JWT_SECRET",
+      "SUPABASE_URL",
+      "SUPABASE_SERVICE_ROLE_KEY"
+    ],
+    "variaveis_producao": [
+      "MERCADOPAGO_ACCESS_TOKEN"
+    ],
+    "status": "INCOMPLETO_V19"
+  },
+  "problemas_identificados": {
+    "criticos": [
+      {
+        "problema": "Variáveis V19 não presentes em env.example",
+        "variaveis": [
+          "USE_ENGINE_V19",
+          "ENGINE_HEARTBEAT_ENABLED",
+          "ENGINE_MONITOR_ENABLED",
+          "USE_DB_QUEUE"
+        ],
+        "impacto": "CRITICO",
+        "acao": "Adicionar ao env.example"
+      },
+      {
+        "problema": "Validação não verifica variáveis V19",
+        "arquivo": "config/required-env.js",
+        "impacto": "CRITICO",
+        "acao": "Adicionar validação de variáveis V19"
+      }
+    ],
+    "importantes": [
+      {
+        "problema": "Variáveis opcionais V19 não documentadas",
+        "variaveis": [
+          "HEARTBEAT_INTERVAL_MS",
+          "INSTANCE_ID"
+        ],
+        "impacto": "MEDIO",
+        "acao": "Adicionar ao env.example com valores padrão"
+      }
+    ]
+  },
+  "resumo": {
+    "total_variaveis_env_example": 30,
+    "variaveis_v19_obrigatorias": 3,
+    "variaveis_v19_opcionais": 2,
+    "variaveis_v19_faltando": 5,
+    "variaveis_v19_presentes": 0,
+    "status_geral": "INCOMPLETO",
+    "percentual_completo": 0
+  },
+  "recomendacoes": {
+    "prioridade_critica": [
+      "Adicionar USE_ENGINE_V19=true ao env.example",
+      "Adicionar ENGINE_HEARTBEAT_ENABLED=true ao env.example",
+      "Adicionar ENGINE_MONITOR_ENABLED=true ao env.example",
+      "Adicionar USE_DB_QUEUE=false ao env.example",
+      "Atualizar config/required-env.js para validar variáveis V19"
+    ],
+    "prioridade_alta": [
+      "Adicionar HEARTBEAT_INTERVAL_MS=5000 ao env.example",
+      "Documentar INSTANCE_ID (geração automática)"
+    ]
+  }
+}
+

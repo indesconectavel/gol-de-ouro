@@ -1,27 +1,111 @@
-/* ===== escopo /game ===== */
-body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
-.game-page { position:fixed; inset:0; display:flex; background:transparent; }
+/* =====================================================
+   ARQUITETURA PROFISSIONAL DE GAME STAGE FIXA
+   =====================================================
+   Stage fixo 1920x1080px com escala proporcional
+   Todos os elementos em PX fixo dentro do stage
+   ===================================================== */
+
+/* ===== ANIMAÇÕES DE LOADING E PROCESSING ===== */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner,
+.processing-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* ===== Escopo /game ===== */
+body[data-page="game"] { 
+  margin: 0; 
+  padding: 0;
+  overflow: hidden; 
+  background: #000; /* Fundo preto para letterboxing */
+  /* Prevenir refresh infinito */
+  will-change: auto;
+}
+
+/* ===== VIEWPORT - Container que ocupa toda a tela ===== */
+.game-viewport {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000; /* Fundo preto para letterboxing */
+  overflow: hidden;
+  /* Prevenir refresh infinito */
+  will-change: auto;
+}
+
+/* ===== GAME SCALE - Container que aplica transform: scale() ===== */
+.game-scale {
+  position: relative;
+  /* Tamanho fixo do stage (1920x1080) */
+  /* A escala será aplicada via transform: scale() no JS */
+  /* transform-origin: center center garante que escala do centro */
+  /* Prevenir refresh infinito - otimizações de performance */
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  /* Prevenir reflow/repaint desnecessários */
+  contain: layout style paint;
+  /* Forçar aceleração por hardware */
+  transform: translateZ(0);
+}
+
+/* ===== GAME STAGE - Stage fixo 1920x1080 ===== */
+.game-stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #0b3a1d; /* Cor de fundo do campo */
+  /* Todos os elementos dentro deste stage usam pixels fixos */
+  /* Prevenir refresh infinito - otimizações de performance */
+  will-change: auto;
+  contain: strict; /* Isolamento completo do layout */
+  /* Forçar aceleração por hardware */
+  transform: translateZ(0);
+  /* Prevenir reflow */
+  isolation: isolate;
+}
+
+/* Variáveis CSS para cálculos proporcionais baseados no stage-root */
+#stage-root{
+  --pf-w: 100%; /* Largura do stage-root */
+  --pf-h: 100%; /* Altura do stage-root */
+  --pf-ratio: 16 / 9; /* Proporção fixa */
+}
 
 /* bloquear retrato somente aqui */
 .game-rotate{ display:none; }
 @media (orientation: portrait){
-  .game-rotate{ position:fixed; inset:0; display:grid; place-items:center; z-index:9999; background:#0b1e2a; color:#fff; padding:24px; text-align:center; }
-  .rotate-card{ border-radius:16px; padding:20px 24px; background:rgba(255,255,255,.06); backdrop-filter:blur(6px); }
+  .game-rotate{ 
+    position:fixed; 
+    inset:0; 
+    display:grid; 
+    place-items:center; 
+    z-index:9999; 
+    background:#0b1e2a; 
+    color:#fff; 
+    padding:24px; 
+    text-align:center; 
+  }
+  .rotate-card{ 
+    border-radius:16px; 
+    padding:20px 24px; 
+    background:rgba(255,255,255,.06); 
+    backdrop-filter:blur(6px); 
+  }
   .game-stage-wrap{ display:none; }
-}
-
-/* ===== stage ocupa toda a viewport (sem fundo azul exposto) ===== */
-:root{ --vh:1vh; --hdr-bottom: 0px; }
-.game-stage-wrap{ position:relative; flex:1; width:100vw; height:calc(var(--vh)*100); }
-.game-stage{ position:absolute; inset:0; }
-#stage-root{ position:absolute; inset:0; width:100vw; height:100vh; overflow:hidden; }
-
-/* ===== geometria 16:9 do playfield ===== */
-#stage-root{
-  --pf-w: min(100vw, calc((var(--vh)*100) * 16 / 9));
-  --pf-h: min(calc(var(--vh)*100), calc(100vw * 9 / 16));
-  --pf-ox: calc((100vw - var(--pf-w)) / 2);
-  --pf-oy: calc((100vh - var(--pf-h)) / 2);
 }
 
 /* BG/canvas cobre o stage */
@@ -37,7 +121,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: var(--header-padding);
   background: rgba(0,0,0,0.3);
   backdrop-filter: blur(8px);
   border-radius: 12px;
@@ -48,16 +132,29 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .brand-small {
   display: flex;
   align-items: center;
-  margin-right: 16px;
+  margin-right: 24px;
   flex-shrink: 0;
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
 }
 
 .brand-logo-small {
-  width: 60px;
-  height: auto;
-  max-height: 60px;
+  width: 150px !important;
+  height: auto !important;
+  max-height: 150px !important;
+  min-width: 150px !important;
+  min-height: auto !important;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.brand-logo-small img {
+  width: 150px !important;
+  height: auto !important;
+  max-height: 150px !important;
+  min-width: 150px !important;
+  object-fit: contain !important;
 }
 
 /* ===== CONTEÚDO DO HEADER ===== */
@@ -66,177 +163,87 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   align-items: center;
   justify-content: space-between;
   flex: 1;
-  gap: 20px;
+  gap: 32px;
 }
 
 /* ===== SISTEMA DE DESIGN RESPONSIVO HARMONIZADO ===== */
 
-/* Variáveis CSS para proporções harmonizadas */
+/* Variáveis CSS - TAMANHOS FIXOS EM PX (baseado em 1920x1080) */
+/* Como o palco é fixo e escalado proporcionalmente, todos os tamanhos são fixos */
+/* Última atualização: textos em 50px, ícones em 70px - FORÇAR ATUALIZAÇÃO */
 :root {
-  /* Tamanhos base (mobile-first) */
-  --stat-gap-mobile: 0.625rem;     /* 10px */
-  --stat-gap-tablet: 0.75rem;      /* 12px */
-  --stat-gap-desktop: 0.875rem;    /* 14px */
+  /* Gaps fixos */
+  --stat-gap: 10px;
+  --stat-inner-gap: 8px;
+  --bet-gap: 8px;
   
-  /* Ícones proporcionais */
-  --stat-icon-mobile: 1.25rem;     /* 20px */
-  --stat-icon-tablet: 1.5rem;      /* 24px */
-  --stat-icon-desktop: 1.75rem;    /* 28px */
+  /* Ícones fixos */
+  --stat-icon: 35px;
   
-  /* Labels proporcionais */
-  --stat-label-mobile: 0.6875rem;  /* 11px */
-  --stat-label-tablet: 0.75rem;    /* 12px */
-  --stat-label-desktop: 0.875rem;  /* 14px */
+  /* Labels fixos */
+  --stat-label: 25px;
   
-  /* Valores proporcionais */
-  --stat-value-mobile: 0.875rem;   /* 14px */
-  --stat-value-tablet: 1rem;       /* 16px */
-  --stat-value-desktop: 1.125rem;  /* 18px */
+  /* Valores fixos */
+  --stat-value: 25px;
   
-  /* Gaps internos proporcionais */
-  --stat-inner-gap-mobile: 0.5rem; /* 8px */
-  --stat-inner-gap-tablet: 0.625rem; /* 10px */
-  --stat-inner-gap-desktop: 0.75rem; /* 12px */
+  /* Padding do header fixo */
+  --header-padding: 14px 20px;
   
-  /* Padding do header proporcional */
-  --header-padding-mobile: 0.625rem 1rem; /* 10px 16px */
-  --header-padding-tablet: 0.75rem 1.25rem; /* 12px 20px */
-  --header-padding-desktop: 1rem 1.5rem; /* 16px 24px */
-  
-  /* Elementos de apostas proporcionais */
-  --bet-gap-mobile: 0.5rem; /* 8px */
-  --bet-gap-tablet: 0.625rem; /* 10px */
-  --bet-gap-desktop: 0.75rem; /* 12px */
-  
-  --bet-btn-padding-mobile: 0.375rem 0.75rem; /* 6px 12px */
-  --bet-btn-padding-tablet: 0.5rem 1rem; /* 8px 16px */
-  --bet-btn-padding-desktop: 0.625rem 1.25rem; /* 10px 20px */
-  
-  --bet-btn-font-mobile: 0.75rem; /* 12px */
-  --bet-btn-font-tablet: 0.875rem; /* 14px */
-  --bet-btn-font-desktop: 1rem; /* 16px */
+  /* Botões de aposta fixos */
+  --bet-btn-padding: 8px 16px;
+  --bet-btn-font: 25px;
 }
 
 .hud-stats {
   display: flex;
-  gap: var(--stat-gap-mobile);
+  gap: var(--stat-gap);
   align-items: center;
   flex-wrap: wrap;
+  flex: 1;
+  justify-content: center;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  gap: var(--stat-inner-gap-mobile);
-  min-width: calc(25% - var(--stat-gap-mobile) * 0.75);
+  gap: var(--stat-inner-gap);
+  min-width: calc(25% - var(--stat-gap) * 0.75);
   flex: 1;
   color: white;
 }
 
 .stat-icon {
-  font-size: var(--stat-icon-mobile);
+  font-size: var(--stat-icon) !important;
   opacity: 0.8;
 }
 
 .stat-content {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem; /* 2px fixo para todos os tamanhos */
+  gap: 2px;
 }
 
 .stat-label {
-  font-size: var(--stat-label-mobile);
+  font-size: var(--stat-label) !important;
   opacity: 0.7;
   font-weight: 500;
-  white-space: nowrap; /* Evita quebra de linha em todos os labels */
+  white-space: nowrap;
 }
 
 .stat-value {
-  font-size: var(--stat-value-mobile);
+  font-size: var(--stat-value) !important;
   font-weight: 700;
   color: #fbbf24;
 }
 
-/* ===== BREAKPOINTS RESPONSIVOS ===== */
-
-/* Tablet: 768px - 1024px */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .hud-stats {
-    gap: var(--stat-gap-tablet);
-  }
-  
-  .stat-item {
-    gap: var(--stat-inner-gap-tablet);
-    min-width: calc(25% - var(--stat-gap-tablet) * 0.75);
-  }
-  
-  .stat-icon {
-    font-size: var(--stat-icon-tablet);
-  }
-  
-  .stat-label {
-    font-size: var(--stat-label-tablet);
-  }
-  
-  .stat-value {
-    font-size: var(--stat-value-tablet);
-  }
-  
-  .hud-header {
-    padding: var(--header-padding-tablet);
-  }
-  
-  .hud-betting {
-    gap: var(--bet-gap-tablet);
-  }
-  
-  .bet-btn {
-    padding: var(--bet-btn-padding-tablet);
-    font-size: var(--bet-btn-font-tablet);
-  }
-}
-
-/* Desktop: 1024px+ */
-@media (min-width: 1024px) {
-  .hud-stats {
-    gap: var(--stat-gap-desktop);
-  }
-  
-  .stat-item {
-    gap: var(--stat-inner-gap-desktop);
-    min-width: calc(25% - var(--stat-gap-desktop) * 0.75);
-  }
-  
-  .stat-icon {
-    font-size: var(--stat-icon-desktop);
-  }
-  
-  .stat-label {
-    font-size: var(--stat-label-desktop);
-  }
-  
-  .stat-value {
-    font-size: var(--stat-value-desktop);
-  }
-  
-  .hud-header {
-    padding: var(--header-padding-desktop);
-  }
-  
-  .hud-betting {
-    gap: var(--bet-gap-desktop);
-  }
-  
-  .bet-btn {
-    padding: var(--bet-btn-padding-desktop);
-    font-size: var(--bet-btn-font-desktop);
-  }
-}
+/* ===== BREAKPOINTS REMOVIDOS ===== */
+/* Como o palco é fixo 1920x1080px e escalado proporcionalmente,
+   todos os tamanhos são fixos em pixels e não precisam de breakpoints */
 
 .hud-betting {
   display: flex;
   align-items: center;
-  gap: var(--bet-gap-mobile);
+  gap: var(--bet-gap);
 }
 
 /* Regras movidas para o sistema harmonizado acima */
@@ -257,6 +264,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: center;
 }
 
 .bet-controls {
@@ -266,9 +274,12 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 }
 
 .bet-label {
-  font-size: 14px;
+  font-size: 25px;
   color: white;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  line-height: 1;
 }
 
 .bet-buttons {
@@ -277,15 +288,16 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 }
 
 .bet-btn {
-  padding: 6px 12px;
+  padding: var(--bet-btn-padding);
   border: 1px solid rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.1);
   color: white;
-  border-radius: 6px;
-  font-size: 12px;
+  border-radius: 8px;
+  font-size: var(--bet-btn-font) !important;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-width: 60px;
 }
 
 .bet-btn:hover {
@@ -384,6 +396,8 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   color:#000000; /* Preto */
   font-weight: 700;
   transition: all 0.3s ease;
+  font-size: 25px !important;
+  margin-left: 30px;
 }
 .btn-dashboard:hover {
   background:#f59e0b; /* Amarelo mais escuro no hover */
@@ -402,16 +416,40 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   height: 80px; /* Altura fixa para o rodapé */
 }
 .hud-bottom-left, .hud-bottom-right{ 
-  position:absolute; 
-  bottom:5px !important; /* 5px acima da borda inferior - ATUALIZADO */
-  pointer-events:auto; 
-  z-index:16;
+  position:absolute !important; 
+  bottom: 30px !important; /* 30px acima da borda inferior */
+  pointer-events:auto !important; 
+  z-index: 100 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 .hud-bottom-left{
-  left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  left: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+  z-index: 100 !important;
+}
+
+.game-actions {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+  pointer-events: auto !important;
 }
 .hud-bottom-right{
-  right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
+  right: 30px !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(8px) !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 /* garantir que reapareçam mesmo se algo os tenha ocultado antes */
 .btn-queue, .hud-cluster{ 
@@ -439,7 +477,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 /* Estilos específicos para botões inferiores */
 .hud-btn {
   background: #23c381 !important;
-  color: white !important;
+  color: #000000 !important;
   border: none !important;
   border-radius: 8px !important;
   padding: 12px 20px !important;
@@ -452,6 +490,17 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   z-index: 20 !important;
   pointer-events: auto !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  font-size: 30px !important;
+}
+
+.hud-btn .btn-icon {
+  font-size: 36px !important;
+  line-height: 1 !important;
+}
+
+.hud-btn span:not(.btn-icon) {
+  font-size: 30px !important;
+  line-height: 1 !important;
 }
 
 .hud-btn:hover {
@@ -468,28 +517,62 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   background: #4b5563 !important;
 }
 
+/* Control Panel - Container dos botões inferiores direitos */
+.control-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+.control-buttons {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
 .control-btn {
   background: rgba(255, 255, 255, 0.1) !important;
   color: white !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 6px !important;
+  border-radius: 12px !important;
   padding: 8px !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 40px !important;
-  height: 40px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
   transition: all 0.2s ease !important;
   z-index: 20 !important;
   pointer-events: auto !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  gap: 4px !important;
 }
 
 .control-btn:hover {
   background: rgba(255, 255, 255, 0.2) !important;
   border-color: rgba(255, 255, 255, 0.4) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+.control-btn .btn-icon {
+  font-size: 36px !important;
+  line-height: 1 !important;
+}
+
+.control-btn .btn-text {
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+}
+
+/* Botão NOVATO - com texto e ícone */
+.control-btn-novato {
+  padding: 8px 12px !important;
+  min-width: auto !important;
+  width: auto !important;
 }
 
 .rank-display {
@@ -507,58 +590,35 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* ===== GOLEIRO — escala e posição calibradas =====
-   - escala dinâmica por altura do playfield (clamp para desktop/tablet)
-   - +30px para baixo
-   - troque .goalie/.gk/.keeper pelo seletor real do seu sprite
+/* ===== GOLEIRO — Proporções baseadas no stage 16:9 =====
+   - Tamanho será controlado pelo hook useGameResponsive via inline styles
+   - Mantém proporções consistentes independente do tamanho da tela
 */
 .gs-goalie {
-  position:absolute; left:50%; transform-origin:50% 100%;
-  transform:
-    translate(-50%, 0)
-    translateY(30px)
-    scale(clamp(1.20, calc(var(--pf-h) * 0.00250), 2.00)); /* Tamanho original */
+  position:absolute; 
+  left:50%; 
+  transform-origin:50% 100%;
+  /* Tamanho será controlado pelo hook useGameResponsive via inline styles */
   z-index:3;
 }
 
-/* ===== CORREÇÃO DE PROPORÇÃO PARA TABLET/DESKTOP =====
-   - Mantém a proporção do mobile
-   - Ajusta apenas para telas maiores
-   - Escala baseada na largura do playfield para melhor proporção
-*/
-@media (min-width: 768px) and (max-width: 1024px) {
-  .gs-goalie {
-    transform:
-      translate(-50%, 0)
-      translateY(45px) /* Ajuste intermediário */
-      scale(clamp(1.50, calc(var(--pf-w) * 0.00180), 2.50)); /* Tamanho original Tablet */
-  }
-}
-
-@media (min-width: 1024px) {
-  .gs-goalie {
-    transform:
-      translate(-50%, 0)
-      translateY(60px) /* Ajuste para desktop */
-      scale(clamp(1.80, calc(var(--pf-w) * 0.00150), 3.00)); /* Tamanho original Desktop */
-  }
-}
-
-/* ===== BOLA — alinhada ao círculo central =====
-   ajuste fino do coeficiente 0.875 → 0.865~0.885 conforme seu gramado
+/* ===== BOLA — Proporções baseadas no stage 16:9 =====
+   - Posição e tamanho serão controlados pelo hook useGameResponsive via inline styles
+   - Mantém proporções consistentes independente do tamanho da tela
 */
 .gs-ball {
-  position:absolute; left:50%;
-  top: calc(var(--pf-oy) + var(--pf-h) * 0.875);
-  transform: translate(-50%, -50%);
+  position:absolute; 
+  left:50%;
+  /* Posição e tamanho serão controlados pelo hook useGameResponsive via inline styles */
   z-index:2;
+  /* ✅ OTIMIZAÇÃO: Filter apenas quando não estiver animando (via classe) */
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+  transition: filter 0.3s ease;
 }
 
-/* Diminuir bola 20% no mobile */
-@media (max-width: 767px) {
-  .gs-ball {
-    transform: translate(-50%, -50%) scale(0.8); /* -20% de tamanho */
-  }
+/* Remover filter durante animação para melhor performance */
+.gs-ball.animating {
+  filter: none;
 }
 
 /* ===== CHAT RESPONSIVO ===== */
@@ -628,6 +688,64 @@ body[data-page="game"] .chat-user {
     bottom: 10px !important;
     right: 10px !important;
     max-height: 300px !important;
+  }
+}
+
+/* ===== ANIMAÇÕES DOS OVERLAYS ===== */
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes gooolPop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+    filter: brightness(1.2);
+  }
+  30% {
+    transform: scale(1.1);
+    opacity: 1;
+    filter: brightness(1.5);
+  }
+  70% {
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@keyframes ganhouPop {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+    filter: brightness(1.2);
+  }
+  20% {
+    transform: scale(1.1);
+    opacity: 1;
+    filter: brightness(1.5);
+  }
+  80% {
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: brightness(1);
   }
 }
 

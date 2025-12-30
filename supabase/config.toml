@@ -1,0 +1,20 @@
+# ============================================================================
+# CONFIGURAÇÃO SUPABASE: Scheduler para Expiração de PIX
+# ============================================================================
+# Data: 2025-11-24
+# Descrição: Configuração do Supabase Scheduler para executar Edge Function
+#            expire-stale-pix a cada 5 minutos via cron job.
+# ============================================================================
+
+[project]
+id = "gayopagjdrkcmkirmfvy"
+name = "goldeouro-production"
+
+[functions.expire-stale-pix]
+verify_jwt = false
+
+# Scheduler: Executar a cada 5 minutos
+# Cron: "*/5 * * * *" = A cada 5 minutos
+# Formato: minuto hora dia mês dia-da-semana
+# Exemplo: "*/5 * * * *" = A cada 5 minutos, todos os dias, todas as horas
+

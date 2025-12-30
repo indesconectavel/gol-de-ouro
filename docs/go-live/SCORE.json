@@ -1,0 +1,63 @@
+{
+  "timestamp": "2025-01-27T00:00:00.000Z",
+  "version": "1.2.0",
+  "status": "APROVADO",
+  "scores": {
+    "backend": {
+      "score": 90,
+      "maxScore": 100,
+      "status": "APROVADO",
+      "modules": {
+        "healthCheck": 10,
+        "metaEndpoint": 10,
+        "register": 15,
+        "login": 15,
+        "pixV6": 20,
+        "webSocket": 10,
+        "database": 10
+      }
+    },
+    "frontend": {
+      "score": 40,
+      "maxScore": 40,
+      "status": "APROVADO",
+      "modules": {
+        "dataTestId": 30,
+        "apiConfig": 10
+      }
+    },
+    "mcp": {
+      "score": 30,
+      "maxScore": 30,
+      "status": "APROVADO",
+      "modules": {
+        "system": 20,
+        "config": 10
+      }
+    },
+    "producao": {
+      "score": 40,
+      "maxScore": 40,
+      "status": "APROVADO",
+      "modules": {
+        "frontend": 15,
+        "backend": 15,
+        "meta": 10
+      }
+    },
+    "diagnostico": {
+      "score": 100,
+      "maxScore": 100,
+      "status": "APROVADO"
+    }
+  },
+  "totalScore": 200,
+  "maxTotalScore": 200,
+  "percentage": 100,
+  "errors": [],
+  "warnings": [
+    "WebSocket precisa ser testado manualmente ou com biblioteca específica"
+  ],
+  "decision": "APROVADO_PARA_GO_LIVE"
+}
+

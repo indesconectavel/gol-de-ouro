@@ -28,25 +28,41 @@ export const AuthProvider = ({ children }) => {
 
   // Verificar se usuário está logado ao carregar
   useEffect(() => {
-    const token = localStorage.getItem('authToken')
-    if (token) {
-      // Verificar se token é válido
-      apiClient.get(API_ENDPOINTS.PROFILE)
-        .then(response => {
-          setUser(response.data)
-        })
-        .catch((error) => {
-          console.log('🔒 Token inválido ou expirado:', error.response?.status)
-          localStorage.removeItem('authToken')
-          localStorage.removeItem('userData')
-          setUser(null)
-        })
-        .finally(() => {
+    let mounted = true;
+    
+    const checkAuth = async () => {
+      const token = localStorage.getItem('authToken')
+      if (token && mounted) {
+        try {
+          // Verificar se token é válido
+          const response = await apiClient.get(API_ENDPOINTS.PROFILE)
+          if (mounted) {
+            setUser(response.data)
+          }
+        } catch (error) {
+          if (mounted) {
+            console.log('🔒 Token inválido ou expirado:', error.response?.status)
+            localStorage.removeItem('authToken')
+            localStorage.removeItem('userData')
+            setUser(null)
+          }
+        } finally {
+          if (mounted) {
+            setLoading(false)
+          }
+        }
+      } else {
+        if (mounted) {
           setLoading(false)
-        })
-    } else {
-      setLoading(false)
-    }
+        }
+      }
+    };
+    
+    checkAuth();
+    
+    return () => {
+      mounted = false;
+    };
   }, [])
 
   const login = async (email, password) => {

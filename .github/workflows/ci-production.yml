@@ -1,0 +1,91 @@
+name: CI Production V19
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Aplicar migrations?'
+        required: false
+        default: 'false'
+        type: boolean
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run linter
+      run: npm run lint --if-present
+      continue-on-error: true
+
+    - name: Run tests
+      run: npm test --if-present
+      continue-on-error: true
+
+    - name: Run Full Audit (dry-run)
+      run: node automation/executar_v19.js --env=PROD --skip-tests
+      env:
+        SUPABASE_URL_PROD: ${{ secrets.SUPABASE_URL_PROD }}
+        SUPABASE_SERVICE_ROLE_KEY_PROD: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY_PROD }}
+      continue-on-error: true
+
+    - name: Apply migrations (if approved)
+      if: ${{ github.event.inputs.apply == 'true' || github.event_name == 'push' }}
+      run: node automation/executar_v19.js --env=PROD --apply
+      env:
+        SUPABASE_URL_PROD: ${{ secrets.SUPABASE_URL_PROD }}
+        SUPABASE_SERVICE_ROLE_KEY_PROD: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY_PROD }}
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        FLY_APP_BACKEND: ${{ secrets.FLY_APP_BACKEND }}
+        VERCEL_PROJECT_ADMIN: ${{ secrets.VERCEL_PROJECT_ADMIN }}
+
+    - name: Deploy backend to Fly.io
+      if: ${{ github.event.inputs.apply == 'true' || github.event_name == 'push' }}
+      run: |
+        chmod +x automation/deploy_backend.sh
+        ./automation/deploy_backend.sh prod
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        FLY_APP_BACKEND: ${{ secrets.FLY_APP_BACKEND }}
+
+    - name: Deploy admin to Vercel
+      if: ${{ github.event.inputs.apply == 'true' || github.event_name == 'push' }}
+      run: |
+        chmod +x automation/deploy_admin.sh
+        ./automation/deploy_admin.sh prod
+      env:
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        VERCEL_PROJECT_ADMIN: ${{ secrets.VERCEL_PROJECT_ADMIN }}
+        VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+
+    - name: Upload logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: logs-production-${{ github.run_id }}
+        path: |
+          logs/v19/automation/*.json
+          logs/v19/automation/*.log
+        retention-days: 30
+

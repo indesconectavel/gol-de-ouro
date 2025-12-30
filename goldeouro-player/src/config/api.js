@@ -6,7 +6,28 @@
 // GPT-4o Auto-Fix: API endpoints corrigidos
 
 // URL base do backend em produção (unificado com domínio v2 do Fly.io)
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://goldeouro-backend-v2.fly.dev';
+// ✅ CORREÇÃO CRÍTICA: Verificar bootstrap primeiro
+let API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://goldeouro-backend-v2.fly.dev';
+
+// ✅ CORREÇÃO CRÍTICA: Se bootstrap forçou backend, usar ele
+// MAS só se estiver em produção
+if (typeof window !== 'undefined' && window.__FORCED_BACKEND__) {
+  const hostname = window.location.hostname;
+  const isProductionDomain = hostname.includes('goldeouro.lol') || 
+                             hostname.includes('goldeouro.com') ||
+                             hostname === 'www.goldeouro.lol' ||
+                             hostname === 'goldeouro.lol';
+  
+  if (isProductionDomain) {
+    const forcedBackend = window.__API_BASE_URL__;
+    if (forcedBackend) {
+      API_BASE_URL = forcedBackend;
+      console.log('[API] Usando backend forçado pelo bootstrap (PRODUÇÃO):', API_BASE_URL);
+    }
+  } else {
+    console.log('[API] Modo desenvolvimento - ignorando backend forçado, usando proxy');
+  }
+}
 
 // Endpoints relativos da API (evitar URL absoluto para não duplicar base)
 export const API_ENDPOINTS = {

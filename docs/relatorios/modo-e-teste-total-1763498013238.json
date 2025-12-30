@@ -1,0 +1,251 @@
+{
+  "titulo": "MODO E — TESTE TOTAL (GO-LIVE)",
+  "ambiente": "Produção Real",
+  "dataHora": "2025-11-18T20:33:05.099Z",
+  "modo": "Modo E — Teste Total",
+  "mcp1_backend": {
+    "status": "CONCLUÍDO",
+    "testes": [
+      {
+        "timestamp": "2025-11-18T20:33:08.091Z",
+        "nome": "Health Check",
+        "sucesso": true,
+        "detalhes": {
+          "tempo": 2984,
+          "status": 200
+        }
+      },
+      {
+        "timestamp": "2025-11-18T20:33:08.886Z",
+        "nome": "Meta Info",
+        "sucesso": true,
+        "detalhes": {
+          "tempo": 795,
+          "dados": {
+            "success": true,
+            "timestamp": "2025-11-18T20:33:07.949Z",
+            "data": {
+              "name": "Gol de Ouro Backend API",
+              "version": "1.2.0",
+              "description": "API do jogo Gol de Ouro",
+              "environment": "production",
+              "compatibility": {
+                "minVersion": "1.0.0",
+                "supported": true
+              },
+              "features": {
+                "pix": true,
+                "goldenGoal": true,
+                "monitoring": true
+              }
+            },
+            "message": "Informações do sistema"
+          }
+        }
+      },
+      {
+        "timestamp": "2025-11-18T20:33:09.915Z",
+        "nome": "Admin Stats",
+        "sucesso": true,
+        "detalhes": {
+          "tempo": 1029
+        }
+      },
+      {
+        "timestamp": "2025-11-18T20:33:10.717Z",
+        "nome": "Rota protegida: /api/games/shoot (POST)",
+        "sucesso": true,
+        "detalhes": {
+          "status": 401
+        }
+      },
+      {
+        "timestamp": "2025-11-18T20:33:12.269Z",
+        "nome": "Rota protegida: /api/payments/pix/criar (POST)",
+        "sucesso": true,
+        "detalhes": {
+          "status": 401
+        }
+      },
+      {
+        "timestamp": "2025-11-18T20:33:12.694Z",
+        "nome": "Rota protegida: /api/admin/stats (GET)",
+        "sucesso": true,
+        "detalhes": {
+          "status": 401
+        }
+      }
+    ],
+    "divergencias": []
+  },
+  "mcp2_admin": {
+    "status": "CONCLUÍDO",
+    "testes": [
+      {
+        "timestamp": "2025-11-18T20:33:19.377Z",
+        "nome": "Admin acessível",
+        "sucesso": true,
+        "detalhes": {
+          "tempo": 6675
+        }
+      },
+      {
+        "timestamp": "2025-11-18T20:33:19.378Z",
+        "nome": "CSP presente",
+        "sucesso": false,
+        "detalhes": {}
+      },
+      {
+        "timestamp": "2025-11-18T20:33:19.378Z",
+        "nome": "X-Frame-Options",
+        "sucesso": true,
+        "detalhes": {}
+      }
+    ],
+    "divergencias": []
+  },
+  "mcp3_mobile": {
+    "status": "PENDENTE",
+    "testes": [
+      {
+        "nome": "Auditoria Mobile",
+        "sucesso": false,
+        "detalhes": {
+          "nota": "Requer execução manual ou credenciais válidas"
+        }
+      }
+    ],
+    "divergencias": []
+  },
+  "mcp4_financeiro": {
+    "status": "CONCLUÍDO",
+    "testes": [
+      {
+        "timestamp": "2025-11-18T20:33:20.705Z",
+        "nome": "Endpoint PIX: /api/payments/pix/criar",
+        "sucesso": true,
+        "detalhes": {
+          "nota": "Endpoint existe (validação básica)"
+        }
+      },
+      {
+        "timestamp": "2025-11-18T20:33:20.926Z",
+        "nome": "Endpoint PIX: /api/payments/pix/status/:id",
+        "sucesso": true,
+        "detalhes": {
+          "nota": "Endpoint existe (validação básica)"
+        }
+      },
+      {
+        "timestamp": "2025-11-18T20:33:21.171Z",
+        "nome": "Endpoint PIX: /api/payments/extrato/:user_id",
+        "sucesso": true,
+        "detalhes": {
+          "nota": "Endpoint existe (validação básica)"
+        }
+      },
+      {
+        "timestamp": "2025-11-18T20:33:21.221Z",
+        "nome": "Validação básica de endpoints",
+        "sucesso": true,
+        "detalhes": {
+          "nota": "Teste completo requer credenciais válidas. Execute scripts/auditoria-mcp4-financeiro-pix.js com credenciais."
+        }
+      }
+    ],
+    "divergencias": []
+  },
+  "mcp5_websocket": {
+    "status": "PENDENTE",
+    "testes": [
+      {
+        "nome": "Auditoria WebSocket",
+        "sucesso": false,
+        "detalhes": {
+          "nota": "Requer conexão WebSocket real e testes manuais"
+        }
+      }
+    ],
+    "divergencias": []
+  },
+  "mcp6_lotes": {
+    "status": "PENDENTE",
+    "testes": [
+      {
+        "nome": "Auditoria Lotes",
+        "sucesso": false,
+        "detalhes": {
+          "nota": "Requer criação de lotes e testes de chute reais"
+        }
+      }
+    ],
+    "divergencias": []
+  },
+  "mcp7_performance": {
+    "status": "CONCLUÍDO",
+    "testes": [
+      {
+        "timestamp": "2025-11-18T20:33:23.741Z",
+        "nome": "Latência aceitável",
+        "sucesso": false,
+        "detalhes": {
+          "tempoMedio": 501.8,
+          "tempoMax": 787,
+          "tempoMin": 203
+        }
+      }
+    ],
+    "divergencias": [
+      {
+        "timestamp": "2025-11-18T20:33:23.742Z",
+        "tipo": "PERFORMANCE",
+        "descricao": "Latência alta: 501.80ms",
+        "impacto": "Experiência do usuário degradada",
+        "gravidade": "MÉDIA"
+      }
+    ]
+  },
+  "mcp8_seguranca": {
+    "status": "CONCLUÍDO",
+    "testes": [
+      {
+        "timestamp": "2025-11-18T20:33:24.531Z",
+        "nome": "X-Content-Type-Options",
+        "sucesso": true,
+        "detalhes": {}
+      },
+      {
+        "timestamp": "2025-11-18T20:33:24.531Z",
+        "nome": "X-Frame-Options",
+        "sucesso": false,
+        "detalhes": {}
+      },
+      {
+        "timestamp": "2025-11-18T20:33:33.234Z",
+        "nome": "Rate Limiting ativo",
+        "sucesso": true,
+        "detalhes": {}
+      }
+    ],
+    "divergencias": [
+      {
+        "timestamp": "2025-11-18T20:33:24.533Z",
+        "tipo": "SEGURANÇA",
+        "descricao": "X-Frame-Options ausente",
+        "impacto": "Proteção clickjacking ausente",
+        "gravidade": "MÉDIA"
+      }
+    ]
+  },
+  "resumo": {
+    "totalTestes": 17,
+    "testesPassaram": 14,
+    "testesFalharam": 3,
+    "divergenciasCriticas": 0,
+    "divergenciasAltas": 0,
+    "divergenciasMedias": 2,
+    "divergenciasBaixas": 0
+  },
+  "statusFinal": "APROVADO_COM_RESSALVAS",
+  "recomendacao": "Liberar com ressalvas - Taxa de sucesso abaixo de 90%"
+}

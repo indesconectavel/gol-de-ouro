@@ -37,22 +37,11 @@ class MusicManager {
   }
 
   // Tocar música de fundo das outras páginas
+  // ✅ REMOVIDO: music.mp3 foi removido do jogo
   playPageMusic() {
-    if (!this.enabled) return;
-    
-    // Verificar se já está tocando a mesma música
-    if (this.isPlaying && this.currentMusic && this.currentMusic.src.includes('music.mp3')) {
-      console.log('🎵 Música de página já está tocando, evitando duplicação');
-      return;
-    }
-    
-    // Parar música atual se estiver tocando
-    this.stopMusic();
-    
-    // Aguardar um pouco para garantir que a música anterior parou
-    setTimeout(() => {
-      this.playAudioFile('/sounds/music.mp3', 'page');
-    }, 100);
+    // Não tocar música de página - music.mp3 foi removido
+    console.log('🎵 playPageMusic desabilitado - music.mp3 removido');
+    return;
   }
 
   // Tocar som de defesa

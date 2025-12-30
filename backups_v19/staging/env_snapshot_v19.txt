@@ -1,0 +1,79 @@
+# Backup de Variáveis de Ambiente V19
+# Gerado em: 2025-12-10
+# Apenas chaves (sem valores sensíveis)
+
+# Configurações do Servidor
+NODE_ENV
+PORT
+HOST
+
+# Configurações de Banco de Dados
+SUPABASE_URL
+SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+
+# Configurações JWT
+JWT_SECRET
+JWT_EXPIRES_IN
+
+# Configurações do Mercado Pago
+MERCADOPAGO_ACCESS_TOKEN
+MERCADOPAGO_PUBLIC_KEY
+MERCADOPAGO_WEBHOOK_SECRET
+
+# URLs de Frontend
+FRONTEND_URL
+PLAYER_URL
+BACKEND_URL
+
+# Configurações de CORS
+CORS_ORIGIN
+
+# Configurações de Rate Limiting
+RATE_LIMIT_WINDOW_MS
+RATE_LIMIT_MAX_REQUESTS
+
+# Configurações de Logs
+LOG_LEVEL
+LOG_FILE
+
+# Configurações de Backup
+BACKUP_INTERVAL
+BACKUP_RETENTION_DAYS
+
+# Configurações de Email
+SMTP_HOST
+SMTP_PORT
+SMTP_USER
+SMTP_PASS
+
+# Configurações de Redis (Cache)
+REDIS_URL
+REDIS_PASSWORD
+
+# Configurações de WebSocket
+WS_PORT
+WS_HEARTBEAT_INTERVAL
+
+# Configurações de Segurança
+BCRYPT_ROUNDS
+SESSION_SECRET
+
+# Configurações de Monitoramento
+SENTRY_DSN
+NEW_RELIC_LICENSE_KEY
+
+# ENGINE V19
+USE_ENGINE_V19
+ENGINE_HEARTBEAT_ENABLED
+ENGINE_MONITOR_ENABLED
+USE_DB_QUEUE
+
+# Heartbeat (opcional)
+HEARTBEAT_INTERVAL_MS
+INSTANCE_ID
+
+# Configurações de Desenvolvimento
+DEBUG
+VERBOSE_LOGGING
+

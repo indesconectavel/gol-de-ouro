@@ -1,0 +1,17 @@
+[33mbd7b1f6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/security/fix-ssrf-vulnerabilities[m[33m, [m[1;32msecurity/fix-ssrf-vulnerabilities[m[33m)[m docs: adicionar resumo final de aprovação do PR #18
+[33m11bff8b[m fix: adicionar continue-on-error em npm audit do backend-deploy
+[33maccd7a3[m security: corrigir alertas CodeQL restantes e workflows
+[33md4adb76[m docs: adicionar resumo final completo de todas as correções
+[33mcb7fc35[m docs: adicionar revisão completa de todas as correções aplicadas
+[33m11367ec[m security: corrigir todos os alertas restantes de alta severidade
+[33m3e44a4f[m docs: adicionar auditoria completa do webhook e resumo final das correções
+[33m793451d[m docs: adicionar resumo completo das correções de alta severidade aplicadas
+[33m53d12f2[m security: corrigir múltiplas vulnerabilidades de alta severidade
+[33ma971fbb[m docs: adicionar documentação das correções SSRF aplicadas
+[33md2b59e1[m security: corrigir vulnerabilidades SSRF em webhook e reconciliação
+[33maa49825[m[33m ([m[1;31morigin/docs/resumo-configuracao-seguranca[m[33m, [m[1;32mdocs/resumo-configuracao-seguranca[m[33m)[m docs: adicionar análise completa dos alertas do Code Scanning e plano de correções
+[33m405e846[m docs: adicionar confirmação de que configuração de segurança está 100% completa
+[33m0d8d7fe[m docs: adicionar alerta sobre vulnerabilidades detectadas pelo Dependabot
+[33mb408787[m docs: adicionar status atual do Advanced Security com recomendações
+[33m5bec803[m docs: adicionar resumo completo da configuração de segurança
+[33ma4fccd8[m docs: adicionar status atual da configuração de Branch Protection com checklist final

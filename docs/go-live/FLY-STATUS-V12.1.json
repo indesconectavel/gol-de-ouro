@@ -1,0 +1,253 @@
+{
+  "machines": {
+    "count": 2,
+    "machines": [
+      {
+        "id": "e82d445ae76178",
+        "name": "dry-sea-3466",
+        "state": "started",
+        "region": "gru",
+        "image_ref": {
+          "registry": "registry.fly.io",
+          "repository": "goldeouro-backend-v2",
+          "tag": "deployment-01KBDFFK6FDEXJ3J9F1FBQEDTN",
+          "digest": "sha256:50fc7a7ba0dab371d2c1841e6c7afb93810b934bb0459fb127309eb768880d75"
+        },
+        "instance_id": "01KBDFHCE13TA3JYYQYCB69SJ0",
+        "private_ip": "fdaa:2b:dbd4:a7b:103:febc:8422:2",
+        "created_at": "2025-11-15T15:45:38Z",
+        "updated_at": "2025-12-01T17:32:14Z",
+        "config": {
+          "env": {
+            "FLY_PROCESS_GROUP": "app",
+            "NODE_ENV": "production",
+            "PRIMARY_REGION": "gru"
+          },
+          "init": {},
+          "guest": {
+            "cpu_kind": "shared",
+            "cpus": 1,
+            "memory_mb": 256
+          },
+          "metadata": {
+            "fly_builder_id": "e82d445ae00e68",
+            "fly_flyctl_version": "0.3.223",
+            "fly_platform_version": "v2",
+            "fly_process_group": "app",
+            "fly_release_id": "P5jgApLBB04j3TBwnAeNlgyX",
+            "fly_release_version": "252"
+          },
+          "services": [
+            {
+              "protocol": "tcp",
+              "internal_port": 8080,
+              "ports": [
+                {
+                  "port": 80,
+                  "handlers": [
+                    "http"
+                  ]
+                },
+                {
+                  "port": 443,
+                  "handlers": [
+                    "tls",
+                    "http"
+                  ]
+                }
+              ],
+              "checks": [
+                {
+                  "type": "http",
+                  "interval": "30s",
+                  "timeout": "15s",
+                  "grace_period": "30s",
+                  "method": "get",
+                  "path": "/health",
+                  "tls_skip_verify": false
+                }
+              ],
+              "concurrency": {
+                "type": "requests",
+                "hard_limit": 200,
+                "soft_limit": 100
+              },
+              "force_instance_key": null
+            }
+          ],
+          "image": "registry.fly.io/goldeouro-backend-v2:deployment-01KBDFFK6FDEXJ3J9F1FBQEDTN",
+          "restart": {
+            "policy": "on-failure",
+            "max_retries": 10
+          },
+          "dns": {}
+        },
+        "events": [
+          {
+            "type": "start",
+            "status": "started",
+            "request": {},
+            "source": "flyd",
+            "timestamp": 1764610334847
+          },
+          {
+            "type": "launch",
+            "status": "created",
+            "source": "user",
+            "timestamp": 1764610323028
+          }
+        ],
+        "checks": [
+          {
+            "name": "servicecheck-00-http-8080",
+            "status": "passing",
+            "output": "{\"success\":true,\"timestamp\":\"2025-12-01T17:32:16.308Z\",\"data\":{\"status\":\"ok\",\"timestamp\":\"2025-12-01T17:32:16.298Z\",\"version\":\"1.2.0\",\"database\":\"disconnected\",\"mercadoPago\":\"disconnected\",\"contadorChutes\":0,\"ultimoGolDeOuro\":0},\"message\":\"Sistema funcionando\"}",
+            "updated_at": "2025-12-01T17:32:16.314Z"
+          }
+        ],
+        "host_status": "ok"
+      },
+      {
+        "id": "2874551a105768",
+        "name": "withered-cherry-5478",
+        "state": "started",
+        "region": "gru",
+        "image_ref": {
+          "registry": "registry.fly.io",
+          "repository": "goldeouro-backend-v2",
+          "tag": "deployment-01KBDFFK6FDEXJ3J9F1FBQEDTN",
+          "digest": "sha256:50fc7a7ba0dab371d2c1841e6c7afb93810b934bb0459fb127309eb768880d75"
+        },
+        "instance_id": "01KBDFGNCDVBA58V7RSN1GZJMF",
+        "private_ip": "fdaa:2b:dbd4:a7b:103:e821:64a6:2",
+        "created_at": "2025-11-15T15:45:48Z",
+        "updated_at": "2025-12-01T17:31:51Z",
+        "config": {
+          "env": {
+            "FLY_PROCESS_GROUP": "app",
+            "NODE_ENV": "production",
+            "PRIMARY_REGION": "gru"
+          },
+          "init": {},
+          "guest": {
+            "cpu_kind": "shared",
+            "cpus": 1,
+            "memory_mb": 256
+          },
+          "metadata": {
+            "fly_builder_id": "e82d445ae00e68",
+            "fly_flyctl_version": "0.3.223",
+            "fly_platform_version": "v2",
+            "fly_process_group": "app",
+            "fly_release_id": "P5jgApLBB04j3TBwnAeNlgyX",
+            "fly_release_version": "252"
+          },
+          "services": [
+            {
+              "protocol": "tcp",
+              "internal_port": 8080,
+              "ports": [
+                {
+                  "port": 80,
+                  "handlers": [
+                    "http"
+                  ]
+                },
+                {
+                  "port": 443,
+                  "handlers": [
+                    "tls",
+                    "http"
+                  ]
+                }
+              ],
+              "checks": [
+                {
+                  "type": "http",
+                  "interval": "30s",
+                  "timeout": "15s",
+                  "grace_period": "30s",
+                  "method": "get",
+                  "path": "/health",
+                  "tls_skip_verify": false
+                }
+              ],
+              "concurrency": {
+                "type": "requests",
+                "hard_limit": 200,
+                "soft_limit": 100
+              },
+              "force_instance_key": null
+            }
+          ],
+          "image": "registry.fly.io/goldeouro-backend-v2:deployment-01KBDFFK6FDEXJ3J9F1FBQEDTN",
+          "restart": {
+            "policy": "on-failure",
+            "max_retries": 10
+          },
+          "dns": {}
+        },
+        "events": [
+          {
+            "type": "start",
+            "status": "started",
+            "request": {},
+            "source": "flyd",
+            "timestamp": 1764610311397
+          },
+          {
+            "type": "launch",
+            "status": "created",
+            "source": "user",
+            "timestamp": 1764610299421
+          }
+        ],
+        "checks": [
+          {
+            "name": "servicecheck-00-http-8080",
+            "status": "passing",
+            "output": "{\"success\":true,\"timestamp\":\"2025-12-01T17:31:52.810Z\",\"data\":{\"status\":\"ok\",\"timestamp\":\"2025-12-01T17:31:52.801Z\",\"version\":\"1.2.0\",\"database\":\"disconnected\",\"mercadoPago\":\"disconnected\",\"contadorChutes\":0,\"ultimoGolDeOuro\":0},\"message\":\"Sistema funcionando\"}",
+            "updated_at": "2025-12-01T17:31:52.823Z"
+          }
+        ],
+        "host_status": "ok"
+      }
+    ],
+    "region": "unknown",
+    "version": "unknown"
+  },
+  "health": {
+    "status": 500,
+    "ok": false,
+    "latency": 204,
+    "timeout": true,
+    "cors": false,
+    "headers": {
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "strict-transport-security": "max-age=31536000; includeSubDomains; preload"
+    },
+    "tls": true,
+    "data": {
+      "success": false,
+      "message": "Erro interno do servidor",
+      "timestamp": "2025-12-03T21:33:23.653Z",
+      "requestId": "unknown"
+    },
+    "meta": {
+      "ok": true,
+      "version": "1.2.0",
+      "latency": 26
+    }
+  },
+  "deploy": {
+    "hasSecrets": true
+  },
+  "config": {
+    "hasToml": true,
+    "hasPort": true,
+    "hasEnv": true
+  },
+  "score": 100,
+  "errors": []
+}

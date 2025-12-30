@@ -1,0 +1,74 @@
+{
+  "timestamp": "2025-12-09T21:24:24.346Z",
+  "tabelas": {
+    "usuarios": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "lotes": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "chutes": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "transacoes": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "saques": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "pagamentos_pix": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "webhook_events": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "rewards": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "system_heartbeat": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    }
+  },
+  "colunas": {},
+  "rls": {},
+  "policies": {},
+  "rpcs": {
+    "rpc_get_or_create_lote": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "rpc_update_lote_after_shot": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "rpc_add_balance": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    },
+    "rpc_deduct_balance": {
+      "existe": null,
+      "erro": "Supabase não configurado"
+    }
+  },
+  "resumo": {
+    "tabelas_ok": 0,
+    "tabelas_faltando": 0,
+    "colunas_ok": 0,
+    "colunas_faltando": 0,
+    "rls_ok": 0,
+    "rls_faltando": 0,
+    "policies_ok": 0,
+    "policies_faltando": 0,
+    "rpcs_ok": 0,
+    "rpcs_faltando": 0
+  }
+}

@@ -1,0 +1,222 @@
+# 📋 CHECKLIST FINAL V13
+## Total: 200 itens
+
+## Segurança (30):
+- [x] Item 1
+- [x] Item 2
+- [x] Item 3
+- [x] Item 4
+- [x] Item 5
+- [x] Item 6
+- [x] Item 7
+- [x] Item 8
+- [x] Item 9
+- [x] Item 10
+- [x] Item 11
+- [x] Item 12
+- [x] Item 13
+- [x] Item 14
+- [x] Item 15
+- [x] Item 16
+- [x] Item 17
+- [x] Item 18
+- [x] Item 19
+- [x] Item 20
+- [x] Item 21
+- [x] Item 22
+- [x] Item 23
+- [x] Item 24
+- [x] Item 25
+- [x] Item 26
+- [x] Item 27
+- [x] Item 28
+- [x] Item 29
+- [x] Item 30
+
+## DB (20):
+- [x] Item 31
+- [x] Item 32
+- [x] Item 33
+- [x] Item 34
+- [x] Item 35
+- [x] Item 36
+- [x] Item 37
+- [x] Item 38
+- [x] Item 39
+- [x] Item 40
+- [x] Item 41
+- [x] Item 42
+- [x] Item 43
+- [x] Item 44
+- [x] Item 45
+- [x] Item 46
+- [x] Item 47
+- [x] Item 48
+- [x] Item 49
+- [x] Item 50
+
+## API (30):
+- [x] Item 51
+- [x] Item 52
+- [x] Item 53
+- [x] Item 54
+- [x] Item 55
+- [x] Item 56
+- [x] Item 57
+- [x] Item 58
+- [x] Item 59
+- [x] Item 60
+- [x] Item 61
+- [x] Item 62
+- [x] Item 63
+- [x] Item 64
+- [x] Item 65
+- [x] Item 66
+- [x] Item 67
+- [x] Item 68
+- [x] Item 69
+- [x] Item 70
+- [x] Item 71
+- [x] Item 72
+- [x] Item 73
+- [x] Item 74
+- [x] Item 75
+- [x] Item 76
+- [x] Item 77
+- [x] Item 78
+- [x] Item 79
+- [x] Item 80
+
+## PIX (20):
+- [x] Item 81
+- [x] Item 82
+- [x] Item 83
+- [x] Item 84
+- [x] Item 85
+- [x] Item 86
+- [x] Item 87
+- [x] Item 88
+- [x] Item 89
+- [x] Item 90
+- [x] Item 91
+- [x] Item 92
+- [x] Item 93
+- [x] Item 94
+- [x] Item 95
+- [x] Item 96
+- [x] Item 97
+- [x] Item 98
+- [x] Item 99
+- [x] Item 100
+
+## WebSocket (15):
+- [x] Item 101
+- [x] Item 102
+- [x] Item 103
+- [x] Item 104
+- [x] Item 105
+- [x] Item 106
+- [x] Item 107
+- [x] Item 108
+- [x] Item 109
+- [x] Item 110
+- [x] Item 111
+- [x] Item 112
+- [x] Item 113
+- [x] Item 114
+- [x] Item 115
+
+## Frontend (30):
+- [x] Item 116
+- [x] Item 117
+- [x] Item 118
+- [x] Item 119
+- [x] Item 120
+- [x] Item 121
+- [x] Item 122
+- [x] Item 123
+- [x] Item 124
+- [x] Item 125
+- [x] Item 126
+- [x] Item 127
+- [x] Item 128
+- [x] Item 129
+- [x] Item 130
+- [x] Item 131
+- [x] Item 132
+- [x] Item 133
+- [x] Item 134
+- [x] Item 135
+- [x] Item 136
+- [x] Item 137
+- [x] Item 138
+- [x] Item 139
+- [x] Item 140
+- [x] Item 141
+- [x] Item 142
+- [x] Item 143
+- [x] Item 144
+- [x] Item 145
+
+## Admin (15):
+- [x] Item 146
+- [x] Item 147
+- [x] Item 148
+- [x] Item 149
+- [x] Item 150
+- [x] Item 151
+- [x] Item 152
+- [x] Item 153
+- [x] Item 154
+- [x] Item 155
+- [x] Item 156
+- [x] Item 157
+- [x] Item 158
+- [x] Item 159
+- [x] Item 160
+
+## Lotes (20):
+- [x] Item 161
+- [x] Item 162
+- [x] Item 163
+- [x] Item 164
+- [x] Item 165
+- [x] Item 166
+- [x] Item 167
+- [x] Item 168
+- [x] Item 169
+- [x] Item 170
+- [x] Item 171
+- [x] Item 172
+- [x] Item 173
+- [x] Item 174
+- [x] Item 175
+- [x] Item 176
+- [x] Item 177
+- [x] Item 178
+- [x] Item 179
+- [x] Item 180
+
+## E2E (10):
+- [x] Item 181
+- [x] Item 182
+- [x] Item 183
+- [x] Item 184
+- [x] Item 185
+- [x] Item 186
+- [x] Item 187
+- [x] Item 188
+- [x] Item 189
+- [x] Item 190
+
+## Deploy (10):
+- [ ] Item 191
+- [ ] Item 192
+- [ ] Item 193
+- [ ] Item 194
+- [ ] Item 195
+- [ ] Item 196
+- [ ] Item 197
+- [ ] Item 198
+- [ ] Item 199
+- [ ] Item 200

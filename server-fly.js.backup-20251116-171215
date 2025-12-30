@@ -1,0 +1,2311 @@
+// SERVIDOR SIMPLIFICADO - GOL DE OURO v1.2.0 - DEPLOY FUNCIONAL
+// ==============================================================
+// Data: 21/10/2025
+// Status: SERVIDOR SIMPLIFICADO PARA DEPLOY
+// Versão: v1.2.0-deploy-functional
+// GPT-4o Auto-Fix: Backend funcional para deploy
+
+const express = require('express');
+const cors = require('cors');
+const compression = require('compression');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { createClient } = require('@supabase/supabase-js');
+const axios = require('axios');
+const http = require('http');
+const crypto = require('crypto'); // ✅ Adicionado para geração segura de números aleatórios
+// Logger opcional - fallback para console se não disponível
+let logger;
+try {
+  logger = require('./logging/sistema-logs-avancado').logger;
+} catch (error) {
+  // Fallback simples para console se logger não disponível
+  logger = {
+    info: (...args) => console.log('[INFO]', ...args),
+    error: (...args) => console.error('[ERROR]', ...args),
+    warn: (...args) => console.warn('[WARN]', ...args),
+    debug: (...args) => console.log('[DEBUG]', ...args)
+  };
+}
+const { body, validationResult } = require('express-validator');
+const { calculateInitialBalance, validateRealData, isProductionMode } = require('./config/system-config');
+
+// Importar validadores
+const PixValidator = require('./utils/pix-validator');
+const LoteIntegrityValidator = require('./utils/lote-integrity-validator');
+const WebhookSignatureValidator = require('./utils/webhook-signature-validator');
+
+require('dotenv').config();
+
+// Validação das variáveis de ambiente obrigatórias
+const { assertRequiredEnv, isProduction } = require('./config/required-env');
+assertRequiredEnv(
+  ['JWT_SECRET', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'],
+  { onlyInProduction: ['MERCADOPAGO_ACCESS_TOKEN'] }
+);
+
+const app = express();
+const PORT = process.env.PORT || 8080;
+
+// =====================================================
+// INSTÂNCIAS DOS VALIDADORES
+// =====================================================
+
+const pixValidator = new PixValidator();
+const loteIntegrityValidator = new LoteIntegrityValidator();
+const webhookSignatureValidator = new WebhookSignatureValidator();
+
+// =====================================================
+// CONFIGURAÇÃO SUPABASE UNIFICADA
+// =====================================================
+
+const { 
+  supabaseAdmin, 
+  validateSupabaseCredentials, 
+  testSupabaseConnection, 
+  supabaseHealthCheck 
+} = require('./database/supabase-unified-config');
+
+// Importar serviço de email
+const emailService = require('./services/emailService');
+// ✅ FASE 1: Importar FinancialService para operações ACID
+const FinancialService = require('./services/financialService');
+// ✅ FASE 2: Importar WebhookService para idempotência completa
+const WebhookService = require('./services/webhookService');
+// ✅ PERSISTÊNCIA DE LOTES: Importar LoteService para persistir lotes no banco
+const LoteService = require('./services/loteService');
+// ✅ FASE 5: Importar RewardService para sistema de recompensas ACID
+const RewardService = require('./services/rewardService');
+// WebSocket Manager (inicializado após criar o servidor HTTP)
+const WebSocketManager = require('./src/websocket');
+
+// =====================================================
+// IMPORTAÇÃO DE ROTAS ORGANIZADAS
+// =====================================================
+// ✅ FASE 9: Refatoração controlada - Usar arquivos de rotas dedicados
+const authRoutes = require('./routes/authRoutes');
+const gameRoutes = require('./routes/gameRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const withdrawRoutes = require('./routes/withdrawRoutes');
+const systemRoutes = require('./routes/systemRoutes');
+
+// =====================================================
+// SISTEMAS DE MONITORAMENTO AVANÇADOS
+// =====================================================
+
+// Sistema de monitoramento desabilitado temporariamente para estabilidade
+// TODO: Re-habilitar após backend estável
+/*
+const {
+  startCustomMetricsCollection,
+  stopCustomMetricsCollection,
+  getCustomMetricsStats,
+  generateCustomMetricsReport,
+  testCustomMetrics
+} = require('./monitoring/flyio-custom-metrics');
+
+const {
+  startNotificationSystem,
+  stopNotificationSystem,
+  sendNotification,
+  getNotificationStats,
+  generateNotificationReport,
+  testNotifications
+} = require('./monitoring/flyio-advanced-notifications');
+
+const {
+  startConfigBackupSystem,
+  stopConfigBackupSystem,
+  executeManualBackup,
+  getBackupStats,
+  generateBackupReport,
+  testConfigBackup
+} = require('./monitoring/flyio-config-backup');
+*/
+
+let supabase = supabaseAdmin;
+let dbConnected = false;
+
+// Conectar Supabase com validação
+async function connectSupabase() {
+  try {
+    console.log('🔍 [SUPABASE] Validando credenciais...');
+    
+    // Validar credenciais
+    const validation = validateSupabaseCredentials();
+    if (!validation.valid) {
+      console.error('❌ [SUPABASE] Credenciais inválidas:', validation.errors);
+      dbConnected = false;
+      return false;
+    }
+    
+    console.log('✅ [SUPABASE] Credenciais validadas');
+    
+    // Testar conexão
+    const connectionTest = await testSupabaseConnection();
+    if (!connectionTest.success) {
+      console.error('❌ [SUPABASE] Falha na conexão:', connectionTest.error);
+      dbConnected = false;
+      return false;
+    }
+    
+    console.log('✅ [SUPABASE] Conectado com sucesso');
+    dbConnected = true;
+    
+    // ✅ PERSISTÊNCIA DE LOTES: Sincronizar lotes ativos do banco ao iniciar
+    await syncLotesFromDatabase();
+    
+    return true;
+    
+  } catch (error) {
+    console.log('❌ [SUPABASE] Erro na conexão:', error.message);
+    dbConnected = false;
+    return false;
+  }
+}
+
+// ✅ PERSISTÊNCIA DE LOTES: Sincronizar lotes ativos do banco ao iniciar servidor
+async function syncLotesFromDatabase() {
+  try {
+    console.log('🔄 [LOTES] Sincronizando lotes do banco de dados...');
+    const result = await LoteService.syncActiveLotes();
+    
+    if (result.success && result.count > 0) {
+      console.log(`✅ [LOTES] ${result.count} lotes ativos encontrados no banco`);
+      
+      // Recriar lotes em memória
+      for (const loteData of result.lotes) {
+        const config = batchConfigs[loteData.valor_aposta];
+        if (config) {
+          const lote = {
+            id: loteData.id,
+            valor: loteData.valor_aposta,
+            ativo: loteData.status === 'ativo',
+            valorAposta: loteData.valor_aposta,
+            config: config,
+            chutes: [], // Será reconstruído conforme necessário (ou pode buscar do banco)
+            status: loteData.status === 'ativo' ? 'active' : 'completed',
+            winnerIndex: loteData.indice_vencedor,
+            createdAt: loteData.created_at,
+            totalArrecadado: parseFloat(loteData.total_arrecadado || 0),
+            premioTotal: parseFloat(loteData.premio_total || 0)
+          };
+          
+          lotesAtivos.set(loteData.id, lote);
+          console.log(`✅ [LOTES] Lote ${loteData.id} sincronizado (valor: R$${loteData.valor_aposta}, posição: ${loteData.posicao_atual}/${loteData.tamanho})`);
+        }
+      }
+    } else {
+      console.log('✅ [LOTES] Nenhum lote ativo no banco');
+    }
+  } catch (error) {
+    console.error('❌ [LOTES] Erro ao sincronizar lotes:', error);
+    // Não bloquear inicialização do servidor se sincronização falhar
+  }
+}
+
+// =====================================================
+// CONFIGURAÇÃO MERCADO PAGO
+// =====================================================
+
+const mercadoPagoAccessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+let mercadoPagoConnected = false;
+
+// Testar Mercado Pago
+async function testMercadoPago() {
+  if (!mercadoPagoAccessToken) {
+    console.log('⚠️ [MERCADO-PAGO] Token não configurado');
+    return false;
+  }
+
+  try {
+    const response = await axios.get('https://api.mercadopago.com/v1/payment_methods', {
+      headers: { 
+        'Authorization': `Bearer ${mercadoPagoAccessToken}`,
+        'Accept': 'application/json',
+        'User-Agent': 'GolDeOuro/1.2.0'
+      },
+      timeout: 5000,
+      maxRedirects: 3,
+      validateStatus: (status) => status < 500
+    });
+    
+    if (response.status === 200) {
+      console.log('✅ [MERCADO-PAGO] Conectado com sucesso');
+      mercadoPagoConnected = true;
+      return true;
+    }
+  } catch (error) {
+    console.log('❌ [MERCADO-PAGO] Erro:', error.message);
+    mercadoPagoConnected = false;
+    return false;
+  }
+}
+
+// =====================================================
+// MIDDLEWARE E CONFIGURAÇÕES
+// =====================================================
+
+// Middleware de segurança
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  }
+}));
+
+app.use(compression());
+// Trust proxy configurado corretamente para Fly.io (1 = confiar apenas no primeiro proxy)
+app.set('trust proxy', 1);
+
+// CORS configurado
+const parseCorsOrigins = () => {
+  const csv = process.env.CORS_ORIGIN || '';
+  const list = csv.split(',').map(s => s.trim()).filter(Boolean);
+  return list.length > 0 ? list : [
+    'https://goldeouro.lol',
+    'https://www.goldeouro.lol',
+    'https://admin.goldeouro.lol'
+  ];
+};
+
+app.use(cors({
+  origin: parseCorsOrigins(),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Idempotency-Key']
+}));
+
+// Rate limiting melhorado
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100, // máximo 100 requests por IP (mais razoável)
+  message: {
+    success: false,
+    message: 'Muitas tentativas. Tente novamente em 15 minutos.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { trustProxy: false }, // ✅ CORRIGIDO: Desabilitar validação de trust proxy para evitar erro
+  skip: (req) => {
+    // Pular rate limiting para health check, meta e auth
+    return req.path === '/health' || 
+           req.path === '/meta' || 
+           req.path.startsWith('/auth/') ||
+           req.path.startsWith('/api/auth/');
+  },
+  handler: (req, res) => {
+    console.log(`🚫 [RATE-LIMIT] IP ${req.ip} bloqueado por excesso de requests (${req.path})`);
+    res.status(429).json({
+      success: false,
+      message: 'Muitas tentativas. Tente novamente em 15 minutos.',
+      retryAfter: Math.round(15 * 60) // 15 minutos em segundos
+    });
+  }
+});
+
+// Rate limiting específico para autenticação
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5, // máximo 5 tentativas de login por IP
+  validate: { trustProxy: false }, // ✅ CORRIGIDO: Desabilitar validação de trust proxy
+  message: {
+        success: false,
+    message: 'Muitas tentativas de login. Tente novamente em 15 minutos.'
+  },
+  skipSuccessfulRequests: true, // Não contar tentativas bem-sucedidas
+  handler: (req, res) => {
+    console.log(`🚫 [AUTH-LIMIT] IP ${req.ip} bloqueado por excesso de tentativas de login`);
+    res.status(429).json({
+      success: false,
+      message: 'Muitas tentativas de login. Tente novamente em 15 minutos.'
+    });
+  }
+});
+
+app.use(limiter); // Rate limiting global
+app.use('/api/', limiter);
+app.use('/api/auth/', authLimiter);
+app.use('/auth/', authLimiter);
+
+// Body parsing
+app.use(express.json({ 
+  limit: '10mb',
+  verify: (req, res, buf) => {
+    try {
+      req.rawBody = buf.toString('utf8');
+    } catch (e) {
+      req.rawBody = undefined;
+    }
+  }
+}));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// =====================================================
+// REGISTRO DE ROTAS ORGANIZADAS
+// =====================================================
+// ✅ FASE 9: Refatoração controlada - Registrar rotas de arquivos dedicados
+// Nota: Rotas inline abaixo ainda funcionam para compatibilidade
+// Serão removidas gradualmente após testes
+app.use('/api/auth', authRoutes);
+app.use('/api/games', gameRoutes);
+app.use('/api/user', usuarioRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/withdraw', withdrawRoutes);
+app.use('/', systemRoutes); // Rotas de sistema na raiz
+
+// =====================================================
+// MIDDLEWARE DE VALIDAÇÃO
+// =====================================================
+
+// Middleware para validar dados usando express-validator
+const validateData = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Dados inválidos',
+      errors: errors.array()
+    });
+  }
+  next();
+};
+
+// =====================================================
+// MIDDLEWARE DE AUTENTICAÇÃO
+// =====================================================
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    console.log('❌ [AUTH] Token não fornecido');
+        return res.status(401).json({
+          success: false,
+      message: 'Token de acesso requerido' 
+    });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      console.log('❌ [AUTH] Token inválido:', err.message);
+        return res.status(403).json({
+          success: false,
+        message: 'Token inválido' 
+        });
+      }
+    req.user = user;
+      next();
+  });
+};
+
+// =====================================================
+// SISTEMA DE LOTES CORRIGIDO
+// =====================================================
+
+let lotesAtivos = new Map();
+// Variáveis globais para métricas - ZERADAS para produção real
+let contadorChutesGlobal = 0; // Zerado - sem dados simulados
+let ultimoGolDeOuro = 0; // Zerado - sem dados simulados
+
+// Configurações dos lotes por valor de aposta
+const batchConfigs = {
+  1: { size: 10, totalValue: 10, winChance: 0.1, description: "10% chance" },
+  2: { size: 5, totalValue: 10, winChance: 0.2, description: "20% chance" },
+  5: { size: 2, totalValue: 10, winChance: 0.5, description: "50% chance" },
+  10: { size: 1, totalValue: 10, winChance: 1.0, description: "100% chance" }
+};
+
+// ✅ PERSISTÊNCIA DE LOTES: Função atualizada para persistir no banco
+async function getOrCreateLoteByValue(amount) {
+  const config = batchConfigs[amount];
+  if (!config) {
+    throw new Error(`Valor de aposta inválido: ${amount}`);
+  }
+
+  // Verificar se existe lote ativo em memória para este valor
+  let loteAtivo = null;
+  for (const [loteId, lote] of lotesAtivos.entries()) {
+    // Compatível com validador: usa lote.valor e booleano lote.ativo
+    const valorLote = typeof lote.valor !== 'undefined' ? lote.valor : lote.valorAposta;
+    const ativo = typeof lote.ativo === 'boolean' ? lote.ativo : lote.status === 'active';
+    if (valorLote === amount && ativo && lote.chutes.length < config.size) {
+      loteAtivo = lote;
+      break;
+    }
+  }
+
+  // Se não existe em memória, buscar/criar no banco
+  if (!loteAtivo) {
+    // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomBytes ao invés de Math.random()
+    const randomBytes = crypto.randomBytes(6).toString('hex');
+    const loteId = `lote_${amount}_${Date.now()}_${randomBytes}`;
+    const winnerIndex = crypto.randomInt(0, config.size);
+
+    // ✅ PERSISTIR NO BANCO
+    if (dbConnected && supabase) {
+      try {
+        const result = await LoteService.getOrCreateLote(loteId, amount, config.size, winnerIndex);
+        
+        if (!result.success) {
+          console.error(`❌ [LOTE] Erro ao criar lote no banco: ${result.error}`);
+          // Continuar com criação em memória apenas (fallback)
+        } else {
+          // Usar dados do banco
+          const loteData = result.lote;
+          loteAtivo = {
+            id: loteData.id,
+            valor: loteData.valor_aposta,
+            ativo: loteData.status === 'ativo',
+            valorAposta: loteData.valor_aposta,
+            config: config,
+            chutes: [], // Será reconstruído conforme necessário
+            status: loteData.status === 'ativo' ? 'active' : 'completed',
+            winnerIndex: loteData.indice_vencedor,
+            createdAt: new Date().toISOString(),
+            totalArrecadado: parseFloat(loteData.total_arrecadado || 0),
+            premioTotal: parseFloat(loteData.premio_total || 0)
+          };
+          
+          lotesAtivos.set(loteId, loteAtivo);
+          console.log(`🎮 [LOTE] Novo lote criado e persistido: ${loteId} (R$${amount})`);
+          return loteAtivo;
+        }
+      } catch (error) {
+        console.error(`❌ [LOTE] Exceção ao criar lote no banco: ${error.message}`);
+        // Continuar com criação em memória apenas (fallback)
+      }
+    }
+
+    // Fallback: criar apenas em memória se banco não disponível
+    loteAtivo = {
+      id: loteId,
+      valor: amount,
+      ativo: true,
+      valorAposta: amount,
+      config: config,
+      chutes: [],
+      status: 'active',
+      winnerIndex: winnerIndex,
+      createdAt: new Date().toISOString(),
+      totalArrecadado: 0,
+      premioTotal: 0
+    };
+    lotesAtivos.set(loteId, loteAtivo);
+    console.log(`🎮 [LOTE] Novo lote criado (apenas memória): ${loteId} (R$${amount})`);
+  }
+
+  return loteAtivo;
+}
+
+// =====================================================
+// ROTAS DE AUTENTICAÇÃO
+// =====================================================
+// ✅ FASE 9 ETAPA 3: Rotas movidas para authRoutes.js
+// Rotas abaixo foram removidas e estão em routes/authRoutes.js:
+// - POST /api/auth/forgot-password
+// - POST /api/auth/reset-password
+// - POST /api/auth/verify-email
+// - POST /api/auth/register (duplicada)
+// - POST /api/auth/login (duplicada)
+// - PUT /api/auth/change-password (duplicada)
+
+// Rotas de autenticação removidas - agora em authRoutes.js
+// Rotas removidas:
+// - POST /api/auth/forgot-password
+// - POST /api/auth/reset-password
+// - POST /api/auth/verify-email
+// - POST /api/auth/register (duplicada)
+// - POST /api/auth/login (duplicada)
+// - PUT /api/auth/change-password (duplicada)
+
+// Rotas de autenticação duplicadas mantidas temporariamente para compatibilidade
+// As rotas em authRoutes.js têm prioridade (registradas primeiro)
+// Remoção completa será feita após testes em produção
+
+// Login de usuário (mantido temporariamente)
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    // Buscar usuário
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('email', email)
+      .eq('ativo', true)
+      .single();
+
+    if (userError || !user) {
+      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+      const sanitizedEmailLogin = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
+      const logMessageLoginNotFound = `❌ [LOGIN] Usuário não encontrado: ${sanitizedEmailLogin}`;
+      console.log(logMessageLoginNotFound);
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciais inválidas'
+      });
+    }
+
+    // Verificar senha
+    const senhaValida = await bcrypt.compare(password, user.senha_hash);
+    if (!senhaValida) {
+      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+      const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
+      console.log(logMessageInvalidPassword);
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciais inválidas'
+      });
+    }
+
+    // Verificar se usuário precisa de saldo inicial (para usuários antigos)
+    if (user.saldo === 0 || user.saldo === null) {
+      try {
+        const { error: updateError } = await supabase
+          .from('usuarios')
+          .update({ saldo: calculateInitialBalance('regular') })
+          .eq('id', user.id);
+        
+        if (!updateError) {
+          user.saldo = calculateInitialBalance('regular');
+          // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+          const logMessageBalance = `💰 [LOGIN] Saldo inicial de R$ ${calculateInitialBalance('regular')} adicionado para usuário ${sanitizedEmailLogin}`;
+          console.log(logMessageBalance);
+        }
+      } catch (saldoError) {
+        console.log('⚠️ [LOGIN] Erro ao adicionar saldo inicial:', saldoError.message);
+      }
+    }
+
+    // Gerar token JWT
+    const token = jwt.sign(
+      { 
+        userId: user.id, 
+        email: user.email,
+        username: user.username
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+    const logMessageLoginSuccess = `✅ [LOGIN] Login realizado: ${sanitizedEmailLogin}`;
+    console.log(logMessageLoginSuccess);
+
+    res.json({
+      success: true,
+      message: 'Login realizado com sucesso',
+      token: token,
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        saldo: user.saldo,
+        tipo: user.tipo,
+        total_apostas: user.total_apostas,
+        total_ganhos: user.total_ganhos
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [LOGIN] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// =====================================================
+// ROTAS DE PERFIL DO USUÁRIO
+// =====================================================
+
+// Obter perfil do usuário
+app.get('/api/user/profile', authenticateToken, async (req, res) => {
+  try {
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('id', req.user.userId)
+      .single();
+
+    if (userError || !user) {
+      console.error('❌ [PROFILE] Usuário não encontrado:', userError);
+      return res.status(404).json({ 
+        success: false,
+        message: 'Usuário não encontrado' 
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        nome: user.username, // Compatibilidade com frontend
+        saldo: user.saldo,
+        tipo: user.tipo,
+        total_apostas: user.total_apostas,
+        total_ganhos: user.total_ganhos,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [PROFILE] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Atualizar perfil do usuário
+app.put('/api/user/profile', authenticateToken, async (req, res) => {
+  try {
+    const { nome, email } = req.body;
+    
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    // Validar dados
+    if (!nome || !email) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Nome e email são obrigatórios' 
+      });
+    }
+
+    // Verificar se email já existe (exceto para o usuário atual)
+    const { data: existingUser, error: checkError } = await supabase
+      .from('usuarios')
+      .select('id')
+      .eq('email', email)
+      .neq('id', req.user.userId)
+      .single();
+
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('❌ [PROFILE] Erro ao verificar email:', checkError);
+      return res.status(500).json({ 
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+
+    if (existingUser) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Este email já está em uso por outro usuário' 
+      });
+    }
+
+    // Atualizar usuário
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('usuarios')
+      .update({
+        username: nome,
+        email: email,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', req.user.userId)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('❌ [PROFILE] Erro ao atualizar usuário:', updateError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao atualizar perfil' 
+      });
+    }
+
+    console.log(`✅ [PROFILE] Perfil atualizado para usuário ${req.user.userId}`);
+
+    res.json({
+      success: true,
+      message: 'Perfil atualizado com sucesso!',
+      data: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        username: updatedUser.username,
+        nome: updatedUser.username, // Compatibilidade
+        saldo: updatedUser.saldo || 0,
+        total_apostas: updatedUser.total_apostas || 0,
+        total_ganhos: updatedUser.total_ganhos || 0,
+        tipo: updatedUser.tipo || 'user',
+        created_at: updatedUser.created_at,
+        updated_at: updatedUser.updated_at
+      }
+    });
+  } catch (error) {
+    console.error('❌ [PROFILE] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// =====================================================
+// SISTEMA DE JOGO CORRIGIDO
+// =====================================================
+
+// Endpoint para chutar
+app.post('/api/games/shoot', authenticateToken, async (req, res) => {
+  try {
+    const { direction, amount } = req.body;
+    
+    // Validar entrada
+    if (!direction || !amount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Direção e valor são obrigatórios'
+      });
+    }
+
+    // Validar valor de aposta
+    if (!batchConfigs[amount]) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valor de aposta inválido. Use: 1, 2, 5 ou 10'
+      });
+    }
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    // Verificar saldo do usuário
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('saldo')
+      .eq('id', req.user.userId)
+      .single();
+
+    if (userError || !user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+
+    if (user.saldo < amount) {
+      return res.status(400).json({
+      success: false,
+        message: 'Saldo insuficiente'
+      });
+    }
+
+    // Obter ou criar lote para este valor (persistido no banco)
+    const lote = await getOrCreateLoteByValue(amount);
+    
+    // Validar integridade do lote antes de processar chute
+    const integrityValidation = loteIntegrityValidator.validateBeforeShot(lote, {
+      direction: direction,
+      amount: amount,
+      userId: req.user.userId
+    });
+
+    if (!integrityValidation.valid) {
+      console.error('❌ [SHOOT] Problema de integridade do lote:', integrityValidation.error);
+      return res.status(400).json({
+        success: false,
+        message: integrityValidation.error
+      });
+    }
+    
+    // Incrementar contador global
+    contadorChutesGlobal++;
+    
+    // Verificar se é Gol de Ouro (a cada 1000 chutes)
+    const isGolDeOuro = contadorChutesGlobal % 1000 === 0;
+    
+    // Salvar contador no Supabase
+    await saveGlobalCounter();
+    
+    // Determinar se é gol baseado no sistema de lotes
+    const shotIndex = lote.chutes.length;
+    const isGoal = shotIndex === lote.winnerIndex;
+    const result = isGoal ? 'goal' : 'miss';
+    
+    let premio = 0;
+    let premioGolDeOuro = 0;
+    
+    if (isGoal) {
+      // Prêmio normal: R$5 fixo (independente do valor apostado)
+      premio = 5.00;
+      
+      // Gol de Ouro: R$100 adicional
+      if (isGolDeOuro) {
+        premioGolDeOuro = 100.00;
+        ultimoGolDeOuro = contadorChutesGlobal;
+        console.log(`🏆 [GOL DE OURO] Chute #${contadorChutesGlobal} - Prêmio: R$ ${premioGolDeOuro}`);
+      }
+      
+      // Encerrar o lote imediatamente após o gol (um vencedor por lote)
+      // Isso evita novos chutes no mesmo lote e alinha com o validador de integridade.
+      lote.status = 'completed';
+      lote.ativo = false;
+    }
+    
+    // Adicionar chute ao lote
+    const chute = {
+      id: `${lote.id}_${shotIndex}`,
+      // Campo esperado pelo validador
+      userId: req.user.userId,
+      direction,
+      amount,
+      result,
+      premio,
+      premioGolDeOuro,
+      isGolDeOuro,
+      shotIndex: shotIndex + 1,
+      timestamp: new Date().toISOString()
+    };
+    
+    lote.chutes.push(chute);
+    lote.totalArrecadado += amount;
+    lote.premioTotal += premio + premioGolDeOuro;
+
+    // Validar integridade do lote após adicionar chute
+    const postShotValidation = loteIntegrityValidator.validateAfterShot(lote, {
+      result: result,
+      premio: premio,
+      premioGolDeOuro: premioGolDeOuro,
+      timestamp: new Date().toISOString()
+    });
+
+    if (!postShotValidation.valid) {
+      console.error('❌ [SHOOT] Problema de integridade após chute:', postShotValidation.error);
+      // Reverter chute do lote
+      lote.chutes.pop();
+      lote.totalArrecadado -= amount;
+      lote.premioTotal -= premio + premioGolDeOuro;
+      return res.status(400).json({
+        success: false,
+        message: postShotValidation.error
+      });
+    }
+
+    // Salvar chute no banco de dados (usar tabela 'chutes' para acionar gatilhos de métricas/saldo)
+    const { data: chuteData, error: chuteError } = await supabase
+      .from('chutes')
+      .insert({
+        usuario_id: req.user.userId,
+        lote_id: lote.id,
+        direcao: direction,
+        valor_aposta: amount,
+        resultado: result,
+        premio: premio,
+        premio_gol_de_ouro: premioGolDeOuro,
+        is_gol_de_ouro: isGolDeOuro,
+        contador_global: contadorChutesGlobal,
+        shot_index: shotIndex + 1
+      })
+      .select('id')
+      .single();
+
+    if (chuteError) {
+      console.error('❌ [SHOOT] Erro ao salvar chute:', chuteError);
+    }
+
+    const chuteId = chuteData?.id || null;
+
+    // Verificar se lote está completo
+    // Já encerrado em caso de gol, mas mantém fechamento por tamanho para consistência
+    if (lote.chutes.length >= lote.config.size && lote.status !== 'completed') {
+      lote.status = 'completed';
+      // Desativar para o validador entender que não aceita mais chutes
+      lote.ativo = false;
+      console.log(`🏆 [LOTE] Lote ${lote.id} completado: ${lote.chutes.length} chutes, R$${lote.totalArrecadado} arrecadado, R$${lote.premioTotal} em prêmios`);
+    }
+
+    // ✅ PERSISTÊNCIA DE LOTES: Atualizar lote no banco após chute
+    if (dbConnected && supabase && lote.id) {
+      try {
+        const updateResult = await LoteService.updateLoteAfterShot(
+          lote.id,
+          amount,
+          premio,
+          premioGolDeOuro,
+          isGoal
+        );
+
+        if (updateResult.success && updateResult.lote) {
+          // Atualizar status se lote foi finalizado no banco
+          if (updateResult.lote.is_complete) {
+            lote.status = 'completed';
+            lote.ativo = false;
+          }
+          // Sincronizar valores do banco
+          lote.totalArrecadado = parseFloat(updateResult.lote.total_arrecadado || lote.totalArrecadado);
+          lote.premioTotal = parseFloat(updateResult.lote.premio_total || lote.premioTotal);
+        } else {
+          console.error(`❌ [SHOOT] Erro ao atualizar lote no banco: ${updateResult.error}`);
+        }
+      } catch (error) {
+        console.error(`❌ [SHOOT] Exceção ao atualizar lote no banco: ${error.message}`);
+        // Continuar mesmo se atualização falhar (lote já está em memória)
+      }
+    }
+    
+    const shootResult = {
+      loteId: lote.id,
+      direction,
+      amount,
+      result,
+      premio,
+      premioGolDeOuro,
+      isGolDeOuro,
+      contadorGlobal: contadorChutesGlobal,
+      timestamp: new Date().toISOString(),
+      playerId: req.user.userId,
+      loteProgress: {
+        current: lote.chutes.length,
+        total: lote.config.size,
+        remaining: lote.config.size - lote.chutes.length
+      },
+      isLoteComplete: lote.status === 'completed'
+    };
+
+    // ✅ FASE 5: Sistema de Recompensas ACID
+    // Creditar recompensas usando RewardService (garante integridade financeira)
+    if (isGoal) {
+      // Creditar prêmio normal (R$5)
+      if (premio > 0) {
+        const rewardResult = await RewardService.creditReward(
+          req.user.userId,
+          lote.id,
+          chuteId,
+          'gol_normal',
+          premio,
+          `Prêmio por gol no lote ${lote.id}`,
+          {
+            lote_id: lote.id,
+            chute_id: chuteId,
+            shot_index: shotIndex + 1,
+            contador_global: contadorChutesGlobal
+          }
+        );
+
+        if (rewardResult.success) {
+          shootResult.rewardId = rewardResult.rewardId;
+          shootResult.saldoPosterior = rewardResult.saldoPosterior;
+          console.log(`✅ [SHOOT] Recompensa de gol normal creditada: R$${premio} (reward_id: ${rewardResult.rewardId})`);
+        } else {
+          console.error(`❌ [SHOOT] Erro ao creditar recompensa de gol normal: ${rewardResult.error}`);
+        }
+      }
+
+      // Creditar Gol de Ouro (R$100 adicional)
+      if (premioGolDeOuro > 0) {
+        const goldenRewardResult = await RewardService.creditReward(
+          req.user.userId,
+          lote.id,
+          chuteId,
+          'gol_de_ouro',
+          premioGolDeOuro,
+          `Gol de Ouro! Chute #${contadorChutesGlobal}`,
+          {
+            lote_id: lote.id,
+            chute_id: chuteId,
+            shot_index: shotIndex + 1,
+            contador_global: contadorChutesGlobal,
+            is_gol_de_ouro: true
+          }
+        );
+
+        if (goldenRewardResult.success) {
+          shootResult.goldenRewardId = goldenRewardResult.rewardId;
+          shootResult.saldoPosterior = goldenRewardResult.saldoPosterior;
+          console.log(`🏆 [SHOOT] Recompensa de Gol de Ouro creditada: R$${premioGolDeOuro} (reward_id: ${goldenRewardResult.rewardId})`);
+        } else {
+          console.error(`❌ [SHOOT] Erro ao creditar recompensa de Gol de Ouro: ${goldenRewardResult.error}`);
+        }
+      }
+
+      // Nota: O valor da aposta (amount) já foi debitado pelo gatilho do banco ao salvar o chute
+      // As recompensas são creditadas acima usando FinancialService (ACID)
+      // O saldo final já está correto: saldo_anterior - amount + premio + premioGolDeOuro
+    }
+    
+    console.log(`⚽ [SHOOT] Chute #${contadorChutesGlobal}: ${result} por usuário ${req.user.userId}`);
+    
+    res.status(200).json({
+      success: true,
+      data: shootResult
+    });
+
+  } catch (error) {
+    console.error('❌ [SHOOT] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// =====================================================
+// SISTEMA DE SAQUES PIX COM VALIDAÇÃO
+// =====================================================
+
+// Solicitar saque PIX
+app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
+  try {
+    const { valor, chave_pix, tipo_chave } = req.body;
+    const userId = req.user.userId;
+
+    // Validar dados de entrada usando PixValidator
+    const withdrawData = {
+      amount: valor,
+      pixKey: chave_pix,
+      pixType: tipo_chave,
+      userId: userId
+    };
+
+    const validation = await pixValidator.validateWithdrawData(withdrawData);
+    if (!validation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: validation.error
+      });
+    }
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    // Verificar saldo do usuário
+    const { data: usuario, error: userError } = await supabase
+      .from('usuarios')
+      .select('saldo')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !usuario) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+
+    if (parseFloat(usuario.saldo) < parseFloat(valor)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Saldo insuficiente'
+      });
+    }
+
+    // Calcular taxa de saque
+    const taxa = parseFloat(process.env.PAGAMENTO_TAXA_SAQUE || '2.00');
+    const valorLiquido = parseFloat(valor) - taxa;
+
+    // Criar saque no banco (schema padronizado)
+    const { data: saque, error: saqueError } = await supabase
+      .from('saques')
+      .insert({
+        usuario_id: userId,
+        // Compatibilidade com esquemas antigos e novos
+        valor: parseFloat(valor), // alguns schemas usam 'valor'
+        amount: parseFloat(valor),
+        // colunas novas
+        pix_key: validation.data.pixKey,
+        pix_type: validation.data.pixType,
+        // colunas legadas
+        chave_pix: validation.data.pixKey,
+        tipo_chave: validation.data.pixType,
+        // status compatível com ambos esquemas (aceita 'pendente' sem CHECK no novo; requerido no antigo)
+        status: 'pendente',
+        created_at: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (saqueError) {
+      console.error('❌ [SAQUE] Erro ao criar saque:', saqueError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao criar saque'
+      });
+    }
+
+    // Transação contábil: delegada para processador externo/contábil (removida do backend direto)
+
+    console.log(`💰 [SAQUE] Saque solicitado: R$ ${valor} para usuário ${userId}`);
+
+    res.status(201).json({
+      success: true,
+      message: 'Saque solicitado com sucesso',
+      data: {
+        id: saque.id,
+        amount: valor,
+        pix_key: validation.data.pixKey,
+        pix_type: validation.data.pixType,
+        status: 'pending',
+        created_at: saque.created_at
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [SAQUE] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Buscar saques do usuário
+app.get('/api/withdraw/history', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const { data: saques, error: saquesError } = await supabase
+      .from('saques')
+      .select('*')
+      .eq('usuario_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (saquesError) {
+      console.error('❌ [SAQUE] Erro ao buscar saques:', saquesError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao buscar histórico de saques'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        saques: saques || [],
+        total: saques?.length || 0
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [SAQUE] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// =====================================================
+// SISTEMA DE PAGAMENTOS PIX CORRIGIDO
+// =====================================================
+
+// Criar pagamento PIX
+app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
+  try {
+    const { amount } = req.body;
+    
+    if (!amount || amount < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valor inválido'
+      });
+    }
+
+    if (amount > 1000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valor máximo: R$ 1.000,00'
+      });
+    }
+
+    // APENAS MERCADO PAGO REAL - SEM FALLBACK
+    if (!mercadoPagoConnected) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema de pagamento temporariamente indisponível. Tente novamente em alguns minutos.'
+      });
+    }
+
+    try {
+      // Buscar dados completos do usuário
+      const { data: userData, error: userDataError } = await supabase
+        .from('usuarios')
+        .select('email, username')
+        .eq('id', req.user.userId)
+        .single();
+
+      const userName = userData?.username || '';
+      const userEmail = userData?.email || req.user.email;
+
+      // Preparar nome do comprador
+      const names = userName.split(' ');
+      const firstName = names[0] || '';
+      const lastName = names.slice(1).join(' ') || '';
+
+      // CPF opcional vindo do cliente; fallback seguro
+      const payerCpf = (req.body && req.body.cpf) ? String(req.body.cpf).replace(/\\D/g, '') : '52998224725';
+
+      const paymentData = {
+        transaction_amount: parseFloat(amount),
+        description: 'Depósito Gol de Ouro',
+        payment_method_id: 'pix',
+        payer: {
+          email: userEmail,
+          first_name: firstName,
+          last_name: lastName,
+          identification: {
+            type: 'CPF',
+            number: payerCpf // CPF obrigatório para produção
+          }
+        },
+        external_reference: `goldeouro_${req.user.userId}_${Date.now()}`,
+        statement_descriptor: 'GOL DE OURO',
+        notification_url: `${process.env.BACKEND_URL || 'https://goldeouro-backend-v2.fly.dev'}/api/payments/webhook`
+      };
+
+      // Gerar X-Idempotency-Key único
+      // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomBytes ao invés de Math.random()
+      const randomBytes = crypto.randomBytes(6).toString('hex');
+      const idempotencyKey = `pix_${req.user.userId}_${Date.now()}_${randomBytes}`;
+      
+      const response = await axios.post(
+        'https://api.mercadopago.com/v1/payments',
+        paymentData,
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+            'Content-Type': 'application/json',
+            'X-Idempotency-Key': idempotencyKey,
+            'Accept': 'application/json',
+            'User-Agent': 'GolDeOuro/1.2.0'
+          },
+          timeout: 8000,
+          maxRedirects: 3,
+          validateStatus: (status) => status < 500
+        }
+      );
+
+      const payment = response.data;
+      if (!payment || !payment.id || !payment.point_of_interaction?.transaction_data?.qr_code) {
+        throw new Error(`Resposta inválida do Mercado Pago: ${JSON.stringify(response.data || {})}`);
+      }
+      
+      // Salvar no banco de dados
+      if (dbConnected && supabase) {
+        const { data: pixRecord, error: insertError } = await supabase
+          .from('pagamentos_pix')
+          .insert({
+            usuario_id: req.user.userId,
+            external_id: String(payment.id),
+            payment_id: String(payment.id),
+            amount: parseFloat(amount),
+            valor: parseFloat(amount),
+            status: 'pending',
+            qr_code: payment.point_of_interaction?.transaction_data?.qr_code || null,
+            qr_code_base64: payment.point_of_interaction?.transaction_data?.qr_code_base64 || null,
+            pix_copy_paste: payment.point_of_interaction?.transaction_data?.qr_code || null
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error('❌ [PIX] Erro ao salvar no banco:', insertError);
+        }
+      }
+
+      console.log(`💰 [PIX] PIX real criado: R$ ${amount} para usuário ${req.user.userId}`);
+
+      res.json({
+        success: true,
+        message: 'PIX criado com sucesso!',
+        data: {
+          id: payment.id,
+          amount: parseFloat(amount),
+          qr_code: payment.point_of_interaction?.transaction_data?.qr_code,
+          qr_code_base64: payment.point_of_interaction?.transaction_data?.qr_code_base64,
+          pix_copy_paste: payment.point_of_interaction?.transaction_data?.qr_code,
+          pix_code: payment.point_of_interaction?.transaction_data?.qr_code,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        }
+      });
+
+    } catch (mpError) {
+      const mpDetail = mpError?.response?.data || { message: mpError.message };
+      console.error('❌ [PIX] Erro Mercado Pago:', mpDetail);
+      // Modo diagnóstico opcional e temporário
+      if (req.query?.debug === '1' || req.body?.debug === true) {
+        return res.status(500).json({
+          success: false,
+          message: 'Erro ao criar PIX (diagnóstico)',
+          detalhe: mpDetail
+        });
+      }
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao criar PIX. Tente novamente em alguns minutos.'
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ [PIX] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Buscar pagamentos PIX do usuário
+app.get('/api/payments/pix/usuario', authenticateToken, async (req, res) => {
+  try {
+    console.log(`🔍 [PIX] Buscando pagamentos para usuário: ${req.user.userId}`);
+    
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      console.log('❌ [PIX] Supabase não conectado');
+      return res.status(503).json({ 
+        success: false,
+        message: 'Sistema temporariamente indisponível' 
+      });
+    }
+
+    // Primeiro, verificar se a tabela existe tentando uma query simples
+    const { data: testData, error: testError } = await supabase
+      .from('pagamentos_pix')
+      .select('id')
+      .limit(1);
+
+    if (testError) {
+      console.error('❌ [PIX] Erro ao acessar tabela pagamentos_pix:', testError);
+      console.error('❌ [PIX] Detalhes do erro:', {
+        message: testError.message,
+        details: testError.details,
+        hint: testError.hint,
+        code: testError.code
+      });
+      
+      // Retornar lista vazia se a tabela não existir
+      return res.json({
+        success: true,
+        data: {
+          payments: [],
+          total: 0,
+          message: 'Nenhum pagamento encontrado'
+        }
+      });
+    }
+
+    // Buscar pagamentos do usuário
+    const { data: payments, error: paymentsError } = await supabase
+                .from('pagamentos_pix')
+                .select('*')
+      .eq('usuario_id', req.user.userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (paymentsError) {
+      console.error('❌ [PIX] Erro ao buscar pagamentos do usuário:', paymentsError);
+      console.error('❌ [PIX] Detalhes do erro:', {
+        message: paymentsError.message,
+        details: paymentsError.details,
+        hint: paymentsError.hint,
+        code: paymentsError.code
+      });
+      
+      // Retornar lista vazia em caso de erro
+      return res.json({
+        success: true,
+        data: {
+          payments: [],
+          total: 0,
+          message: 'Erro ao carregar pagamentos'
+        }
+      });
+    }
+
+    console.log(`✅ [PIX] ${payments?.length || 0} pagamentos encontrados para usuário ${req.user.userId}`);
+
+    res.json({
+      success: true,
+      data: {
+        payments: payments || [],
+        total: payments?.length || 0
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ [PIX] Erro geral:', error);
+    console.error('❌ [PIX] Stack trace:', error.stack);
+    
+    // Retornar lista vazia em caso de erro geral
+    res.json({
+      success: true,
+      data: {
+        payments: [],
+        total: 0,
+        message: 'Erro interno do servidor'
+      }
+    });
+  }
+});
+
+// =====================================================
+// WEBHOOK PIX CORRIGIDO
+// =====================================================
+
+// Webhook principal com validação de signature (modo permissivo para desenvolvimento/testes)
+app.post('/api/payments/webhook', async (req, res, next) => {
+  // Validar signature apenas se MERCADOPAGO_WEBHOOK_SECRET estiver configurado
+  if (process.env.MERCADOPAGO_WEBHOOK_SECRET) {
+    const validation = webhookSignatureValidator.validateMercadoPagoWebhook(req);
+    if (!validation.valid) {
+      console.error('❌ [WEBHOOK] Signature inválida:', validation.error);
+      // Em produção, rejeitar; em desenvolvimento, apenas logar
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(401).json({
+          success: false,
+          error: 'Webhook signature inválida',
+          message: validation.error
+        });
+      } else {
+        console.warn('⚠️ [WEBHOOK] Signature inválida ignorada em modo não-produção');
+      }
+    } else {
+      req.webhookValidation = validation;
+    }
+  }
+  next();
+}, async (req, res) => {
+  try {
+    const { type, data } = req.body;
+    console.log('📨 [WEBHOOK] PIX recebido:', { type, data });
+    
+    res.status(200).json({ received: true }); // Responder imediatamente
+    
+    if (type === 'payment' && data?.id) {
+      // ✅ FASE 2: Validar paymentId antes de usar (segurança SSRF)
+      if (typeof data.id !== 'string' && typeof data.id !== 'number') {
+        console.error('❌ [WEBHOOK] ID de pagamento inválido (tipo):', data.id);
+        return;
+      }
+
+      const paymentIdStr = String(data.id).trim();
+      if (!/^\d+$/.test(paymentIdStr)) {
+        console.error('❌ [WEBHOOK] ID de pagamento inválido (formato):', data.id);
+        return;
+      }
+
+      const paymentIdNum = parseInt(paymentIdStr, 10);
+      if (isNaN(paymentIdNum) || paymentIdNum <= 0) {
+        console.error('❌ [WEBHOOK] ID de pagamento inválido (valor):', data.id);
+        return;
+      }
+
+      // Verificar pagamento no Mercado Pago
+      let paymentData;
+      try {
+        const paymentResponse = await axios.get(
+          `https://api.mercadopago.com/v1/payments/${paymentIdNum}`,
+          { 
+            headers: { 
+              'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+              'Content-Type': 'application/json'
+            },
+            timeout: 5000
+          }
+        );
+        paymentData = paymentResponse.data;
+      } catch (mpError) {
+        console.error(`❌ [WEBHOOK] Erro ao consultar Mercado Pago ${paymentIdNum}:`, mpError.message);
+        return;
+      }
+
+      // ✅ FASE 2: Processar webhook com idempotência completa
+      const webhookResult = await WebhookService.processPaymentWebhook(
+        req.body, // Payload completo
+        paymentIdStr,
+        paymentData.status
+      );
+
+      if (!webhookResult.success) {
+        console.error(`❌ [WEBHOOK] Erro ao processar webhook ${paymentIdStr}:`, webhookResult.error);
+        return;
+      }
+
+      if (webhookResult.alreadyProcessed) {
+        console.log(`⏭️ [WEBHOOK] Webhook ${paymentIdStr} já foi processado anteriormente (eventId: ${webhookResult.eventId})`);
+        return;
+      }
+
+      if (webhookResult.processed) {
+        console.log(`✅ [WEBHOOK] Webhook ${paymentIdStr} processado com sucesso (eventId: ${webhookResult.eventId})`);
+      } else {
+        console.log(`ℹ️ [WEBHOOK] Webhook ${paymentIdStr} registrado mas não processado: ${webhookResult.reason || 'Status não requer processamento'}`);
+      }
+    }
+  } catch (error) {
+    console.error('❌ [WEBHOOK] Erro:', error);
+  }
+});
+
+// =====================================================
+// FUNÇÕES AUXILIARES
+// =====================================================
+
+// Salvar contador global
+async function saveGlobalCounter() {
+  if (dbConnected && supabase) {
+    try {
+      const { error } = await supabase
+        .from('metricas_globais')
+        .upsert({
+          id: 1,
+          contador_chutes_global: contadorChutesGlobal,
+          ultimo_gol_de_ouro: ultimoGolDeOuro,
+          updated_at: new Date().toISOString()
+        });
+      
+      if (error) {
+        console.error('❌ [METRICS] Erro ao salvar contador:', error);
+      }
+    } catch (error) {
+      console.error('❌ [METRICS] Erro:', error);
+    }
+  }
+}
+
+// Reconciliação automática de PIX pendentes (fallback ao webhook)
+let reconciling = false;
+async function reconcilePendingPayments() {
+  if (reconciling) return;
+  if (!dbConnected || !supabase || !mercadoPagoConnected) return;
+  try {
+    reconciling = true;
+    const maxAgeMin = parseInt(process.env.MP_RECONCILE_MIN_AGE_MIN || '2', 10);
+    const limit = parseInt(process.env.MP_RECONCILE_LIMIT || '10', 10);
+    const sinceIso = new Date(Date.now() - maxAgeMin * 60 * 1000).toISOString();
+
+    const { data: pendings, error: listError } = await supabase
+      .from('pagamentos_pix')
+      .select('id, usuario_id, external_id, payment_id, status, amount, valor, created_at')
+      .eq('status', 'pending')
+      .lt('created_at', sinceIso)
+      .order('created_at', { ascending: true })
+      .limit(limit);
+
+    if (listError) {
+      console.error('❌ [RECON] Erro ao listar pendentes:', listError.message);
+      return;
+    }
+    if (!pendings || pendings.length === 0) return;
+
+    for (const p of pendings) {
+      const mpId = String(p.external_id || p.payment_id || '').trim();
+      if (!mpId) continue;
+
+      // ✅ CORREÇÃO SSRF: Validar mpId antes de usar na URL
+      if (!/^\d+$/.test(mpId)) {
+        console.error('❌ [RECON] ID de pagamento inválido (não é número):', mpId);
+        continue;
+      }
+      
+      const paymentId = parseInt(mpId, 10);
+      if (isNaN(paymentId) || paymentId <= 0) {
+        console.error('❌ [RECON] ID de pagamento inválido (não é número positivo):', mpId);
+        continue;
+      }
+
+      try {
+        const resp = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
+          headers: { Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}` },
+          timeout: 5000
+        });
+        const status = resp?.data?.status;
+        if (status === 'approved') {
+          let { error: updError } = await supabase
+            .from('pagamentos_pix')
+            .update({ status: 'approved', updated_at: new Date().toISOString() })
+            .eq('external_id', mpId);
+          if (updError) {
+            const alt = await supabase
+              .from('pagamentos_pix')
+              .update({ status: 'approved', updated_at: new Date().toISOString() })
+              .eq('payment_id', mpId);
+            if (alt.error) {
+              console.error('❌ [RECON] Falha ao aprovar registro:', alt.error.message);
+              continue;
+            }
+          }
+
+          const credit = (p.amount ?? p.valor ?? 0);
+          if (credit > 0) {
+            // ✅ FASE 1: Usar FinancialService ACID para crédito
+            const addBalanceResult = await FinancialService.addBalance(
+              p.usuario_id,
+              parseFloat(credit),
+              {
+                description: 'Depósito via PIX (Reconciliação)',
+                referenceId: mpId ? parseInt(String(mpId).replace(/\D/g, '')) || null : null,
+                referenceType: 'deposito'
+              }
+            );
+
+            if (!addBalanceResult.success) {
+              console.error(`❌ [RECON] Erro ao creditar saldo ACID para pagamento ${mpId}:`, addBalanceResult.error);
+            } else {
+              console.log(`✅ [RECON] Pagamento ${mpId} aprovado e saldo +${credit} aplicado ACID ao usuário ${p.usuario_id} (saldo: ${addBalanceResult.data.oldBalance} → ${addBalanceResult.data.newBalance})`);
+            }
+          }
+        }
+      } catch (mpErr) {
+        console.log(`⚠️ [RECON] Erro consultando MP ${mpId}:`, mpErr.response?.data || mpErr.message);
+      }
+    }
+  } catch (err) {
+    console.error('❌ [RECON] Erro geral:', err.message);
+  } finally {
+    reconciling = false;
+  }
+}
+
+// Agendar reconciliação (habilitado por padrão)
+if (process.env.MP_RECONCILE_ENABLED !== 'false') {
+  const intervalMs = parseInt(process.env.MP_RECONCILE_INTERVAL_MS || '60000', 10);
+  setInterval(reconcilePendingPayments, Math.max(30000, intervalMs));
+  console.log(`🕒 [RECON] Reconciliação de PIX pendentes ativa a cada ${Math.round(intervalMs / 1000)}s`);
+}
+
+// =====================================================
+// ROTAS DE SAÚDE E MONITORAMENTO
+// =====================================================
+// ✅ FASE 9 ETAPA 3: Rotas movidas para systemRoutes.js
+// Rotas abaixo foram removidas e estão em routes/systemRoutes.js:
+// - GET /robots.txt
+// - GET /
+// - GET /health
+// - GET /api/metrics
+// - GET /api/monitoring/metrics
+// - GET /api/monitoring/health
+// - GET /meta
+// - GET /api/production-status
+
+// Métricas globais - REMOVIDA (agora em systemRoutes.js)
+
+// =====================================================
+// INICIALIZAÇÃO DO SERVIDOR
+// =====================================================
+
+async function startServer() {
+  try {
+    // Validar variáveis obrigatórias
+    if (!process.env.JWT_SECRET) {
+      console.error('❌ [ENV] JWT_SECRET não configurado');
+      process.exit(1);
+    }
+
+    // Conectar Supabase
+    await connectSupabase();
+    
+    // Testar Mercado Pago
+    await testMercadoPago();
+    
+    // Carregar contador global
+    if (dbConnected && supabase) {
+      try {
+        const { data: metrics, error } = await supabase
+          .from('metricas_globais')
+          .select('contador_chutes_global, ultimo_gol_de_ouro')
+          .eq('id', 1)
+          .single();
+
+        if (!error && metrics) {
+          contadorChutesGlobal = metrics.contador_chutes_global || 0;
+          ultimoGolDeOuro = metrics.ultimo_gol_de_ouro || 0;
+          console.log(`📊 [METRICS] Contador carregado: ${contadorChutesGlobal} chutes, último Gol de Ouro: ${ultimoGolDeOuro}`);
+        }
+      } catch (error) {
+        console.error('❌ [METRICS] Erro ao carregar contador:', error);
+      }
+    }
+    
+    // ✅ FASE 9: Injetar dependências do servidor no SystemController
+    const SystemController = require('./controllers/systemController');
+    SystemController.injectDependencies({
+      dbConnected,
+      mercadoPagoConnected,
+      contadorChutesGlobal,
+      ultimoGolDeOuro
+    });
+    
+    // Sistema de monitoramento avançado
+const monitoringMetrics = {
+  requests: { total: 0, success: 0, errors: 0, avgResponseTime: 0 },
+  users: { active: 0, registered: 0, online: 0 },
+  payments: { total: 0, success: 0, pending: 0, failed: 0 },
+  games: { totalShots: 0, goals: 0, goldenGoals: 0 },
+  performance: { memoryUsage: 0, cpuUsage: 0, uptime: 0 }
+};
+
+// Middleware de monitoramento avançado
+app.use((req, res, next) => {
+  const startTime = Date.now();
+  
+  // Incrementar contador de requisições
+  monitoringMetrics.requests.total++;
+  
+  // Interceptar resposta
+  const originalSend = res.send;
+  res.send = function(data) {
+    const responseTime = Date.now() - startTime;
+    
+    // Atualizar métricas
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      monitoringMetrics.requests.success++;
+    } else {
+      monitoringMetrics.requests.errors++;
+    }
+    
+    // Calcular tempo médio de resposta
+    monitoringMetrics.requests.avgResponseTime = 
+      (monitoringMetrics.requests.avgResponseTime + responseTime) / 2;
+    
+    // Log estruturado
+    console.log(`📊 [MONITORING] ${req.method} ${req.url} - ${res.statusCode} - ${responseTime}ms`);
+    
+    // Chamar método original
+    originalSend.call(this, data);
+  };
+  
+  next();
+});
+
+// Endpoints de monitoramento - REMOVIDOS (agora em systemRoutes.js)
+// - GET /api/monitoring/metrics
+// - GET /api/monitoring/health
+// - GET /meta
+
+// Endpoint para alterar senha (após login)
+app.put('/api/auth/change-password', authenticateToken, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Senha atual e nova senha são obrigatórias'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Nova senha deve ter pelo menos 6 caracteres'
+      });
+    }
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível' 
+      });
+    }
+
+    // Buscar usuário atual
+    const { data: user, error: userError } = await supabase
+        .from('usuarios')
+        .select('*')
+      .eq('id', req.user.userId)
+      .eq('ativo', true)
+        .single();
+
+    if (userError || !user) {
+        return res.status(404).json({
+          success: false,
+          message: 'Usuário não encontrado'
+        });
+      }
+
+    // Verificar senha atual
+    const currentPasswordValid = await bcrypt.compare(currentPassword, user.senha_hash);
+    if (!currentPasswordValid) {
+      return res.status(401).json({
+          success: false,
+        message: 'Senha atual incorreta'
+        });
+      }
+
+    // Gerar hash da nova senha
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Atualizar senha no banco
+      const { error: updateError } = await supabase
+        .from('usuarios')
+      .update({ senha_hash: hashedNewPassword })
+      .eq('id', user.id);
+
+      if (updateError) {
+      console.error('❌ [CHANGE-PASSWORD] Erro ao atualizar senha:', updateError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor'
+      });
+    }
+
+    // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
+    const sanitizedEmailChangePassword = typeof user.email === 'string' ? user.email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(user.email);
+    const logMessageChangePassword = `✅ [CHANGE-PASSWORD] Senha alterada para usuário: ${sanitizedEmailChangePassword}`;
+    console.log(logMessageChangePassword);
+    
+    res.json({
+      success: true,
+      message: 'Senha alterada com sucesso'
+    });
+    
+  } catch (error) {
+    console.error('❌ [CHANGE-PASSWORD] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Endpoint /auth/login para compatibilidade (implementação direta)
+app.post('/auth/login', async (req, res) => {
+  console.log('🔄 [COMPATIBILITY] Endpoint /auth/login chamado diretamente');
+  
+  try {
+    const { email, password } = req.body;
+    
+    // Validar entrada
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email e senha são obrigatórios'
+      });
+    }
+    
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({ 
+        success: false,
+        message: 'Sistema temporariamente indisponível' 
+      });
+    }
+    
+    // Buscar usuário no Supabase
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('email', email)
+      .eq('ativo', true)
+      .single();
+    
+    if (userError || !user) {
+      console.log('❌ [LOGIN] Usuário não encontrado:', email);
+      return res.status(401).json({
+      success: false,
+        message: 'Credenciais inválidas'
+      });
+    }
+    
+    // Verificar senha
+    const senhaValida = await bcrypt.compare(password, user.senha_hash);
+    if (!senhaValida) {
+      console.log('❌ [LOGIN] Senha inválida para:', email);
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciais inválidas'
+      });
+    }
+    
+    // Usuário deve depositar para ter saldo - sem crédito automático
+    
+    // Gerar token JWT
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+    
+    console.log('✅ [LOGIN] Login realizado com sucesso:', email);
+    
+    res.json({
+      success: true,
+      message: 'Login realizado com sucesso',
+      token: token,
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        saldo: user.saldo,
+        tipo: user.tipo
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ [COMPATIBILITY] Erro no endpoint login:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// =====================================================
+// MIDDLEWARE DE AUTENTICAÇÃO ADMIN
+// =====================================================
+const authAdmin = (req, res, next) => {
+  const adminToken = req.headers['x-admin-token'];
+  
+  if (!adminToken) {
+    return res.status(401).json({
+      success: false,
+      error: 'Token de administrador não fornecido',
+      message: 'Header x-admin-token é obrigatório'
+    });
+  }
+  
+  if (adminToken !== process.env.ADMIN_TOKEN) {
+    return res.status(403).json({
+      success: false,
+      error: 'Acesso negado',
+      message: 'Token de administrador inválido'
+    });
+  }
+  
+  next();
+};
+
+// =====================================================
+// ROTAS ADMIN - RELATÓRIOS E ESTATÍSTICAS
+// =====================================================
+const AdminController = require('./controllers/adminController');
+
+// Estatísticas gerais
+app.get('/api/admin/stats', authAdmin, AdminController.getGeneralStats);
+app.get('/api/admin/game-stats', authAdmin, AdminController.getGameStats);
+app.get('/api/admin/users', authAdmin, AdminController.getUsers);
+app.get('/api/admin/financial-report', authAdmin, AdminController.getFinancialReport);
+app.get('/api/admin/top-players', authAdmin, AdminController.getTopPlayers);
+app.get('/api/admin/recent-transactions', authAdmin, AdminController.getRecentTransactions);
+app.get('/api/admin/recent-shots', authAdmin, AdminController.getRecentShots);
+app.get('/api/admin/weekly-report', authAdmin, AdminController.getWeeklyReport);
+
+// Rotas legadas (POST) - manter compatibilidade
+app.post('/api/admin/relatorio-semanal', authAdmin, AdminController.getWeeklyReport);
+app.post('/api/admin/estatisticas-gerais', authAdmin, AdminController.getGeneralStats);
+app.post('/api/admin/top-jogadores', authAdmin, AdminController.getTopPlayers);
+app.post('/api/admin/transacoes-recentes', authAdmin, AdminController.getRecentTransactions);
+app.post('/api/admin/chutes-recentes', authAdmin, AdminController.getRecentShots);
+app.get('/api/admin/lista-usuarios', authAdmin, AdminController.getUsers);
+
+// =====================================================
+// BOOTSTRAP ADMIN (one-shot) - promove o usuário autenticado a admin
+// Somente se ainda não houver nenhum admin no sistema
+// =====================================================
+app.post('/api/admin/bootstrap', authenticateToken, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+    // Verificar se já existe algum admin
+    const { count, error: countError } = await supabase
+      .from('usuarios')
+      .select('*', { count: 'exact', head: true })
+      .eq('tipo', 'admin');
+    if (countError) {
+      console.error('❌ [ADMIN-BOOTSTRAP] Erro ao contar admins:', countError);
+      return res.status(500).json({ success: false, message: 'Erro ao verificar admins' });
+    }
+    if ((count || 0) > 0) {
+      return res.status(403).json({
+        success: false,
+        message: 'Já existe um administrador configurado'
+      });
+    }
+    // Promover o usuário atual
+    const { error: promoteError } = await supabase
+      .from('usuarios')
+      .update({ tipo: 'admin', updated_at: new Date().toISOString() })
+      .eq('id', req.user.userId);
+    if (promoteError) {
+      console.error('❌ [ADMIN-BOOTSTRAP] Erro ao promover admin:', promoteError);
+      return res.status(500).json({ success: false, message: 'Erro ao promover usuário' });
+    }
+    console.log(`🛡️ [ADMIN-BOOTSTRAP] Usuário ${req.user.userId} promovido a admin`);
+    res.json({ success: true, message: 'Administrador criado com sucesso' });
+  } catch (error) {
+    console.error('❌ [ADMIN-BOOTSTRAP] Erro:', error);
+    res.status(500).json({ success: false, message: 'Erro interno do servidor' });
+  }
+});
+
+// Endpoint para verificar se sistema está em produção real
+// ✅ FASE 9 ETAPA 3: Rota /api/production-status removida (agora em systemRoutes.js)
+
+// Endpoint de debug para verificar token
+app.get('/api/debug/token', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  console.log('🔍 [DEBUG] Headers recebidos:', req.headers);
+  console.log('🔍 [DEBUG] Auth header:', authHeader);
+  console.log('🔍 [DEBUG] Token extraído:', token);
+  
+  if (!token) {
+    return res.status(401).json({
+        success: false,
+      message: 'Token não fornecido',
+      debug: {
+        authHeader,
+        token,
+        headers: req.headers
+      }
+    });
+  }
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('✅ [DEBUG] Token válido:', decoded);
+    
+    res.json({
+      success: true,
+      message: 'Token válido',
+      debug: {
+        decoded,
+        authHeader,
+        token: token.substring(0, 20) + '...'
+      }
+    });
+  } catch (error) {
+    console.log('❌ [DEBUG] Token inválido:', error.message);
+    res.status(403).json({
+        success: false,
+      message: 'Token inválido',
+      debug: {
+        error: error.message,
+        authHeader,
+        token: token.substring(0, 20) + '...'
+      }
+    });
+  }
+});
+
+// Endpoint /usuario/perfil para compatibilidade (implementação direta)
+app.get('/usuario/perfil', authenticateToken, async (req, res) => {
+  console.log('🔄 [COMPATIBILITY] Endpoint /usuario/perfil chamado diretamente');
+  
+  try {
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({ 
+        success: false,
+        message: 'Sistema temporariamente indisponível' 
+      });
+    }
+
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('id', req.user.userId)
+      .eq('ativo', true)
+      .single();
+
+    if (userError) {
+      console.error('❌ [PERFIL] Erro ao buscar usuário:', userError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao carregar perfil do usuário'
+      });
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+
+    console.log('✅ [PERFIL] Usuário encontrado:', user.email);
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          saldo: user.saldo,
+          tipo: user.tipo,
+          total_apostas: user.total_apostas,
+          total_ganhos: user.total_ganhos,
+          created_at: user.created_at
+        }
+      }
+    });
+  } catch (error) {
+    console.error('❌ [COMPATIBILITY] Erro no endpoint perfil:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Endpoint /api/fila/entrar para compatibilidade
+app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
+  console.log('🔄 [COMPATIBILITY] Endpoint /api/fila/entrar chamado');
+  
+  try {
+    // Simular entrada na fila (implementação básica)
+    res.json({
+      success: true,
+      data: {
+        message: 'Entrada na fila realizada com sucesso',
+        // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomInt ao invés de Math.random()
+        position: crypto.randomInt(1, 11), // 1 a 10
+        estimatedWait: crypto.randomInt(1, 6) // 1 a 5
+      }
+    });
+  } catch (error) {
+    console.error('❌ [COMPATIBILITY] Erro no endpoint fila:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Middleware de tratamento de erros global (deve ser o último)
+    app.use((err, req, res, next) => {
+      console.error('❌ [ERROR] Erro não tratado:', err);
+      
+      // Incrementar contador de erros
+      monitoringMetrics.requests.errors++;
+      
+      // Log detalhado do erro
+      console.error('❌ [ERROR] Stack:', err.stack);
+      console.error('❌ [ERROR] URL:', req.url);
+      console.error('❌ [ERROR] Method:', req.method);
+      console.error('❌ [ERROR] IP:', req.ip);
+      
+      // Resposta padronizada
+      res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor',
+        timestamp: new Date().toISOString(),
+        requestId: req.headers['x-request-id'] || 'unknown'
+      });
+    });
+
+    // Middleware global de tratamento de erros
+    app.use((err, req, res, next) => {
+      try {
+        logger.error('Unhandled error', {
+          path: req.originalUrl,
+          method: req.method,
+          ip: req.ip,
+          message: err.message,
+          stack: err.stack
+        });
+      } catch (_) {
+        console.error('❌ [ERROR] Unhandled error (logger fallback):', err);
+      }
+      res.status(500).json({
+        success: false,
+        message: 'Erro interno do servidor'
+      });
+    });
+
+    // Middleware para rotas não encontradas (deve ser o último)
+    app.use('*', (req, res) => {
+      console.log(`❌ [404] Rota não encontrada: ${req.method} ${req.originalUrl}`);
+      res.status(404).json({
+        success: false,
+        message: 'Rota não encontrada',
+        path: req.originalUrl,
+        method: req.method
+      });
+    });
+    
+    // Iniciar servidor HTTP e WebSocket
+    const server = http.createServer(app);
+    const wss = new WebSocketManager(server);
+    server.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 [SERVER] Servidor iniciado na porta ${PORT}`);
+      console.log(`🌐 [SERVER] Ambiente: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📊 [SERVER] Supabase: ${dbConnected ? 'Conectado' : 'Desconectado'}`);
+      console.log(`💳 [SERVER] Mercado Pago: ${mercadoPagoConnected ? 'Conectado' : 'Desconectado'}`);
+      console.log('✅ [SERVER] Sistema de monitoramento desabilitado temporariamente');
+    });
+    
+  } catch (error) {
+    console.error('❌ [SERVER] Erro ao iniciar servidor:', error);
+    process.exit(1);
+  }
+}
+
+// Iniciar servidor
+startServer();
+
+// =====================================================
+// SERVIDOR SIMPLIFICADO v1.2.0 - DEPLOY FUNCIONAL
+// =====================================================

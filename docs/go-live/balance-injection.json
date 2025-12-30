@@ -1,0 +1,8 @@
+{
+  "userId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+  "email": "test_v16_diag_1764865077736@example.com",
+  "amount": 50,
+  "success": false,
+  "error": "TypeError: fetch failed",
+  "note": "Adicionar saldo manualmente via Supabase Dashboard"
+}

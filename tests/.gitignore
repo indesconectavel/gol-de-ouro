@@ -1,0 +1,24 @@
+# Dependências
+node_modules/
+
+# Relatórios (manter latest-report.md)
+reports/*.md
+!reports/latest-report.md
+
+# Logs
+*.log
+logs/
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.*.local
+
+# Evidências (se salvas)
+evidencias/
+
+# Arquivos temporários
+*.tmp
+*.temp
+.DS_Store
+

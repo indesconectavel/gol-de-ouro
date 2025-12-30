@@ -1,0 +1,65 @@
+{
+  "inicio": "2025-11-25T19:23:30.640Z",
+  "testes": [
+    {
+      "nome": "Health Check",
+      "sucesso": true,
+      "detalhes": "Status: 200",
+      "tipo": "info",
+      "timestamp": "2025-11-25T19:23:31.009Z"
+    },
+    {
+      "nome": "Registro de Usuário",
+      "sucesso": true,
+      "detalhes": "Usuário criado com sucesso",
+      "tipo": "info",
+      "timestamp": "2025-11-25T19:23:31.370Z"
+    },
+    {
+      "nome": "Token Inválido Retorna 401",
+      "sucesso": true,
+      "detalhes": "Status correto",
+      "tipo": "info",
+      "timestamp": "2025-11-25T19:23:31.409Z"
+    },
+    {
+      "nome": "PIX Criar com QR Code",
+      "sucesso": true,
+      "detalhes": "QR code/copy-paste presente",
+      "tipo": "info",
+      "timestamp": "2025-11-25T19:23:34.133Z"
+    },
+    {
+      "nome": "PIX Status",
+      "sucesso": true,
+      "detalhes": "Status: pending",
+      "tipo": "info",
+      "timestamp": "2025-11-25T19:23:34.399Z"
+    },
+    {
+      "nome": "WebSocket Autenticação",
+      "sucesso": false,
+      "detalhes": "Usuário não encontrado ou inativo",
+      "tipo": "info",
+      "timestamp": "2025-11-25T19:23:39.765Z"
+    },
+    {
+      "nome": "Admin Stats",
+      "sucesso": true,
+      "detalhes": "Stats obtidos",
+      "tipo": "info",
+      "timestamp": "2025-11-25T19:23:39.921Z"
+    },
+    {
+      "nome": "Admin Chutes",
+      "sucesso": false,
+      "detalhes": "Ainda retorna erro 500",
+      "tipo": "info",
+      "timestamp": "2025-11-25T19:23:39.987Z"
+    }
+  ],
+  "sucessos": 6,
+  "falhas": 2,
+  "avisos": 0,
+  "fim": "2025-11-25T19:23:39.989Z"
+}

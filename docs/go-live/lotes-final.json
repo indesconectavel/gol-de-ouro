@@ -1,0 +1,15 @@
+{
+  "chutes": {
+    "total": 10,
+    "sucesso": 0,
+    "falhas": 10
+  },
+  "lote": {
+    "fechado": false,
+    "chutesRegistrados": 0
+  },
+  "persistencia": {
+    "chutesRegistrados": 0,
+    "note": "Consulta Supabase requer acesso direto ou endpoint admin"
+  }
+}

@@ -1,0 +1,65 @@
+warning: in the working copy of '.github/workflows/backend-deploy.yml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.github/workflows/tests.yml', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'controllers/authController.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'controllers/paymentController.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'controllers/usuarioController.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/mcps/GUIA-CONFIGURAR-VARIAVEIS-AMBIENTE.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'goldeouro-mobile/app.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'goldeouro-mobile/package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'goldeouro-player/src/services/versionService.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'goldeouro-player/vercel.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'middlewares/authMiddleware.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'middlewares/security-performance.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'routes/adminRoutes.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'routes/authRoutes.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'routes/mpWebhook.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'routes/paymentRoutes.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'scripts/test-websocket.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server-fly-deploy.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server-fly.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/websocket.js', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tatus', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'utils/pix-validator.js', LF will be replaced by CRLF the next time Git touches it
+README-DEPLOY.md
+controllers/authController.js
+controllers/gameController.js
+controllers/paymentController.js
+controllers/usuarioController.js
+docs/mcps/GUIA-CONFIGURAR-VARIAVEIS-AMBIENTE.md
+docs/seguranca/AUDITORIA-COMPLETA-PR-18-FINAL.md
+docs/seguranca/AUDITORIA-COMPLETA-WEBHOOK-AVANCADA.md
+docs/seguranca/AUDITORIA-FINAL-PR-18-COMPLETA.md
+docs/seguranca/AUDITORIA-WEBHOOK-E-CORRECOES-FINAL.md
+docs/seguranca/CORRECOES-COMPLETAS-TODOS-ALERTAS.md
+docs/seguranca/CORRECOES-FINAIS-CODEQL-ALERTAS.md
+docs/seguranca/GUIA-APROVAR-E-MERGEAR-PR-18.md
+docs/seguranca/GUIA-MERGE-PR-18.md
+docs/seguranca/MERGE-REALIZADO-PR-18.md
+docs/seguranca/RESUMO-AUDITORIA-PR-18-APROVACAO.md
+docs/seguranca/RESUMO-CORRECOES-ALERTAS-ALTA-SEVERIDADE.md
+docs/seguranca/RESUMO-FINAL-COMPLETO-CORRECOES.md
+docs/seguranca/RESUMO-FINAL-COMPLETO-PR-18.md
+docs/seguranca/REVISAO-COMPLETA-TODAS-CORRECOES.md
+goldeouro-admin
+goldeouro-mobile/App.js
+goldeouro-mobile/app.json
+goldeouro-mobile/package.json
+goldeouro-mobile/src/screens/GameScreen.js
+goldeouro-mobile/src/screens/ProfileScreen.js
+goldeouro-mobile/src/services/AuthService.js
+goldeouro-mobile/src/services/GameService.js
+goldeouro-player/src/components/VersionWarning.jsx
+goldeouro-player/src/services/versionService.js
+goldeouro-player/vercel.json
+middlewares/authMiddleware.js
+package-lock.json
+package.json
+routes/adminRoutes.js
+routes/authRoutes.js
+routes/gameRoutes.js
+routes/paymentRoutes.js
+routes/usuarioRoutes.js
+scripts/test-websocket.js
+server-fly.js
+src/websocket.js
+tatus

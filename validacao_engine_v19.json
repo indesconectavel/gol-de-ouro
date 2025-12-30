@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-12-09T21:24:42.439Z",
+  "engine_core": {
+    "supabase_unified_config": true,
+    "services": {
+      "LoteService": true,
+      "FinancialService": true,
+      "RewardService": true
+    }
+  },
+  "monitoramento": {
+    "modulo_monitor": true,
+    "monitor_controller": true,
+    "monitor_routes": true,
+    "heartbeat_sender": true
+  },
+  "healthcheck": {
+    "modulo_health": true,
+    "health_routes": true,
+    "system_routes": true
+  },
+  "endpoints": {
+    "game/jogar": true,
+    "lotes/ativo": true,
+    "financial/depositar": true,
+    "financial/sacar": true,
+    "admin/*": true
+  },
+  "resumo": {
+    "core_ok": 4,
+    "core_faltando": 0,
+    "monitoramento_ok": 4,
+    "monitoramento_faltando": 0,
+    "healthcheck_ok": 3,
+    "healthcheck_faltando": 0,
+    "endpoints_ok": 5,
+    "endpoints_faltando": 0
+  }
+}

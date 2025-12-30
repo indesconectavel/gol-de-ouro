@@ -1,0 +1,408 @@
+{
+  "timestamp": "2025-12-07T00:00:00Z",
+  "versao": "V19.0.0",
+  "modo": "READ-ONLY",
+  "status_geral": "CODIGO_IMPLEMENTADO_MIGRATION_PENDENTE",
+  
+  "services": {
+    "LoteService": {
+      "arquivo": "services/loteService.js",
+      "status": "IMPLEMENTADO",
+      "linhas": 159,
+      "metodos": {
+        "getOrCreateLote": {
+          "status": "IMPLEMENTADO",
+          "rpc_usada": "rpc_get_or_create_lote",
+          "linhas": "23-60"
+        },
+        "updateLoteAfterShot": {
+          "status": "IMPLEMENTADO",
+          "rpc_usada": "rpc_update_lote_after_shot",
+          "linhas": "73-109"
+        },
+        "syncActiveLotes": {
+          "status": "IMPLEMENTADO",
+          "rpc_usada": "rpc_get_active_lotes",
+          "linhas": "116-155"
+        }
+      },
+      "integracao": {
+        "supabase": "database/supabase-config",
+        "tratamento_erros": true,
+        "logs_estruturados": true
+      }
+    },
+    
+    "FinancialService": {
+      "arquivo": "services/financialService.js",
+      "status": "IMPLEMENTADO",
+      "linhas": 428,
+      "metodos": {
+        "addBalance": {
+          "status": "IMPLEMENTADO",
+          "rpc_usada": "rpc_add_balance",
+          "acid": true,
+          "linhas": "26-87"
+        },
+        "deductBalance": {
+          "status": "IMPLEMENTADO",
+          "rpc_usada": "rpc_deduct_balance",
+          "acid": true,
+          "linhas": "102-177"
+        },
+        "transferBalance": {
+          "status": "IMPLEMENTADO",
+          "rpc_usada": "rpc_transfer_balance",
+          "acid": true,
+          "linhas": "189-256"
+        },
+        "getBalance": {
+          "status": "IMPLEMENTADO",
+          "rpc_usada": "rpc_get_balance",
+          "linhas": "266-310"
+        },
+        "createTransaction": {
+          "status": "IMPLEMENTADO",
+          "linhas": "323-388"
+        },
+        "hasSufficientBalance": {
+          "status": "IMPLEMENTADO",
+          "linhas": "398-424"
+        }
+      },
+      "caracteristicas": {
+        "operacoes_acid": true,
+        "row_level_locking": true,
+        "tratamento_erros": true,
+        "validacoes": true
+      }
+    },
+    
+    "RewardService": {
+      "arquivo": "services/rewardService.js",
+      "status": "IMPLEMENTADO",
+      "linhas": 260,
+      "metodos": {
+        "creditReward": {
+          "status": "IMPLEMENTADO",
+          "integracao": "FinancialService",
+          "linhas": "29-139"
+        },
+        "getUserRewards": {
+          "status": "IMPLEMENTADO",
+          "rpc_usada": "rpc_get_user_rewards",
+          "linhas": "152-198"
+        },
+        "getUserRewardStats": {
+          "status": "IMPLEMENTADO",
+          "linhas": "207-256"
+        }
+      },
+      "caracteristicas": {
+        "rastreabilidade": true,
+        "integracao_acid": true,
+        "tipos_suportados": [
+          "gol_normal",
+          "gol_de_ouro",
+          "bonus",
+          "promocao",
+          "outro"
+        ]
+      }
+    }
+  },
+  
+  "controllers": {
+    "GameController": {
+      "arquivo": "controllers/gameController.js",
+      "status": "IMPLEMENTADO",
+      "linhas": 537,
+      "metodo_principal": {
+        "shoot": {
+          "status": "IMPLEMENTADO",
+          "linhas": "215-525",
+          "integracao": {
+            "LoteService": true,
+            "RewardService": true,
+            "FinancialService": false,
+            "validacao_integridade": true
+          },
+          "dependencias_injetadas": [
+            "dbConnected",
+            "supabase",
+            "getOrCreateLoteByValue",
+            "batchConfigs",
+            "contadorChutesGlobal",
+            "ultimoGolDeOuro",
+            "saveGlobalCounter",
+            "incrementGlobalCounter",
+            "setUltimoGolDeOuro"
+          ]
+        }
+      },
+      "outros_metodos": {
+        "getGameStatus": "IMPLEMENTADO",
+        "registerShot": "IMPLEMENTADO",
+        "getGameStats": "IMPLEMENTADO",
+        "getShotHistory": "IMPLEMENTADO"
+      }
+    },
+    
+    "MonitorController": {
+      "arquivo": "src/modules/monitor/monitor.controller.js",
+      "status": "IMPLEMENTADO",
+      "linhas": 198,
+      "metodos": {
+        "getMonitor": {
+          "status": "IMPLEMENTADO",
+          "problema": "Tenta acessar system_heartbeat que não existe",
+          "linha_problema": 136,
+          "linhas": "51-67"
+        },
+        "getMetrics": {
+          "status": "IMPLEMENTADO",
+          "linhas": "72-83"
+        },
+        "collectMetrics": {
+          "status": "IMPLEMENTADO",
+          "linhas": "88-162"
+        }
+      },
+      "metricas_prometheus": {
+        "lotesAtivosGauge": true,
+        "chutesTotalCounter": true,
+        "premiosTotalCounter": true,
+        "errors5xxCounter": true,
+        "latenciaChuteHistogram": true
+      }
+    }
+  },
+  
+  "rotas": {
+    "monitorRoutes": {
+      "arquivo": "src/modules/monitor/monitor.routes.js",
+      "status": "IMPLEMENTADO",
+      "endpoints": {
+        "GET /monitor": {
+          "status": "IMPLEMENTADO",
+          "controller": "MonitorController.getMonitor",
+          "problema": "Retorna HTTP 500 se system_heartbeat não existir"
+        },
+        "GET /metrics": {
+          "status": "IMPLEMENTADO",
+          "controller": "MonitorController.getMetrics",
+          "funcional": true
+        }
+      },
+      "registrado_em": "server-fly.js (linhas 397-398)"
+    },
+    
+    "gameRoutes": {
+      "arquivo": "routes/gameRoutes.js",
+      "status": "IMPLEMENTADO",
+      "endpoints": {
+        "POST /api/games/shoot": {
+          "status": "IMPLEMENTADO",
+          "controller": "GameController.shoot",
+          "autenticacao": true
+        }
+      }
+    },
+    
+    "adminRoutes": {
+      "arquivo": "routes/adminRoutes.js",
+      "status": "IMPLEMENTADO",
+      "endpoints": 13,
+      "autenticacao": "x-admin-token"
+    }
+  },
+  
+  "heartbeat": {
+    "arquivo": "src/scripts/heartbeat_sender.js",
+    "status": "IMPLEMENTADO",
+    "linhas": 84,
+    "funcionalidades": {
+      "sendHeartbeat": {
+        "status": "IMPLEMENTADO",
+        "linhas": "12-41",
+        "tabela": "system_heartbeat",
+        "problema": "Tabela não existe (requer migration)"
+      },
+      "startHeartbeat": {
+        "status": "IMPLEMENTADO",
+        "linhas": "43-68",
+        "intervalo_padrao": "5000ms",
+        "variavel_ambiente": "HEARTBEAT_INTERVAL_MS"
+      },
+      "stopHeartbeat": {
+        "status": "IMPLEMENTADO",
+        "linhas": "70-76"
+      }
+    },
+    "integracao": {
+      "server_fly_js": {
+        "linha": 798,
+        "condicao": "USE_DB_QUEUE === 'true' || USE_ENGINE_V19 === 'true'",
+        "status": "CONFIGURADO"
+      }
+    }
+  },
+  
+  "scripts_validacao": {
+    "validate_heartbeat_v19": {
+      "arquivo": "src/scripts/validate_heartbeat_v19.js",
+      "status": "IMPLEMENTADO"
+    },
+    "validate_monitor_endpoint": {
+      "arquivo": "src/scripts/validate_monitor_endpoint.js",
+      "status": "IMPLEMENTADO"
+    },
+    "validate_metrics_endpoint": {
+      "arquivo": "src/scripts/validate_metrics_endpoint.js",
+      "status": "IMPLEMENTADO"
+    },
+    "validate_engine_v19_final": {
+      "arquivo": "src/scripts/validate_engine_v19_final.js",
+      "status": "IMPLEMENTADO"
+    },
+    "validate_server_startup_v19": {
+      "arquivo": "src/scripts/validate_server_startup_v19.js",
+      "status": "IMPLEMENTADO"
+    }
+  },
+  
+  "variaveis_ambiente": {
+    "USE_DB_QUEUE": {
+      "status": "NAO_CONFIGURADO",
+      "necessario": true,
+      "padrao": "true",
+      "impacto": "Heartbeat não inicia"
+    },
+    "USE_ENGINE_V19": {
+      "status": "NAO_CONFIGURADO",
+      "necessario": true,
+      "padrao": "true",
+      "impacto": "ENGINE V19 não ativa"
+    },
+    "ENGINE_VERSION": {
+      "status": "NAO_CONFIGURADO",
+      "necessario": false,
+      "padrao": "V19",
+      "impacto": "Apenas informativo"
+    },
+    "HEARTBEAT_ENABLED": {
+      "status": "NAO_CONFIGURADO",
+      "necessario": false,
+      "padrao": "true",
+      "impacto": "Apenas informativo"
+    },
+    "HEARTBEAT_INTERVAL_MS": {
+      "status": "NAO_CONFIGURADO",
+      "necessario": false,
+      "padrao": "5000",
+      "impacto": "Intervalo padrão usado"
+    }
+  },
+  
+  "codigo_obsoleto": {
+    "filaRoutes": {
+      "arquivo": "routes/filaRoutes.js",
+      "status": "OBSOLETO",
+      "usado": false,
+      "registrado": false,
+      "acao": "ARQUIVAR"
+    },
+    "queueService": {
+      "arquivo": "services/queueService.js",
+      "status": "OBSOLETO",
+      "usado": false,
+      "conteudo": "Vazio com comentário OBSOLETO",
+      "acao": "ARQUIVAR"
+    },
+    "analyticsRoutes_duplicadas": {
+      "arquivos": [
+        "routes/analyticsRoutes_v1.js",
+        "routes/analyticsRoutes_fixed.js",
+        "routes/analyticsRoutes_optimized.js",
+        "routes/analyticsRoutes.js.backup"
+      ],
+      "status": "DUPLICADOS",
+      "usados": false,
+      "acao": "REMOVER"
+    }
+  },
+  
+  "problemas_identificados": [
+    {
+      "severidade": "CRITICO",
+      "componente": "MonitorController",
+      "problema": "Tenta acessar system_heartbeat que não existe",
+      "linha": 136,
+      "impacto": "Endpoint /monitor retorna HTTP 500",
+      "solucao": "Aplicar Migration V19"
+    },
+    {
+      "severidade": "ALTO",
+      "componente": "Heartbeat Sender",
+      "problema": "Tabela system_heartbeat não existe",
+      "impacto": "Heartbeat não funciona",
+      "solucao": "Aplicar Migration V19"
+    },
+    {
+      "severidade": "MEDIO",
+      "componente": "Variáveis de Ambiente",
+      "problema": "USE_DB_QUEUE e USE_ENGINE_V19 não configurados",
+      "impacto": "Heartbeat não inicia automaticamente",
+      "solucao": "Configurar variáveis no .env"
+    },
+    {
+      "severidade": "BAIXO",
+      "componente": "Código Obsoleto",
+      "problema": "Arquivos obsoletos presentes",
+      "impacto": "Confusão e manutenção desnecessária",
+      "solucao": "Arquivar ou remover"
+    }
+  ],
+  
+  "pontos_positivos": [
+    "Services V19 bem implementados e estruturados",
+    "Operações ACID garantidas via RPCs",
+    "Sistema de monitoramento V19 implementado",
+    "Heartbeat sender implementado",
+    "Scripts de validação criados",
+    "Injeção de dependências funcionando",
+    "Tratamento de erros completo",
+    "Logs estruturados"
+  ],
+  
+  "acoes_necessarias": [
+    {
+      "prioridade": 1,
+      "acao": "Aplicar Migration V19 no Supabase",
+      "tempo_estimado": "5-10 minutos"
+    },
+    {
+      "prioridade": 2,
+      "acao": "Configurar variáveis de ambiente",
+      "tempo_estimado": "2 minutos"
+    },
+    {
+      "prioridade": 3,
+      "acao": "Validar endpoints após migration",
+      "tempo_estimado": "5 minutos"
+    },
+    {
+      "prioridade": 4,
+      "acao": "Limpar código obsoleto",
+      "tempo_estimado": "15-30 minutos"
+    }
+  ],
+  
+  "status_final": {
+    "codigo": "IMPLEMENTADO",
+    "migration": "PENDENTE",
+    "funcionalidade": "PARCIAL",
+    "pronto_producao": false
+  }
+}
+

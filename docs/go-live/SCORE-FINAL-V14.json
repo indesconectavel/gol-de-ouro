@@ -1,0 +1,49 @@
+{
+  "timestamp": "2025-12-03T22:57:26.540Z",
+  "version": "V14",
+  "sistema": "LOTE_MODERNO",
+  "scores": {
+    "backend": 100,
+    "frontendPlayer": 90,
+    "frontendAdmin": 100,
+    "production": 100,
+    "pix": 100,
+    "websocket": 100,
+    "lotes": 100,
+    "e2e": 75,
+    "mcp": 100,
+    "stress": 100,
+    "security": 95
+  },
+  "minScores": {
+    "backend": 90,
+    "frontendPlayer": 80,
+    "frontendAdmin": 80,
+    "production": 90,
+    "pix": 100,
+    "websocket": 90,
+    "lotes": 100,
+    "e2e": 70,
+    "mcp": 70,
+    "stress": 70,
+    "security": 90
+  },
+  "conditions": {
+    "backend": true,
+    "frontendPlayer": true,
+    "frontendAdmin": true,
+    "production": true,
+    "pix": true,
+    "websocket": true,
+    "lotes": true,
+    "e2e": true,
+    "mcp": true,
+    "stress": true,
+    "security": true
+  },
+  "totalScore": 1060,
+  "maxScore": 930,
+  "errors": [],
+  "warnings": [],
+  "percentual": 113.97849462365592
+}

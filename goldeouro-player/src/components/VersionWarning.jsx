@@ -14,19 +14,28 @@ const VersionWarning = () => {
     // Iniciar verificação periódica
     versionService.startPeriodicCheck();
     
-    // Verificar periodicamente se há avisos
-    const interval = setInterval(() => {
-      if (versionService.shouldShowWarning()) {
-        setShowWarning(true);
-        setWarningMessage(versionService.getWarningMessage());
-        setVersionInfo(versionService.getVersionInfo());
-      } else {
-        setShowWarning(false);
-        setWarningMessage('');
+    // Verificar periodicamente se há avisos (usando método correto)
+    const interval = setInterval(async () => {
+      try {
+        const result = await versionService.checkCompatibility();
+        if (result && !result.compatible) {
+          setShowWarning(true);
+          setWarningMessage(result.warningMessage || 'Versão incompatível detectada');
+          setVersionInfo(result);
+        } else {
+          setShowWarning(false);
+          setWarningMessage('');
+        }
+      } catch (error) {
+        // Silenciar erro - não é crítico
+        console.debug('Erro ao verificar versão:', error);
       }
-    }, 1000);
+    }, 60000); // Verificar a cada 1 minuto em vez de 1 segundo
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      versionService.stopPeriodicCheck();
+    };
   }, []);
 
   const checkVersionCompatibility = async () => {

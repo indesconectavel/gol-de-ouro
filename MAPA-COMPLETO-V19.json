@@ -1,0 +1,432 @@
+{
+  "auditoria": {
+    "versao": "V19.0.0",
+    "data": "2025-12-10",
+    "auditor": "AUDITOR SUPREMO V19",
+    "tipo": "AUDITORIA SUPREMA 360°",
+    "status": "EM_ANDAMENTO"
+  },
+  "estrutura_projeto": {
+    "nome": "goldeouro-backend",
+    "versao": "1.2.0",
+    "node_version": ">=18.0.0",
+    "servidor_principal": "server-fly.js",
+    "arquitetura": "MODULAR_V19"
+  },
+  "modulos": {
+    "admin": {
+      "controllers": ["admin.controller.js"],
+      "routes": ["admin.routes.js"],
+      "services": [],
+      "status": "ATIVO"
+    },
+    "auth": {
+      "controllers": ["auth.controller.js", "usuario.controller.js"],
+      "routes": ["auth.routes.js", "usuario.routes.js"],
+      "services": ["auth.service.js"],
+      "status": "ATIVO"
+    },
+    "chutes": {
+      "controllers": [],
+      "routes": [],
+      "services": [],
+      "status": "LEGACY"
+    },
+    "financial": {
+      "controllers": ["payment.controller.js", "withdraw.controller.js"],
+      "routes": ["payment.routes.js", "withdraw.routes.js"],
+      "services": [
+        "financial.service.js",
+        "pix-mercado-pago.service.js",
+        "pix.service.js",
+        "webhook.service.js"
+      ],
+      "status": "ATIVO",
+      "critico": true
+    },
+    "game": {
+      "controllers": ["game.controller.js"],
+      "routes": ["game.routes.js"],
+      "services": [],
+      "status": "ATIVO",
+      "critico": true
+    },
+    "health": {
+      "controllers": [],
+      "routes": ["health.routes.js"],
+      "services": [],
+      "status": "ATIVO"
+    },
+    "lotes": {
+      "controllers": [],
+      "routes": [],
+      "services": [
+        "lote.service.js",
+        "lote.service.db.js"
+      ],
+      "adapters": ["lote.adapter.js"],
+      "status": "ATIVO",
+      "critico": true
+    },
+    "monitor": {
+      "controllers": ["system.controller.js", "monitor.controller.js"],
+      "routes": ["system.routes.js", "monitor.routes.js"],
+      "services": [],
+      "metrics": ["metrics.js"],
+      "status": "ATIVO",
+      "v19": true
+    },
+    "rewards": {
+      "controllers": [],
+      "routes": [],
+      "services": ["reward.service.js"],
+      "status": "ATIVO",
+      "critico": true
+    },
+    "shared": {
+      "controllers": [],
+      "routes": [],
+      "services": ["email.service.js"],
+      "middleware": ["authMiddleware.js", "response-handler.js"],
+      "utils": ["response-helper.js"],
+      "validators": [
+        "lote-integrity-validator.js",
+        "pix-validator.js",
+        "webhook-signature-validator.js"
+      ],
+      "status": "ATIVO"
+    },
+    "transactions": {
+      "controllers": [],
+      "routes": [],
+      "services": [],
+      "status": "LEGACY"
+    }
+  },
+  "controllers_legacy": {
+    "diretorio": "controllers/",
+    "arquivos": [
+      "adminController.js",
+      "authController.js",
+      "gameController.js",
+      "paymentController.js",
+      "systemController.js",
+      "usuarioController.js",
+      "withdrawController.js"
+    ],
+    "status": "LEGACY - Não usado em V19 modular"
+  },
+  "services_core_v19": {
+    "FinancialService": {
+      "arquivo": "src/modules/financial/services/financial.service.js",
+      "versao": "v4.0",
+      "rpc_functions": [
+        "rpc_add_balance",
+        "rpc_deduct_balance",
+        "rpc_transfer_balance",
+        "rpc_get_balance"
+      ],
+      "status": "CRITICO",
+      "acid": true
+    },
+    "LoteService": {
+      "arquivo": "src/modules/lotes/services/lote.service.js",
+      "versao": "v4.0",
+      "rpc_functions": [
+        "rpc_get_or_create_lote",
+        "rpc_update_lote_after_shot",
+        "rpc_get_active_lotes"
+      ],
+      "status": "CRITICO"
+    },
+    "RewardService": {
+      "arquivo": "src/modules/rewards/services/reward.service.js",
+      "versao": "v4.0",
+      "rpc_functions": [
+        "rpc_register_reward",
+        "rpc_mark_reward_credited"
+      ],
+      "status": "CRITICO"
+    },
+    "WebhookService": {
+      "arquivo": "src/modules/financial/services/webhook.service.js",
+      "versao": "v4.0",
+      "rpc_functions": [
+        "rpc_register_webhook_event",
+        "rpc_check_webhook_event_processed",
+        "rpc_mark_webhook_event_processed"
+      ],
+      "status": "CRITICO",
+      "idempotencia": true
+    }
+  },
+  "validators": {
+    "LoteIntegrityValidator": {
+      "arquivo": "src/modules/shared/validators/lote-integrity-validator.js",
+      "versao": "v1.2.0",
+      "status": "ATIVO",
+      "correcoes_recentes": [
+        "Removida validação restritiva de direções em chutes existentes",
+        "Ajustado filtro de erros em validateBeforeShot"
+      ]
+    },
+    "PixValidator": {
+      "arquivo": "src/modules/shared/validators/pix-validator.js",
+      "status": "ATIVO"
+    },
+    "WebhookSignatureValidator": {
+      "arquivo": "src/modules/shared/validators/webhook-signature-validator.js",
+      "status": "ATIVO"
+    }
+  },
+  "database": {
+    "migration_v19": {
+      "arquivo": "MIGRATION-V19-PARA-SUPABASE.sql",
+      "linhas": 587,
+      "status": "PRONTA_PARA_APLICACAO",
+      "idempotente": true,
+      "conteudo": {
+        "roles": ["backend", "observer", "admin"],
+        "colunas_lotes": [
+          "persisted_global_counter",
+          "synced_at",
+          "posicao_atual"
+        ],
+        "indices": true,
+        "system_heartbeat": true,
+        "rls": true,
+        "policies": true,
+        "rpc_functions": [
+          "rpc_get_or_create_lote",
+          "rpc_update_lote_after_shot"
+        ]
+      }
+    },
+    "rpc_financeiras": {
+      "arquivo": "database/rpc-financial-acid.sql",
+      "status": "SEPARADO",
+      "funcoes": [
+        "rpc_add_balance",
+        "rpc_deduct_balance",
+        "rpc_transfer_balance",
+        "rpc_get_balance"
+      ],
+      "nota": "Não incluído na Migration V19 principal, precisa ser aplicado separadamente"
+    },
+    "schema_lotes": {
+      "arquivo": "database/schema-lotes-persistencia.sql",
+      "status": "ATIVO",
+      "funcoes": [
+        "rpc_get_or_create_lote",
+        "rpc_update_lote_after_shot",
+        "rpc_get_active_lotes"
+      ]
+    },
+    "tabelas_criticas": [
+      "usuarios",
+      "lotes",
+      "chutes",
+      "transacoes",
+      "rewards",
+      "webhook_events",
+      "system_heartbeat"
+    ]
+  },
+  "scripts_v19": {
+    "total": 84,
+    "categorias": {
+      "validacao": [
+        "validate_engine_v19_final.js",
+        "validate_migration_v19.js",
+        "validate_heartbeat_v19.js",
+        "validate_rpc_functions_v19.js",
+        "validate_environment_v19.js",
+        "validate_server_startup_v19.js",
+        "validate_monitor_endpoint.js",
+        "validate_policies_v19.js",
+        "validate_database_consistency_v19.js",
+        "validar_engine_v19_final.js",
+        "validar_migration_v19_completa.js",
+        "validar_heartbeat_pos_migration.js",
+        "validar_estruturas_db_v19_safe.js",
+        "validar_rpc_functions_pos_migration.js"
+      ],
+      "migration": [
+        "aplicar_migration_v19_supabase.js",
+        "apply_migration_v19_supabase.js",
+        "prechecks_v19.js",
+        "post_migration_checks.js"
+      ],
+      "heartbeat": [
+        "heartbeat_sender.js",
+        "validar_heartbeat_safe.js",
+        "validar_heartbeat_pos_migration.js",
+        "validate_heartbeat_v19.js"
+      ],
+      "testes": [
+        "teste_completo_pix_e_10_chutes.js",
+        "teste_completo_producao_real.js",
+        "teste_final_completo_jogo.js",
+        "testar_funcionalidades_principais.js",
+        "testar_rpc_com_usuario_real.js",
+        "testar_rpc_deduct_balance.js"
+      ],
+      "auditoria": [
+        "auditoria_avancada_finalizacao_jogo.js",
+        "auditoria_check.js",
+        "auditoria_final_100_porcento.js",
+        "auditoria_geral_completa_jogo.js",
+        "verificacao_suprema_01_contexto.js",
+        "verificacao_suprema_02_env.js",
+        "verificacao_suprema_04_migration.js",
+        "verificacao_suprema_05_codigo.js",
+        "verificacao_suprema_07_simulacao.js"
+      ],
+      "diagnostico": [
+        "diagnostico_v19_safe.js",
+        "diagnostico_webhook_saldo.js",
+        "diagnostico_problemas_teste.js"
+      ]
+    }
+  },
+  "variaveis_ambiente_v19": {
+    "obrigatorias": {
+      "USE_ENGINE_V19": {
+        "valor_esperado": "true",
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "env.example"
+      },
+      "ENGINE_HEARTBEAT_ENABLED": {
+        "valor_esperado": "true",
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "env.example"
+      },
+      "ENGINE_MONITOR_ENABLED": {
+        "valor_esperado": "true",
+        "status": "REQUER_VERIFICACAO",
+        "arquivo": "env.example"
+      },
+      "SUPABASE_URL": {
+        "status": "OBRIGATORIA",
+        "arquivo": "env.example"
+      },
+      "SUPABASE_SERVICE_ROLE_KEY": {
+        "status": "OBRIGATORIA",
+        "arquivo": "env.example"
+      },
+      "MERCADOPAGO_ACCESS_TOKEN": {
+        "status": "OBRIGATORIA_PRODUCAO",
+        "arquivo": "env.example"
+      }
+    },
+    "opcionais": {
+      "USE_DB_QUEUE": {
+        "valor_esperado": "false",
+        "status": "OPCIONAL"
+      },
+      "HEARTBEAT_INTERVAL_MS": {
+        "valor_padrao": "5000",
+        "status": "OPCIONAL"
+      },
+      "INSTANCE_ID": {
+        "status": "OPCIONAL",
+        "geracao": "automatica"
+      }
+    }
+  },
+  "problemas_conhecidos": {
+    "corrigidos_recentemente": [
+      {
+        "problema": "Validador de lotes bloqueando chutes válidos",
+        "arquivo": "src/modules/shared/validators/lote-integrity-validator.js",
+        "status": "CORRIGIDO",
+        "data": "2025-12-10"
+      },
+      {
+        "problema": "Webhook PIX - payment_id muito grande para INTEGER",
+        "arquivo": "src/modules/financial/services/webhook.service.js",
+        "status": "CORRIGIDO",
+        "data": "2025-12-10"
+      },
+      {
+        "problema": "Colunas faltantes na tabela transacoes",
+        "arquivo": "database/verificar-e-corrigir-transacoes-completo.sql",
+        "status": "CORRIGIDO",
+        "data": "2025-12-10"
+      },
+      {
+        "problema": "Constraint transacoes_status_check incompatível",
+        "arquivo": "database/corrigir-constraint-status-transacoes.sql",
+        "status": "CORRIGIDO",
+        "data": "2025-12-10"
+      }
+    ]
+  },
+  "deploy": {
+    "plataforma": "Fly.io",
+    "app_name": "goldeouro-backend-v2",
+    "arquivo_config": "fly.toml",
+    "servidor": "server-fly.js",
+    "node_version": ">=18.0.0"
+  },
+  "testes": {
+    "framework": "vitest",
+    "config": "jest.config.js",
+    "diretorio": "src/tests/",
+    "categorias": {
+      "v19": [
+        "test_engine_v19.spec.js",
+        "test_financial.spec.js",
+        "test_lotes.spec.js",
+        "test_migration.spec.js",
+        "test_monitoramento.spec.js"
+      ],
+      "geral": [
+        "smoke.test.js",
+        "rls.policies.test.js",
+        "concurrency.fila.test.js",
+        "migration.integration.test.js"
+      ]
+    }
+  },
+  "documentacao": {
+    "relatorios_auditoria": [
+      "RELATORIO-AUDITORIA-COMPLETA-CORRECOES-RECENTES.md",
+      "AUDITORIA-TECNICA-COMPLETA-V19.md",
+      "RELATORIO-CERTIFICACAO-FINAL-V19.md"
+    ],
+    "checklists": [
+      "CHECKLIST-FINAL-V19.md",
+      "CHECKLIST-POS-MIGRATION-V19.md",
+      "CHECKLIST-ACOES-V19.md"
+    ],
+    "guias": [
+      "GUIA-APLICAR-MIGRATION-V19-SUPABASE.md",
+      "GUIA-APLICAR-RPCs-FINANCEIRAS.md",
+      "GUIA-CORRIGIR-TABELA-TRANSACOES.md"
+    ]
+  },
+  "arquivos_legacy": {
+    "controllers_legacy": "controllers/",
+    "middlewares_legacy": [
+      "_archived_legacy_middlewares/",
+      "middleware/"
+    ],
+    "routes_legacy": [
+      "_archived_legacy_routes/",
+      "routes/"
+    ],
+    "config_legacy": "_archived_config_controllers/"
+  },
+  "estatisticas": {
+    "total_modulos": 11,
+    "total_controllers": 7,
+    "total_services": 8,
+    "total_routes": 10,
+    "total_validators": 3,
+    "total_scripts": 84,
+    "total_testes": 9,
+    "total_rpc_functions": 10
+  }
+}
+

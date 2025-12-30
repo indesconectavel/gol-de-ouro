@@ -1,0 +1,11 @@
+{
+  "schedules": [
+    {
+      "name": "expire-stale-pix",
+      "cron": "*/5 * * * *",
+      "function": "expire-stale-pix",
+      "verify_jwt": false
+    }
+  ]
+}
+

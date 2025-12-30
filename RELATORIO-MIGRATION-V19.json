@@ -1,0 +1,367 @@
+{
+  "auditoria": {
+    "versao": "V19.0.0",
+    "data": "2025-12-10",
+    "auditor": "AUDITOR SUPREMO V19",
+    "etapa": "ETAPA 2 - Auditoria de Migration V19",
+    "arquivo": "MIGRATION-V19-PARA-SUPABASE.sql",
+    "linhas": 587,
+    "status": "ANALISADO"
+  },
+  "migration": {
+    "idempotente": true,
+    "transacao": true,
+    "status": "PRONTA_PARA_APLICACAO",
+    "data_criacao": "2025-12-05",
+    "versao": "V19.0.0"
+  },
+  "componentes": {
+    "roles": {
+      "total": 3,
+      "roles": [
+        {
+          "nome": "backend",
+          "descricao": "Operações de escrita",
+          "status": "CRIADO_SE_NAO_EXISTIR",
+          "linha": 27
+        },
+        {
+          "nome": "observer",
+          "descricao": "Apenas leitura de agregados",
+          "status": "CRIADO_SE_NAO_EXISTIR",
+          "linha": 35
+        },
+        {
+          "nome": "admin",
+          "descricao": "Acesso total",
+          "status": "CRIADO_SE_NAO_EXISTIR",
+          "linha": 43
+        }
+      ]
+    },
+    "colunas_adicionadas": {
+      "tabela": "lotes",
+      "colunas": [
+        {
+          "nome": "persisted_global_counter",
+          "tipo": "BIGINT",
+          "default": 0,
+          "status": "ADICIONADA_SE_NAO_EXISTIR",
+          "linha": 65
+        },
+        {
+          "nome": "synced_at",
+          "tipo": "TIMESTAMP WITH TIME ZONE",
+          "default": null,
+          "status": "ADICIONADA_SE_NAO_EXISTIR",
+          "linha": 76
+        },
+        {
+          "nome": "posicao_atual",
+          "tipo": "INTEGER",
+          "default": 0,
+          "status": "ADICIONADA_SE_NAO_EXISTIR",
+          "linha": 87
+        }
+      ]
+    },
+    "indices": {
+      "total": 11,
+      "categorias": {
+        "chutes": [
+          {
+            "nome": "idx_chutes_usuario_id",
+            "tabela": "chutes",
+            "colunas": ["usuario_id"],
+            "linha": 97
+          },
+          {
+            "nome": "idx_chutes_lote_id",
+            "tabela": "chutes",
+            "colunas": ["lote_id"],
+            "linha": 98
+          },
+          {
+            "nome": "idx_chutes_created_at",
+            "tabela": "chutes",
+            "colunas": ["created_at"],
+            "linha": 99
+          },
+          {
+            "nome": "idx_chutes_lote_created",
+            "tabela": "chutes",
+            "colunas": ["lote_id", "created_at"],
+            "linha": 100
+          }
+        ],
+        "transacoes": [
+          {
+            "nome": "idx_transacoes_usuario_id",
+            "tabela": "transacoes",
+            "colunas": ["usuario_id"],
+            "linha": 103
+          },
+          {
+            "nome": "idx_transacoes_created_at",
+            "tabela": "transacoes",
+            "colunas": ["created_at"],
+            "linha": 104
+          },
+          {
+            "nome": "idx_transacoes_usuario_created",
+            "tabela": "transacoes",
+            "colunas": ["usuario_id", "created_at"],
+            "linha": 105
+          }
+        ],
+        "lotes": [
+          {
+            "nome": "idx_lotes_status_created",
+            "tabela": "lotes",
+            "colunas": ["status", "created_at"],
+            "linha": 108
+          },
+          {
+            "nome": "idx_lotes_valor_status",
+            "tabela": "lotes",
+            "colunas": ["valor_aposta", "status"],
+            "linha": 109
+          }
+        ],
+        "usuarios": [
+          {
+            "nome": "idx_usuarios_email",
+            "tabela": "usuarios",
+            "colunas": ["email"],
+            "linha": 112
+          }
+        ],
+        "system_heartbeat": [
+          {
+            "nome": "idx_system_heartbeat_last_seen",
+            "tabela": "system_heartbeat",
+            "colunas": ["last_seen"],
+            "linha": 126
+          },
+          {
+            "nome": "idx_system_heartbeat_instance",
+            "tabela": "system_heartbeat",
+            "colunas": ["instance_id"],
+            "linha": 127
+          }
+        ]
+      }
+    },
+    "tabelas": {
+      "criadas": [
+        {
+          "nome": "system_heartbeat",
+          "colunas": [
+            "id SERIAL PRIMARY KEY",
+            "instance_id VARCHAR(255) UNIQUE NOT NULL",
+            "last_seen TIMESTAMP WITH TIME ZONE DEFAULT NOW()",
+            "metadata JSONB",
+            "created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()"
+          ],
+          "indices": 2,
+          "linha": 118
+        }
+      ],
+      "com_rls_habilitado": [
+        "usuarios",
+        "chutes",
+        "lotes",
+        "transacoes",
+        "pagamentos_pix",
+        "saques",
+        "webhook_events",
+        "rewards"
+      ]
+    },
+    "policies_rls": {
+      "total": 16,
+      "por_tabela": {
+        "usuarios": 3,
+        "chutes": 2,
+        "lotes": 2,
+        "transacoes": 2,
+        "pagamentos_pix": 2,
+        "saques": 2,
+        "webhook_events": 1,
+        "rewards": 2
+      },
+      "tipos": {
+        "SELECT": 8,
+        "INSERT": 4,
+        "UPDATE": 1,
+        "ALL": 3
+      }
+    },
+    "rpc_functions": {
+      "criadas_na_migration": [
+        {
+          "nome": "rpc_get_or_create_lote",
+          "parametros": [
+            "p_lote_id VARCHAR(100)",
+            "p_valor_aposta DECIMAL(10,2)",
+            "p_tamanho INTEGER",
+            "p_indice_vencedor INTEGER"
+          ],
+          "retorno": "JSON",
+          "status": "CRIADA_SE_NAO_EXISTIR",
+          "linha": 366,
+          "usada_por": "LoteService.getOrCreateLote()"
+        },
+        {
+          "nome": "rpc_update_lote_after_shot",
+          "parametros": [
+            "p_lote_id VARCHAR(100)",
+            "p_valor_aposta DECIMAL(10,2)",
+            "p_premio DECIMAL(10,2) DEFAULT 0.00",
+            "p_premio_gol_de_ouro DECIMAL(10,2) DEFAULT 0.00",
+            "p_is_goal BOOLEAN DEFAULT false"
+          ],
+          "retorno": "JSON",
+          "status": "CRIADA_SE_NAO_EXISTIR",
+          "linha": 440,
+          "usada_por": "LoteService.updateLoteAfterShot()"
+        }
+      ],
+      "verificadas_na_migration": [
+        {
+          "nome": "rpc_add_balance",
+          "status": "VERIFICADA_MAS_NAO_CRIADA",
+          "linha": 516,
+          "arquivo_separado": "database/rpc-financial-acid.sql",
+          "nota": "Migration apenas verifica existência, não cria. Precisa aplicar rpc-financial-acid.sql separadamente"
+        },
+        {
+          "nome": "rpc_deduct_balance",
+          "status": "VERIFICADA_MAS_NAO_CRIADA",
+          "linha": 523,
+          "arquivo_separado": "database/rpc-financial-acid.sql",
+          "nota": "Migration apenas verifica existência, não cria. Precisa aplicar rpc-financial-acid.sql separadamente"
+        }
+      ]
+    }
+  },
+  "problemas_identificados": {
+    "criticos": [
+      {
+        "problema": "RPCs financeiras não são criadas pela migration",
+        "rpc_functions": [
+          "rpc_add_balance",
+          "rpc_deduct_balance",
+          "rpc_transfer_balance",
+          "rpc_get_balance"
+        ],
+        "arquivo": "database/rpc-financial-acid.sql",
+        "status": "SEPARADO",
+        "impacto": "CRITICO - Sistema financeiro não funcionará sem essas RPCs",
+        "acao": "Aplicar database/rpc-financial-acid.sql separadamente após migration"
+      }
+    ],
+    "importantes": [
+      {
+        "problema": "Migration não verifica estrutura completa da tabela transacoes",
+        "colunas_necessarias": [
+          "referencia_id",
+          "referencia_tipo",
+          "saldo_anterior",
+          "saldo_posterior",
+          "metadata",
+          "processed_at"
+        ],
+        "status": "VERIFICAR_SE_EXISTEM",
+        "impacto": "MEDIO - RPCs financeiras podem falhar se colunas não existirem",
+        "acao": "Verificar se colunas existem, aplicar correções se necessário"
+      },
+      {
+        "problema": "Migration não verifica constraint transacoes_status_check",
+        "valores_permitidos": [
+          "pendente",
+          "processado",
+          "cancelado",
+          "falhou",
+          "concluido",
+          "processando"
+        ],
+        "status": "VERIFICAR_SE_EXISTE",
+        "impacto": "MEDIO - RPCs podem falhar se constraint não permitir 'concluido'",
+        "acao": "Verificar constraint, aplicar correção se necessário"
+      }
+    ]
+  },
+  "validacao_codigo_vs_migration": {
+    "services_que_usam_rpcs": {
+      "FinancialService": {
+        "rpc_add_balance": {
+          "esperado_na_migration": false,
+          "arquivo_separado": "database/rpc-financial-acid.sql",
+          "status": "REQUER_APLICACAO_SEPARADA"
+        },
+        "rpc_deduct_balance": {
+          "esperado_na_migration": false,
+          "arquivo_separado": "database/rpc-financial-acid.sql",
+          "status": "REQUER_APLICACAO_SEPARADA"
+        }
+      },
+      "LoteService": {
+        "rpc_get_or_create_lote": {
+          "esperado_na_migration": true,
+          "status": "CRIADA_NA_MIGRATION"
+        },
+        "rpc_update_lote_after_shot": {
+          "esperado_na_migration": true,
+          "status": "CRIADA_NA_MIGRATION"
+        }
+      }
+    },
+    "tabelas_esperadas_pelo_codigo": {
+      "system_heartbeat": {
+        "criada_na_migration": true,
+        "usada_por": [
+          "src/scripts/heartbeat_sender.js",
+          "src/modules/monitor/monitor.controller.js"
+        ],
+        "status": "OK"
+      },
+      "lotes": {
+        "colunas_adicionadas": true,
+        "colunas": [
+          "persisted_global_counter",
+          "synced_at",
+          "posicao_atual"
+        ],
+        "status": "OK"
+      }
+    }
+  },
+  "resumo": {
+    "total_roles": 3,
+    "total_colunas_adicionadas": 3,
+    "total_indices": 11,
+    "total_tabelas_criadas": 1,
+    "total_tabelas_com_rls": 8,
+    "total_policies": 16,
+    "total_rpc_criadas": 2,
+    "total_rpc_verificadas": 2,
+    "total_rpc_faltando": 4,
+    "status_geral": "INCOMPLETO - Requer aplicação de rpc-financial-acid.sql"
+  },
+  "recomendacoes": {
+    "prioridade_critica": [
+      "Aplicar MIGRATION-V19-PARA-SUPABASE.sql primeiro",
+      "Aplicar database/rpc-financial-acid.sql após migration",
+      "Verificar se colunas da tabela transacoes existem",
+      "Verificar se constraint transacoes_status_check permite 'concluido'"
+    ],
+    "prioridade_alta": [
+      "Validar que todas as RPCs foram criadas corretamente",
+      "Validar que todas as policies foram criadas",
+      "Validar que RLS está habilitado em todas as tabelas críticas",
+      "Testar operações financeiras após aplicação"
+    ]
+  }
+}
+

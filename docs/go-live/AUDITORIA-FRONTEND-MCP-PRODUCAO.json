@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-12-03T18:58:14.307Z",
+  "frontend": {
+    "score": 40,
+    "errors": [],
+    "warnings": []
+  },
+  "mcp": {
+    "score": 30,
+    "errors": [],
+    "warnings": []
+  },
+  "producao": {
+    "score": 40,
+    "errors": [],
+    "warnings": [],
+    "version": "1.2.0"
+  },
+  "score": 110,
+  "maxScore": 100,
+  "status": "APROVADO",
+  "errors": [],
+  "warnings": []
+}

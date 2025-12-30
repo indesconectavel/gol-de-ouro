@@ -1,0 +1,63 @@
+{
+  "health": {
+    "ok": true,
+    "latency": 280,
+    "data": {
+      "success": true,
+      "timestamp": "2025-12-03T21:21:10.082Z",
+      "data": {
+        "status": "ok",
+        "timestamp": "2025-12-03T21:21:10.082Z",
+        "version": "1.2.0",
+        "database": "connected",
+        "mercadoPago": "connected",
+        "contadorChutes": 61,
+        "ultimoGolDeOuro": 0
+      },
+      "message": "Sistema funcionando"
+    }
+  },
+  "meta": {
+    "ok": true,
+    "version": "1.2.0",
+    "latency": 31
+  },
+  "database": {
+    "hasLotes": true,
+    "hasChutes": true,
+    "hasUsuarios": true
+  },
+  "rotas": {
+    "hasShoot": true,
+    "hasChutar": true
+  },
+  "cors": {
+    "error": "Request failed with status code 500"
+  },
+  "security": {
+    "hasHelmet": true,
+    "hasRateLimit": true
+  },
+  "auth": {
+    "hasRegister": true,
+    "hasLogin": true
+  },
+  "saldo": {
+    "hasCheck": true
+  },
+  "chutes": {
+    "hasProcess": true
+  },
+  "lotes": {
+    "hasService": true
+  },
+  "pix": {
+    "hasV6": true,
+    "hasIdempotency": true
+  },
+  "websocket": {
+    "configured": true
+  },
+  "score": 110,
+  "errors": []
+}

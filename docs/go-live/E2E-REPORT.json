@@ -1,0 +1,65 @@
+{
+  "timestamp": "2025-12-03T19:22:27.220Z",
+  "status": "REPROVADO",
+  "score": 22,
+  "maxScore": 100,
+  "summary": {
+    "frontendUrl": "https://www.goldeouro.lol",
+    "backendUrl": "https://goldeouro-backend-v2.fly.dev",
+    "wsUrl": "wss://goldeouro-backend-v2.fly.dev",
+    "errors": 8,
+    "warnings": 1
+  },
+  "modules": {
+    "module1_dataTestID": {
+      "score": 9,
+      "maxScore": 20,
+      "status": "PARTIAL",
+      "issues": [
+        "Login: data-testid não encontrado (fallback funciona)",
+        "Register: username data-testid não encontrado (fallback funciona)"
+      ]
+    },
+    "module2_register": {
+      "score": 0,
+      "maxScore": 20,
+      "status": "FAILED",
+      "issue": "Token não capturado após registro (timeout na requisição)"
+    },
+    "module3_login": {
+      "score": 0,
+      "maxScore": 20,
+      "status": "FAILED",
+      "issue": "Credenciais não disponíveis (depende do módulo 2)"
+    },
+    "module4_versionService": {
+      "score": 10,
+      "maxScore": 10,
+      "status": "PASSED"
+    },
+    "module5_websocket": {
+      "score": 0,
+      "maxScore": 10,
+      "status": "FAILED",
+      "issue": "Token não disponível (depende do módulo 2)"
+    },
+    "module6_pixV6": {
+      "score": 0,
+      "maxScore": 15,
+      "status": "FAILED",
+      "issue": "Token não disponível (depende do módulo 2)"
+    },
+    "module7_screenshotsNetwork": {
+      "score": 3,
+      "maxScore": 5,
+      "status": "PARTIAL"
+    }
+  },
+  "recommendations": [
+    "Corrigir captura de requisições no Puppeteer",
+    "Aumentar timeout para requisições de registro",
+    "Melhorar fallbacks para seletores",
+    "Testes manuais passaram - sistema funcional"
+  ]
+}
+

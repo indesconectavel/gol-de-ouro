@@ -1,0 +1,50 @@
+### Teste E2E Mercado Pago - Gol de Ouro v1.1.1
+### Substituir <API_URL> pela URL do backend em produção
+
+### 1. Criar cobrança PIX de R$1
+POST {{API_URL}}/api/payments/pix
+Content-Type: application/json
+X-Idempotency-Key: test-{{$timestamp}}
+
+{
+  "amount": 1.00,
+  "description": "Teste E2E Gol de Ouro",
+  "user_id": 1
+}
+
+### 2. Verificar status da transação
+GET {{API_URL}}/api/transactions/1
+Content-Type: application/json
+
+### 3. Simular webhook de pagamento aprovado
+POST {{API_URL}}/webhook/mercadopago
+Content-Type: application/json
+X-Signature: test-signature
+
+{
+  "type": "payment",
+  "data": {
+    "id": "123456789"
+  }
+}
+
+### 4. Verificar se transação foi atualizada
+GET {{API_URL}}/api/transactions/1
+Content-Type: application/json
+
+### 5. Testar idempotência do webhook
+POST {{API_URL}}/webhook/mercadopago
+Content-Type: application/json
+X-Signature: test-signature
+
+{
+  "type": "payment",
+  "data": {
+    "id": "123456789"
+  }
+}
+
+### 6. Verificar logs do webhook
+GET {{API_URL}}/api/admin/webhook-logs
+Content-Type: application/json
+X-Admin-Token: admin-prod-token-2025

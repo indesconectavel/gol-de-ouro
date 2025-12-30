@@ -1,0 +1,930 @@
+{
+  "timestamp": "2025-12-04T16:17:57.714Z",
+  "version": "V16+",
+  "scores": {
+    "autenticacao": 20,
+    "cors": 0,
+    "websocket": 20,
+    "chutes": 0,
+    "lote": 0,
+    "total": 40
+  },
+  "resultados": {
+    "detect": {
+      "sistema": {
+        "tipo": "LOTE_MODERNO",
+        "tamanhoLote": 10
+      },
+      "rotas": {
+        "shoot": true,
+        "shootPath": [
+          "router.get('/status'",
+          "router.post('/chutar'",
+          "router.get('/stats'",
+          "router.get('/history'",
+          "router.post('/shoot'",
+          "router.get('/health'"
+        ]
+      },
+      "estrutura": {
+        "hasLoteService": true,
+        "hasGameController": false,
+        "hasAuthMiddleware": true
+      },
+      "config": {
+        "cors": true,
+        "options": true,
+        "authMiddleware": true
+      },
+      "mapeamento": {
+        "shootMethod": true,
+        "shootParams": [
+          "shoot(req, res) {\r\n    try {\r\n      // Verificar se dependências foram injetadas\r\n      if (!this.dependencies) {\r\n        console.error('❌ [SHOOT] Dependências não injetadas no GameController');\r\n        return res.status(500).json({\r\n          success: false,\r\n          message: 'Sistema temporariamente indisponível'\r\n        }"
+        ]
+      }
+    },
+    "auth": {
+      "cadastro": {
+        "success": true,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-04T16:17:57.092Z",
+          "data": {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MzA0ZjJkMC0xMTk1LTQ0MTYtOWY4Zi1kNzQwMzgwMDYyZWUiLCJlbWFpbCI6InRlc3RfdjE2X2RpYWdfMTc2NDg2NTA3NzczNkBleGFtcGxlLmNvbSIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0ODY1MDc3LCJleHAiOjE3NjQ5NTE0Nzd9.voFBN39GbfRt_IYQwHL6RMRpPjY0kSMhHGgJNbDr1XE",
+            "user": {
+              "id": "8304f2d0-1195-4416-9f8f-d740380062ee",
+              "email": "test_v16_diag_1764865077736@example.com",
+              "username": "testuser_1764865077736",
+              "saldo": 0,
+              "tipo": "jogador"
+            }
+          },
+          "message": "Usuário registrado com sucesso!"
+        }
+      },
+      "login": {
+        "success": true,
+        "data": {
+          "success": true,
+          "timestamp": "2025-12-04T16:17:57.310Z",
+          "data": {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MzA0ZjJkMC0xMTk1LTQ0MTYtOWY4Zi1kNzQwMzgwMDYyZWUiLCJlbWFpbCI6InRlc3RfdjE2X2RpYWdfMTc2NDg2NTA3NzczNkBleGFtcGxlLmNvbSIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0ODY1MDc3LCJleHAiOjE3NjQ5NTE0Nzd9.voFBN39GbfRt_IYQwHL6RMRpPjY0kSMhHGgJNbDr1XE",
+            "user": {
+              "id": "8304f2d0-1195-4416-9f8f-d740380062ee",
+              "email": "test_v16_diag_1764865077736@example.com",
+              "username": "testuser_1764865077736",
+              "saldo": 0,
+              "tipo": "jogador"
+            }
+          },
+          "message": "Login realizado com sucesso!"
+        }
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4MzA0ZjJkMC0xMTk1LTQ0MTYtOWY4Zi1kNzQwMzgwMDYyZWUiLCJlbWFpbCI6InRlc3RfdjE2X2RpYWdfMTc2NDg2NTA3NzczNkBleGFtcGxlLmNvbSIsInJvbGUiOiJqb2dhZG9yIiwiaWF0IjoxNzY0ODY1MDc3LCJleHAiOjE3NjQ5NTE0Nzd9.voFBN39GbfRt_IYQwHL6RMRpPjY0kSMhHGgJNbDr1XE",
+      "jwt": {
+        "hasThreeParts": true,
+        "payload": {
+          "userId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+          "email": "test_v16_diag_1764865077736@example.com",
+          "role": "jogador",
+          "iat": 1764865077,
+          "exp": 1764951477
+        },
+        "hasExp": true,
+        "hasUserId": true
+      }
+    },
+    "cors": {
+      "options": {
+        "status": 500,
+        "headers": {}
+      },
+      "postSemToken": {
+        "status": 500,
+        "data": {
+          "success": false,
+          "message": "Erro interno do servidor",
+          "timestamp": "2025-12-04T16:17:57.373Z",
+          "requestId": "unknown"
+        },
+        "headers": {
+          "content-security-policy": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "DENY",
+          "x-permitted-cross-domain-policies": "none",
+          "x-xss-protection": "0",
+          "content-type": "application/json; charset=utf-8",
+          "etag": "W/\"73-Tk/xT/Int5mvAR/S7q4oSzTiaWU\"",
+          "vary": "Accept-Encoding",
+          "date": "Thu, 04 Dec 2025 16:17:57 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked",
+          "server": "Fly/023f4916d (2025-12-03)",
+          "via": "1.1 fly.io",
+          "fly-request-id": "01KBN2FW3V2CPSF27CH9H54HB8-gru"
+        }
+      },
+      "postComToken": {
+        "status": 500,
+        "data": {
+          "success": false,
+          "message": "Erro interno do servidor",
+          "timestamp": "2025-12-04T16:17:57.400Z",
+          "requestId": "unknown"
+        },
+        "headers": {
+          "content-security-policy": "default-src 'self';style-src 'self' 'unsafe-inline';script-src 'self';img-src 'self' data: https:;base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';object-src 'none';script-src-attr 'none';upgrade-insecure-requests",
+          "cross-origin-opener-policy": "same-origin",
+          "cross-origin-resource-policy": "same-origin",
+          "origin-agent-cluster": "?1",
+          "referrer-policy": "no-referrer",
+          "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+          "x-content-type-options": "nosniff",
+          "x-dns-prefetch-control": "off",
+          "x-download-options": "noopen",
+          "x-frame-options": "DENY",
+          "x-permitted-cross-domain-policies": "none",
+          "x-xss-protection": "0",
+          "content-type": "application/json; charset=utf-8",
+          "etag": "W/\"73-Yj1qtrGBq0QMWOT5M4Cgs1mubkc\"",
+          "vary": "Accept-Encoding",
+          "date": "Thu, 04 Dec 2025 16:17:57 GMT",
+          "connection": "keep-alive",
+          "keep-alive": "timeout=5",
+          "transfer-encoding": "chunked",
+          "server": "Fly/023f4916d (2025-12-03)",
+          "via": "1.1 fly.io",
+          "fly-request-id": "01KBN2FW4PY4JKKSCBZYHFJJP7-gru"
+        }
+      }
+    },
+    "chutes": {
+      "resultados": [
+        {
+          "index": 1,
+          "status": 400,
+          "success": false,
+          "latency": 83,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:17:59.988Z"
+        },
+        {
+          "index": 2,
+          "status": 400,
+          "success": false,
+          "latency": 96,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:00.688Z"
+        },
+        {
+          "index": 3,
+          "status": 400,
+          "success": false,
+          "latency": 88,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:01.382Z"
+        },
+        {
+          "index": 4,
+          "status": 400,
+          "success": false,
+          "latency": 85,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:02.083Z"
+        },
+        {
+          "index": 5,
+          "status": 400,
+          "success": false,
+          "latency": 95,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:02.780Z"
+        },
+        {
+          "index": 6,
+          "status": 400,
+          "success": false,
+          "latency": 91,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:03.480Z"
+        },
+        {
+          "index": 7,
+          "status": 400,
+          "success": false,
+          "latency": 92,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:04.182Z"
+        },
+        {
+          "index": 8,
+          "status": 400,
+          "success": false,
+          "latency": 69,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:04.879Z"
+        },
+        {
+          "index": 9,
+          "status": 400,
+          "success": false,
+          "latency": 64,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:05.545Z"
+        },
+        {
+          "index": 10,
+          "status": 400,
+          "success": false,
+          "latency": 199,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:06.354Z"
+        }
+      ],
+      "sucesso": 0,
+      "falhas": 10,
+      "erros": [
+        {
+          "index": 1,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        },
+        {
+          "index": 2,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        },
+        {
+          "index": 3,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        },
+        {
+          "index": 4,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        },
+        {
+          "index": 5,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        },
+        {
+          "index": 6,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        },
+        {
+          "index": 7,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        },
+        {
+          "index": 8,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        },
+        {
+          "index": 9,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        },
+        {
+          "index": 10,
+          "status": 400,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          }
+        }
+      ],
+      "saldoAdicionado": false
+    },
+    "lote": {
+      "shots": [
+        {
+          "index": 1,
+          "status": 400,
+          "success": false,
+          "latency": 83,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:17:59.988Z"
+        },
+        {
+          "index": 2,
+          "status": 400,
+          "success": false,
+          "latency": 96,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:00.688Z"
+        },
+        {
+          "index": 3,
+          "status": 400,
+          "success": false,
+          "latency": 88,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:01.382Z"
+        },
+        {
+          "index": 4,
+          "status": 400,
+          "success": false,
+          "latency": 85,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:02.083Z"
+        },
+        {
+          "index": 5,
+          "status": 400,
+          "success": false,
+          "latency": 95,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:02.780Z"
+        },
+        {
+          "index": 6,
+          "status": 400,
+          "success": false,
+          "latency": 91,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:03.480Z"
+        },
+        {
+          "index": 7,
+          "status": 400,
+          "success": false,
+          "latency": 92,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:04.182Z"
+        },
+        {
+          "index": 8,
+          "status": 400,
+          "success": false,
+          "latency": 69,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:04.879Z"
+        },
+        {
+          "index": 9,
+          "status": 400,
+          "success": false,
+          "latency": 64,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:05.545Z"
+        },
+        {
+          "index": 10,
+          "status": 400,
+          "success": false,
+          "latency": 199,
+          "data": {
+            "success": false,
+            "message": "Saldo insuficiente"
+          },
+          "timestamp": "2025-12-04T16:18:06.354Z"
+        }
+      ],
+      "lotes": [],
+      "validacao": {
+        "chutesRegistrados": 0,
+        "loteFechado": false
+      },
+      "note": "Consulta Supabase requer endpoint ou acesso direto"
+    },
+    "websocket": {
+      "conexao": true,
+      "eventos": [
+        {
+          "timestamp": "2025-12-04T16:18:07.064Z",
+          "data": {
+            "type": "welcome",
+            "message": "Conectado ao Gol de Ouro WebSocket",
+            "connectionId": "conn_1764865085935_gmxg0qe6l",
+            "timestamp": "2025-12-04T16:18:05.935Z"
+          }
+        },
+        {
+          "timestamp": "2025-12-04T16:18:07.124Z",
+          "data": {
+            "type": "auth_success",
+            "userId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+            "user": {
+              "id": "8304f2d0-1195-4416-9f8f-d740380062ee",
+              "email": "test_v16_diag_1764865077736@example.com",
+              "username": "testuser_1764865077736",
+              "saldo": 0
+            },
+            "reconnectToken": "reconnect_1764865085998_mr0gnqyqi"
+          }
+        }
+      ],
+      "handshake": {
+        "success": true,
+        "timestamp": "2025-12-04T16:18:07.062Z"
+      },
+      "erro": null
+    },
+    "logs": {
+      "raw": "",
+      "filtered": [],
+      "erros": [],
+      "error": "Command failed: flyctl logs --app goldeouro-backend-v2 --region gru --since 5m\nError: unknown flag: --since\n"
+    },
+    "diagnostico": {
+      "payloadEnviado": {
+        "direction": "left",
+        "amount": 1
+      },
+      "payloadEsperado": {
+        "note": "Analisando código do controller",
+        "hasDirection": true,
+        "hasAmount": true
+      },
+      "divergencias": [],
+      "problemas": [
+        {
+          "tipo": "STATUS_CODE",
+          "descricao": "Status 500 ao invés de 200/201",
+          "possivelCausa": "Erro desconhecido",
+          "solucao": "Revisar logs do backend"
+        },
+        {
+          "tipo": "CHUTES_FALHANDO",
+          "descricao": "0/10 chutes bem-sucedidos",
+          "possivelCausa": "Autenticação, payload ou validação",
+          "solucao": "Revisar logs e corrigir problema identificado"
+        }
+      ]
+    },
+    "patch": {
+      "correcoes": [],
+      "arquivos": []
+    },
+    "retest": {
+      "chutes": {
+        "resultados": [
+          {
+            "index": 1,
+            "status": 400,
+            "success": false,
+            "latency": 83,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:17:59.988Z"
+          },
+          {
+            "index": 2,
+            "status": 400,
+            "success": false,
+            "latency": 96,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:00.688Z"
+          },
+          {
+            "index": 3,
+            "status": 400,
+            "success": false,
+            "latency": 88,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:01.382Z"
+          },
+          {
+            "index": 4,
+            "status": 400,
+            "success": false,
+            "latency": 85,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:02.083Z"
+          },
+          {
+            "index": 5,
+            "status": 400,
+            "success": false,
+            "latency": 95,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:02.780Z"
+          },
+          {
+            "index": 6,
+            "status": 400,
+            "success": false,
+            "latency": 91,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:03.480Z"
+          },
+          {
+            "index": 7,
+            "status": 400,
+            "success": false,
+            "latency": 92,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:04.182Z"
+          },
+          {
+            "index": 8,
+            "status": 400,
+            "success": false,
+            "latency": 69,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:04.879Z"
+          },
+          {
+            "index": 9,
+            "status": 400,
+            "success": false,
+            "latency": 64,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:05.545Z"
+          },
+          {
+            "index": 10,
+            "status": 400,
+            "success": false,
+            "latency": 199,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:06.354Z"
+          }
+        ],
+        "sucesso": 0,
+        "falhas": 10,
+        "erros": [
+          {
+            "index": 1,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          },
+          {
+            "index": 2,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          },
+          {
+            "index": 3,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          },
+          {
+            "index": 4,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          },
+          {
+            "index": 5,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          },
+          {
+            "index": 6,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          },
+          {
+            "index": 7,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          },
+          {
+            "index": 8,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          },
+          {
+            "index": 9,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          },
+          {
+            "index": 10,
+            "status": 400,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            }
+          }
+        ],
+        "saldoAdicionado": false
+      },
+      "websocket": {
+        "conexao": true,
+        "eventos": [
+          {
+            "timestamp": "2025-12-04T16:18:07.064Z",
+            "data": {
+              "type": "welcome",
+              "message": "Conectado ao Gol de Ouro WebSocket",
+              "connectionId": "conn_1764865085935_gmxg0qe6l",
+              "timestamp": "2025-12-04T16:18:05.935Z"
+            }
+          },
+          {
+            "timestamp": "2025-12-04T16:18:07.124Z",
+            "data": {
+              "type": "auth_success",
+              "userId": "8304f2d0-1195-4416-9f8f-d740380062ee",
+              "user": {
+                "id": "8304f2d0-1195-4416-9f8f-d740380062ee",
+                "email": "test_v16_diag_1764865077736@example.com",
+                "username": "testuser_1764865077736",
+                "saldo": 0
+              },
+              "reconnectToken": "reconnect_1764865085998_mr0gnqyqi"
+            }
+          }
+        ],
+        "handshake": {
+          "success": true,
+          "timestamp": "2025-12-04T16:18:07.062Z"
+        },
+        "erro": null
+      },
+      "lote": {
+        "shots": [
+          {
+            "index": 1,
+            "status": 400,
+            "success": false,
+            "latency": 83,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:17:59.988Z"
+          },
+          {
+            "index": 2,
+            "status": 400,
+            "success": false,
+            "latency": 96,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:00.688Z"
+          },
+          {
+            "index": 3,
+            "status": 400,
+            "success": false,
+            "latency": 88,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:01.382Z"
+          },
+          {
+            "index": 4,
+            "status": 400,
+            "success": false,
+            "latency": 85,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:02.083Z"
+          },
+          {
+            "index": 5,
+            "status": 400,
+            "success": false,
+            "latency": 95,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:02.780Z"
+          },
+          {
+            "index": 6,
+            "status": 400,
+            "success": false,
+            "latency": 91,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:03.480Z"
+          },
+          {
+            "index": 7,
+            "status": 400,
+            "success": false,
+            "latency": 92,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:04.182Z"
+          },
+          {
+            "index": 8,
+            "status": 400,
+            "success": false,
+            "latency": 69,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:04.879Z"
+          },
+          {
+            "index": 9,
+            "status": 400,
+            "success": false,
+            "latency": 64,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:05.545Z"
+          },
+          {
+            "index": 10,
+            "status": 400,
+            "success": false,
+            "latency": 199,
+            "data": {
+              "success": false,
+              "message": "Saldo insuficiente"
+            },
+            "timestamp": "2025-12-04T16:18:06.354Z"
+          }
+        ],
+        "lotes": [],
+        "validacao": {
+          "chutesRegistrados": 0,
+          "loteFechado": false
+        },
+        "note": "Consulta Supabase requer endpoint ou acesso direto"
+      }
+    }
+  },
+  "erros": [],
+  "warnings": [],
+  "artifacts": [
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-DETECT.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-AUTH-TEST.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-CORS-TEST.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\logs\\test-shoots-log.json",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-SHOOT-TEST.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-LOTE-REAL.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\logs\\websocket-events.json",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-WS-TEST.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-FLY-LOGS.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-DIAGNOSTICO.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\patches\\v16-fix.diff",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-RETEST.md",
+    "E:\\Chute de Ouro\\goldeouro-backend\\docs\\GO-LIVE\\V16-SCORE-FINAL.md"
+  ],
+  "goNoGo": "NO-GO"
+}

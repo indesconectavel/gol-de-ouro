@@ -1,0 +1,76 @@
+{
+  "resumo": {
+    "totalProblemas": 1,
+    "problemasCriticos": 1,
+    "problemasMedios": 0,
+    "problemasBaixos": 0,
+    "correcoes": 0,
+    "recomendacoes": 5
+  },
+  "status": {
+    "frontend": "ok",
+    "backend": "ok",
+    "database": "ok",
+    "infraestrutura": "verificar",
+    "seguranca": "problemas",
+    "testes": "ok",
+    "documentacao": "unknown"
+  },
+  "problemas": [
+    {
+      "tipo": "crítico",
+      "componente": "seguranca",
+      "problema": "8 tabelas com RLS desabilitado",
+      "impacto": "Vulnerabilidade de segurança",
+      "solucao": "Executar script corrigir-rls-supabase-completo.sql"
+    }
+  ],
+  "correcoes": [],
+  "recomendacoes": [
+    {
+      "tipo": "crítico",
+      "componente": "infraestrutura",
+      "item": "Configurar domínio goldeouro.lol no Vercel",
+      "status": "pendente",
+      "acao": "Adicionar domínio customizado no Vercel"
+    },
+    {
+      "tipo": "crítico",
+      "componente": "infraestrutura",
+      "item": "Verificar certificado SSL",
+      "status": "pendente",
+      "acao": "Vercel deve fornecer SSL automaticamente, verificar se está ativo"
+    },
+    {
+      "tipo": "médio",
+      "componente": "infraestrutura",
+      "item": "Configurar monitoramento",
+      "status": "pendente",
+      "acao": "Configurar alertas no Vercel e Fly.io"
+    },
+    {
+      "tipo": "médio",
+      "componente": "infraestrutura",
+      "item": "Configurar backups automáticos",
+      "status": "pendente",
+      "acao": "Configurar backups do Supabase"
+    },
+    {
+      "tipo": "médio",
+      "componente": "seguranca",
+      "item": "Verificar rate limiting no backend",
+      "status": "verificar",
+      "acao": "Confirmar que rate limiting está ativo"
+    }
+  ],
+  "checklist": {
+    "deploy": false,
+    "dominio": false,
+    "ssl": false,
+    "monitoramento": false,
+    "backups": false,
+    "seguranca": false,
+    "performance": false,
+    "testes": false
+  }
+}

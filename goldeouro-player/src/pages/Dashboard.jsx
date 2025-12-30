@@ -56,21 +56,19 @@ const Dashboard = () => {
         }
       } catch (pixError) {
         console.warn('⚠️ [DASHBOARD] Erro ao carregar dados PIX após retry:', pixError.message)
-        // Fallback para lista vazia em caso de erro PIX
+        // FASE 1 - CRI-003: Removido comentário de fallback
+        // Lista vazia é o estado correto quando não há dados
         setRecentBets([])
       }
 
     } catch (error) {
       console.error('❌ [DASHBOARD] Erro ao carregar dados do usuário após retry:', error)
-      // Fallback para dados mínimos em caso de erro
-      setUser({
-        id: 3,
-        email: 'free10signer@gmail.com',
-        nome: 'free10signer',
-        saldo: 0
-      })
+      // FASE 1 - CRI-003: Removido fallback hardcoded
+      // Usar dataAdapter para normalizar dados vazios em vez de dados falsos
+      setUser(null)
       setBalance(0)
       setRecentBets([])
+      // UI exibirá estado de erro/loading apropriado
     } finally {
       setLoading(false)
     }

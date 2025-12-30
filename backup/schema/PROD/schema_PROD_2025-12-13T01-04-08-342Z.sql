@@ -1,0 +1,4 @@
+-- Schema export for PROD
+-- Generated: 2025-12-13T01:04:08.342Z
+-- Note: Full schema export requires direct PostgreSQL access
+-- Use Supabase SQL Editor: SELECT * FROM information_schema.tables WHERE table_schema = 'public';

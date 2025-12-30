@@ -1,0 +1,292 @@
+{
+  "version": "1.0.0",
+  "mcps": {
+    "goldeouro": {
+      "name": "Gol de Ouro MCP System",
+      "description": "Sistema MCP para auditoria automática do Gol de Ouro",
+      "version": "1.1.1",
+      "commands": {
+        "Audit Gol de Ouro": {
+          "description": "Executa auditoria completa do sistema Gol de Ouro",
+          "command": "node cursor-mcp-command.js",
+          "autoTrigger": {
+            "gitPush": true,
+            "deploy": true,
+            "branches": [
+              "main",
+              "master"
+            ]
+          },
+          "output": {
+            "reports": "./reports/",
+            "latest": "audit-latest.md",
+            "timestamped": "audit-[timestamp].md"
+          }
+        },
+        "audit:full": {
+          "description": "Auditoria completa com relatório detalhado",
+          "command": "cd mcp-system && node audit-simple.js --full --report"
+        },
+        "audit:quick": {
+          "description": "Auditoria rápida sem relatório",
+          "command": "cd mcp-system && node audit-simple.js"
+        }
+      },
+      "triggers": {
+        "prePush": {
+          "enabled": true,
+          "branches": [
+            "main",
+            "master"
+          ],
+          "command": "Audit Gol de Ouro",
+          "action": "validate"
+        },
+        "preDeploy": {
+          "enabled": true,
+          "platforms": [
+            "vercel",
+            "render",
+            "railway"
+          ],
+          "command": "Audit Gol de Ouro",
+          "action": "validate"
+        }
+      },
+      "settings": {
+        "criticalErrors": "cancel",
+        "warnings": "continue",
+        "reportFormat": "markdown",
+        "logLevel": "info"
+      }
+    },
+    "vercel": {
+      "name": "vercel",
+      "description": "MCP para vercel",
+      "version": "1.0.0",
+      "command": "npx vercel",
+      "env": [
+        "VERCEL_TOKEN",
+        "VERCEL_ORG_ID",
+        "VERCEL_PROJECT_ID"
+      ],
+      "enabled": true,
+      "commands": {
+        "deploy": {
+          "description": "Deploy do frontend para produção",
+          "command": "cd goldeouro-player && npx vercel --prod --yes"
+        },
+        "status": {
+          "description": "Verificar status do deploy",
+          "command": "npx vercel ls"
+        },
+        "logs": {
+          "description": "Ver logs do Vercel",
+          "command": "npx vercel logs"
+        }
+      },
+      "type": "wrapper"
+    },
+    "flyio": {
+      "name": "flyio",
+      "description": "MCP para flyio",
+      "version": "1.0.0",
+      "command": "flyctl",
+      "env": [
+        "FLY_API_TOKEN"
+      ],
+      "enabled": true,
+      "commands": {
+        "deploy": {
+          "description": "Deploy do backend para produção",
+          "command": "flyctl deploy --app goldeouro-backend-v2"
+        },
+        "status": {
+          "description": "Verificar status do backend",
+          "command": "flyctl status --app goldeouro-backend-v2"
+        },
+        "logs": {
+          "description": "Ver logs do backend",
+          "command": "flyctl logs --app goldeouro-backend-v2"
+        }
+      },
+      "type": "wrapper"
+    },
+    "supabase": {
+      "name": "supabase",
+      "description": "MCP para supabase",
+      "version": "1.0.0",
+      "command": "npx supabase",
+      "env": [
+        "SUPABASE_URL",
+        "SUPABASE_SERVICE_ROLE_KEY"
+      ],
+      "enabled": true,
+      "commands": {
+        "query": {
+          "description": "Executar query SQL no Supabase",
+          "command": "node scripts/executar-query-supabase.js"
+        },
+        "status": {
+          "description": "Verificar status do Supabase",
+          "command": "node test-supabase.js"
+        }
+      },
+      "type": "wrapper"
+    },
+    "github-actions": {
+      "name": "github-actions",
+      "description": "MCP para github-actions",
+      "version": "1.0.0",
+      "command": "gh",
+      "env": [
+        "GITHUB_TOKEN"
+      ],
+      "enabled": true,
+      "commands": {
+        "workflow": {
+          "description": "Executar workflow do GitHub Actions",
+          "command": "gh workflow run"
+        },
+        "status": {
+          "description": "Verificar status dos workflows",
+          "command": "gh run list"
+        }
+      },
+      "type": "wrapper"
+    },
+    "lighthouse": {
+      "name": "lighthouse",
+      "description": "MCP para lighthouse",
+      "version": "1.0.0",
+      "command": "npx lighthouse",
+      "env": [],
+      "enabled": true,
+      "commands": {
+        "audit": {
+          "description": "Executar auditoria Lighthouse",
+          "command": "npx lighthouse https://goldeouro.lol --output html --output-path ./reports/lighthouse-report.html"
+        }
+      },
+      "type": "wrapper"
+    },
+    "docker": {
+      "name": "docker",
+      "description": "MCP para docker",
+      "version": "1.0.0",
+      "command": "docker",
+      "env": [],
+      "enabled": true,
+      "commands": {
+        "build": {
+          "description": "Build da imagem Docker",
+          "command": "docker build -t goldeouro-backend ."
+        },
+        "run": {
+          "description": "Executar container Docker",
+          "command": "docker run -p 8080:8080 goldeouro-backend"
+        }
+      },
+      "type": "wrapper"
+    },
+    "sentry": {
+      "name": "sentry",
+      "description": "MCP para sentry",
+      "version": "1.0.0",
+      "command": "npx @sentry/cli",
+      "env": [
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT"
+      ],
+      "enabled": true,
+      "commands": {
+        "release": {
+          "description": "Criar release no Sentry",
+          "command": "npx @sentry/cli releases new"
+        }
+      },
+      "type": "wrapper"
+    },
+    "postgres": {
+      "name": "postgres",
+      "description": "MCP para postgres",
+      "version": "1.0.0",
+      "command": "psql",
+      "env": [
+        "DATABASE_URL"
+      ],
+      "enabled": true,
+      "commands": {
+        "query": {
+          "description": "Executar query SQL",
+          "command": "psql $DATABASE_URL -c"
+        }
+      },
+      "type": "wrapper"
+    },
+    "mercado-pago": {
+      "name": "mercado-pago",
+      "description": "MCP para mercado-pago",
+      "version": "1.0.0",
+      "command": "node",
+      "env": [
+        "MERCADOPAGO_ACCESS_TOKEN"
+      ],
+      "enabled": true,
+      "commands": {
+        "test": {
+          "description": "Testar integração com Mercado Pago",
+          "command": "node scripts/test-mercadopago.js"
+        }
+      },
+      "type": "wrapper"
+    },
+    "jest": {
+      "name": "jest",
+      "description": "MCP para jest",
+      "version": "1.0.0",
+      "command": "npx jest",
+      "env": [],
+      "enabled": true,
+      "commands": {
+        "test": {
+          "description": "Executar todos os testes",
+          "command": "npm test"
+        },
+        "test:watch": {
+          "description": "Executar testes em modo watch",
+          "command": "npm run test:watch"
+        },
+        "test:coverage": {
+          "description": "Executar testes com cobertura",
+          "command": "npm run test:coverage"
+        }
+      },
+      "type": "wrapper"
+    },
+    "eslint": {
+      "name": "eslint",
+      "description": "MCP para eslint",
+      "version": "1.0.0",
+      "command": "npx eslint",
+      "env": [],
+      "enabled": true,
+      "commands": {
+        "lint": {
+          "description": "Executar ESLint",
+          "command": "npx eslint ."
+        },
+        "lint:fix": {
+          "description": "Corrigir problemas do ESLint",
+          "command": "npx eslint . --fix"
+        }
+      },
+      "type": "npm"
+    }
+  },
+  "settings": {
+    "autoEnable": true,
+    "logLevel": "info"
+  }
+}

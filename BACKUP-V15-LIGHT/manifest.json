@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-12-04T13:59:00.909Z",
+  "version": "V15-LIGHT",
+  "gitHash": "417629a06fa57170b4fad91ab562b9b8b55d892e",
+  "backups": {
+    "backend": {
+      "path": "E:\\Chute de Ouro\\goldeouro-backend\\BACKUP-V15-LIGHT\\backend-v15-light-2025-12-04.zip",
+      "hash": "4988bc81bd0d7400264010c20835a8bb68d5cf0e4d4f4993118a4a31812badc4",
+      "size": 15521552
+    }
+  },
+  "sizes": {
+    "backend": 15521552
+  },
+  "hashes": {
+    "backend": "4988bc81bd0d7400264010c20835a8bb68d5cf0e4d4f4993118a4a31812badc4"
+  }
+}

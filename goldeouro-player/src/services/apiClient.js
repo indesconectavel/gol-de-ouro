@@ -1,13 +1,53 @@
 // Cliente API ULTRA DEFINITIVO COM FALLBACK E CACHE - Gol de Ouro Player
+// FASE 1 - Integração com authAdapter para renovação automática de token
 import axios from 'axios';
-import { validateEnvironment } from '../config/environments.js';
+import { validateEnvironment, getCurrentEnvironment } from '../config/environments.js';
 import requestCache from '../utils/requestCache.js';
+import authAdapter from '../adapters/authAdapter.js';
+import errorAdapter from '../adapters/errorAdapter.js';
 
-const env = validateEnvironment();
+// CORREÇÃO CRÍTICA: Função para obter ambiente atual dinamicamente
+const getEnv = () => {
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isProductionDomain = hostname.includes('goldeouro.lol') || 
+                             hostname.includes('goldeouro.com') ||
+                             hostname === 'www.goldeouro.lol' ||
+                             hostname === 'goldeouro.lol';
+  
+  // ✅ CORREÇÃO CRÍTICA: Verificar bootstrap primeiro (última linha de defesa)
+  // MAS só usar se realmente estiver em produção
+  if (typeof window !== 'undefined' && window.__FORCED_BACKEND__ && isProductionDomain) {
+    const forcedBackend = window.__API_BASE_URL__;
+    if (forcedBackend) {
+      console.log('[API-CLIENT] Usando backend forçado pelo bootstrap (PRODUÇÃO):', forcedBackend);
+      return {
+        API_BASE_URL: forcedBackend,
+        USE_MOCKS: false,
+        USE_SANDBOX: false,
+        IS_PRODUCTION: true
+      };
+    }
+  }
+  
+  // Limpar cache do ambiente para forçar detecção atual
+  const env = getCurrentEnvironment();
+  
+  // Em desenvolvimento, usar o ambiente normal (que usa proxy)
+  if (!isProductionDomain) {
+    console.log('[API-CLIENT] Modo desenvolvimento - usando proxy do Vite');
+    return env;
+  }
+  
+  // Em produção, forçar backend correto
+  return {
+    ...env,
+    API_BASE_URL: 'https://goldeouro-backend-v2.fly.dev' // FORÇAR PRODUÇÃO
+  };
+};
 
 // Configuração do cliente Axios ULTRA DEFINITIVA
 const apiClient = axios.create({
-  baseURL: env.API_BASE_URL,
+  baseURL: getEnv().API_BASE_URL,
   timeout: 30000,
   withCredentials: false, // Desabilitar credentials para evitar CORS
   headers: {
@@ -19,15 +59,28 @@ const apiClient = axios.create({
 // Interceptor para autenticação e cache
 apiClient.interceptors.request.use(
   (config) => {
+    // CORREÇÃO CRÍTICA: Sempre usar ambiente atual dinamicamente
+    const currentEnv = getEnv();
+    
+    // Atualizar baseURL se necessário
+    if (!config.baseURL || (config.baseURL.includes('goldeouro-backend.fly.dev') && !config.baseURL.includes('goldeouro-backend-v2.fly.dev'))) {
+      config.baseURL = currentEnv.API_BASE_URL;
+    }
+    
     // Saneamento de URL: remover BOM e espaços e evitar URL absoluta duplicada
     if (typeof config.url === 'string') {
       // remover BOM (U+FEFF) no início, caso exista
       config.url = config.url.replace(/^\uFEFF/, '').trim();
 
       // Se por algum motivo vier uma URL absoluta do mesmo backend, tornar relativa
-      const base = (env.API_BASE_URL || '').replace(/\/+$/, '');
+      const base = (currentEnv.API_BASE_URL || '').replace(/\/+$/, '');
       if (config.url.startsWith(base)) {
         config.url = config.url.slice(base.length);
+      }
+      
+      // CORREÇÃO CRÍTICA: Se URL absoluta contém backend antigo, substituir
+      if (config.url.includes('goldeouro-backend.fly.dev') && !config.url.includes('goldeouro-backend-v2.fly.dev')) {
+        config.url = config.url.replace('goldeouro-backend.fly.dev', 'goldeouro-backend-v2.fly.dev');
       }
 
       // Garantir que comece com uma única barra quando for relativa
@@ -36,7 +89,9 @@ apiClient.interceptors.request.use(
       }
     }
 
-    const token = localStorage.getItem('authToken');
+    // FASE 1: Usar authAdapter para obter token válido
+    // authAdapter gerencia renovação automática se necessário
+    const token = authAdapter.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -172,12 +227,43 @@ apiClient.interceptors.response.use(
       }
     }
     
+    // FASE 1: Tratamento de erro 401 com renovação automática via authAdapter
     if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('userData');
-      // Não redirecionar automaticamente - deixar o componente de login lidar com isso
+      const originalRequest = error.config;
+      
+      // Tentar renovar token se não foi uma tentativa de renovação
+      if (!originalRequest._retry && !originalRequest.url.includes('/auth/refresh')) {
+        originalRequest._retry = true;
+        
+        try {
+          const refreshResult = await authAdapter.refreshToken();
+          
+          if (refreshResult.success && refreshResult.token) {
+            // Atualizar header com novo token
+            originalRequest.headers.Authorization = `Bearer ${refreshResult.token}`;
+            
+            if (isDevelopment) {
+              console.log('✅ [API] Token renovado automaticamente, retentando requisição');
+            }
+            
+            // Retentar requisição original com novo token
+            return apiClient(originalRequest);
+          }
+        } catch (refreshError) {
+          if (isDevelopment) {
+            console.error('❌ [API] Erro ao renovar token:', refreshError);
+          }
+        }
+      }
+      
+      // Se não conseguiu renovar, limpar tokens e emitir evento
+      authAdapter.clearTokens();
+      
+      // Emitir evento para UI reagir (sem alterar UI diretamente)
+      window.dispatchEvent(new CustomEvent('auth:token-expired'));
+      
       if (isDevelopment) {
-        console.log('🔒 Token inválido ou expirado - usuário precisa fazer login novamente');
+        console.log('🔒 [API] Token inválido ou expirado - usuário precisa fazer login novamente');
       }
     }
     

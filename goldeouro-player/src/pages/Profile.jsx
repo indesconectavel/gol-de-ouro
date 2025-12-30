@@ -10,6 +10,7 @@ import { useAdvancedGamification } from '../hooks/useAdvancedGamification'
 import AdvancedStats from '../components/AdvancedStats'
 import AvatarSystem from '../components/AvatarSystem'
 import NotificationCenter from '../components/NotificationCenter'
+import dataAdapter from '../adapters/dataAdapter'
 
 const Profile = () => {
   const { isCollapsed } = useSidebar()
@@ -62,18 +63,21 @@ const Profile = () => {
       }
     } catch (error) {
       console.error('Erro ao carregar perfil:', error)
-             // Fallback para dados mínimos
-             setUser({
-               name: 'free10signer',
-               email: 'free10signer@gmail.com',
-               balance: 0.00,
-               totalBets: 0,
-               totalWins: 0,
-               winRate: 0,
-               joinDate: '2024-01-01',
-               level: 'Jogador',
-               avatar: '👤'
-             })
+      // FASE 1 - CRI-003: Removido fallback hardcoded
+      // Usar dataAdapter para normalizar dados vazios em vez de dados falsos
+      const normalizedUser = dataAdapter.normalizeUser(null)
+      setUser({
+        name: normalizedUser?.nome || 'Usuário',
+        email: normalizedUser?.email || '',
+        balance: normalizedUser?.saldo || 0.00,
+        totalBets: 0,
+        totalWins: 0,
+        winRate: 0,
+        joinDate: '',
+        level: 'Jogador',
+        avatar: '👤'
+      })
+      // UI exibirá estado de erro apropriado se necessário
     } finally {
       setLoading(false)
     }

@@ -1,0 +1,46 @@
+{
+  "inicio": "2025-11-25T17:32:30.700Z",
+  "testes": [
+    {
+      "nome": "Token inválido retorna 401",
+      "sucesso": true,
+      "detalhes": "Status correto",
+      "timestamp": "2025-11-25T17:32:31.632Z"
+    },
+    {
+      "nome": "PIX retorna QR Code/Copy-Paste",
+      "sucesso": false,
+      "detalhes": "QR code não encontrado na resposta",
+      "timestamp": "2025-11-25T17:32:34.870Z"
+    },
+    {
+      "nome": "WebSocket Autenticação",
+      "sucesso": false,
+      "detalhes": "Usuário não encontrado ou inativo",
+      "timestamp": "2025-11-25T17:32:37.217Z"
+    },
+    {
+      "nome": "Admin Chutes não retorna 500",
+      "sucesso": false,
+      "detalhes": "Ainda retorna erro 500",
+      "timestamp": "2025-11-25T17:32:37.319Z"
+    }
+  ],
+  "problemas": [
+    {
+      "teste": "PIX retorna QR Code/Copy-Paste",
+      "detalhes": "QR code não encontrado na resposta"
+    },
+    {
+      "teste": "WebSocket Autenticação",
+      "detalhes": "Usuário não encontrado ou inativo"
+    },
+    {
+      "teste": "Admin Chutes não retorna 500",
+      "detalhes": "Ainda retorna erro 500"
+    }
+  ],
+  "sucessos": 1,
+  "falhas": 3,
+  "fim": "2025-11-25T17:32:37.320Z"
+}

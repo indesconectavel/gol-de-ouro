@@ -1,0 +1,167 @@
+{
+  "timestamp": "2025-12-02T18:54:00Z",
+  "version": "v3.0",
+  "status": "REPROVADO",
+  "score": {
+    "atual": 22,
+    "maximo": 100,
+    "minimo_requerido": 80,
+    "gap": 58,
+    "percentual": 22
+  },
+  "modulos": {
+    "total": 7,
+    "passando": 2,
+    "falhando": 5,
+    "percentual_passando": 28.6,
+    "detalhes": {
+      "module1_dataTestID": {
+        "score": 9,
+        "max_score": 20,
+        "status": "PARCIAL",
+        "bloqueador": false
+      },
+      "module2_register": {
+        "score": 0,
+        "max_score": 20,
+        "status": "FALHOU",
+        "bloqueador": true
+      },
+      "module3_login": {
+        "score": 0,
+        "max_score": 20,
+        "status": "FALHOU",
+        "bloqueador": true
+      },
+      "module4_versionService": {
+        "score": 10,
+        "max_score": 10,
+        "status": "PASSOU",
+        "bloqueador": false
+      },
+      "module5_websocket": {
+        "score": 0,
+        "max_score": 10,
+        "status": "FALHOU",
+        "bloqueador": true
+      },
+      "module6_pixV6": {
+        "score": 0,
+        "max_score": 15,
+        "status": "FALHOU",
+        "bloqueador": true
+      },
+      "module7_screenshotsNetwork": {
+        "score": 3,
+        "max_score": 5,
+        "status": "PASSOU",
+        "bloqueador": false
+      }
+    }
+  },
+  "erros": {
+    "total": 8,
+    "criticos": 8,
+    "medios": 0,
+    "baixos": 0,
+    "lista": [
+      "Login: email não encontrado",
+      "Login: password não encontrado",
+      "Login: submit não encontrado",
+      "Register: username não encontrado",
+      "Token não salvo após registro",
+      "Credenciais não disponíveis",
+      "Token não disponível (WebSocket)",
+      "Token não disponível (PIX)"
+    ]
+  },
+  "warnings": {
+    "total": 1,
+    "lista": [
+      "Token não disponível para módulos WebSocket e PIX"
+    ]
+  },
+  "problemas_identificados": {
+    "criticos": [
+      {
+        "id": "P001",
+        "descricao": "Frontend sem data-testid em produção",
+        "impacto": "Alto",
+        "solucao": "Deploy do frontend com data-testid",
+        "tempo_estimado": "30 minutos"
+      },
+      {
+        "id": "P002",
+        "descricao": "Token não salvo após registro",
+        "impacto": "Crítico",
+        "solucao": "Debug e correção do fluxo de registro",
+        "tempo_estimado": "1-2 horas"
+      }
+    ],
+    "medios": [],
+    "baixos": []
+  },
+  "criterios_aprovacao": {
+    "score_minimo": false,
+    "modulos_criticos": false,
+    "erros_criticos": false,
+    "warnings": true,
+    "frontend_data_testid": false,
+    "registro_funcionando": false,
+    "login_funcionando": false,
+    "websocket_conectando": false,
+    "pix_funcionando": false,
+    "total_aprovados": 1,
+    "total_requeridos": 9,
+    "percentual_aprovacao": 11.1
+  },
+  "riscos": {
+    "criticos": [
+      "Usuários não conseguirão se registrar",
+      "Usuários não conseguirão fazer login",
+      "PIX não funcionará",
+      "WebSocket não conectará"
+    ],
+    "medios": [
+      "Automação de testes comprometida"
+    ]
+  },
+  "proximos_passos": [
+    {
+      "fase": 1,
+      "acao": "Deploy do frontend com data-testid",
+      "prioridade": "CRÍTICA",
+      "tempo_estimado": "30 minutos",
+      "bloqueador": true
+    },
+    {
+      "fase": 2,
+      "acao": "Debug e correção do fluxo de registro",
+      "prioridade": "CRÍTICA",
+      "tempo_estimado": "1-2 horas",
+      "bloqueador": true
+    },
+    {
+      "fase": 3,
+      "acao": "Reexecutar auditoria E2E completa",
+      "prioridade": "CRÍTICA",
+      "tempo_estimado": "30 minutos",
+      "bloqueador": true
+    }
+  ],
+  "decisao_final": {
+    "status": "REPROVADO",
+    "justificativa": "Score muito abaixo do mínimo (22/100 vs. 80/100), funcionalidades críticas não funcionando",
+    "recomendacao": "NÃO LIBERAR PARA PRODUÇÃO",
+    "timeline_estimada": "2-3 horas para correção"
+  },
+  "arquivos_gerados": [
+    "docs/e2e/E2E-PRODUCTION-REPORT.json",
+    "docs/e2e/E2E-PRODUCTION-REPORT.md",
+    "docs/e2e/network.har.json",
+    "docs/e2e/screenshots/",
+    "docs/e2e/RELATORIO-FINAL-CONSOLIDADO-GO-LIVE-v3.md",
+    "docs/e2e/DECISAO-FINAL-GO-LIVE-v3.md",
+    "docs/e2e/STATUS-FINAL-GO-LIVE.json"
+  ]
+}

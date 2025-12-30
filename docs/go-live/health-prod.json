@@ -1,0 +1,18 @@
+{
+  "status": 200,
+  "data": {
+    "success": true,
+    "timestamp": "2025-12-04T18:03:23.645Z",
+    "data": {
+      "status": "ok",
+      "timestamp": "2025-12-04T18:03:23.645Z",
+      "version": "1.2.0",
+      "database": "connected",
+      "mercadoPago": "connected",
+      "contadorChutes": 61,
+      "ultimoGolDeOuro": 0
+    },
+    "message": "Sistema funcionando"
+  },
+  "ok": true
+}

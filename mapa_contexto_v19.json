@@ -1,0 +1,164 @@
+{
+  "timestamp": "2025-12-09T21:23:29.028Z",
+  "projeto": "Gol de Ouro Backend",
+  "versao": "V19.0.0",
+  "estrutura": {
+    "modulos": {
+      "admin": {
+        "controllers": [
+          "admin.controller.js"
+        ],
+        "routes": [
+          "admin.routes.js"
+        ],
+        "services": []
+      },
+      "auth": {
+        "controllers": [
+          "auth.controller.js",
+          "usuario.controller.js"
+        ],
+        "routes": [
+          "auth.routes.js",
+          "usuario.routes.js"
+        ],
+        "services": [
+          "auth.service.js"
+        ]
+      },
+      "chutes": {
+        "controllers": [],
+        "routes": [],
+        "services": []
+      },
+      "financial": {
+        "controllers": [
+          "payment.controller.js",
+          "withdraw.controller.js"
+        ],
+        "routes": [
+          "payment.routes.js",
+          "withdraw.routes.js"
+        ],
+        "services": [
+          "financial.service.js",
+          "pix-mercado-pago.service.js",
+          "pix.service.js",
+          "webhook.service.js"
+        ]
+      },
+      "game": {
+        "controllers": [
+          "game.controller.js"
+        ],
+        "routes": [
+          "game.routes.js"
+        ],
+        "services": []
+      },
+      "health": {
+        "controllers": [],
+        "routes": [
+          "health.routes.js"
+        ],
+        "services": []
+      },
+      "lotes": {
+        "controllers": [],
+        "routes": [],
+        "services": [
+          "lote.service.js"
+        ]
+      },
+      "monitor": {
+        "controllers": [
+          "system.controller.js"
+        ],
+        "routes": [
+          "system.routes.js"
+        ],
+        "services": []
+      },
+      "rewards": {
+        "controllers": [],
+        "routes": [],
+        "services": [
+          "reward.service.js"
+        ]
+      },
+      "shared": {
+        "controllers": [],
+        "routes": [],
+        "services": [
+          "email.service.js"
+        ]
+      },
+      "transactions": {
+        "controllers": [],
+        "routes": [],
+        "services": []
+      }
+    }
+  },
+  "arquivos": {
+    "servidor": "server-fly.js",
+    "servidor_path": "E:\\Chute de Ouro\\goldeouro-backend\\server-fly.js",
+    "importantes": {
+      "package.json": true,
+      "database/supabase-unified-config.js": true,
+      "config/system-config.js": true,
+      "config/required-env.js": true
+    }
+  },
+  "variaveis_ambiente": {
+    "USE_ENGINE_V19": {
+      "definida": false
+    },
+    "USE_DB_QUEUE": {
+      "definida": false
+    },
+    "ENGINE_HEARTBEAT_ENABLED": {
+      "definida": false
+    },
+    "ENGINE_MONITOR_ENABLED": {
+      "definida": false
+    },
+    "SUPABASE_URL": {
+      "definida": false
+    },
+    "SUPABASE_SERVICE_ROLE_KEY": {
+      "definida": false
+    },
+    "JWT_SECRET": {
+      "definida": false
+    }
+  },
+  "engine_v19": {
+    "scripts": [
+      "aplicar_migration_v19_supabase.js",
+      "apply_migration_v19_supabase.js",
+      "diagnostico_v19_safe.js",
+      "execute_v19_staging.js",
+      "execute_v19_staging_safe.js",
+      "heartbeat_sender.js",
+      "prechecks_v19.js",
+      "validar_engine_v19_final.js",
+      "validar_estruturas_db_v19_safe.js",
+      "validar_heartbeat_pos_migration.js",
+      "validar_heartbeat_safe.js",
+      "validar_migration_v19_completa.js",
+      "validar_pos_migration_v19.js",
+      "validate_database_consistency_v19.js",
+      "validate_engine_v19_final.js",
+      "validate_environment_v19.js",
+      "validate_heartbeat_v19.js",
+      "validate_migration_v19.js",
+      "validate_monitor_endpoint.js",
+      "validate_policies_v19.js",
+      "validate_rpc_functions_v19.js",
+      "validate_server_startup_v19.js"
+    ],
+    "monitor_existe": true,
+    "heartbeat_existe": true
+  }
+}

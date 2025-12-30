@@ -1,0 +1,191 @@
+{
+  "dashboard": {
+    "title": "Gol de Ouro - Engine V19 Dashboard",
+    "tags": ["goldeouro", "v19", "production"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "System Heartbeat",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "SELECT last_heartbeat FROM system_heartbeat ORDER BY last_heartbeat DESC LIMIT 1",
+            "refId": "A",
+            "datasource": "Supabase PostgreSQL"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "value": null,
+                  "color": "red"
+                },
+                {
+                  "value": 300,
+                  "color": "green"
+                }
+              ]
+            },
+            "unit": "s",
+            "mappings": []
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Lotes Ativos",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "SELECT COUNT(*) as count FROM lotes WHERE status = 'ativo'",
+            "refId": "A",
+            "datasource": "Supabase PostgreSQL"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short",
+            "mappings": []
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Chutes por Minuto",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "SELECT COUNT(*) as count, DATE_TRUNC('minute', created_at) as minute FROM chutes WHERE created_at > NOW() - INTERVAL '1 hour' GROUP BY minute ORDER BY minute",
+            "refId": "A",
+            "datasource": "Supabase PostgreSQL"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short",
+            "mappings": []
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 4,
+        "title": "Pagamentos PIX Pendentes",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "SELECT COUNT(*) as count FROM webhook_events WHERE processed = false AND event_type LIKE '%payment%'",
+            "refId": "A",
+            "datasource": "Supabase PostgreSQL"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "value": null,
+                  "color": "green"
+                },
+                {
+                  "value": 10,
+                  "color": "yellow"
+                },
+                {
+                  "value": 50,
+                  "color": "red"
+                }
+              ]
+            },
+            "unit": "short",
+            "mappings": []
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 5,
+        "title": "RPC Error Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "SELECT COUNT(*) FILTER (WHERE error_message IS NOT NULL) as errors, COUNT(*) as total, DATE_TRUNC('minute', created_at) as minute FROM webhook_events WHERE created_at > NOW() - INTERVAL '1 hour' GROUP BY minute ORDER BY minute",
+            "refId": "A",
+            "datasource": "Supabase PostgreSQL"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "percent",
+            "mappings": []
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 6,
+          "y": 16
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "annotations": {
+      "list": []
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "links": [],
+    "liveNow": false,
+    "weekStart": ""
+  }
+}
+

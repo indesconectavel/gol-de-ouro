@@ -1,0 +1,17 @@
+{
+  "conexao": {
+    "url": "wss://goldeouro-backend-v2.fly.dev",
+    "hasWss": true,
+    "hasGlobal": true,
+    "hasFile": true
+  },
+  "eventos": {
+    "hasConnection": true,
+    "hasBroadcast": true,
+    "hasReconnect": true,
+    "hasHeartbeat": true
+  },
+  "stress": {},
+  "score": 100,
+  "errors": []
+}
