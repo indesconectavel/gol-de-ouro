@@ -231,6 +231,7 @@ correcao-final.log
 auditoria-sistema.log
 
 # Arquivos de backup específicos
+BACKUP-V15/
 BACKUP-COMPLETO-*/
 BACKUP-ANTES-*/
 BACKUP-PRODUCAO-*/
