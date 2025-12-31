@@ -34,10 +34,15 @@ import goalieDiveBR from '../assets/goalie_dive_br.png';
 import goalieDiveMid from '../assets/goalie_dive_mid.png';
 import ballImg from '../assets/ball.png';
 import bgGoalImg from '../assets/bg_goal.jpg';
-import gooolImg from '../assets/goool.png';
+// Novas imagens (com fallback para imagens antigas)
+import golNormalImg from '../assets/gol_normal.png';
+import gooolImg from '../assets/goool.png'; // Fallback
+import ganhou5Img from '../assets/ganhou_5.png';
+import ganhouImg from '../assets/ganhou.png'; // Fallback
+import golDeOuroImg from '../assets/gol_de_ouro.png';
+import goldenGoalImg from '../assets/golden-goal.png'; // Fallback
+import ganhou100Img from '../assets/ganhou_100.png';
 import defendeuImg from '../assets/defendeu.png';
-import goldenGoalImg from '../assets/golden-goal.png';
-import ganhouImg from '../assets/ganhou.png';
 
 const Jogo = () => {
   const navigate = useNavigate();
@@ -98,6 +103,7 @@ const Jogo = () => {
   const [showDefendeu, setShowDefendeu] = useState(false);
   const [showGanhou, setShowGanhou] = useState(false);
   const [showGoldenGoal, setShowGoldenGoal] = useState(false);
+  const [showGanhou100, setShowGanhou100] = useState(false);
   
   // Estados das estatísticas
   const [shotsTaken, setShotsTaken] = useState(0);
@@ -142,7 +148,8 @@ const Jogo = () => {
     goool: null,
     defendeu: null,
     ganhou: null,
-    goldenGoal: null
+    goldenGoal: null,
+    ganhou100: null
   });
   
   // ✅ OTIMIZAÇÃO: Função para adicionar timer e garantir limpeza
@@ -228,9 +235,10 @@ const Jogo = () => {
       showGoool,
       showDefendeu,
       showGanhou,
-      showGoldenGoal
+      showGoldenGoal,
+      showGanhou100
     });
-  }, [showGoool, showDefendeu, showGanhou, showGoldenGoal]);
+  }, [showGoool, showDefendeu, showGanhou, showGoldenGoal, showGanhou100]);
   
   const initializeGame = async () => {
     try {
@@ -452,12 +460,31 @@ const Jogo = () => {
               }
               toast.success(`🏆 GOL DE OURO! Você ganhou R$ ${capturedPrize}!`);
               
-              // ✅ FASE 4: Reset após 5.5s (animação ganhouPop dura 5s + margem)
+              // Mostrar ganhou_100.png após 1.2s (quando gol_de_ouro termina)
+              const showGanhou100Timer = setTimeout(() => {
+                console.log('🎉 [JOGO] Mostrando ganhou_100.png');
+                // ✅ CRÍTICO: Usar flushSync para garantir que o estado seja atualizado imediatamente
+                flushSync(() => {
+                  setShowGanhou100(true);
+                });
+                // ✅ ÁUDIO: Tocar celebração quando ganhou_100 aparece
+                if (!isMuted) {
+                  playCelebrationSound();
+                }
+                // ✅ FASE 4: Reset após ganhouPop terminar (5s de animação + margem)
+                const resetTimer = setTimeout(() => {
+                  console.log('🔄 [JOGO] Finalizando ciclo após ganhou_100 (fallback timer)');
+                  endCycle();
+                }, 5200); // 5s de animação + 200ms de margem
+                addTimer(resetTimer);
+              }, 1200);
+              addTimer(showGanhou100Timer);
+              
+              // Ocultar gol_de_ouro.png após 1.2s (quando ganhou_100 aparece)
               const hideGoldenTimer = setTimeout(() => {
-                console.log('🖼️ [JOGO] Ocultando golden-goal.png e finalizando ciclo');
+                console.log('🔄 [JOGO] Ocultando gol_de_ouro.png');
                 setShowGoldenGoal(false);
-                endCycle();
-              }, 5500);
+              }, 1200);
               addTimer(hideGoldenTimer);
             } else {
               // GOL NORMAL - Corrigido timing para 5.5s total (ganhouPop dura 5s)
@@ -608,6 +635,7 @@ const Jogo = () => {
     setShowDefendeu(false);
     setShowGanhou(false);
     setShowGoldenGoal(false);
+    setShowGanhou100(false);
     setGoaliePose("idle");
     setGoalieStagePos({ x: 50, y: 62, rot: 0 });
     
@@ -623,6 +651,7 @@ const Jogo = () => {
       showDefendeu,
       showGanhou,
       showGoldenGoal,
+      showGanhou100,
       gameState
     });
     
@@ -630,7 +659,7 @@ const Jogo = () => {
     setGameState(GAME_STATE.IDLE); // ✅ ÚNICA autoridade que libera input
     
     console.log('[GAME] Ciclo finalizado - gameState agora é IDLE');
-  }, [resetVisuals, showGoool, showDefendeu, showGanhou, showGoldenGoal]);
+  }, [resetVisuals, showGoool, showDefendeu, showGanhou, showGoldenGoal, showGanhou100]);
   
   // ✅ RESET À PROVA DE BATCHING (manter por compatibilidade temporária)
   const resetAnimations = useCallback(() => {
@@ -879,6 +908,7 @@ const Jogo = () => {
               <div>showDefendeu: {showDefendeu ? '✅ TRUE' : '❌ false'}</div>
               <div>showGanhou: {showGanhou ? '✅ TRUE' : '❌ false'}</div>
               <div>showGoldenGoal: {showGoldenGoal ? '✅ TRUE' : '❌ false'}</div>
+              <div>showGanhou100: {showGanhou100 ? '✅ TRUE' : '❌ false'}</div>
             </div>
           )}
           
@@ -902,6 +932,7 @@ const Jogo = () => {
               <div>showDefendeu: {showDefendeu ? '✅ TRUE' : '❌ false'}</div>
               <div>showGanhou: {showGanhou ? '✅ TRUE' : '❌ false'}</div>
               <div>showGoldenGoal: {showGoldenGoal ? '✅ TRUE' : '❌ false'}</div>
+              <div>showGanhou100: {showGanhou100 ? '✅ TRUE' : '❌ false'}</div>
               <div style={{ marginTop: '10px', fontSize: '10px', color: '#aaa' }}>
                 gameState: {gameState}
               </div>
@@ -917,11 +948,11 @@ const Jogo = () => {
           {/* Overlays - Renderizar diretamente no body usando Portal para evitar overflow:hidden */}
           {typeof document !== 'undefined' && document.body && (
             <>
-              {/* Overlay GOL - USANDO IMAGEM goool.png COM ANIMAÇÃO */}
+              {/* Overlay GOL - USANDO IMAGEM gol_normal.png COM ANIMAÇÃO (fallback para goool.png) */}
               {showGoool && createPortal(
                 <img
                   ref={(el) => { overlayRefs.current.goool = el; }}
-                  src={gooolImg}
+                  src={golNormalImg}
                   alt="Gol!"
                   className="gs-goool"
                   style={{
@@ -941,10 +972,11 @@ const Jogo = () => {
                     willChange: 'transform, opacity'
                   }}
                   onError={(e) => {
-                    console.error('❌ [JOGO] Erro ao carregar goool.png:', e);
+                    console.warn('⚠️ [JOGO] Erro ao carregar gol_normal.png, usando fallback goool.png');
+                    e.target.src = gooolImg;
                   }}
                   onLoad={() => {
-                    console.log('✅ [JOGO] goool.png carregada com sucesso');
+                    console.log('✅ [JOGO] gol_normal.png carregada com sucesso');
                   }}
                   onAnimationEnd={(e) => {
                     if (e.animationName === 'gooolPop') {
@@ -955,11 +987,11 @@ const Jogo = () => {
                 document.body
               )}
               
-              {/* Overlay GANHOU - USANDO IMAGEM ganhou.png COM ANIMAÇÃO (aparece após gol) */}
+              {/* Overlay GANHOU - USANDO IMAGEM ganhou_5.png COM ANIMAÇÃO (aparece após gol normal, fallback para ganhou.png) */}
               {showGanhou && createPortal(
                 <img
                   ref={(el) => { overlayRefs.current.ganhou = el; }}
-                  src={ganhouImg}
+                  src={ganhou5Img}
                   alt="Ganhou!"
                   className="gs-ganhou"
                   style={{
@@ -979,10 +1011,11 @@ const Jogo = () => {
                     willChange: 'transform, opacity'
                   }}
                   onError={(e) => {
-                    console.error('❌ [JOGO] Erro ao carregar ganhou.png:', e, 'Path:', ganhouImg);
+                    console.warn('⚠️ [JOGO] Erro ao carregar ganhou_5.png, usando fallback ganhou.png');
+                    e.target.src = ganhouImg;
                   }}
                   onLoad={() => {
-                    console.log('✅ [JOGO] ganhou.png carregada com sucesso, src:', ganhouImg);
+                    console.log('✅ [JOGO] ganhou_5.png carregada com sucesso');
                   }}
                   onAnimationEnd={(e) => {
                     if (e.animationName === 'ganhouPop') {
@@ -1032,11 +1065,11 @@ const Jogo = () => {
                 document.body
               )}
               
-              {/* Overlay GOL DE OURO - USANDO IMAGEM golden-goal.png */}
+              {/* Overlay GOL DE OURO - USANDO IMAGEM gol_de_ouro.png (fallback para golden-goal.png) */}
               {showGoldenGoal && createPortal(
                 <img
                   ref={(el) => { overlayRefs.current.goldenGoal = el; }}
-                  src={goldenGoalImg}
+                  src={golDeOuroImg}
                   alt="Gol de Ouro!"
                   className="gs-golden-goal"
                   style={{
@@ -1055,14 +1088,54 @@ const Jogo = () => {
                     opacity: 1
                   }}
                   onError={(e) => {
-                    console.error('❌ [JOGO] Erro ao carregar golden-goal.png:', e);
+                    console.warn('⚠️ [JOGO] Erro ao carregar gol_de_ouro.png, usando fallback golden-goal.png');
+                    e.target.src = goldenGoalImg;
                   }}
                   onLoad={() => {
-                    console.log('✅ [JOGO] golden-goal.png carregada com sucesso');
+                    console.log('✅ [JOGO] gol_de_ouro.png carregada com sucesso');
                   }}
                   onAnimationEnd={(e) => {
                     if (e.animationName === 'ganhouPop') {
-                      console.log('✅ [JOGO] Animação ganhouPop (golden goal) terminou - finalizando ciclo');
+                      console.log('✅ [JOGO] Animação ganhouPop (golden goal) terminou');
+                    }
+                  }}
+                />,
+                document.body
+              )}
+              
+              {/* Overlay GANHOU 100 - USANDO IMAGEM ganhou_100.png COM ANIMAÇÃO (aparece após gol de ouro) */}
+              {showGanhou100 && createPortal(
+                <img
+                  ref={(el) => { overlayRefs.current.ganhou100 = el; }}
+                  src={ganhou100Img}
+                  alt="Ganhou R$100!"
+                  className="gs-ganhou"
+                  style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 10002, // Maior que gol_de_ouro para aparecer sobre ele
+                    pointerEvents: 'none',
+                    width: isMobile ? 'min(70%, 350px)' : isTablet ? 'min(55%, 450px)' : 'min(45%, 550px)',
+                    height: 'auto',
+                    maxWidth: '550px',
+                    animation: 'ganhouPop 5s ease-out forwards',
+                    display: 'block',
+                    visibility: 'visible',
+                    opacity: 1,
+                    willChange: 'transform, opacity'
+                  }}
+                  onError={(e) => {
+                    console.warn('⚠️ [JOGO] Erro ao carregar ganhou_100.png, continuando sem imagem');
+                    // Não usar fallback aqui pois é específico para gol de ouro
+                  }}
+                  onLoad={() => {
+                    console.log('✅ [JOGO] ganhou_100.png carregada com sucesso');
+                  }}
+                  onAnimationEnd={(e) => {
+                    if (e.animationName === 'ganhouPop') {
+                      console.log('✅ [JOGO] Animação ganhouPop (ganhou_100) terminou - finalizando ciclo');
                       endCycle();
                     }
                   }}
