@@ -207,24 +207,57 @@ app.use(compression());
 // Trust proxy configurado corretamente para Fly.io (1 = confiar apenas no primeiro proxy)
 app.set('trust proxy', 1);
 
-// CORS configurado
+// CORS configurado - CORREÇÃO CIRÚRGICA MISSÃO B
 const parseCorsOrigins = () => {
   const csv = process.env.CORS_ORIGIN || '';
   const list = csv.split(',').map(s => s.trim()).filter(Boolean);
   return list.length > 0 ? list : [
     'https://goldeouro.lol',
     'https://www.goldeouro.lol',
+    'https://app.goldeouro.lol', // ✅ ADICIONADO: Subdomínio de produção
     'https://admin.goldeouro.lol',
     'http://localhost:5173', // Permitir localhost para desenvolvimento
     'http://localhost:5174'
   ];
 };
 
+// ✅ CORREÇÃO: Usar função dinâmica de origin para suportar wildcards Vercel
 app.use(cors({
-  origin: parseCorsOrigins(),
+  origin: function (origin, callback) {
+    // Permitir requests sem origin (mobile apps, Postman, health checks, etc.)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    const allowedOrigins = parseCorsOrigins();
+    
+    // Verificar se origin está na lista permitida
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // ✅ CORREÇÃO: Permitir wildcards do Vercel (goldeouro-player-*.vercel.app)
+    // Padrão: https://goldeouro-player-{hash}-{team}.vercel.app
+    const vercelPattern = /^https:\/\/goldeouro-player(-[a-z0-9]+)?(-[a-z0-9-]+)?\.vercel\.app$/;
+    if (vercelPattern.test(origin)) {
+      return callback(null, true);
+    }
+    
+    // Bloquear origin não permitida
+    console.warn(`🚫 [CORS] Origin bloqueada: ${origin}`);
+    callback(new Error('Não permitido pelo CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Idempotency-Key']
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With', 
+    'X-Idempotency-Key',
+    'x-admin-token' // ✅ ADICIONADO: Header para admin
+  ],
+  exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
+  maxAge: 86400 // 24 horas para cache de preflight
 }));
 
 // Rate limiting melhorado
