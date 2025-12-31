@@ -3,6 +3,7 @@
 // =====================================================
 // Todas as posições e tamanhos em PIXELS fixos (baseado em 1920x1080)
 // Este é o ÚNICO arquivo onde posições visuais devem ser ajustadas
+// BACKUP IMUTÁVEL - NÃO ALTERAR NUNCA
 
 export const STAGE = {
   WIDTH: 1920,
@@ -131,3 +132,4 @@ export const getTargetPosition = (direction) => {
     default: return TARGETS.C;
   }
 };
+

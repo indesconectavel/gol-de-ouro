@@ -1,0 +1,599 @@
+.gs-wrapper{
+  width:100vw; height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  background:#052a4d; overflow:auto;
+  /* Proporção de referência baseada no print */
+  --reference-width: 1920px;
+  --reference-height: 1080px;
+  --reference-ratio: calc(1920 / 1080);
+}
+
+/* ajuste da trave - Proporção fixa baseada no print */
+.gs-stage{
+  --goal-left: 19.5%;
+  --goal-top:  36.5%;
+  --goal-width: 61%;
+  --goal-height: 33%;
+
+  position:relative;
+  /* Tamanho fixo para consistência em todos os dispositivos */
+  width: 1200px;
+  height: 675px; /* 1200 * 9/16 = 675 */
+  overflow:hidden;
+  border-radius:16px;
+  background:#0b3a1d;
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
+  
+  /* Garante que a proporção seja sempre 16:9 */
+  aspect-ratio: 16/9;
+}
+.gs-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+
+/* HUD - Design Glassmorphism */
+.gs-hud{ 
+  position:absolute; left:20px; right:20px; top:20px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; z-index:10;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  backdrop-filter: blur(20px); color:#fff;
+  padding:20px 28px; border-radius:20px; min-height:90px;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+.brand{ display:flex; align-items:center; gap:12px; }
+.brand-logo{ width:100px; height:100px; object-fit:contain; filter:drop-shadow(0 2px 8px rgba(0,0,0,.3)); }
+.brand-info{ display:flex; flex-direction:column; gap:2px; }
+.brand-name{ font-size:20px; font-weight:800; text-shadow:0 2px 4px rgba(0,0,0,.5); color:#ffd700; }
+.brand-subtitle{ font-size:12px; opacity:1; text-transform:uppercase; letter-spacing:1px; color:#ffffff; }
+.hud-center{ display:flex; flex-direction:column; align-items:center; gap:12px; }
+.stats-grid{ display:flex; align-items:center; gap:24px; }
+.stat-item{ display:flex; align-items:center; gap:12px; }
+.stat-icon{ font-size:35px !important; filter:drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
+.stat-content{ display:flex; flex-direction:column; gap:4px; }
+.stat-label{ font-size:25px !important; opacity:.8; text-transform:uppercase; letter-spacing:.5px; color:#a0a0a0; }
+.stat-value{ font-size:25px !important; font-weight:700; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.5); }
+
+/* Status da Fila */
+.queue-status{ 
+  display:flex; align-items:center; gap:8px; 
+  padding:8px 16px; border-radius:20px; 
+  font-size:14px; font-weight:600; color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.5);
+  animation:pulse 2s infinite;
+}
+.status-message{ font-weight:700; }
+.wait-time{ font-size:12px; opacity:.9; }
+.hud-right{ display:flex; align-items:center; }
+.betting-section{ display:flex; flex-direction:column; gap:12px; align-items:flex-end; }
+.bet-controls{ display:flex; flex-direction:column; gap:8px; align-items:center; }
+.bet-label{ font-size:25px !important; color:#a0a0a0; font-weight:600; }
+.bet-buttons{ display:flex; gap:6px; }
+.bet-btn{ 
+  padding:8px 16px; border:none; border-radius:10px; 
+  font-size:25px !important; font-weight:600; cursor:pointer; 
+  transition:all .2s ease; background:rgba(255,255,255,.1);
+  color:#fff; border:1px solid rgba(255,255,255,.2);
+}
+.bet-btn:hover:not(:disabled){ 
+  background:rgba(255,255,255,.2); 
+  transform:translateY(-1px);
+  border:1px solid rgba(255,255,255,.3);
+}
+.bet-btn.active{ 
+  background:linear-gradient(135deg,#10b981,#059669); 
+  color:#fff; font-weight:700; 
+  border:1px solid rgba(16,185,129,.3);
+  box-shadow:0 2px 8px rgba(16,185,129,.3);
+}
+.bet-btn.disabled{ opacity:.4; cursor:not-allowed; }
+.hud-actions{ display:flex; align-items:center; gap:12px; }
+.hud-btn{ 
+  display:flex; align-items:center; gap:8px; padding:12px 20px; border:none; border-radius:12px;
+  font-size:30px !important; font-weight:600; cursor:pointer; transition:all .3s ease;
+  border:1px solid rgba(255,255,255,.2); position:relative; overflow:hidden;
+  background:rgba(255,255,255,.1); color:#fff;
+}
+.hud-btn.primary{ 
+  background:linear-gradient(135deg,#10b981,#059669); color:#000000 !important; font-weight:700;
+  box-shadow:0 4px 12px rgba(16,185,129,.3); border:1px solid rgba(16,185,129,.3);
+}
+.hud-btn.primary:hover:not(:disabled){ 
+  transform:translateY(-2px); 
+  box-shadow:0 6px 16px rgba(16,185,129,.4);
+  background:linear-gradient(135deg,#059669,#047857);
+}
+.hud-btn.primary:disabled{ opacity:.6; cursor:not-allowed; }
+.hud-btn.secondary{ 
+  background:rgba(255,255,255,.1); color:#fff; 
+  border:1px solid rgba(255,255,255,.2);
+}
+.hud-btn.secondary:hover{ 
+  background:rgba(255,255,255,.2); 
+  transform:translateY(-1px);
+  border:1px solid rgba(255,255,255,.3);
+}
+.btn-icon{ font-size:36px !important; }
+.hud-btn .btn-icon{ font-size:36px !important; }
+.hud-btn span:not(.btn-icon){ font-size:30px !important; }
+
+/* HUD Inferior Esquerdo - Controles de Partida */
+.hud-bottom-left{ 
+  position:absolute; bottom:20px; left:10px; z-index:10;
+  background:rgba(255,255,255,.1); backdrop-filter:blur(20px);
+  border-radius:20px; padding:16px; border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+.game-actions{ display:flex; gap:8px; }
+
+
+/* Display de Rank */
+.rank-display{ 
+  display:flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,.1); padding:8px 12px;
+  border-radius:12px; border:1px solid rgba(255,255,255,.2);
+  min-width:80px; justify-content:center;
+}
+.rank-icon{ font-size:16px; }
+.rank-text{ 
+  font-size:12px; font-weight:700; 
+  text-transform:uppercase; letter-spacing:.5px;
+}
+
+/* HUD Lateral Esquerda - Debug (apenas para admin) */
+.hud-left-debug{ 
+  position:absolute; left:20px; top:50%; transform:translateY(-50%); z-index:10;
+}
+.debug-btn{ 
+  display:flex; align-items:center; gap:8px;
+  background:rgba(255,0,0,.1); backdrop-filter:blur(20px);
+  border:1px solid rgba(255,0,0,.3); border-radius:12px;
+  padding:12px 16px; color:#ff6b6b; cursor:pointer;
+  transition:all .3s ease; font-weight:600;
+}
+.debug-btn:hover{ 
+  background:rgba(255,0,0,.2); border-color:rgba(255,0,0,.5);
+  transform:translateY(-2px); box-shadow:0 4px 12px rgba(255,0,0,.3);
+}
+.debug-btn .btn-icon{ font-size:36px !important; }
+.debug-text{ font-size:12px; }
+
+/* HUD Inferior Direito - Controles e Chat */
+.hud-bottom-right{ 
+  position:absolute; bottom:20px; right:20px; z-index:10;
+  background:rgba(255,255,255,.1); backdrop-filter:blur(20px);
+  border-radius:20px; padding:16px; border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+.control-panel{ display:flex; flex-direction:column; gap:12px; }
+.control-buttons{ display:flex; gap:8px; }
+.control-btn{ 
+  width:44px; height:44px; border:none; border-radius:12px;
+  background:rgba(255,255,255,.1); color:#fff; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s ease; border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.control-btn:hover{ 
+  background:rgba(255,255,255,.2); 
+  transform:translateY(-2px);
+  border:1px solid rgba(255,255,255,.3);
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.control-btn .btn-icon{ font-size:36px !important; }
+.control-btn .btn-text{ font-size:8px; font-weight:500; }
+
+/* Chat Panel */
+.chat-panel{ 
+  width:300px; height:200px; background:rgba(255,255,255,.1);
+  border-radius:16px; border:1px solid rgba(255,255,255,.2);
+  display:flex; flex-direction:column;
+  backdrop-filter: blur(20px);
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+.chat-header{ 
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.2);
+  font-size:12px; font-weight:600; color:#fff;
+}
+.chat-close{ 
+  background:none; border:none; color:#fff; cursor:pointer;
+  font-size:16px; padding:0; width:20px; height:20px;
+}
+.chat-messages{ 
+  flex:1; padding:8px; overflow-y:auto; 
+  display:flex; flex-direction:column; gap:4px;
+}
+.chat-message{ 
+  display:flex; gap:6px; font-size:11px;
+}
+.chat-user{ color:#ffd700; font-weight:600; }
+.chat-text{ color:#fff; }
+.chat-input{ 
+  display:flex; gap:6px; padding:8px; border-top:1px solid rgba(255,255,255,.2);
+}
+.chat-input input{ 
+  flex:1; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+  border-radius:6px; padding:4px 8px; color:#fff; font-size:11px;
+}
+.chat-input input::placeholder{ color:rgba(255,255,255,.6); }
+.chat-send{ 
+  background:linear-gradient(135deg,#10b981,#059669); color:#fff; border:none;
+  border-radius:8px; padding:6px 12px; font-size:11px; font-weight:600;
+  cursor:pointer; border:1px solid rgba(16,185,129,.3);
+  box-shadow:0 2px 8px rgba(16,185,129,.3);
+  transition:all .2s ease;
+}
+.chat-send:hover{
+  background:linear-gradient(135deg,#059669,#047857);
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(16,185,129,.4);
+}
+
+/* Responsividade - Mantém o jogo igual em todos os dispositivos */
+@media (max-width: 1400px) {
+  .gs-stage {
+    width: 1000px;
+    height: 562.5px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .gs-stage {
+    width: 900px;
+    height: 506.25px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .gs-stage {
+    width: 800px;
+    height: 450px;
+  }
+  
+  .gs-hud {
+    padding: 16px 20px;
+    min-height: 80px;
+  }
+  
+  .brand-logo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .brand-name {
+    font-size: 18px;
+  }
+  
+  .stat-value {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .gs-stage {
+    width: 700px;
+    height: 393.75px;
+  }
+  
+  .gs-hud {
+    padding: 14px 16px;
+    min-height: 70px;
+    gap: 16px;
+  }
+  
+  .brand-logo {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .brand-name {
+    font-size: 16px;
+  }
+  
+  .brand-subtitle {
+    font-size: 10px;
+  }
+  
+  .stat-value {
+    font-size: 13px;
+  }
+  
+  .stat-label {
+    font-size: 9px;
+  }
+  
+  .bet-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  
+  .hud-bottom-left {
+    bottom: 10px;
+    left: 5px;
+    padding: 12px;
+  }
+  
+  .hud-bottom-right {
+    bottom: 10px;
+    right: 10px;
+    padding: 12px;
+  }
+  
+  
+  .rank-display {
+    min-width: 60px;
+    padding: 6px 8px;
+  }
+  
+  .rank-icon {
+    font-size: 14px;
+  }
+  
+  .rank-text {
+    font-size: 10px;
+  }
+  
+  .hud-left-debug {
+    left: 10px;
+  }
+  
+  .debug-btn {
+    padding: 8px 12px;
+  }
+  
+  .debug-text {
+    font-size: 10px;
+  }
+  
+  .control-btn {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .control-btn .btn-icon {
+    font-size: 14px;
+  }
+  
+  .chat-panel {
+    width: 250px;
+    height: 150px;
+  }
+  
+  .stats-grid {
+    gap: 16px;
+  }
+  
+  .stat-item {
+    gap: 8px;
+  }
+  
+  .stat-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gs-stage {
+    width: 600px;
+    height: 337.5px;
+  }
+  
+  .gs-hud {
+    padding: 12px 14px;
+    min-height: 60px;
+    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .hud-center {
+    order: 1;
+  }
+  
+  .hud-left {
+    order: 2;
+  }
+  
+  .hud-right {
+    order: 3;
+  }
+  
+  .brand-logo {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .brand-name {
+    font-size: 14px;
+  }
+  
+  .brand-subtitle {
+    font-size: 9px;
+  }
+  
+  .stats-grid {
+    gap: 16px;
+    justify-content: center;
+  }
+  
+  .stat-value {
+    font-size: 12px;
+  }
+  
+  .stat-label {
+    font-size: 8px;
+  }
+  
+  .bet-btn {
+    padding: 6px 10px;
+    font-size: 10px;
+  }
+  
+  
+  .hud-bottom-left,
+  .hud-bottom-right {
+    bottom: 10px;
+  }
+  
+  .hud-left-debug {
+    left: 10px;
+  }
+  
+  .control-btn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .chat-panel {
+    width: 200px;
+    height: 120px;
+  }
+  
+  .rank-display {
+    padding: 6px 8px;
+    min-width: 60px;
+  }
+  
+  .rank-text {
+    font-size: 10px;
+  }
+}
+
+/* HUD Meio Direito - Dashboard */
+.hud-center-right{
+  position:absolute; right:20px; top:calc(50% - 80px);
+  transform:translateY(-50%); z-index:10;
+}
+.dashboard-btn{
+  display:flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(20px); color:#fff;
+  padding:12px 20px; border-radius:12px;
+  cursor:pointer; transition:all 0.3s ease;
+  box-shadow:0 4px 16px rgba(0,0,0,.3);
+}
+.dashboard-btn:hover{
+  background:rgba(255,255,255,.2);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(0,0,0,.4);
+}
+.dashboard-btn .btn-icon{ font-size:18px; }
+.dashboard-btn .btn-text{ font-weight:600; font-size:25px !important; }
+
+/* Controle de Áudio */
+.audio-control-btn{
+  display:flex; align-items:center; gap:8px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  backdrop-filter:blur(20px); color:#fff;
+  padding:8px 16px; border-radius:8px;
+  cursor:pointer; transition:all 0.3s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+.audio-control-btn:hover{
+  background:rgba(255,255,255,.2);
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+}
+.audio-control-btn .btn-icon{ font-size:16px; }
+.audio-control-btn .btn-text{ font-weight:500; font-size:12px; }
+
+/* zonas */
+.gs-zone{ --size:31px; position:absolute; width:var(--size); height:var(--size);
+  transform:translate(-50%,-50%); border-radius:999px;
+  border:2px solid #fff; background:rgba(255,255,255,.2);
+  cursor:pointer; z-index:6; }
+.gs-zone:hover{ background:rgba(255,255,255,.36); }
+.gs-zone.disabled{ pointer-events:none; opacity:.5; }
+
+/* bola */
+.gs-ball{ position:absolute; width:52px; aspect-ratio:1/1;
+  transform:translate(-50%,-50%); z-index:7;
+  filter:drop-shadow(0 6px 12px rgba(0,0,0,.5));
+  transition:left .9s cubic-bezier(.18,.76,.2,1), top .9s cubic-bezier(.18,.76,.2,1);
+}
+
+/* goleiro */
+.gs-goalie{ position:absolute; width:clamp(160px,20vw,260px);
+  transform:translate(-50%,-50%); z-index:6;
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,.5));
+  transition: left .6s cubic-bezier(.2,.8,.2,1), top .6s cubic-bezier(.2,.8,.2,1), transform .6s ease;
+}
+
+/* gol overlay - GameFinal usa Portal com flexbox, este CSS é fallback */
+.gs-goool{ 
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%, -50%) !important;
+  width:520px !important;
+  height:200px !important;
+  z-index:10000 !important;
+  pointer-events:none;
+  animation:gooolPop 1.2s ease-out forwards; 
+}
+
+/* defendeu overlay - GameFinal usa Portal com flexbox, este CSS é fallback */
+.gs-defendeu{ 
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%, -50%) !important;
+  width:520px !important;
+  height:200px !important;
+  z-index:10000 !important;
+  pointer-events:none;
+  animation:pop 0.8s ease-out forwards; 
+}
+
+/* ganhou overlay - aparece após o goool.png */
+.gs-ganhou{ 
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%, -50%) !important;
+  width:480px !important;
+  height:180px !important;
+  z-index:10001 !important;
+  pointer-events:none;
+  animation:ganhouPop 5s ease-out forwards; 
+}
+
+@keyframes pop{ 
+  0%{transform:translate(-50%, -50%) scale(.6);opacity:0;} 
+  100%{transform:translate(-50%, -50%) scale(1);opacity:1;} 
+}
+@keyframes gooolPop{ 
+  0%{transform:translate(-50%, -50%) scale(.6);opacity:0; filter:brightness(1.2);} 
+  30%{transform:translate(-50%, -50%) scale(1.1);opacity:1; filter:brightness(1.5);}
+  70%{transform:translate(-50%, -50%) scale(1);opacity:1; filter:brightness(1.2);}
+  100%{transform:translate(-50%, -50%) scale(1);opacity:1; filter:brightness(1);}
+}
+@keyframes ganhouPop{ 
+  0%{transform:translate(-50%, -50%) scale(.3);opacity:0; filter:brightness(1.2);} 
+  20%{transform:translate(-50%, -50%) scale(1.1);opacity:1; filter:brightness(1.5);}
+  80%{transform:translate(-50%, -50%) scale(1);opacity:1; filter:brightness(1.2);}
+  100%{transform:translate(-50%, -50%) scale(1);opacity:1; filter:brightness(1);} 
+}
+@keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.7;} }
+
+/* erro */
+.gs-error{ position:absolute; right:14px; bottom:14px; z-index:10;
+  background:rgba(255,63,63,.15); border:1px solid rgba(255,63,63,.45);
+  padding:.55rem .8rem; color:#ffe; border-radius:10px; backdrop-filter: blur(6px); }
+
+/* DEBUG overlay */
+.gs-debug .goal-box{
+  position:absolute; z-index:9;
+  left:var(--goal-left); top:var(--goal-top);
+  width:var(--goal-width); height:var(--goal-height);
+  border:2px dashed rgba(255,255,0,.5);
+}
+.gs-debug .dbg-point{
+  position:absolute; transform:translate(-50%,-50%);
+  background:yellow; color:#000; font-size:.7rem;
+  padding:2px 4px; border-radius:4px;
+  font-weight:700; z-index:10;
+}
+

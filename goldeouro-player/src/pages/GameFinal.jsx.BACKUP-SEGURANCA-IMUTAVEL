@@ -5,6 +5,7 @@
 // Backend simulado | Estado único | Sem loops | Sem travamentos
 // Data: 2025-01-27
 // Status: VERSÃO VALIDADA ANTES DAS MELHORIAS
+// BACKUP IMUTÁVEL - NÃO ALTERAR NUNCA
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
@@ -910,3 +911,4 @@ const GameFinal = () => {
 };
 
 export default GameFinal;
+
