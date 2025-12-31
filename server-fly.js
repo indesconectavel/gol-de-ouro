@@ -407,7 +407,9 @@ async function getOrCreateLoteByValue(amount) {
   for (const [loteId, lote] of lotesAtivos.entries()) {
     const valorLote = typeof lote.valor !== 'undefined' ? lote.valor : lote.valorAposta;
     const ativo = typeof lote.ativo === 'boolean' ? lote.ativo : lote.status === 'active';
-    if (valorLote === amount && ativo && lote.chutes.length < config.size) {
+    // ✅ CORREÇÃO CIRÚRGICA: Verificar se lote ainda não atingiu R$10 (não fechou)
+    const totalArrecadado = lote.totalArrecadado || 0;
+    if (valorLote === amount && ativo && totalArrecadado < 10.00) {
       loteAtivo = lote;
       break;
     }
@@ -417,7 +419,9 @@ async function getOrCreateLoteByValue(amount) {
   if (!loteAtivo) {
     const randomBytes = crypto.randomBytes(6).toString('hex');
     const loteId = `lote_${amount}_${Date.now()}_${randomBytes}`;
-    const winnerIndex = crypto.randomInt(0, config.size);
+    // ✅ CORREÇÃO CIRÚRGICA: winnerIndex será determinado pelo fechamento econômico, não aleatório
+    // Usar -1 como placeholder (será atualizado quando lote fechar)
+    const winnerIndex = -1;
 
     // ✅ PERSISTIR NO BANCO
     const result = await LoteService.getOrCreateLote(loteId, amount, config.size, winnerIndex);
@@ -437,7 +441,7 @@ async function getOrCreateLoteByValue(amount) {
       config: config,
       chutes: [], // Array vazio inicialmente (será populado conforme chutes chegam)
       status: loteDb.status === 'ativo' ? 'active' : 'completed',
-      winnerIndex: loteDb.indice_vencedor,
+      winnerIndex: -1, // ✅ Será determinado quando lote fechar economicamente
       posicaoAtual: loteDb.posicao_atual || 0,
       createdAt: new Date().toISOString(),
       totalArrecadado: parseFloat(loteDb.total_arrecadado || 0),
@@ -1192,7 +1196,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     }
 
     // Obter ou criar lote para este valor
-    const lote = getOrCreateLoteByValue(amount);
+    const lote = await getOrCreateLoteByValue(amount);
     
     // Validar integridade do lote antes de processar chute
     const integrityValidation = loteIntegrityValidator.validateBeforeShot(lote, {
@@ -1209,38 +1213,78 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
     }
     
+    // ✅ CORREÇÃO CIRÚRGICA: Calcular arrecadação ANTES de processar chute
+    const arrecadacaoAntesChute = parseFloat(lote.totalArrecadado || 0);
+    const arrecadacaoAposChute = arrecadacaoAntesChute + amount;
+    
+    // ✅ CORREÇÃO CIRÚRGICA: Verificar se este chute fecha o lote economicamente (R$10)
+    const fechaLote = arrecadacaoAposChute >= 10.00;
+    
+    // ✅ CORREÇÃO CIRÚRGICA: Se fecha o lote, este chute é o vencedor (winnerIndex = shotIndex)
+    const shotIndex = lote.chutes.length;
+    const isGoal = fechaLote; // Gol só quando fecha economicamente
+    
     // Incrementar contador global
     contadorChutesGlobal++;
     
-    // Verificar se é Gol de Ouro (a cada 1000 chutes)
-    const isGolDeOuro = contadorChutesGlobal % 1000 === 0;
+    // ✅ CORREÇÃO CIRÚRGICA: Obter arrecadação global para calcular Gol de Ouro
+    let arrecadacaoGlobal = 0;
+    try {
+      const { data: metrics, error: metricsError } = await supabase
+        .from('metricas_globais')
+        .select('total_receita')
+        .eq('id', 1)
+        .single();
+      
+      if (!metricsError && metrics) {
+        arrecadacaoGlobal = parseFloat(metrics.total_receita || 0);
+      }
+    } catch (error) {
+      console.error('❌ [SHOOT] Erro ao obter arrecadação global:', error);
+    }
+    
+    // ✅ CORREÇÃO CIRÚRGICA: Calcular Gol de Ouro baseado em R$1000 arrecadados (não chutes)
+    const novaArrecadacaoGlobal = arrecadacaoGlobal + amount;
+    const ultimoGolDeOuroArrecadacao = await getUltimoGolDeOuroArrecadacao();
+    const isGolDeOuro = (novaArrecadacaoGlobal >= ultimoGolDeOuroArrecadacao + 1000.00);
     
     // Salvar contador no Supabase
     await saveGlobalCounter();
     
-    // Determinar se é gol baseado no sistema de lotes
-    const shotIndex = lote.chutes.length;
-    const isGoal = shotIndex === lote.winnerIndex;
+    // ✅ CORREÇÃO CIRÚRGICA: Atualizar arrecadação global
+    await updateArrecadacaoGlobal(novaArrecadacaoGlobal, isGolDeOuro);
+    
     const result = isGoal ? 'goal' : 'miss';
     
     let premio = 0;
     let premioGolDeOuro = 0;
     
-    if (isGoal) {
+    // ✅ CORREÇÃO CIRÚRGICA: Só pagar prêmio se lote fechou com R$10 arrecadados
+    if (isGoal && arrecadacaoAposChute >= 10.00) {
       // Prêmio normal: R$5 fixo (independente do valor apostado)
       premio = 5.00;
       
-      // Gol de Ouro: R$100 adicional
+      // Gol de Ouro: R$100 adicional (só se atingiu R$1000 arrecadados globalmente)
       if (isGolDeOuro) {
         premioGolDeOuro = 100.00;
         ultimoGolDeOuro = contadorChutesGlobal;
-        console.log(`🏆 [GOL DE OURO] Chute #${contadorChutesGlobal} - Prêmio: R$ ${premioGolDeOuro}`);
+        await setUltimoGolDeOuroArrecadacao(novaArrecadacaoGlobal);
+        console.log(`🏆 [GOL DE OURO] Arrecadação global: R$${novaArrecadacaoGlobal.toFixed(2)} - Prêmio: R$ ${premioGolDeOuro.toFixed(2)}`);
       }
       
-      // Encerrar o lote imediatamente após o gol (um vencedor por lote)
-      // Isso evita novos chutes no mesmo lote e alinha com o validador de integridade.
+      // ✅ CORREÇÃO CIRÚRGICA: Encerrar o lote quando fecha economicamente
       lote.status = 'completed';
       lote.ativo = false;
+      // ✅ CORREÇÃO CIRÚRGICA: Atualizar winnerIndex para o chute que fechou
+      lote.winnerIndex = shotIndex;
+      console.log(`✅ [LOTE] Lote ${lote.id} fechado economicamente: R$${arrecadacaoAposChute.toFixed(2)} arrecadado, vencedor: chute #${shotIndex + 1}`);
+    } else if (isGoal) {
+      // ✅ CORREÇÃO CIRÚRGICA: Bloquear gol se arrecadação < R$10 (não deve acontecer, mas segurança)
+      console.error(`❌ [LOTE] Tentativa de gol com arrecadação insuficiente: R$${arrecadacaoAposChute.toFixed(2)}`);
+      return res.status(400).json({
+        success: false,
+        message: 'Lote precisa arrecadar R$10 antes de conceder prêmio'
+      });
     }
     
     // Adicionar chute ao lote
@@ -1259,7 +1303,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     };
     
     lote.chutes.push(chute);
-    lote.totalArrecadado += amount;
+    lote.totalArrecadado = arrecadacaoAposChute; // ✅ Usar valor calculado
     lote.premioTotal += premio + premioGolDeOuro;
 
     // Validar integridade do lote após adicionar chute
@@ -1312,24 +1356,31 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     );
 
     if (updateResult.success && updateResult.lote.is_complete) {
-      // Lote foi finalizado no banco
+      // ✅ CORREÇÃO CIRÚRGICA: Lote foi finalizado no banco (atingiu R$10)
       lote.status = 'completed';
       lote.ativo = false;
-      console.log(`🏆 [LOTE] Lote ${lote.id} completado e persistido: ${lote.chutes.length} chutes, R$${lote.totalArrecadado} arrecadado, R$${lote.premioTotal} em prêmios`);
+      // ✅ Atualizar winnerIndex do cache com o valor do banco
+      if (updateResult.lote.indice_vencedor !== undefined) {
+        lote.winnerIndex = updateResult.lote.indice_vencedor;
+      }
+      console.log(`🏆 [LOTE] Lote ${lote.id} completado e persistido: ${lote.chutes.length} chutes, R$${lote.totalArrecadado.toFixed(2)} arrecadado, R$${lote.premioTotal.toFixed(2)} em prêmios`);
+      
+      // ✅ CORREÇÃO CIRÚRGICA: Remover lote do cache para forçar criação de novo lote
+      lotesAtivos.delete(lote.id);
     } else if (updateResult.success) {
       // Atualizar posição atual do cache
       lote.posicaoAtual = updateResult.lote.posicao_atual;
       lote.totalArrecadado = parseFloat(updateResult.lote.total_arrecadado);
       lote.premioTotal = parseFloat(updateResult.lote.premio_total);
+      // ✅ Atualizar winnerIndex se foi definido
+      if (updateResult.lote.indice_vencedor !== undefined) {
+        lote.winnerIndex = updateResult.lote.indice_vencedor;
+      }
     } else {
       console.error('❌ [SHOOT] Erro ao atualizar lote no banco:', updateResult.error);
     }
 
-    // Verificar se lote está completo (fallback)
-    if (lote.chutes.length >= lote.config.size && lote.status !== 'completed') {
-      lote.status = 'completed';
-      lote.ativo = false;
-    }
+    // ✅ CORREÇÃO CIRÚRGICA: Remover verificação de tamanho máximo (lote fecha apenas por R$10)
     
     const shootResult = {
       loteId: lote.id,
@@ -2073,6 +2124,73 @@ async function saveGlobalCounter() {
     } catch (error) {
       console.error('❌ [METRICS] Erro:', error);
     }
+  }
+}
+
+// ✅ CORREÇÃO CIRÚRGICA: Obter última arrecadação global do Gol de Ouro
+async function getUltimoGolDeOuroArrecadacao() {
+  if (!dbConnected || !supabase) return 0;
+  
+  try {
+    const { data, error } = await supabase
+      .from('metricas_globais')
+      .select('ultimo_gol_de_ouro_arrecadacao')
+      .eq('id', 1)
+      .single();
+    
+    if (error || !data) return 0;
+    return parseFloat(data.ultimo_gol_de_ouro_arrecadacao || 0);
+  } catch (error) {
+    console.error('❌ [METRICS] Erro ao obter última arrecadação Gol de Ouro:', error);
+    return 0;
+  }
+}
+
+// ✅ CORREÇÃO CIRÚRGICA: Salvar última arrecadação global do Gol de Ouro
+async function setUltimoGolDeOuroArrecadacao(arrecadacao) {
+  if (!dbConnected || !supabase) return;
+  
+  try {
+    const { error } = await supabase
+      .from('metricas_globais')
+      .upsert({
+        id: 1,
+        ultimo_gol_de_ouro_arrecadacao: arrecadacao,
+        updated_at: new Date().toISOString()
+      });
+    
+    if (error) {
+      console.error('❌ [METRICS] Erro ao salvar última arrecadação Gol de Ouro:', error);
+    }
+  } catch (error) {
+    console.error('❌ [METRICS] Erro:', error);
+  }
+}
+
+// ✅ CORREÇÃO CIRÚRGICA: Atualizar arrecadação global
+async function updateArrecadacaoGlobal(arrecadacao, isGolDeOuro = false) {
+  if (!dbConnected || !supabase) return;
+  
+  try {
+    const updateData = {
+      id: 1,
+      total_receita: arrecadacao,
+      updated_at: new Date().toISOString()
+    };
+    
+    if (isGolDeOuro) {
+      updateData.ultimo_gol_de_ouro_arrecadacao = arrecadacao;
+    }
+    
+    const { error } = await supabase
+      .from('metricas_globais')
+      .upsert(updateData);
+    
+    if (error) {
+      console.error('❌ [METRICS] Erro ao atualizar arrecadação global:', error);
+    }
+  } catch (error) {
+    console.error('❌ [METRICS] Erro:', error);
   }
 }
 
