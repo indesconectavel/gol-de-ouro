@@ -1142,12 +1142,106 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
 });
 
 // =====================================================
+// SISTEMA DE AUDITORIA FINANCEIRA
+// =====================================================
+
+/**
+ * Função helper para registrar eventos de auditoria com fail-safe
+ * PRINCÍPIO DE OURO: Se auditoria falhar → o jogo CONTINUA
+ * @param {Object} supabaseInstance - Instância do Supabase
+ * @param {string} tipoEvento - Tipo do evento (SHOOT_PROCESSED, LOTE_FECHADO, PREMIO_PAGO, ERRO_FINANCEIRO)
+ * @param {Object} dados - Dados do evento { userId, loteId, shotId, valor, payload }
+ */
+async function registrarEventoAuditoria(supabaseInstance, tipoEvento, dados = {}) {
+  try {
+    // Validar instância do Supabase
+    if (!supabaseInstance) {
+      console.error('❌ [AUDITORIA] Supabase não disponível para registrar evento:', tipoEvento);
+      return;
+    }
+
+    // Preparar payload JSON de forma segura
+    let payloadJson = null;
+    try {
+      if (dados.payload) {
+        payloadJson = typeof dados.payload === 'string' ? JSON.parse(dados.payload) : dados.payload;
+      }
+    } catch (payloadError) {
+      console.error('❌ [AUDITORIA] Erro ao serializar payload:', payloadError);
+      // Continuar sem payload se serialização falhar
+    }
+
+    // Inserir evento na tabela de auditoria
+    const { error: auditError } = await supabaseInstance
+      .from('auditoria_eventos')
+      .insert({
+        tipo_evento: tipoEvento,
+        user_id: dados.userId || null,
+        lote_id: dados.loteId || null,
+        shot_id: dados.shotId || null,
+        valor: dados.valor || null,
+        payload: payloadJson
+      });
+
+    if (auditError) {
+      console.error(`❌ [AUDITORIA] Erro ao registrar evento ${tipoEvento}:`, auditError);
+    } else {
+      console.log(`✅ [AUDITORIA] Evento registrado: ${tipoEvento}`);
+    }
+  } catch (error) {
+    // FAIL-SAFE: Capturar qualquer erro e apenas logar, nunca quebrar o fluxo
+    console.error(`❌ [AUDITORIA] Erro inesperado ao registrar evento ${tipoEvento}:`, error);
+  }
+}
+
+// =====================================================
 // SISTEMA DE JOGO CORRIGIDO
 // =====================================================
 
 // Endpoint para chutar
 app.post('/api/games/shoot', authenticateToken, async (req, res) => {
   try {
+    // =====================================================
+    // IDEMPOTÊNCIA: Verificar header X-Idempotency-Key
+    // =====================================================
+    const idempotencyKey = req.headers['x-idempotency-key'] || req.headers['X-Idempotency-Key'];
+    
+    if (!idempotencyKey) {
+      return res.status(400).json({
+        success: false,
+        message: 'Header X-Idempotency-Key é obrigatório'
+      });
+    }
+
+    // APENAS SUPABASE REAL - SEM FALLBACK
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const endpoint = '/api/games/shoot';
+    const userId = req.user.userId;
+
+    // Verificar se já existe resposta salva para esta combinação
+    const { data: existingResponse, error: lookupError } = await supabase
+      .from('idempotency_keys')
+      .select('response_body')
+      .eq('user_id', userId)
+      .eq('endpoint', endpoint)
+      .eq('idempotency_key', idempotencyKey)
+      .single();
+
+    if (lookupError && lookupError.code !== 'PGRST116') { // PGRST116 = nenhum resultado encontrado
+      console.error('❌ [SHOOT] Erro ao verificar idempotência:', lookupError);
+      // Continuar processamento se erro não for crítico
+    } else if (existingResponse && existingResponse.response_body) {
+      // Retornar resposta salva exatamente como foi salva
+      console.log(`🔄 [SHOOT] Retornando resposta idempotente para usuário ${userId}, key: ${idempotencyKey.substring(0, 8)}...`);
+      return res.status(200).json(existingResponse.response_body);
+    }
+
     const { direction, amount } = req.body;
     
     // Validar entrada
@@ -1163,14 +1257,6 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Valor de aposta inválido. Use: 1, 2, 5 ou 10'
-      });
-    }
-
-    // APENAS SUPABASE REAL - SEM FALLBACK
-    if (!dbConnected || !supabase) {
-      return res.status(503).json({
-        success: false,
-        message: 'Sistema temporariamente indisponível'
       });
     }
 
@@ -1195,8 +1281,72 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
     }
 
-    // Obter ou criar lote para este valor
-    const lote = await getOrCreateLoteByValue(amount);
+    // ✅ CONTROLE DE CONCORRÊNCIA: Buscar lote ativo com lock (FOR UPDATE)
+    // Isso garante que apenas uma requisição possa processar o mesmo lote
+    const { data: loteLockResult, error: loteLockError } = await supabaseAdmin.rpc('rpc_get_active_lote_with_lock', {
+      p_valor_aposta: amount
+    });
+
+    if (loteLockError) {
+      console.error('❌ [SHOOT] Erro ao buscar lote com lock:', loteLockError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao processar lote'
+      });
+    }
+
+    if (!loteLockResult || !loteLockResult.success) {
+      return res.status(500).json({
+        success: false,
+        message: loteLockResult?.error || 'Erro ao buscar lote ativo'
+      });
+    }
+
+    // Se não existe lote ativo, criar novo usando função existente
+    let lote;
+    if (!loteLockResult.lote) {
+      lote = await getOrCreateLoteByValue(amount);
+    } else {
+      // Usar lote do banco (com lock)
+      const loteDb = loteLockResult.lote;
+      const config = batchConfigs[amount];
+      
+      // Verificar cache para obter chutes
+      let loteCache = lotesAtivos.get(loteDb.id);
+      if (!loteCache) {
+        loteCache = {
+          id: loteDb.id,
+          valor: amount,
+          ativo: loteDb.status === 'ativo',
+          valorAposta: amount,
+          config: config,
+          chutes: [],
+          status: loteDb.status === 'ativo' ? 'active' : 'completed',
+          winnerIndex: loteDb.indice_vencedor,
+          posicaoAtual: loteDb.posicao_atual,
+          totalArrecadado: parseFloat(loteDb.total_arrecadado || 0),
+          premioTotal: parseFloat(loteDb.premio_total || 0),
+          createdAt: loteDb.created_at
+        };
+        lotesAtivos.set(loteDb.id, loteCache);
+      } else {
+        // Atualizar cache com dados do banco
+        loteCache.totalArrecadado = parseFloat(loteDb.total_arrecadado || 0);
+        loteCache.premioTotal = parseFloat(loteDb.premio_total || 0);
+        loteCache.posicaoAtual = loteDb.posicao_atual;
+        loteCache.status = loteDb.status === 'ativo' ? 'active' : 'completed';
+        loteCache.ativo = loteDb.status === 'ativo';
+      }
+      lote = loteCache;
+    }
+
+    // ✅ CONTROLE DE CONCORRÊNCIA: Verificar se lote ainda está ativo
+    // (pode ter sido fechado por outra requisição enquanto processávamos)
+    if (lote.status === 'completed' || lote.totalArrecadado >= 10.00) {
+      // Lote foi fechado por outra requisição, buscar novo lote
+      console.log(`🔄 [SHOOT] Lote ${lote.id} já foi fechado, buscando novo lote...`);
+      lote = await getOrCreateLoteByValue(amount);
+    }
     
     // Validar integridade do lote antes de processar chute
     const integrityValidation = loteIntegrityValidator.validateBeforeShot(lote, {
@@ -1272,12 +1422,42 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
         console.log(`🏆 [GOL DE OURO] Arrecadação global: R$${novaArrecadacaoGlobal.toFixed(2)} - Prêmio: R$ ${premioGolDeOuro.toFixed(2)}`);
       }
       
+      // 🔍 AUDITORIA: Registrar pagamento de prêmio
+      await registrarEventoAuditoria(supabase, 'PREMIO_PAGO', {
+        userId: req.user.userId,
+        loteId: lote.id,
+        shotId: `${lote.id}_${shotIndex}`,
+        valor: premio + premioGolDeOuro,
+        payload: {
+          premio: premio,
+          premioGolDeOuro: premioGolDeOuro,
+          isGolDeOuro: isGolDeOuro,
+          arrecadacaoLote: arrecadacaoAposChute,
+          arrecadacaoGlobal: novaArrecadacaoGlobal
+        }
+      });
+      
       // ✅ CORREÇÃO CIRÚRGICA: Encerrar o lote quando fecha economicamente
       lote.status = 'completed';
       lote.ativo = false;
       // ✅ CORREÇÃO CIRÚRGICA: Atualizar winnerIndex para o chute que fechou
       lote.winnerIndex = shotIndex;
       console.log(`✅ [LOTE] Lote ${lote.id} fechado economicamente: R$${arrecadacaoAposChute.toFixed(2)} arrecadado, vencedor: chute #${shotIndex + 1}`);
+      
+      // 🔍 AUDITORIA: Registrar fechamento de lote
+      await registrarEventoAuditoria(supabase, 'LOTE_FECHADO', {
+        userId: req.user.userId,
+        loteId: lote.id,
+        shotId: `${lote.id}_${shotIndex}`,
+        valor: arrecadacaoAposChute,
+        payload: {
+          arrecadacao: arrecadacaoAposChute,
+          premio: premio,
+          premioGolDeOuro: premioGolDeOuro,
+          shotIndex: shotIndex + 1,
+          contadorGlobal: contadorChutesGlobal
+        }
+      });
     } else if (isGoal) {
       // ✅ CORREÇÃO CIRÚRGICA: Bloquear gol se arrecadação < R$10 (não deve acontecer, mas segurança)
       console.error(`❌ [LOTE] Tentativa de gol com arrecadação insuficiente: R$${arrecadacaoAposChute.toFixed(2)}`);
@@ -1344,6 +1524,20 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
 
     if (chuteError) {
       console.error('❌ [SHOOT] Erro ao salvar chute:', chuteError);
+      // 🔍 AUDITORIA: Registrar erro financeiro ao salvar chute
+      await registrarEventoAuditoria(supabase, 'ERRO_FINANCEIRO', {
+        userId: req.user.userId,
+        loteId: lote.id,
+        shotId: `${lote.id}_${shotIndex}`,
+        valor: amount,
+        payload: {
+          erro: 'Erro ao salvar chute no banco',
+          detalhes: chuteError.message || String(chuteError),
+          direction: direction,
+          amount: amount,
+          result: result
+        }
+      });
     }
 
     // ✅ ATUALIZAR LOTE NO BANCO (persistência)
@@ -1421,13 +1615,71 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     
     console.log(`⚽ [SHOOT] Chute #${contadorChutesGlobal}: ${result} por usuário ${req.user.userId}`);
     
-    res.status(200).json({
+    // 🔍 AUDITORIA: Registrar chute processado com sucesso
+    await registrarEventoAuditoria(supabase, 'SHOOT_PROCESSED', {
+      userId: req.user.userId,
+      loteId: lote.id,
+      shotId: chute.id,
+      valor: amount,
+      payload: {
+        direction: direction,
+        result: result,
+        premio: premio,
+        premioGolDeOuro: premioGolDeOuro,
+        isGolDeOuro: isGolDeOuro,
+        contadorGlobal: contadorChutesGlobal,
+        shotIndex: shotIndex + 1,
+        arrecadacaoLote: lote.totalArrecadado
+      }
+    });
+    
+    const responseBody = {
       success: true,
       data: shootResult
-    });
+    };
+
+    // =====================================================
+    // IDEMPOTÊNCIA: Salvar resposta na tabela
+    // =====================================================
+    try {
+      const { error: saveError } = await supabase
+        .from('idempotency_keys')
+        .insert({
+          user_id: userId,
+          endpoint: endpoint,
+          idempotency_key: idempotencyKey,
+          response_body: responseBody
+        });
+
+      if (saveError) {
+        // Log do erro mas não falhar a requisição
+        console.error('❌ [SHOOT] Erro ao salvar idempotência:', saveError);
+      } else {
+        console.log(`✅ [SHOOT] Resposta idempotente salva para usuário ${userId}, key: ${idempotencyKey.substring(0, 8)}...`);
+      }
+    } catch (idempotencyError) {
+      // Log do erro mas não falhar a requisição
+      console.error('❌ [SHOOT] Erro ao salvar idempotência:', idempotencyError);
+    }
+
+    res.status(200).json(responseBody);
 
   } catch (error) {
     console.error('❌ [SHOOT] Erro:', error);
+    
+    // 🔍 AUDITORIA: Registrar erro inesperado
+    await registrarEventoAuditoria(supabase, 'ERRO_FINANCEIRO', {
+      userId: req.user?.userId || null,
+      loteId: null,
+      shotId: null,
+      valor: null,
+      payload: {
+        erro: 'Erro inesperado no endpoint /api/games/shoot',
+        detalhes: error.message || String(error),
+        stack: error.stack || null
+      }
+    });
+    
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor'
