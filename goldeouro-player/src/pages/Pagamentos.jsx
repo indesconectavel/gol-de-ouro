@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useSidebar } from '../contexts/SidebarContext';
 import Logo from '../components/Logo';
-import Navigation from '../components/Navigation';
 import VersionBanner from '../components/VersionBanner';
 import apiClient from '../services/apiClient';
 import { API_ENDPOINTS } from '../config/api';
 
 const Pagamentos = () => {
   const navigate = useNavigate();
-  const { isCollapsed } = useSidebar();
   const [loading, setLoading] = useState(false);
   const [saldo, setSaldo] = useState(0);
   const [valorRecarga, setValorRecarga] = useState(10);
@@ -124,9 +121,7 @@ const Pagamentos = () => {
       {/* Banner de Versão */}
       <VersionBanner showTime={true} />
       
-      <Navigation />
-      
-      <div className={`transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
+      <div className="transition-all duration-300 ml-0">
         <div className="p-6">
           {/* Header */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
@@ -135,18 +130,12 @@ const Pagamentos = () => {
                 <h1 className="text-2xl font-bold text-gray-900">Pagamentos PIX</h1>
                 <p className="text-gray-600 mt-1">Recarregue seu saldo para apostar no jogo</p>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">Saldo atual</p>
-                  <p className="text-2xl font-bold text-green-600">R$ {saldo.toFixed(2)}</p>
-                </div>
-                <button
-                  onClick={() => navigate('/dashboard')}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
-                  ← Voltar
-                </button>
-              </div>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
+                ← Voltar
+              </button>
             </div>
           </div>
 
@@ -232,15 +221,6 @@ const Pagamentos = () => {
               </div>
               
               <div className="bg-gray-50 rounded-lg p-4">
-                <div className="text-center mb-6">
-                  <p className="text-2xl font-bold text-gray-900 mb-1">
-                    R$ {valorRecarga.toFixed(2)}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    ID: {pagamentoAtual.id}
-                  </p>
-                </div>
-
                 {/* PIX Code - MVP SIMPLIFICADO */}
                 {console.log('🔍 [PIX] Verificando exibição:', {
                   pagamentoAtual,
@@ -318,6 +298,15 @@ const Pagamentos = () => {
                   </p>
                 </div>
               )}
+
+                <div className="text-center mb-6">
+                  <p className="text-2xl font-bold text-gray-900 mb-1">
+                    R$ {valorRecarga.toFixed(2)}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    ID: {pagamentoAtual.id}
+                  </p>
+                </div>
 
                 <div className="mt-6 text-center">
                   <button

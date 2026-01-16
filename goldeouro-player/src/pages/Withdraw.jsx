@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
-import Navigation from '../components/Navigation'
-import { useSidebar } from '../contexts/SidebarContext'
+
 import paymentService from '../services/paymentService'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
@@ -11,7 +10,6 @@ import apiClient from '../services/apiClient'
 import { API_ENDPOINTS } from '../config/api'
 
 const Withdraw = () => {
-  const { isCollapsed } = useSidebar()
   const [balance, setBalance] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -169,8 +167,7 @@ const Withdraw = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex">
-        <Navigation />
-        <div className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}>
+        <div className="flex-1 relative overflow-hidden p-4 transition-all duration-300 ml-0">
           <div className="flex items-center justify-center h-96">
             <LoadingSpinner />
           </div>
@@ -183,8 +180,7 @@ const Withdraw = () => {
   if (error) {
     return (
       <div className="min-h-screen flex">
-        <Navigation />
-        <div className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}>
+        <div className="flex-1 relative overflow-hidden p-4 transition-all duration-300 ml-0">
           <div className="max-w-4xl mx-auto">
             <ErrorMessage message={error} onRetry={loadUserData} />
           </div>
@@ -195,12 +191,9 @@ const Withdraw = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Menu de Navegação */}
-      <Navigation />
-      
       {/* Conteúdo Principal */}
       <div 
-        className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}
+        className="flex-1 relative overflow-hidden p-4 transition-all duration-300 ml-0"
         style={{
           backgroundImage: 'url(/images/Gol_de_Ouro_Bg02.jpg)',
           backgroundSize: 'cover',

@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
-import Navigation from '../components/Navigation'
 import VersionBanner from '../components/VersionBanner'
-import { useSidebar } from '../contexts/SidebarContext'
 import apiClient from '../services/apiClient'
 import { API_ENDPOINTS } from '../config/api'
 import { useAdvancedGamification } from '../hooks/useAdvancedGamification'
@@ -13,7 +11,6 @@ import NotificationCenter from '../components/NotificationCenter'
 import dataAdapter from '../adapters/dataAdapter'
 
 const Profile = () => {
-  const { isCollapsed } = useSidebar()
   const { userStats, badges, achievements, loading: gamificationLoading } = useAdvancedGamification()
   const [user, setUser] = useState({
     name: 'Carregando...',
@@ -161,12 +158,9 @@ const Profile = () => {
       {/* Banner de Versão */}
       <VersionBanner showTime={true} />
       
-      {/* Menu de Navegação */}
-      <Navigation />
-      
       {/* Conteúdo Principal */}
       <div 
-        className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}
+        className="flex-1 relative overflow-hidden p-4 transition-all duration-300 ml-0"
         style={{
           backgroundImage: 'url(/images/Gol_de_Ouro_Bg02.jpg)',
           backgroundSize: 'cover',
