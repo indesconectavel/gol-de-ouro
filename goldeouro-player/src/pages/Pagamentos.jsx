@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Logo from '../components/Logo';
-import VersionBanner from '../components/VersionBanner';
 import apiClient from '../services/apiClient';
 import { API_ENDPOINTS } from '../config/api';
 
@@ -119,7 +118,6 @@ const Pagamentos = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Banner de Versão */}
-      <VersionBanner showTime={true} />
       
       <div className="transition-all duration-300 ml-0">
         <div className="p-6">

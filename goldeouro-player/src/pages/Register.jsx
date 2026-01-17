@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import Logo from '../components/Logo'
-import VersionBanner from '../components/VersionBanner'
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator'
 
 const Register = () => {
@@ -65,7 +64,6 @@ const Register = () => {
            backgroundRepeat: 'no-repeat'
          }}>
       {/* Banner de Versão */}
-      <VersionBanner showTime={true} />
       
       {/* Overlay escuro para melhorar legibilidade */}
       <div className="absolute inset-0 bg-black/60"></div>
