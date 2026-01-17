@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
-import VersionBanner from '../components/VersionBanner'
 import apiClient from '../services/apiClient'
 import { API_ENDPOINTS } from '../config/api'
 import { retryDataRequest } from '../utils/retryLogic'
@@ -99,8 +98,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Banner de Versão */}
-      <VersionBanner showTime={true} />
       
       {/* Conteúdo Principal */}
       <div 
