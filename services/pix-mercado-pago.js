@@ -11,7 +11,10 @@ const MP_CONFIG = {
 
 // Verificar se token está configurado
 const isConfigured = () => {
-  return !!(MP_CONFIG.accessToken && MP_CONFIG.accessToken.startsWith('APP_USR-'));
+  return !!(
+    MP_CONFIG.accessToken &&
+    (MP_CONFIG.accessToken.startsWith('APP_USR-') || MP_CONFIG.accessToken.startsWith('APP_USR_'))
+  );
 };
 
 // Criar PIX real no Mercado Pago (HARDENED)
@@ -217,7 +220,7 @@ const processWebhook = async (webhookData) => {
 };
 
 // Criar saque PIX automático (HARDENED)
-const createPixWithdraw = async (amount, pixKey, pixKeyType, userId) => {
+const createPixWithdraw = async (amount, pixKey, pixKeyType, userId, saqueId, correlationId) => {
   try {
     if (!isConfigured()) {
       throw new Error('Token do Mercado Pago não configurado');
@@ -253,68 +256,78 @@ const createPixWithdraw = async (amount, pixKey, pixKeyType, userId) => {
       throw new Error('Email inválido');
     }
 
-    // Gerar ID único para idempotência
-    const withdrawId = crypto.randomUUID();
-    const externalReference = `withdraw_${userId}_${withdrawId}`;
+    if (!saqueId || !correlationId) {
+      throw new Error('saqueId e correlationId são obrigatórios para payout');
+    }
 
-    // Dados do saque (hardened)
-    const withdrawData = {
+    const externalReference = `${saqueId}_${correlationId}`;
+
+    const keyTypeMap = {
+      cpf: 'CPF',
+      cnpj: 'CNPJ',
+      email: 'EMAIL',
+      phone: 'PHONE',
+      random: 'EVP',
+      evp: 'EVP',
+      CPF: 'CPF',
+      CNPJ: 'CNPJ',
+      EMAIL: 'EMAIL',
+      PHONE: 'PHONE',
+      EVP: 'EVP'
+    };
+    const normalizedKeyType = keyTypeMap[pixKeyType] || keyTypeMap[String(pixKeyType).toLowerCase()];
+    if (!normalizedKeyType) {
+      throw new Error('Tipo de chave PIX inválido para payout');
+    }
+
+    const transferData = {
       amount: parseFloat(amount),
+      description: 'Saque Gol de Ouro',
       external_reference: externalReference,
-      description: `Saque Gol de Ouro - ${userId}`.substring(0, 100),
-      pix_key: pixKey,
-      pix_key_type: pixKeyType,
-      metadata: {
-        user_id: userId,
-        withdraw_id: withdrawId,
-        created_at: new Date().toISOString()
+      receiver: {
+        pix_key: pixKey,
+        pix_key_type: normalizedKeyType
       }
     };
 
-    // Verificar se payouts está habilitado
-    const payoutToken = process.env.MP_PAYOUT_ACCESS_TOKEN;
-    if (!payoutToken) {
-      // Fallback: retornar status pending-auto
-      console.log(`⚠️ [PIX] Payouts não habilitado - retornando pending-auto para ${withdrawId}`);
-      
-      return {
-        success: true,
-        data: {
-          id: withdrawId,
-          status: 'pending-auto',
-          amount: amount,
-          pix_key: pixKey,
-          pix_key_type: pixKeyType,
-          external_reference: externalReference,
-          created_at: new Date().toISOString(),
-          message: 'Saque em processamento automático (aguardando habilitação de payouts)'
-        }
-      };
-    }
+    const response = await axios.post(
+      `${MP_CONFIG.baseUrl}/v1/transfers`,
+      transferData,
+      {
+        headers: {
+          'Authorization': `Bearer ${MP_CONFIG.accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000
+      }
+    );
 
-    // TODO: Implementar API de Payouts/Transfers do Mercado Pago
-    // Por enquanto, simular criação de saque
-    console.log(`🎯 [PIX] Saque PIX criado: ${withdrawId} - Usuário: ${userId} - Valor: R$ ${amount}`);
+    const transfer = response.data;
+    console.log(`🎯 [PIX] Payout enviado ao MP`, {
+      saqueId,
+      userId,
+      correlationId,
+      status: transfer?.status,
+      external_reference: transfer?.external_reference
+    });
 
     return {
       success: true,
       data: {
-        id: withdrawId,
-        status: 'processing',
-        amount: amount,
-        pix_key: pixKey,
-        pix_key_type: pixKeyType,
-        external_reference: externalReference,
-        created_at: new Date().toISOString(),
-        message: 'Saque processado automaticamente (SIMPLE_MVP)'
+        id: transfer?.id,
+        status: transfer?.status,
+        amount: transfer?.amount,
+        external_reference: transfer?.external_reference,
+        created_at: transfer?.date_created,
+        raw: transfer
       }
     };
 
   } catch (error) {
-    console.error('❌ [PIX] Erro ao criar saque PIX:', error.message);
+    console.error('❌ [PIX] Erro ao criar saque PIX:', error.response?.data || error.message);
     return {
       success: false,
-      error: error.message
+      error: error.response?.data?.message || error.message
     };
   }
 };

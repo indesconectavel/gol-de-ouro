@@ -1,8 +1,8 @@
-// SERVIDOR SIMPLIFICADO - GOL DE OURO v1.2.0 - DEPLOY FUNCIONAL
+// SERVIDOR SIMPLIFICADO - GOL DE OURO v1.2.1 - DEPLOY FUNCIONAL
 // ==============================================================
 // Data: 21/10/2025
 // Status: SERVIDOR SIMPLIFICADO PARA DEPLOY
-// Versão: v1.2.0-deploy-functional
+// Versão: v1.2.1-deploy-functional
 // GPT-4o Auto-Fix: Backend funcional para deploy
 
 const express = require('express');
@@ -16,6 +16,13 @@ const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
 const http = require('http');
 const crypto = require('crypto'); // ✅ Adicionado para geração segura de números aleatórios
+const { createPixWithdraw } = require('./services/pix-mercado-pago');
+const {
+  payoutCounters,
+  createLedgerEntry,
+  rollbackWithdraw,
+  processPendingWithdrawals
+} = require('./src/domain/payout/processPendingWithdrawals');
 // Logger opcional - fallback para console se não disponível
 let logger;
 try {
@@ -109,6 +116,16 @@ const {
 
 let supabase = supabaseAdmin;
 let dbConnected = false;
+
+const runProcessPendingWithdrawals = async () => {
+  const payoutEnabled = String(process.env.PAYOUT_PIX_ENABLED || '').toLowerCase() === 'true';
+  return processPendingWithdrawals({
+    supabase,
+    isDbConnected: dbConnected,
+    payoutEnabled,
+    createPixWithdraw
+  });
+};
 
 // Conectar Supabase com validação
 async function connectSupabase() {
@@ -1311,11 +1328,19 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
 // SISTEMA DE SAQUES PIX COM VALIDAÇÃO
 // =====================================================
 
+
 // Solicitar saque PIX
 app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
   try {
     const { valor, chave_pix, tipo_chave } = req.body;
     const userId = req.user.userId;
+    const correlationId = String(
+      req.headers['x-idempotency-key'] ||
+      req.headers['x-correlation-id'] ||
+      crypto.randomUUID()
+    );
+
+    console.log(`🔄 [SAQUE] Início`, { userId, correlationId });
 
     // Validar dados de entrada usando PixValidator
     const withdrawData = {
@@ -1333,11 +1358,77 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
       });
     }
 
+    const minWithdrawAmount = 10.00;
+    const requestedAmount = parseFloat(valor);
+    if (requestedAmount < minWithdrawAmount) {
+      return res.status(400).json({
+        success: false,
+        message: `Valor mínimo para saque é R$ ${minWithdrawAmount.toFixed(2)}`
+      });
+    }
+
     // APENAS SUPABASE REAL - SEM FALLBACK
     if (!dbConnected || !supabase) {
       return res.status(503).json({
         success: false,
         message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    // Idempotência por correlation_id (se já existe, retornar o saque existente)
+    const { data: existingWithdraw, error: existingWithdrawError } = await supabase
+      .from('saques')
+      .select('id, amount, valor, fee, net_amount, pix_key, pix_type, chave_pix, tipo_chave, status, created_at, correlation_id')
+      .eq('correlation_id', correlationId)
+      .maybeSingle();
+
+    if (existingWithdrawError) {
+      console.error('❌ [SAQUE] Erro ao verificar idempotência:', existingWithdrawError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao verificar idempotência do saque'
+      });
+    }
+
+    if (existingWithdraw?.id) {
+      console.log(`✅ [SAQUE] Idempotência - saque já existente`, { userId, correlationId, saqueId: existingWithdraw.id });
+      return res.status(200).json({
+        success: true,
+        message: 'Saque solicitado com sucesso',
+        data: {
+          id: existingWithdraw.id,
+          amount: existingWithdraw.amount ?? existingWithdraw.valor,
+          fee: existingWithdraw.fee ?? null,
+          net_amount: existingWithdraw.net_amount ?? null,
+          pix_key: existingWithdraw.pix_key ?? existingWithdraw.chave_pix,
+          pix_type: existingWithdraw.pix_type ?? existingWithdraw.tipo_chave,
+          status: existingWithdraw.status,
+          created_at: existingWithdraw.created_at,
+          correlation_id: existingWithdraw.correlation_id
+        }
+      });
+    }
+
+    // Bloquear saque duplicado pendente
+    const { data: pendingWithdrawals, error: pendingError } = await supabase
+      .from('saques')
+      .select('id, status')
+      .eq('usuario_id', userId)
+      .in('status', ['pendente', 'pending'])
+      .limit(1);
+
+    if (pendingError) {
+      console.error('❌ [SAQUE] Erro ao verificar saques pendentes:', pendingError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao verificar saques pendentes'
+      });
+    }
+
+    if (pendingWithdrawals && pendingWithdrawals.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: 'Já existe um saque pendente em processamento'
       });
     }
 
@@ -1355,7 +1446,7 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
       });
     }
 
-    if (parseFloat(usuario.saldo) < parseFloat(valor)) {
+    if (parseFloat(usuario.saldo) < requestedAmount) {
       return res.status(400).json({
         success: false,
         message: 'Saldo insuficiente'
@@ -1364,7 +1455,31 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
 
     // Calcular taxa de saque
     const taxa = parseFloat(process.env.PAGAMENTO_TAXA_SAQUE || '2.00');
-    const valorLiquido = parseFloat(valor) - taxa;
+    const valorLiquido = requestedAmount - taxa;
+    if (valorLiquido <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valor líquido inválido para saque'
+      });
+    }
+
+    // Debitar saldo do usuário (com verificação de concorrência)
+    const novoSaldo = parseFloat(usuario.saldo) - requestedAmount;
+    const { data: saldoAtualizado, error: saldoUpdateError } = await supabase
+      .from('usuarios')
+      .update({ saldo: novoSaldo, updated_at: new Date().toISOString() })
+      .eq('id', userId)
+      .eq('saldo', usuario.saldo)
+      .select('saldo')
+      .single();
+
+    if (saldoUpdateError || !saldoAtualizado) {
+      console.error('❌ [SAQUE] Erro ao debitar saldo:', saldoUpdateError);
+      return res.status(409).json({
+        success: false,
+        message: 'Saldo atualizado recentemente. Tente novamente.'
+      });
+    }
 
     // Criar saque no banco (schema padronizado)
     const { data: saque, error: saqueError } = await supabase
@@ -1372,8 +1487,11 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
       .insert({
         usuario_id: userId,
         // Compatibilidade com esquemas antigos e novos
-        valor: parseFloat(valor), // alguns schemas usam 'valor'
-        amount: parseFloat(valor),
+        valor: requestedAmount, // alguns schemas usam 'valor'
+        amount: requestedAmount,
+        fee: taxa,
+        net_amount: valorLiquido,
+        correlation_id: correlationId,
         // colunas novas
         pix_key: validation.data.pixKey,
         pix_type: validation.data.pixType,
@@ -1389,26 +1507,89 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
 
     if (saqueError) {
       console.error('❌ [SAQUE] Erro ao criar saque:', saqueError);
+      // Reverter débito de saldo em caso de falha
+      const rollback = await supabase
+        .from('usuarios')
+        .update({ saldo: usuario.saldo, updated_at: new Date().toISOString() })
+        .eq('id', userId);
+      if (rollback.error) {
+        console.error('❌ [SAQUE] Falha ao reverter saldo:', rollback.error);
+      }
       return res.status(500).json({
         success: false,
         message: 'Erro ao criar saque'
       });
     }
 
+    const ledgerDebit = await createLedgerEntry({
+      supabase,
+      tipo: 'saque',
+      usuarioId: userId,
+      valor: requestedAmount,
+      referencia: saque.id,
+      correlationId
+    });
+
+    if (!ledgerDebit.success) {
+      console.error('❌ [SAQUE] Erro ao registrar ledger (saque):', ledgerDebit.error);
+      await rollbackWithdraw({
+        supabase,
+        saqueId: saque.id,
+        userId,
+        correlationId,
+        amount: requestedAmount,
+        fee: taxa,
+        motivo: 'Erro ao registrar ledger do saque'
+      });
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao registrar saque'
+      });
+    }
+
+    const ledgerFee = await createLedgerEntry({
+      supabase,
+      tipo: 'taxa',
+      usuarioId: userId,
+      valor: taxa,
+      referencia: `${saque.id}:fee`,
+      correlationId
+    });
+
+    if (!ledgerFee.success) {
+      console.error('❌ [SAQUE] Erro ao registrar ledger (taxa):', ledgerFee.error);
+      await rollbackWithdraw({
+        supabase,
+        saqueId: saque.id,
+        userId,
+        correlationId,
+        amount: requestedAmount,
+        fee: taxa,
+        motivo: 'Erro ao registrar ledger da taxa'
+      });
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao registrar saque'
+      });
+    }
+
     // Transação contábil: delegada para processador externo/contábil (removida do backend direto)
 
-    console.log(`💰 [SAQUE] Saque solicitado: R$ ${valor} para usuário ${userId}`);
+    console.log(`✅ [SAQUE] Sucesso`, { saqueId: saque.id, userId, correlationId });
 
     res.status(201).json({
       success: true,
       message: 'Saque solicitado com sucesso',
       data: {
         id: saque.id,
-        amount: valor,
+        amount: requestedAmount,
+        fee: taxa,
+        net_amount: valorLiquido,
         pix_key: validation.data.pixKey,
         pix_type: validation.data.pixType,
         status: 'pending',
-        created_at: saque.created_at
+        created_at: saque.created_at,
+        correlation_id: correlationId
       }
     });
 
@@ -1449,11 +1630,23 @@ app.get('/api/withdraw/history', authenticateToken, async (req, res) => {
       });
     }
 
+    const historico = (saques || []).map((row) => ({
+      id: row.id,
+      valor: row.valor ?? row.amount ?? 0,
+      amount: row.amount ?? row.valor ?? 0,
+      fee: row.fee ?? row.taxa ?? null,
+      net_amount: row.net_amount ?? row.valor_liquido ?? null,
+      status: row.status,
+      pix_key: row.pix_key ?? row.chave_pix ?? null,
+      pix_type: row.pix_type ?? row.tipo_chave ?? null,
+      created_at: row.created_at
+    }));
+
     res.json({
       success: true,
       data: {
-        saques: saques || [],
-        total: saques?.length || 0
+        saques: historico,
+        total: historico.length
       }
     });
 
@@ -1886,6 +2079,184 @@ app.post('/api/payments/webhook', async (req, res, next) => {
 });
 
 // =====================================================
+// WEBHOOK MERCADO PAGO - Payout PIX (Transfers)
+// =====================================================
+app.post('/webhooks/mercadopago', async (req, res) => {
+  try {
+    console.log('🟦 [WEBHOOK][MP] recebido', {
+      body: req.body
+    });
+
+    res.status(200).json({ received: true });
+
+    const payload = req.body || {};
+    const statusRaw = payload.status || payload?.data?.status || payload?.data?.payment?.status;
+    const externalReference =
+      payload.external_reference ||
+      payload?.data?.external_reference ||
+      payload?.data?.payment?.external_reference;
+    const payoutId = payload.id || payload?.data?.id || payload?.data?.transfer_id;
+
+    if (!statusRaw || !externalReference) {
+      console.warn('⚠️ [WEBHOOK][MP] Payload incompleto', { statusRaw, externalReference, payoutId });
+      return;
+    }
+
+    const [saqueId, correlationId] = String(externalReference).split('_');
+    if (!saqueId || !correlationId) {
+      console.warn('⚠️ [WEBHOOK][MP] external_reference inválido', { externalReference });
+      return;
+    }
+
+    const payoutEnabled = String(process.env.PAYOUT_PIX_ENABLED || '').toLowerCase() === 'true';
+    if (!payoutEnabled) {
+      console.warn('⚠️ [WEBHOOK][MP] PAYOUT_PIX_ENABLED=false, ignorando confirmação', {
+        saqueId,
+        correlationId
+      });
+      return;
+    }
+
+    if (!dbConnected || !supabase) {
+      console.error('❌ [WEBHOOK][MP] Supabase indisponível');
+      return;
+    }
+
+    const { data: saqueRow, error: saqueError } = await supabase
+      .from('saques')
+      .select('id, usuario_id, status, amount, valor, fee, net_amount, correlation_id')
+      .eq('id', saqueId)
+      .maybeSingle();
+
+    if (saqueError || !saqueRow) {
+      console.error('❌ [WEBHOOK][MP] Saque não encontrado', { saqueId, saqueError });
+      return;
+    }
+
+    if (String(saqueRow.correlation_id) !== String(correlationId)) {
+      console.warn('⚠️ [WEBHOOK][MP] correlation_id divergente', {
+        saqueId,
+        correlationId,
+        correlation_db: saqueRow.correlation_id
+      });
+      return;
+    }
+
+    if (['processado', 'falhou'].includes(String(saqueRow.status))) {
+      console.log('ℹ️ [WEBHOOK][MP] Saque já finalizado', {
+        saqueId,
+        status: saqueRow.status
+      });
+      return;
+    }
+
+    const { data: existingLedger, error: ledgerError } = await supabase
+      .from('ledger_financeiro')
+      .select('id, tipo')
+      .eq('correlation_id', correlationId)
+      .eq('referencia', saqueId)
+      .in('tipo', ['payout_confirmado', 'falha_payout'])
+      .maybeSingle();
+
+    if (ledgerError) {
+      console.error('❌ [WEBHOOK][MP] Erro ao verificar idempotência', ledgerError);
+      return;
+    }
+    if (existingLedger?.id) {
+      console.log('ℹ️ [WEBHOOK][MP] Evento duplicado ignorado', {
+        saqueId,
+        correlationId,
+        tipo: existingLedger.tipo
+      });
+      return;
+    }
+
+    const normalizedStatus = String(statusRaw).toLowerCase();
+    const amount = parseFloat(saqueRow.amount ?? saqueRow.valor ?? 0);
+    const fee = parseFloat(saqueRow.fee ?? 0);
+    const netAmount = parseFloat(saqueRow.net_amount ?? (amount - fee));
+
+    if (['approved', 'credited'].includes(normalizedStatus)) {
+      const ledgerPayout = await createLedgerEntry({
+        supabase,
+        tipo: 'payout_confirmado',
+        usuarioId: saqueRow.usuario_id,
+        valor: netAmount,
+        referencia: saqueId,
+        correlationId
+      });
+
+      if (!ledgerPayout.success) {
+        console.error('❌ [WEBHOOK][MP] Falha ao registrar payout_confirmado', ledgerPayout.error);
+        return;
+      }
+
+      await supabase.from('saques').update({ status: 'processado' }).eq('id', saqueId);
+      payoutCounters.success++;
+      console.log('✅ [PAYOUT][CONFIRMADO]', {
+        saqueId,
+        userId: saqueRow.usuario_id,
+        correlationId,
+        payoutId,
+        status_original_do_provedor: normalizedStatus
+      });
+      return;
+    }
+
+    if (normalizedStatus === 'in_process') {
+      await supabase.from('saques').update({ status: 'aguardando_confirmacao' }).eq('id', saqueId);
+      console.warn('⚠️ [PAYOUT][EM_PROCESSAMENTO]', {
+        saqueId,
+        userId: saqueRow.usuario_id,
+        correlationId,
+        payoutId,
+        status_original_do_provedor: normalizedStatus
+      });
+      return;
+    }
+
+    if (['rejected', 'cancelled'].includes(normalizedStatus)) {
+      await createLedgerEntry({
+        supabase,
+        tipo: 'falha_payout',
+        usuarioId: saqueRow.usuario_id,
+        valor: netAmount,
+        referencia: saqueId,
+        correlationId
+      });
+
+      await rollbackWithdraw({
+        supabase,
+        saqueId,
+        userId: saqueRow.usuario_id,
+        correlationId,
+        amount,
+        fee,
+        motivo: `payout ${normalizedStatus}`
+      });
+      payoutCounters.fail++;
+      console.error('❌ [PAYOUT][REJEITADO] rollback acionado', {
+        saqueId,
+        userId: saqueRow.usuario_id,
+        correlationId,
+        payoutId,
+        status_original_do_provedor: normalizedStatus
+      });
+      return;
+    }
+
+    console.warn('⚠️ [WEBHOOK][MP] Status não tratado', {
+      saqueId,
+      correlationId,
+      payoutId,
+      status_original_do_provedor: normalizedStatus
+    });
+  } catch (error) {
+    console.error('❌ [WEBHOOK][MP] Erro inesperado:', error);
+  }
+});
+
+// =====================================================
 // FUNÇÕES AUXILIARES
 // =====================================================
 
@@ -2028,7 +2399,7 @@ app.get('/', (req, res) => {
   res.json({ 
     status: 'ok', 
     service: 'Gol de Ouro Backend API',
-    version: '1.2.0',
+    version: '1.2.1',
     endpoints: {
       health: '/health',
       api: '/api'
@@ -2058,7 +2429,7 @@ app.get('/health', async (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    version: '1.2.0',
+    version: '1.2.1',
     database: dbStatus ? 'connected' : 'disconnected',
     mercadoPago: mercadoPagoConnected ? 'connected' : 'disconnected',
     contadorChutes: contadorChutesGlobal,
@@ -2247,7 +2618,7 @@ app.get('/api/monitoring/health', (req, res) => {
       database: dbConnected,
       mercadoPago: mercadoPagoConnected,
       requests: monitoringMetrics.requests,
-      version: '1.2.0'
+      version: '1.2.1'
     };
     
     res.json({
@@ -2269,7 +2640,7 @@ app.get('/meta', (req, res) => {
     res.json({
       success: true,
       data: {
-        version: '1.2.0',
+        version: '1.2.1',
         build: '2025-10-21',
         environment: 'production',
         compatibility: {
@@ -2514,7 +2885,7 @@ app.get('/api/production-status', (req, res) => {
       requireRealDeposits: true,
       enableMockMode: false,
       timestamp: new Date().toISOString(),
-      version: '1.2.0-production-real'
+      version: '1.2.1-production-real'
     };
     
     console.log('🔍 [PRODUCTION] Status verificado:', status);
@@ -2734,8 +3105,12 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
   }
 }
 
-// Iniciar servidor
-startServer();
+// Iniciar servidor somente quando executado diretamente
+if (require.main === module) {
+  startServer();
+}
+
+module.exports.processPendingWithdrawals = runProcessPendingWithdrawals;
 
 // =====================================================
 // SERVIDOR SIMPLIFICADO v1.2.0 - DEPLOY FUNCIONAL
