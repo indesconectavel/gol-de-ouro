@@ -248,23 +248,29 @@ const GameShoot = () => {
         }, 950);
         
       } else {
-        throw new Error(result.error || 'Erro ao processar chute');
+        // CHANGE #4: result.error pode ser { code, message } ou string (legado)
+        const err = result.error;
+        const message = (typeof err === 'object' && err && err.message) ? err.message : (err || 'Erro ao processar chute');
+        setError(message);
+        toast.error(message);
+        if (typeof err === 'object' && err && err.code === 'INSUFFICIENT_BALANCE') {
+          setHighlightRecharge(true);
+          if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
+          highlightTimerRef.current = setTimeout(() => {
+            setHighlightRecharge(false);
+            highlightTimerRef.current = null;
+          }, 3000);
+        }
+        setTimeout(() => {
+          resetAnimations();
+        }, 1000);
+        return;
       }
       
     } catch (error) {
       console.error('❌ [GAME] Erro ao processar chute:', error);
       setError(error.message);
       toast.error(error.message);
-      // CHANGE #3: destaque temporário no botão Recarregar quando saldo insuficiente
-      if (error.message === 'Você está sem saldo. Adicione saldo para jogar.') {
-        setHighlightRecharge(true);
-        if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
-        highlightTimerRef.current = setTimeout(() => {
-          setHighlightRecharge(false);
-          highlightTimerRef.current = null;
-        }, 3000);
-      }
-      // Resetar animações em caso de erro
       setTimeout(() => {
         resetAnimations();
       }, 1000);
