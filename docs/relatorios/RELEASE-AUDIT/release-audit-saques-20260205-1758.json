@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-02-05T20:58:17.629Z",
+  "env": {
+    "SUPABASE_URL": "PRESENTE",
+    "SUPABASE_SERVICE_ROLE_KEY": "PRESENTE"
+  },
+  "saques_por_status": [
+    {
+      "status": "cancelado",
+      "count": 2
+    }
+  ],
+  "saques_nao_final_antigos": {
+    "total": 0,
+    "top30": []
+  },
+  "saldos_negativos": {
+    "count": 0,
+    "top20": []
+  },
+  "ledger": {
+    "por_tipo": [],
+    "duplicidade": []
+  },
+  "lastro": {
+    "alertas": [],
+    "usuarios_saque_maior_pix": [],
+    "ok": true
+  },
+  "erros": []
+}

@@ -56,6 +56,10 @@ const GameShoot = () => {
   // Estados de áudio
   const [audioEnabled, setAudioEnabled] = useState(true);
   
+  // Destaque temporário no botão Recarregar (CHANGE #3)
+  const [highlightRecharge, setHighlightRecharge] = useState(false);
+  const highlightTimerRef = useRef(null);
+  
   // Zonas do gol
   const GOAL_ZONES = {
     "TL": { x: 20, y: 20 },
@@ -76,6 +80,16 @@ const GameShoot = () => {
   
   useEffect(() => {
     initializeGame();
+  }, []);
+
+  // CHANGE #3: limpar timer de highlight ao desmontar
+  useEffect(() => {
+    return () => {
+      if (highlightTimerRef.current) {
+        clearTimeout(highlightTimerRef.current);
+        highlightTimerRef.current = null;
+      }
+    };
   }, []);
   
   const initializeGame = async () => {
@@ -234,15 +248,29 @@ const GameShoot = () => {
         }, 950);
         
       } else {
-        throw new Error(result.error || 'Erro ao processar chute');
+        // CHANGE #4: result.error pode ser { code, message } ou string (legado)
+        const err = result.error;
+        const message = (typeof err === 'object' && err && err.message) ? err.message : (err || 'Erro ao processar chute');
+        setError(message);
+        toast.error(message);
+        if (typeof err === 'object' && err && err.code === 'INSUFFICIENT_BALANCE') {
+          setHighlightRecharge(true);
+          if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
+          highlightTimerRef.current = setTimeout(() => {
+            setHighlightRecharge(false);
+            highlightTimerRef.current = null;
+          }, 3000);
+        }
+        setTimeout(() => {
+          resetAnimations();
+        }, 1000);
+        return;
       }
       
     } catch (error) {
       console.error('❌ [GAME] Erro ao processar chute:', error);
       setError(error.message);
       toast.error(error.message);
-      
-      // Resetar animações em caso de erro
       setTimeout(() => {
         resetAnimations();
       }, 1000);
@@ -312,8 +340,9 @@ const GameShoot = () => {
                   <p className="text-2xl font-bold text-yellow-400">R$ {balance.toFixed(2)}</p>
                 </div>
                 <button
+                  id="btn-recarregar"
                   onClick={() => navigate('/pagamentos')}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                  className={`bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium ${highlightRecharge ? 'ring-2 ring-yellow-400 ring-offset-2 ring-offset-gray-900 shadow-lg shadow-yellow-400/50 animate-pulse' : ''}`}
                 >
                   💳 Recarregar
                 </button>

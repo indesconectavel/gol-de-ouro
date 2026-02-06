@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "SUPABASE_ACCESS_TOKEN_PLACEHOLDER",
+        "--read-only"
+      ]
+    },
+    "vercel": {
+      "url": "https://mcp.vercel.com"
+    },
+    "mercadopago": {
+      "url": "https://mcp.mercadopago.com/mcp",
+      "headers": {
+        "Authorization": "Bearer MERCADOPAGO_ACCESS_TOKEN_PLACEHOLDER"
+      }
+    }
+  }
+}

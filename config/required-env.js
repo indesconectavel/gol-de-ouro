@@ -1,5 +1,5 @@
 // Validação de variáveis de ambiente obrigatórias
-// Uso: assertRequiredEnv(['JWT_SECRET', 'SUPABASE_URL', ...], { onlyInProduction: ['MERCADOPAGO_ACCESS_TOKEN'] })
+// Uso: assertRequiredEnv(['JWT_SECRET', 'SUPABASE_URL', ...], { onlyInProduction: ['MERCADOPAGO_DEPOSIT_ACCESS_TOKEN'] })
 
 'use strict';
 

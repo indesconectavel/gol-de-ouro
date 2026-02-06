@@ -1,3 +1,4 @@
+// LEGADO: Servico PIX nao usado no runtime atual
 // SERVIÇO PIX REAL COM MERCADO PAGO - GOL DE OURO v2.0
 const axios = require('axios');
 const { createClient } = require('@supabase/supabase-js');

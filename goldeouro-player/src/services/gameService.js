@@ -131,9 +131,18 @@ class GameService {
 
     } catch (error) {
       console.error('❌ [GAME] Erro ao processar chute:', error);
+      // Priorizar mensagem do backend quando existir (ex.: 400 Saldo insuficiente)
+      let message = error.response?.data?.message || error.message;
+      const isInsufficientBalance = (message === 'Saldo insuficiente');
+      if (isInsufficientBalance) {
+        message = 'Você está sem saldo. Adicione saldo para jogar.';
+      }
+      // CHANGE #4: retorno semântico { code, message } para gatilho robusto no UI
       return {
         success: false,
-        error: error.message
+        error: isInsufficientBalance
+          ? { code: 'INSUFFICIENT_BALANCE', message }
+          : { code: 'GENERIC_ERROR', message }
       };
     }
   }
