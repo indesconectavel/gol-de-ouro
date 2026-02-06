@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useSidebar } from '../contexts/SidebarContext';
@@ -13,13 +13,14 @@ const Pagamentos = () => {
   const { isCollapsed } = useSidebar();
   const [loading, setLoading] = useState(false);
   const [saldo, setSaldo] = useState(0);
-  const [valorRecarga, setValorRecarga] = useState(10);
+  const [valorRecarga, setValorRecarga] = useState(200);
   const [pagamentos, setPagamentos] = useState([]);
   const [pagamentoAtual, setPagamentoAtual] = useState(null);
   const [copiado, setCopiado] = useState(false);
+  const pixCopiaColaRef = useRef(null);
 
-  // Valores pré-definidos para recarga
-  const valoresRecarga = [10, 25, 50, 100, 200, 500];
+  // Valores pré-definidos para recarga (presets)
+  const valoresRecarga = [1, 5, 10, 25, 50, 100];
 
   useEffect(() => {
 
@@ -61,10 +62,13 @@ const Pagamentos = () => {
 
       if (response.data.success) {
         // O backend retorna os dados em .data
-        console.log('🔍 [PIX] Dados recebidos do backend:', response.data.data);
         setPagamentoAtual(response.data.data);
         toast.success('Pagamento PIX criado com sucesso!');
         carregarDados(); // Recarregar dados
+        // Scroll suave até o bloco PIX Copia e Cola após o próximo paint
+        setTimeout(() => {
+          pixCopiaColaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
       } else {
         toast.error(response.data.message || 'Erro ao criar pagamento PIX');
       }
@@ -138,10 +142,6 @@ const Pagamentos = () => {
                 <p className="text-gray-600 mt-1">Recarregue seu saldo para apostar no jogo</p>
               </div>
               <div className="flex items-center space-x-3">
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">Saldo atual</p>
-                  <p className="text-2xl font-bold text-green-600">R$ {saldo.toFixed(2)}</p>
-                </div>
                 <button
                   onClick={() => navigate('/dashboard')}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
@@ -151,6 +151,106 @@ const Pagamentos = () => {
               </div>
             </div>
           </div>
+
+          {/* PIX Copia e Cola - no topo quando existir pagamento ativo */}
+          {pagamentoAtual && (
+            <div ref={pixCopiaColaRef} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900">Pagamento PIX Criado</h2>
+                <span className="px-3 py-1 rounded-full text-xs font-medium text-yellow-700 bg-yellow-100">
+                  Pendente
+                </span>
+              </div>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="text-center mb-6">
+                  <p className="text-2xl font-bold text-gray-900 mb-1">
+                    R$ {valorRecarga.toFixed(2)}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    ID: {pagamentoAtual.id}
+                  </p>
+                </div>
+
+                {(pagamentoAtual?.pix_code || pagamentoAtual?.qr_code || pagamentoAtual?.pix_copy_paste) && (
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg font-bold text-green-600 mb-4">
+                      ✅ Código PIX Gerado com Sucesso!
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4 font-medium">
+                      Copie o código abaixo e cole no seu app bancário:
+                    </p>
+                    <div className="bg-white p-4 rounded-lg border-2 border-green-200 shadow-sm">
+                      <code className="text-sm font-mono break-all text-gray-800 block mb-4 bg-gray-50 p-3 rounded">
+                        {pagamentoAtual.pix_code || pagamentoAtual.qr_code || pagamentoAtual.pix_copy_paste}
+                      </code>
+                      <button
+                        onClick={() => {
+                          const pixCode = pagamentoAtual.pix_code || pagamentoAtual.qr_code || pagamentoAtual.pix_copy_paste;
+                          navigator.clipboard.writeText(pixCode);
+                          setCopiado(true);
+                          setTimeout(() => setCopiado(false), 3000);
+                        }}
+                        className={`px-6 py-3 rounded-lg transition-colors font-semibold shadow-sm ${
+                          copiado
+                            ? 'bg-green-700 text-white'
+                            : 'bg-green-600 text-white hover:bg-green-700'
+                        }`}
+                      >
+                        {copiado ? '✅ Código Copiado!' : '📋 Copiar Código PIX'}
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      💡 Cole este código no seu app bancário para completar o pagamento
+                    </p>
+                  </div>
+                )}
+
+                {!pagamentoAtual.pix_code && !pagamentoAtual.qr_code && !pagamentoAtual.pix_copy_paste && (
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg font-bold text-blue-600 mb-4">
+                      📧 PIX Enviado por Email!
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4 font-medium">
+                      O código PIX foi enviado para seu email. Verifique sua caixa de entrada.
+                    </p>
+                    <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                      <p className="text-sm text-blue-800">
+                        💡 Se não recebeu o email, verifique a pasta de spam ou lixeira.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {!pagamentoAtual.pix_code && !pagamentoAtual.qr_code_base64 && pagamentoAtual.init_point && (
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-4">
+                      Clique no botão abaixo para realizar o pagamento PIX:
+                    </p>
+                    <a
+                      href={pagamentoAtual.init_point}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold"
+                    >
+                      🏦 Pagar com PIX - Mercado Pago
+                    </a>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Você será redirecionado para o Mercado Pago
+                    </p>
+                  </div>
+                )}
+
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={() => consultarStatusPagamento(pagamentoAtual.id)}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                  >
+                    🔄 Verificar Status
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recarga PIX */}
@@ -222,116 +322,6 @@ const Pagamentos = () => {
               </div>
             </div>
           </div>
-
-          {/* Pagamento Atual */}
-          {pagamentoAtual && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">Pagamento PIX Criado</h2>
-                <span className="px-3 py-1 rounded-full text-xs font-medium text-yellow-700 bg-yellow-100">
-                  Pendente
-                </span>
-              </div>
-              
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="text-center mb-6">
-                  <p className="text-2xl font-bold text-gray-900 mb-1">
-                    R$ {valorRecarga.toFixed(2)}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    ID: {pagamentoAtual.id}
-                  </p>
-                </div>
-
-                {/* PIX Code - MVP SIMPLIFICADO */}
-                {console.log('🔍 [PIX] Verificando exibição:', {
-                  pagamentoAtual,
-                  hasPixCode: pagamentoAtual?.pix_code,
-                  hasQrCode: pagamentoAtual?.qr_code,
-                  hasCopyPaste: pagamentoAtual?.pix_copy_paste
-                })}
-                {(pagamentoAtual?.pix_code || pagamentoAtual?.qr_code || pagamentoAtual?.pix_copy_paste) && (
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg font-bold text-green-600 mb-4">
-                      ✅ Código PIX Gerado com Sucesso!
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-4 font-medium">
-                      Copie o código abaixo e cole no seu app bancário:
-                    </p>
-                    <div className="bg-white p-4 rounded-lg border-2 border-green-200 shadow-sm">
-                      <code className="text-sm font-mono break-all text-gray-800 block mb-4 bg-gray-50 p-3 rounded">
-                        {pagamentoAtual.pix_code || pagamentoAtual.qr_code || pagamentoAtual.pix_copy_paste}
-                      </code>
-                      <button
-                        onClick={() => {
-                          const pixCode = pagamentoAtual.pix_code || pagamentoAtual.qr_code || pagamentoAtual.pix_copy_paste;
-                          navigator.clipboard.writeText(pixCode);
-                          setCopiado(true);
-                          setTimeout(() => setCopiado(false), 3000);
-                        }}
-                        className={`px-6 py-3 rounded-lg transition-colors font-semibold shadow-sm ${
-                          copiado 
-                            ? 'bg-green-700 text-white' 
-                            : 'bg-green-600 text-white hover:bg-green-700'
-                        }`}
-                      >
-                        {copiado ? '✅ Código Copiado!' : '📋 Copiar Código PIX'}
-                      </button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">
-                      💡 Cole este código no seu app bancário para completar o pagamento
-                    </p>
-                  </div>
-                )}
-
-                {/* Fallback - Se não tiver código PIX na resposta */}
-                {!pagamentoAtual.pix_code && !pagamentoAtual.qr_code && !pagamentoAtual.pix_copy_paste && (
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg font-bold text-blue-600 mb-4">
-                      📧 PIX Enviado por Email!
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-4 font-medium">
-                      O código PIX foi enviado para seu email. Verifique sua caixa de entrada.
-                    </p>
-                    <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
-                      <p className="text-sm text-blue-800">
-                        💡 Se não recebeu o email, verifique a pasta de spam ou lixeira.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-              {/* Fallback - Link Mercado Pago (se não tiver QR Code) */}
-              {!pagamentoAtual.pix_code && !pagamentoAtual.qr_code_base64 && pagamentoAtual.init_point && (
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-4">
-                    Clique no botão abaixo para realizar o pagamento PIX:
-                  </p>
-                  <a
-                    href={pagamentoAtual.init_point}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold"
-                  >
-                    🏦 Pagar com PIX - Mercado Pago
-                  </a>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Você será redirecionado para o Mercado Pago
-                  </p>
-                </div>
-              )}
-
-                <div className="mt-6 text-center">
-                  <button
-                    onClick={() => consultarStatusPagamento(pagamentoAtual.id)}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
-                  >
-                    🔄 Verificar Status
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Histórico de Pagamentos */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
