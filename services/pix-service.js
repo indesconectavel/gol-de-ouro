@@ -1,3 +1,4 @@
+// LEGADO: Servico PIX nao usado no runtime atual
 // Serviço PIX para Produção - Gol de Ouro v1.1.1
 const { supabase } = require('./database/supabase-config');
 

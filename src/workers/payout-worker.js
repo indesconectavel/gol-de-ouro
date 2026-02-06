@@ -23,6 +23,12 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
   process.exit(1);
 }
 
+const payoutAccessToken = process.env.MERCADOPAGO_PAYOUT_ACCESS_TOKEN;
+if (!payoutAccessToken) {
+  console.error('❌ [PAYOUT][WORKER] Token de payout não configurado. Encerrando.');
+  process.exit(1);
+}
+
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
   auth: {
     autoRefreshToken: false,

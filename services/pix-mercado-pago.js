@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 // Configurações do Mercado Pago
 const MP_CONFIG = {
-  accessToken: process.env.MP_ACCESS_TOKEN,
+  accessToken: process.env.MERCADOPAGO_PAYOUT_ACCESS_TOKEN,
   baseUrl: 'https://api.mercadopago.com',
   webhookUrl: process.env.PIX_WEBHOOK_URL || 'https://goldeouro-backend-v2.fly.dev/api/payments/pix/webhook'
 };
@@ -21,7 +21,7 @@ const isConfigured = () => {
 const createPixPayment = async (amount, userId, description = 'Depósito Gol de Ouro') => {
   try {
     if (!isConfigured()) {
-      throw new Error('Token do Mercado Pago não configurado');
+      throw new Error('Token de payout do Mercado Pago não configurado');
     }
 
     // Validar valor (hardening)
@@ -100,7 +100,7 @@ const createPixPayment = async (amount, userId, description = 'Depósito Gol de 
 const getPaymentStatus = async (paymentId) => {
   try {
     if (!isConfigured()) {
-      throw new Error('Token do Mercado Pago não configurado');
+      throw new Error('Token de payout do Mercado Pago não configurado');
     }
 
     const response = await axios.get(

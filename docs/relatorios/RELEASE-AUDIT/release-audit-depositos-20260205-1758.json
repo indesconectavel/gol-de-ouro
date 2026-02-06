@@ -1,0 +1,492 @@
+{
+  "timestamp": "2026-02-05T20:58:11.766Z",
+  "env": {
+    "SUPABASE_URL": "PRESENTE",
+    "SUPABASE_SERVICE_ROLE_KEY": "PRESENTE"
+  },
+  "contagem_por_status": [
+    {
+      "status": "expired",
+      "count": 258
+    },
+    {
+      "status": "pending",
+      "count": 34
+    },
+    {
+      "status": "approved",
+      "count": 22
+    }
+  ],
+  "duplicidade": {
+    "payment_id_total": 0,
+    "payment_id_approved": 0,
+    "external_id_total": 1,
+    "external_id_approved": 0,
+    "detalhe_payment_id": [],
+    "detalhe_external_id": [
+      {
+        "external_id": "deposito_344…",
+        "count": 2
+      }
+    ]
+  },
+  "qualidade": {
+    "amount_valor_nulo": 0,
+    "valor_menor_igual_zero": 0,
+    "valor_acima_10000": 0,
+    "amostras_invalidas": []
+  },
+  "pendings": {
+    "total": 34,
+    "faixas": {
+      "0-1d": 2,
+      "2-7d": 2,
+      "8-30d": 21,
+      "31+d": 9
+    },
+    "top30": [
+      {
+        "id": "943f8d64…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-10T16:22:07.088319+00:00",
+        "valor": 10,
+        "payment_id": "136671361121",
+        "external_id": "deposito_4dd…"
+      },
+      {
+        "id": "33d7348c…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-18T23:00:36.245436+00:00",
+        "valor": 10,
+        "payment_id": "137865197605",
+        "external_id": "137865197605"
+      },
+      {
+        "id": "af2e65ef…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-18T23:00:37.447251+00:00",
+        "valor": 10,
+        "payment_id": "137865577381",
+        "external_id": "137865577381"
+      },
+      {
+        "id": "ebd32880…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-19T01:21:26.218609+00:00",
+        "valor": 10,
+        "payment_id": "138525037308",
+        "external_id": "138525037308"
+      },
+      {
+        "id": "87d55aa7…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-19T01:21:27.378217+00:00",
+        "valor": 10,
+        "payment_id": "138526350220",
+        "external_id": "138526350220"
+      },
+      {
+        "id": "fa5b2d31…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-19T15:44:03.602903+00:00",
+        "valor": 10,
+        "payment_id": "138604034392",
+        "external_id": "138604034392"
+      },
+      {
+        "id": "b3250e7b…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-19T15:44:04.844428+00:00",
+        "valor": 10,
+        "payment_id": "138603664736",
+        "external_id": "138603664736"
+      },
+      {
+        "id": "60a2e5ba…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-20T01:11:04.500996+00:00",
+        "valor": 25,
+        "payment_id": "138051566541",
+        "external_id": "138051566541"
+      },
+      {
+        "id": "4761c32b…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2026-01-04T19:27:11.048331+00:00",
+        "valor": 10,
+        "payment_id": "139992840129",
+        "external_id": "139992840129"
+      },
+      {
+        "id": "73534bd4…",
+        "usuario_id": "u_6a1eb8",
+        "created_at": "2026-01-06T16:04:20.723001+00:00",
+        "valor": 10,
+        "payment_id": "140889861086",
+        "external_id": "140889861086"
+      },
+      {
+        "id": "b151311e…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2026-01-17T01:42:15.522508+00:00",
+        "valor": 10,
+        "payment_id": "141704931331",
+        "external_id": "141704931331"
+      },
+      {
+        "id": "d51aa28d…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2026-01-17T14:29:31.87681+00:00",
+        "valor": 10,
+        "payment_id": "142414712404",
+        "external_id": "142414712404"
+      },
+      {
+        "id": "175c80b2…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2026-01-17T14:30:09.58697+00:00",
+        "valor": 10,
+        "payment_id": "142414708506",
+        "external_id": "142414708506"
+      },
+      {
+        "id": "76e50511…",
+        "usuario_id": "u_2c3d3a",
+        "created_at": "2026-01-20T22:12:31.082927+00:00",
+        "valor": 10,
+        "payment_id": "142850268746",
+        "external_id": "142850268746"
+      },
+      {
+        "id": "4b168d4f…",
+        "usuario_id": "u_2c3d3a",
+        "created_at": "2026-01-20T22:12:34.554738+00:00",
+        "valor": 10,
+        "payment_id": "142178705707",
+        "external_id": "142178705707"
+      },
+      {
+        "id": "e3d825b6…",
+        "usuario_id": "u_2c3d3a",
+        "created_at": "2026-01-20T22:12:40.613141+00:00",
+        "valor": 25,
+        "payment_id": "142849111700",
+        "external_id": "142849111700"
+      },
+      {
+        "id": "62b3146a…",
+        "usuario_id": "u_deafdd",
+        "created_at": "2026-01-22T00:48:33.59369+00:00",
+        "valor": 10,
+        "payment_id": "142338486881",
+        "external_id": "142338486881"
+      },
+      {
+        "id": "0f0ae43c…",
+        "usuario_id": "u_deafdd",
+        "created_at": "2026-01-22T00:52:38.461702+00:00",
+        "valor": 10,
+        "payment_id": "143010102922",
+        "external_id": "143010102922"
+      },
+      {
+        "id": "af294a8b…",
+        "usuario_id": "u_3f81df",
+        "created_at": "2026-01-22T01:21:22.811219+00:00",
+        "valor": 10,
+        "payment_id": "142342067301",
+        "external_id": "142342067301"
+      },
+      {
+        "id": "64ec541c…",
+        "usuario_id": "u_3f81df",
+        "created_at": "2026-01-22T01:29:37.107528+00:00",
+        "valor": 10,
+        "payment_id": "142342767417",
+        "external_id": "142342767417"
+      },
+      {
+        "id": "c97ef412…",
+        "usuario_id": "u_3f81df",
+        "created_at": "2026-01-22T01:30:44.126356+00:00",
+        "valor": 13,
+        "payment_id": "143014940592",
+        "external_id": "143014940592"
+      },
+      {
+        "id": "f55b2d15…",
+        "usuario_id": "u_3f81df",
+        "created_at": "2026-01-22T01:34:16.633566+00:00",
+        "valor": 13,
+        "payment_id": "143015784106",
+        "external_id": "143015784106"
+      },
+      {
+        "id": "ddf96980…",
+        "usuario_id": "u_2e7df6",
+        "created_at": "2026-01-27T15:08:52.899107+00:00",
+        "valor": 10,
+        "payment_id": "143031218637",
+        "external_id": "143031218637"
+      },
+      {
+        "id": "330ec366…",
+        "usuario_id": "u_2e7df6",
+        "created_at": "2026-01-27T15:12:39.622032+00:00",
+        "valor": 15,
+        "payment_id": "143030619791",
+        "external_id": "143030619791"
+      },
+      {
+        "id": "1c02ea75…",
+        "usuario_id": "u_e9ff9d",
+        "created_at": "2026-01-27T15:38:45.804292+00:00",
+        "valor": 5,
+        "payment_id": "143033905749",
+        "external_id": "143033905749"
+      },
+      {
+        "id": "4f06dda1…",
+        "usuario_id": "u_e9ff9d",
+        "created_at": "2026-01-27T15:38:50.503465+00:00",
+        "valor": 5,
+        "payment_id": "143034085745",
+        "external_id": "143034085745"
+      },
+      {
+        "id": "9eb0f028…",
+        "usuario_id": "u_e9ff9d",
+        "created_at": "2026-01-27T15:39:10.562933+00:00",
+        "valor": 5,
+        "payment_id": "143033617997",
+        "external_id": "143033617997"
+      },
+      {
+        "id": "6cdc4abb…",
+        "usuario_id": "u_e9ff9d",
+        "created_at": "2026-01-27T15:39:18.000503+00:00",
+        "valor": 11,
+        "payment_id": "143035772371",
+        "external_id": "143035772371"
+      },
+      {
+        "id": "4e1255e8…",
+        "usuario_id": "u_e9ff9d",
+        "created_at": "2026-01-27T15:39:25.779719+00:00",
+        "valor": 30,
+        "payment_id": "143034029737",
+        "external_id": "143034029737"
+      },
+      {
+        "id": "b278801c…",
+        "usuario_id": "u_e9ff9d",
+        "created_at": "2026-01-27T15:39:35.785021+00:00",
+        "valor": 5,
+        "payment_id": "143035680461",
+        "external_id": "143035680461"
+      }
+    ]
+  },
+  "approved_recentes": {
+    "top30": [
+      {
+        "id": "a339b2c8…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2026-01-29T21:24:16.792539+00:00",
+        "valor": 10,
+        "payment_id": "143338739771"
+      },
+      {
+        "id": "53f2bea8…",
+        "usuario_id": "u_2e7df6",
+        "created_at": "2026-01-27T15:08:58.868833+00:00",
+        "valor": 10,
+        "payment_id": "143030005657"
+      },
+      {
+        "id": "b8c7c17f…",
+        "usuario_id": "u_f38dcf",
+        "created_at": "2026-01-22T14:36:18.389393+00:00",
+        "valor": 5,
+        "payment_id": "143068579500"
+      },
+      {
+        "id": "e693e91d…",
+        "usuario_id": "u_3f81df",
+        "created_at": "2026-01-22T01:26:59.70513+00:00",
+        "valor": 10,
+        "payment_id": "143014336882"
+      },
+      {
+        "id": "b75c6f83…",
+        "usuario_id": "u_deafdd",
+        "created_at": "2026-01-22T00:52:41.9717+00:00",
+        "valor": 10,
+        "payment_id": "142338049451"
+      },
+      {
+        "id": "a4a0d3d2…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2026-01-21T21:40:28.273331+00:00",
+        "valor": 1,
+        "payment_id": "142313984693"
+      },
+      {
+        "id": "2161b6f2…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2026-01-19T15:36:40.517474+00:00",
+        "valor": 1,
+        "payment_id": "141993844653"
+      },
+      {
+        "id": "0ba5ca1f…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2026-01-16T20:14:11.642891+00:00",
+        "valor": 1,
+        "payment_id": "142323342902"
+      },
+      {
+        "id": "63a43571…",
+        "usuario_id": "u_508b8d",
+        "created_at": "2026-01-16T14:02:31.562184+00:00",
+        "valor": 1,
+        "payment_id": "141608370661"
+      },
+      {
+        "id": "9113f75e…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2026-01-16T12:41:23.297301+00:00",
+        "valor": 1,
+        "payment_id": "142263647340"
+      },
+      {
+        "id": "136415e5…",
+        "usuario_id": "u_6a1eb8",
+        "created_at": "2026-01-06T16:04:24.633032+00:00",
+        "valor": 10,
+        "payment_id": "140889471496"
+      },
+      {
+        "id": "45cc1a3f…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-20T01:05:46.59172+00:00",
+        "valor": 10,
+        "payment_id": "138049685619"
+      },
+      {
+        "id": "1be3ec03…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-10T16:22:28.803351+00:00",
+        "valor": 10,
+        "payment_id": "136670493793"
+      },
+      {
+        "id": "ab41684d…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-10T14:25:19.506368+00:00",
+        "valor": 10,
+        "payment_id": "136653542813"
+      },
+      {
+        "id": "033254d3…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-10T14:07:52.470217+00:00",
+        "valor": 10,
+        "payment_id": "137280750248"
+      },
+      {
+        "id": "2a6672f1…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-10T00:29:10.261601+00:00",
+        "valor": 5,
+        "payment_id": "136588164639"
+      },
+      {
+        "id": "a766ef30…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-10T00:12:47.390167+00:00",
+        "valor": 5,
+        "payment_id": "137211563912"
+      },
+      {
+        "id": "91146185…",
+        "usuario_id": "u_254ad5",
+        "created_at": "2025-12-09T23:22:20.569259+00:00",
+        "valor": 5,
+        "payment_id": "137204346026"
+      },
+      {
+        "id": "dbc1d4a1…",
+        "usuario_id": "u_7b1c35",
+        "created_at": "2025-11-11T21:37:23.225003+00:00",
+        "valor": 1,
+        "payment_id": "132851745667"
+      },
+      {
+        "id": "00c49c3e…",
+        "usuario_id": "u_7b1c35",
+        "created_at": "2025-11-08T23:19:02.352749+00:00",
+        "valor": 2,
+        "payment_id": "133073525054"
+      },
+      {
+        "id": "3d9dfee0…",
+        "usuario_id": "u_7b1c35",
+        "created_at": "2025-11-08T23:18:08.388379+00:00",
+        "valor": 2,
+        "payment_id": "22980"
+      },
+      {
+        "id": "e8b87750…",
+        "usuario_id": "u_7b1c35",
+        "created_at": "2025-11-08T22:12:39.127645+00:00",
+        "valor": 1,
+        "payment_id": "132468227429"
+      }
+    ]
+  },
+  "cruzamento_approved_usuarios": [
+    {
+      "usuario_id": "u_254ad5",
+      "soma_pix_approved": 69,
+      "qtd_pix_approved": 12
+    },
+    {
+      "usuario_id": "u_2e7df6",
+      "soma_pix_approved": 10,
+      "qtd_pix_approved": 1
+    },
+    {
+      "usuario_id": "u_f38dcf",
+      "soma_pix_approved": 5,
+      "qtd_pix_approved": 1
+    },
+    {
+      "usuario_id": "u_3f81df",
+      "soma_pix_approved": 10,
+      "qtd_pix_approved": 1
+    },
+    {
+      "usuario_id": "u_deafdd",
+      "soma_pix_approved": 10,
+      "qtd_pix_approved": 1
+    },
+    {
+      "usuario_id": "u_508b8d",
+      "soma_pix_approved": 1,
+      "qtd_pix_approved": 1
+    },
+    {
+      "usuario_id": "u_6a1eb8",
+      "soma_pix_approved": 10,
+      "qtd_pix_approved": 1
+    },
+    {
+      "usuario_id": "u_7b1c35",
+      "soma_pix_approved": 6,
+      "qtd_pix_approved": 4
+    }
+  ],
+  "erros": []
+}

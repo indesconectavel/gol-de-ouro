@@ -151,7 +151,7 @@ async function fetchPaymentDetails(paymentId) {
     // ✅ CORREÇÃO FORMAT STRING: Usar template string de forma segura (paymentIdNum já validado)
     const response = await fetch(`https://api.mercadopago.com/v1/payments/${paymentIdNum}`, {
       headers: {
-        'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        'Authorization': `Bearer ${process.env.MERCADOPAGO_DEPOSIT_ACCESS_TOKEN}`,
         'Content-Type': 'application/json'
       }
     });

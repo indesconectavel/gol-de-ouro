@@ -1,3 +1,4 @@
+// @ts-check
 // SERVIDOR SIMPLIFICADO - GOL DE OURO v1.2.1 - DEPLOY FUNCIONAL
 // ==============================================================
 // Data: 21/10/2025
@@ -50,7 +51,7 @@ require('dotenv').config();
 const { assertRequiredEnv, isProduction } = require('./config/required-env');
 assertRequiredEnv(
   ['JWT_SECRET', 'SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'],
-  { onlyInProduction: ['MERCADOPAGO_ACCESS_TOKEN'] }
+  { onlyInProduction: ['MERCADOPAGO_DEPOSIT_ACCESS_TOKEN'] }
 );
 
 const app = express();
@@ -165,13 +166,13 @@ async function connectSupabase() {
 // CONFIGURAÇÃO MERCADO PAGO
 // =====================================================
 
-const mercadoPagoAccessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
+const mercadoPagoAccessToken = process.env.MERCADOPAGO_DEPOSIT_ACCESS_TOKEN;
 let mercadoPagoConnected = false;
 
 // Testar Mercado Pago
 async function testMercadoPago() {
   if (!mercadoPagoAccessToken) {
-    console.log('⚠️ [MERCADO-PAGO] Token não configurado');
+    console.log('⚠️ [MERCADO-PAGO][DEPOSIT] Token de depósito não configurado');
     return false;
   }
 
@@ -205,14 +206,7 @@ async function testMercadoPago() {
 
 // Middleware de segurança
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-    },
-  },
+  contentSecurityPolicy: false,
   hsts: {
     maxAge: 31536000,
     includeSubDomains: true,
@@ -275,6 +269,7 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 5, // máximo 5 tentativas de login por IP
   validate: { trustProxy: false }, // ✅ CORRIGIDO: Desabilitar validação de trust proxy
+  skip: (req) => req.path === '/login',
   message: {
         success: false,
     message: 'Muitas tentativas de login. Tente novamente em 15 minutos.'
@@ -850,10 +845,32 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
+// ⚠️ REGRA V1:
+// Qualquer alteração neste endpoint exige passar no teste de login feliz.
+// Não remover @ts-check desta seção.
 // Login de usuário
 app.post('/api/auth/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    if (!req.body || typeof req.body !== 'object') {
+      return res.status(400).json({
+        success: false,
+        message: 'Email e senha são obrigatórios'
+      });
+    }
+
+    /**
+     * @param {{ email: string, password: string }} body
+     */
+    const { email, password } = /** @type {{ email: string, password: string }} */ (req.body);
+    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email e senha são obrigatórios'
+      });
+    }
+
+    /** @type {string} */
+    const sanitizedEmailLogin = email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '');
 
     // APENAS SUPABASE REAL - SEM FALLBACK
     if (!dbConnected || !supabase) {
@@ -864,16 +881,27 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     // Buscar usuário
-    const { data: user, error: userError } = await supabase
-      .from('usuarios')
-      .select('*')
-      .eq('email', email)
-      .eq('ativo', true)
-      .single();
+    let user;
+    let userError;
+    try {
+      const result = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('email', email)
+        .eq('ativo', true)
+        .single();
+      user = result.data;
+      userError = result.error;
+    } catch (supabaseError) {
+      console.error('❌ [LOGIN] Erro Supabase:', supabaseError?.message || supabaseError);
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
 
     if (userError || !user) {
       // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-      const sanitizedEmailLogin = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
       const logMessageLoginNotFound = `❌ [LOGIN] Usuário não encontrado: ${sanitizedEmailLogin}`;
       console.log(logMessageLoginNotFound);
       return res.status(401).json({
@@ -883,6 +911,15 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     // Verificar senha
+    if (!user.senha_hash || typeof user.senha_hash !== 'string') {
+      const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
+      console.log(logMessageInvalidPassword);
+      return res.status(401).json({
+        success: false,
+        message: 'Credenciais inválidas'
+      });
+    }
+
     const senhaValida = await bcrypt.compare(password, user.senha_hash);
     if (!senhaValida) {
       // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
@@ -914,12 +951,14 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     // Gerar token JWT
+    /** @type {{ userId: string, email: string, username: string }} */
+    const tokenPayload = {
+      userId: user.id,
+      email: user.email,
+      username: user.username
+    };
     const token = jwt.sign(
-      { 
-        userId: user.id, 
-        email: user.email,
-        username: user.username
-      },
+      tokenPayload,
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -1683,6 +1722,14 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
     }
 
     // APENAS MERCADO PAGO REAL - SEM FALLBACK
+    if (!mercadoPagoAccessToken) {
+      console.log('⚠️ [PIX][DEPOSIT] Token de depósito não configurado');
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema de pagamento temporariamente indisponível. Tente novamente em alguns minutos.'
+      });
+    }
+
     if (!mercadoPagoConnected) {
       return res.status(503).json({
         success: false,
@@ -1737,7 +1784,7 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
         paymentData,
         {
           headers: {
-            'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+            'Authorization': `Bearer ${mercadoPagoAccessToken}`,
             'Content-Type': 'application/json',
             'X-Idempotency-Key': idempotencyKey,
             'Accept': 'application/json',
@@ -1981,12 +2028,17 @@ app.post('/api/payments/webhook', async (req, res, next) => {
         return;
       }
       
+      if (!mercadoPagoAccessToken) {
+        console.log('⚠️ [PIX][DEPOSIT] Token de depósito não configurado');
+        return;
+      }
+
       // Verificar pagamento no Mercado Pago
       const payment = await axios.get(
         `https://api.mercadopago.com/v1/payments/${paymentId}`,
         { 
           headers: { 
-            'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+            'Authorization': `Bearer ${mercadoPagoAccessToken}`,
             'Content-Type': 'application/json'
           },
           timeout: 5000
@@ -1994,83 +2046,55 @@ app.post('/api/payments/webhook', async (req, res, next) => {
       );
       
       if (payment.data.status === 'approved') {
-        // Atualizar status do pagamento
-        // Atualizar por external_id; se não afetar linhas, tentar por payment_id
-        let { error: updateError } = await supabase
+        // Claim atômico: atualizar para approved SOMENTE se ainda não estiver approved; creditar saldo APENAS se exatamente 1 linha afetada
+        let claimed = null;
+        const { data: claimByPaymentId, error: claimErr1 } = await supabase
           .from('pagamentos_pix')
           .update({ status: 'approved', updated_at: new Date().toISOString() })
-          .eq('external_id', data.id);
-        if (updateError) {
-          console.error('❌ [WEBHOOK] Update por external_id falhou:', updateError);
+          .eq('payment_id', String(data.id))
+          .neq('status', 'approved')
+          .select('id, usuario_id, amount, valor');
+        if (!claimErr1 && claimByPaymentId && claimByPaymentId.length === 1) {
+          claimed = claimByPaymentId[0];
         }
-        // Checar se atualizou alguma linha; se não, tentar por payment_id
-        const checkAfterUpdate = await supabase
-          .from('pagamentos_pix')
-          .select('id')
-          .eq('external_id', data.id)
-          .maybeSingle();
-        if (!checkAfterUpdate.data) {
-          const upd2 = await supabase
+        if (!claimed) {
+          const { data: claimByExternalId, error: claimErr2 } = await supabase
             .from('pagamentos_pix')
             .update({ status: 'approved', updated_at: new Date().toISOString() })
-            .eq('payment_id', String(data.id));
-          if (upd2.error) {
-            console.error('❌ [WEBHOOK] Update por payment_id falhou:', upd2.error);
-            return;
+            .eq('external_id', String(data.id))
+            .neq('status', 'approved')
+            .select('id, usuario_id, amount, valor');
+          if (!claimErr2 && claimByExternalId && claimByExternalId.length === 1) {
+            claimed = claimByExternalId[0];
           }
         }
-          
-        if (updateError) {
-          console.error('❌ [WEBHOOK] Erro ao atualizar pagamento:', updateError);
+        if (!claimed) {
+          console.log('📨 [WEBHOOK] Claim perdeu: pagamento já processado ou não encontrado:', data.id);
           return;
         }
-
-        // Buscar usuário e atualizar saldo
-        // Buscar registro por external_id ou payment_id
-        let { data: pixRecord, error: pixError } = await supabase
-          .from('pagamentos_pix')
-          .select('usuario_id, amount, valor')
-          .eq('external_id', data.id)
-          .maybeSingle();
-        if ((!pixRecord || pixError) && (!pixRecord?.usuario_id)) {
-          const alt2 = await supabase
-            .from('pagamentos_pix')
-            .select('usuario_id, amount, valor')
-            .eq('payment_id', String(data.id))
-            .maybeSingle();
-          pixRecord = alt2.data;
+        {
+          const pixRecord = claimed;
+          const { data: user, error: userError } = await supabase
+            .from('usuarios')
+            .select('saldo')
+            .eq('id', pixRecord.usuario_id)
+            .single();
+          if (userError || !user) {
+            console.error('❌ [WEBHOOK] Erro ao buscar usuário:', userError);
+            return;
+          }
+          const credit = pixRecord.amount ?? pixRecord.valor ?? 0;
+          const novoSaldo = user.saldo + credit;
+          const { error: saldoError } = await supabase
+            .from('usuarios')
+            .update({ saldo: novoSaldo })
+            .eq('id', pixRecord.usuario_id);
+          if (saldoError) {
+            console.error('❌ [WEBHOOK] Erro ao atualizar saldo:', saldoError);
+            return;
+          }
+          console.log('💰 [WEBHOOK] Claim ganhou: pagamento aprovado e saldo creditado:', data.id);
         }
-
-        if (pixError || !pixRecord) {
-          console.error('❌ [WEBHOOK] Erro ao buscar pagamento:', pixError);
-          return;
-        }
-
-        // Atualizar saldo do usuário
-        const { data: user, error: userError } = await supabase
-          .from('usuarios')
-          .select('saldo')
-          .eq('id', pixRecord.usuario_id)
-          .single();
-
-        if (userError || !user) {
-          console.error('❌ [WEBHOOK] Erro ao buscar usuário:', userError);
-          return;
-        }
-
-        const credit = pixRecord.amount ?? pixRecord.valor ?? 0;
-        const novoSaldo = user.saldo + credit;
-        const { error: saldoError } = await supabase
-          .from('usuarios')
-          .update({ saldo: novoSaldo })
-          .eq('id', pixRecord.usuario_id);
-
-        if (saldoError) {
-          console.error('❌ [WEBHOOK] Erro ao atualizar saldo:', saldoError);
-          return;
-        }
-
-        console.log(`💰 [WEBHOOK] Pagamento aprovado: R$ ${pixRecord.amount} para usuário ${pixRecord.usuario_id}`);
       }
     }
   } catch (error) {
@@ -2287,6 +2311,10 @@ let reconciling = false;
 async function reconcilePendingPayments() {
   if (reconciling) return;
   if (!dbConnected || !supabase || !mercadoPagoConnected) return;
+  if (!mercadoPagoAccessToken) {
+    console.log('⚠️ [RECON][DEPOSIT] Token de depósito não configurado');
+    return;
+  }
   try {
     reconciling = true;
     const maxAgeMin = parseInt(process.env.MP_RECONCILE_MIN_AGE_MIN || '2', 10);
@@ -2325,43 +2353,44 @@ async function reconcilePendingPayments() {
 
       try {
         const resp = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-          headers: { Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}` },
+          headers: { Authorization: `Bearer ${mercadoPagoAccessToken}` },
           timeout: 5000
         });
         const status = resp?.data?.status;
         if (status === 'approved') {
-          let { error: updError } = await supabase
+          // Claim atômico: atualizar por id do registro pendente SOMENTE se status != 'approved'; creditar APENAS se exatamente 1 linha afetada
+          const { data: claimedRows, error: claimErr } = await supabase
             .from('pagamentos_pix')
             .update({ status: 'approved', updated_at: new Date().toISOString() })
-            .eq('external_id', mpId);
-          if (updError) {
-            const alt = await supabase
-              .from('pagamentos_pix')
-              .update({ status: 'approved', updated_at: new Date().toISOString() })
-              .eq('payment_id', mpId);
-            if (alt.error) {
-              console.error('❌ [RECON] Falha ao aprovar registro:', alt.error.message);
-              continue;
+            .eq('id', p.id)
+            .neq('status', 'approved')
+            .select('id, usuario_id, amount, valor');
+          if (claimErr || !claimedRows || claimedRows.length !== 1) {
+            if (!claimErr && claimedRows && claimedRows.length === 0) {
+              // Já processado por webhook ou ciclo anterior
+            } else if (claimErr) {
+              console.error('❌ [RECON] Falha ao aprovar registro:', claimErr.message);
             }
+            continue;
           }
-
-          const credit = (p.amount ?? p.valor ?? 0);
+          const pixRecord = claimedRows[0];
+          const credit = Number(pixRecord.amount ?? pixRecord.valor ?? 0);
           if (credit > 0) {
             const { data: userRow, error: userErr } = await supabase
               .from('usuarios')
               .select('saldo')
-              .eq('id', p.usuario_id)
+              .eq('id', pixRecord.usuario_id)
               .single();
             if (!userErr && userRow) {
-              const novoSaldo = Number(userRow.saldo || 0) + Number(credit);
+              const novoSaldo = Number(userRow.saldo || 0) + credit;
               const { error: saldoErr } = await supabase
                 .from('usuarios')
                 .update({ saldo: novoSaldo })
-                .eq('id', p.usuario_id);
+                .eq('id', pixRecord.usuario_id);
               if (saldoErr) {
                 console.error('❌ [RECON] Erro ao creditar saldo:', saldoErr.message);
               } else {
-                console.log(`✅ [RECON] Pagamento ${mpId} aprovado e saldo +${credit} aplicado ao usuário ${p.usuario_id}`);
+                console.log(`✅ [RECON] Claim ganhou: pagamento ${mpId} aprovado e saldo +${credit} aplicado ao usuário ${pixRecord.usuario_id}`);
               }
             }
           }

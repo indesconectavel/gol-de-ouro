@@ -1,3 +1,4 @@
+// @ts-check
 // Controller de Autenticação - Gol de Ouro v1.1.1
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -13,7 +14,10 @@ class AuthController {
   // Registrar novo usuário
   static async register(req, res) {
     try {
-      const { email, password, username } = req.body;
+      /**
+       * @param {{ email: string, password: string, username: string }} body
+       */
+      const { email, password, username } = /** @type {{ email: string, password: string, username: string }} */ (req.body);
 
       if (!email || !password || !username) {
         return res.status(400).json({ 
@@ -63,12 +67,14 @@ class AuthController {
       }
 
       // Gerar token JWT
+      /** @type {{ userId: string, email: string, role: string | undefined }} */
+      const tokenPayload = {
+        userId: newUser.id,
+        email: newUser.email,
+        role: newUser.role
+      };
       const token = jwt.sign(
-        { 
-          userId: newUser.id, 
-          email: newUser.email, 
-          role: newUser.role 
-        },
+        tokenPayload,
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN }
       );
@@ -98,7 +104,10 @@ class AuthController {
   // Login do usuário
   static async login(req, res) {
     try {
-      const { email, password } = req.body;
+      /**
+       * @param {{ email: string, password: string }} body
+       */
+      const { email, password } = /** @type {{ email: string, password: string }} */ (req.body);
 
       if (!email || !password) {
         return res.status(400).json({ 
@@ -140,12 +149,14 @@ class AuthController {
       }
 
       // Gerar token JWT
+      /** @type {{ userId: string, email: string, role: string }} */
+      const tokenPayload = {
+        userId: user.id,
+        email: user.email,
+        role: user.tipo
+      };
       const token = jwt.sign(
-        { 
-          userId: user.id, 
-          email: user.email, 
-          role: user.tipo 
-        },
+        tokenPayload,
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN }
       );
