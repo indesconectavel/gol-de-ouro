@@ -81,12 +81,12 @@
 
 - **Tag pré-change:** `PRE_CHANGE4_2026-02-06_0050`
 - **Tag pós-change:** `CHANGE4_DONE_2026-02-06_0050`
-- **Hash do commit CHANGE #4:** `0a49bf3` (completo: `0a49bf316de357755775e4b98356c5d459f12e5c`)
+- **Hash do commit CHANGE #4:** `2ad4825` (completo: `2ad4825b73c55c4d2185dca9470af4f0ceb91a87`). *Nota: no repositório remoto o commit está com este hash após push.*
 
 ### Revert seguro (recomendado se já tiver push)
 
 ```powershell
-git revert 0a49bf3
+git revert 2ad4825
 git push
 ```
 
