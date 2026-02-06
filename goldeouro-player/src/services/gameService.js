@@ -131,9 +131,14 @@ class GameService {
 
     } catch (error) {
       console.error('❌ [GAME] Erro ao processar chute:', error);
+      // Priorizar mensagem do backend quando existir (ex.: 400 Saldo insuficiente)
+      let message = error.response?.data?.message || error.message;
+      if (message === 'Saldo insuficiente') {
+        message = 'Você está sem saldo. Adicione saldo para jogar.';
+      }
       return {
         success: false,
-        error: error.message
+        error: message
       };
     }
   }

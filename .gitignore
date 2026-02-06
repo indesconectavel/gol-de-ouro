@@ -20,6 +20,10 @@ build/
 .next/
 out/
 
+# Artefatos de auditoria de produção (não versionar)
+prod-index.html
+prod-assets-index.js
+
 # Backups e temporários
 BACKUP-COMPLETO-*
 backups/
