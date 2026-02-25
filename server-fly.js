@@ -243,8 +243,16 @@ const parseCorsOrigins = () => {
   ];
 };
 
+// Regex restrita: libera apenas previews do projeto goldeouro-player na Vercel (*.vercel.app)
+const vercelPreviewOriginRegex = /^https:\/\/goldeouro-player(-[a-z0-9-]+)*\.vercel\.app$/;
 app.use(cors({
-  origin: parseCorsOrigins(),
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const allowed = parseCorsOrigins();
+    if (allowed.includes(origin)) return callback(null, true);
+    if (vercelPreviewOriginRegex.test(origin)) return callback(null, true);
+    return callback(null, false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Idempotency-Key']
