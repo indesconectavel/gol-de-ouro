@@ -33,6 +33,8 @@ export const API_ENDPOINTS = {
   
   // Saques
   WITHDRAW: `/api/withdraw`,
+  WITHDRAW_REQUEST: `/api/withdraw/request`,
+  WITHDRAW_HISTORY: `/api/withdraw/history`,
   
   // Health Check
   HEALTH: `/health`,

@@ -4,6 +4,7 @@ import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import { useSidebar } from '../contexts/SidebarContext'
 import paymentService from '../services/paymentService'
+import withdrawService from '../services/withdrawService'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import EmptyState from '../components/EmptyState'
@@ -59,20 +60,13 @@ const Withdraw = () => {
     try {
       setHistoryLoading(true)
       setHistoryError(null)
-      
-      const result = await paymentService.getUserPix()
-      
-      if (result.success) {
-        setWithdrawalHistory(Array.isArray(result.data) ? result.data : [])
-      } else {
-        setHistoryError(result.error)
-        // Sem fallback - manter lista vazia em caso de erro
-        setWithdrawalHistory([])
-      }
-      
+
+      const saques = await withdrawService.getWithdrawHistory()
+      setWithdrawalHistory(Array.isArray(saques) ? saques : [])
     } catch (err) {
       console.error('Erro ao carregar histórico de saques:', err)
       setHistoryError('Erro ao carregar histórico de saques')
+      setWithdrawalHistory([])
     } finally {
       setHistoryLoading(false)
     }
@@ -105,29 +99,23 @@ const Withdraw = () => {
         throw new Error('Saldo insuficiente')
       }
 
-      // Criar PIX usando o serviço
-      const result = await paymentService.createPix(
-        amount,
-        formData.pixKey,
-        `Saque Gol de Ouro - ${formData.pixType}`
-      )
+      // Solicitar saque via endpoint real
+      const result = await withdrawService.requestWithdraw({
+        valor: amount,
+        chave_pix: formData.pixKey,
+        tipo_chave: formData.pixType
+      })
 
       if (result.success) {
         setShowSuccess(true)
-        
-        // Atualizar saldo local
-        setBalance(prev => prev - amount)
-        
-        // Recarregar histórico
         await loadWithdrawalHistory()
-        
-        // Resetar formulário após sucesso
+        await loadUserData()
         setTimeout(() => {
           setFormData({ amount: '', pixKey: '', pixType: 'cpf' })
           setShowSuccess(false)
         }, 3000)
       } else {
-        throw new Error(result.error || 'Erro ao processar saque')
+        throw new Error(result.message || 'Erro ao processar saque')
       }
       
     } catch (err) {
@@ -148,20 +136,36 @@ const Withdraw = () => {
   }
 
   const getStatusColor = (status) => {
-    switch(status) {
-      case 'Processado': return 'text-green-400 bg-green-400/20'
-      case 'Pendente': return 'text-yellow-400 bg-yellow-400/20'
-      case 'Cancelado': return 'text-red-400 bg-red-400/20'
-      default: return 'text-gray-400 bg-gray-400/20'
-    }
+    const s = (status || '').toLowerCase()
+    if (s === 'processado') return 'text-green-400 bg-green-400/20'
+    if (s === 'pendente' || s === 'processando' || s === 'aguardando_confirmacao') return 'text-yellow-400 bg-yellow-400/20'
+    if (s === 'cancelado' || s === 'falhou') return 'text-red-400 bg-red-400/20'
+    return 'text-gray-400 bg-gray-400/20'
   }
 
   const getStatusIcon = (status) => {
-    switch(status) {
-      case 'Processado': return '✅'
-      case 'Pendente': return '⏳'
-      case 'Cancelado': return '❌'
-      default: return '❓'
+    const s = (status || '').toLowerCase()
+    if (s === 'processado') return '✅'
+    if (s === 'pendente' || s === 'processando' || s === 'aguardando_confirmacao') return '⏳'
+    if (s === 'cancelado' || s === 'falhou') return '❌'
+    return '❓'
+  }
+
+  const formatWithdrawStatus = (status) => {
+    const s = (status || '').toLowerCase()
+    if (s === 'processado') return 'Processado'
+    if (s === 'pendente' || s === 'processando' || s === 'aguardando_confirmacao') return 'Pendente'
+    if (s === 'cancelado' || s === 'falhou') return 'Cancelado'
+    return status || 'Pendente'
+  }
+
+  const formatWithdrawDate = (createdAt) => {
+    if (!createdAt) return '—'
+    try {
+      const d = new Date(createdAt)
+      return isNaN(d.getTime()) ? createdAt : d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+    } catch {
+      return createdAt
     }
   }
 
@@ -427,27 +431,33 @@ const Withdraw = () => {
           </div>
           
           <div className="space-y-3">
-            {withdrawalHistory.map((withdrawal) => (
-              <div key={withdrawal.id} className="flex items-center justify-between bg-white/10 backdrop-blur-lg rounded-lg p-4 hover:bg-white/20 transition-colors border border-white/20">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    withdrawal.status === 'Processado' ? 'bg-green-400' : 
-                    withdrawal.status === 'Pendente' ? 'bg-yellow-400' : 'bg-red-400'
-                  }`}></div>
-                  <div>
-                    <p className="text-white font-medium">R$ {withdrawal.amount.toFixed(2)}</p>
-                    <p className="text-white/70 text-sm">{withdrawal.method} • {withdrawal.pixKey}</p>
-                    <p className="text-white/50 text-xs">{withdrawal.date}</p>
+            {withdrawalHistory.map((withdrawal) => {
+              const amount = withdrawal.valor ?? withdrawal.amount ?? 0
+              const pixKey = withdrawal.pix_key ?? withdrawal.chave_pix ?? '—'
+              const displayStatus = formatWithdrawStatus(withdrawal.status)
+              const dateStr = formatWithdrawDate(withdrawal.created_at)
+              return (
+                <div key={withdrawal.id} className="flex items-center justify-between bg-white/10 backdrop-blur-lg rounded-lg p-4 hover:bg-white/20 transition-colors border border-white/20">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${
+                      displayStatus === 'Processado' ? 'bg-green-400' :
+                      displayStatus === 'Pendente' ? 'bg-yellow-400' : 'bg-red-400'
+                    }`}></div>
+                    <div>
+                      <p className="text-white font-medium">R$ {Number(amount).toFixed(2)}</p>
+                      <p className="text-white/70 text-sm">{withdrawal.pix_type || 'PIX'} • {pixKey}</p>
+                      <p className="text-white/50 text-xs">{dateStr}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-bold backdrop-blur-lg ${getStatusColor(withdrawal.status)}`}>
+                      <span>{getStatusIcon(withdrawal.status)}</span>
+                      <span>{displayStatus}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-bold backdrop-blur-lg ${getStatusColor(withdrawal.status)}`}>
-                    <span>{getStatusIcon(withdrawal.status)}</span>
-                    <span>{withdrawal.status}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
