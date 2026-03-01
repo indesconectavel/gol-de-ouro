@@ -1,5 +1,10 @@
 import React from 'react';
 
+// Feature-flag: exibir barra de versão apenas quando VITE_SHOW_VERSION_BANNER === "true".
+// Produção (www.goldeouro.lol): não definir ou false → banner não aparece.
+// Preview (Vercel): opcional true para auditoria.
+const SHOW_BANNER = import.meta.env.VITE_SHOW_VERSION_BANNER === 'true';
+
 const VersionBanner = ({ 
   version = "v1.2.0", 
   deployDate = "25/10/2025", 
@@ -7,6 +12,8 @@ const VersionBanner = ({
   showTime = true,
   className = ""
 }) => {
+  if (!SHOW_BANNER) return null;
+
   // Preferir variáveis de ambiente (injetadas no build) quando disponíveis
   const envVersion = typeof import.meta !== 'undefined' ? (import.meta.env?.VITE_BUILD_VERSION || null) : null;
   const envDate = typeof import.meta !== 'undefined' ? (import.meta.env?.VITE_BUILD_DATE || null) : null;
