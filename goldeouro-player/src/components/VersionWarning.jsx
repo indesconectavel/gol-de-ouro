@@ -1,4 +1,5 @@
 // Componente para exibir aviso de versão
+// Hotfix: usa apenas checkCompatibility() no mount; sem setInterval nem métodos inexistentes.
 import { useState, useEffect } from 'react';
 import versionService from '../services/versionService';
 
@@ -8,50 +9,42 @@ const VersionWarning = () => {
   const [versionInfo, setVersionInfo] = useState(null);
 
   useEffect(() => {
-    // Verificar compatibilidade ao montar o componente
-    checkVersionCompatibility();
-    
-    // Iniciar verificação periódica
-    versionService.startPeriodicCheck();
-    
-    // Verificar periodicamente se há avisos
-    const interval = setInterval(() => {
-      if (versionService.shouldShowWarning()) {
-        setShowWarning(true);
-        setWarningMessage(versionService.getWarningMessage());
-        setVersionInfo(versionService.getVersionInfo());
-      } else {
-        setShowWarning(false);
-        setWarningMessage('');
-      }
-    }, 1000);
+    let cancelled = false;
 
-    return () => clearInterval(interval);
+    const runOnce = async () => {
+      try {
+        const result = await versionService.checkCompatibility();
+        if (cancelled) return;
+        if (result && result.compatible === false) {
+          setShowWarning(true);
+          setWarningMessage(result.warningMessage || 'Atualize para continuar.');
+          setVersionInfo({
+            currentVersion: result.currentVersion ?? result.current ?? '—',
+            minRequiredVersion: result.minRequiredVersion ?? '—'
+          });
+        } else {
+          setShowWarning(false);
+          setWarningMessage('');
+          setVersionInfo(null);
+        }
+      } catch {
+        if (!cancelled) {
+          setShowWarning(false);
+          setWarningMessage('');
+          setVersionInfo(null);
+        }
+      }
+    };
+
+    runOnce();
+    return () => { cancelled = true; };
   }, []);
-
-  const checkVersionCompatibility = async () => {
-    try {
-      const result = await versionService.checkCompatibility();
-      
-      if (result.warningMessage) {
-        setShowWarning(true);
-        setWarningMessage(result.warningMessage);
-        setVersionInfo(result);
-      } else {
-        setShowWarning(false);
-        setWarningMessage('');
-      }
-    } catch (error) {
-      console.error('Erro ao verificar compatibilidade:', error);
-    }
-  };
 
   const handleDismiss = () => {
     setShowWarning(false);
   };
 
   const handleUpdate = () => {
-    // Redirecionar para página de atualização ou recarregar
     window.location.reload();
   };
 
@@ -66,23 +59,23 @@ const VersionWarning = () => {
           <div className="flex-shrink-0">
             <span className="text-yellow-800 text-xl">⚠️</span>
           </div>
-          
+
           <div className="flex-1">
             <h3 className="text-sm font-medium text-yellow-800 mb-1">
               Aviso de Versão
             </h3>
-            
+
             <p className="text-sm text-yellow-700 mb-3">
               {warningMessage}
             </p>
-            
+
             {versionInfo && (
               <div className="text-xs text-yellow-600 mb-3">
                 <p>Versão atual: {versionInfo.currentVersion}</p>
                 <p>Versão mínima: {versionInfo.minRequiredVersion}</p>
               </div>
             )}
-            
+
             <div className="flex space-x-2">
               <button
                 onClick={handleUpdate}
@@ -90,7 +83,7 @@ const VersionWarning = () => {
               >
                 Atualizar
               </button>
-              
+
               <button
                 onClick={handleDismiss}
                 className="text-xs bg-yellow-400 hover:bg-yellow-500 text-yellow-800 px-3 py-1 rounded transition-colors"
@@ -99,7 +92,7 @@ const VersionWarning = () => {
               </button>
             </div>
           </div>
-          
+
           <button
             onClick={handleDismiss}
             className="flex-shrink-0 text-yellow-600 hover:text-yellow-800 transition-colors"
@@ -116,4 +109,3 @@ const VersionWarning = () => {
 };
 
 export default VersionWarning;
-
