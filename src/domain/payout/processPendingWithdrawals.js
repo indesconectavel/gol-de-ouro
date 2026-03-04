@@ -1,5 +1,43 @@
 const payoutCounters = { success: 0, fail: 0 };
 
+/** Cache da coluna de usuário no ledger: 'user_id' | 'usuario_id' | null (ainda não descoberto). */
+let ledgerUserIdColumn = null;
+
+/**
+ * Insere uma linha no ledger usando a coluna de usuário existente no ambiente.
+ * Tenta user_id primeiro (produção), depois usuario_id; grava em cache a que funcionar.
+ * Nunca lança exceção; em falha retorna { success: false, error }.
+ */
+async function insertLedgerRow(supabase, payloadBase, usuarioId) {
+  if (ledgerUserIdColumn) {
+    const row = { ...payloadBase, [ledgerUserIdColumn]: usuarioId };
+    const { data, error } = await supabase
+      .from('ledger_financeiro')
+      .insert(row)
+      .select('id')
+      .single();
+    if (error) return { success: false, error };
+    return { success: true, data };
+  }
+
+  const rowUser = { ...payloadBase, user_id: usuarioId };
+  const res1 = await supabase.from('ledger_financeiro').insert(rowUser).select('id').single();
+  if (!res1.error) {
+    ledgerUserIdColumn = 'user_id';
+    return { success: true, data: res1.data };
+  }
+  console.warn('[LEDGER] insert falhou (airbag)', { step: 'user_id', code: res1.error?.code, message: (res1.error?.message || '').slice(0, 80) });
+
+  const rowUsuario = { ...payloadBase, usuario_id: usuarioId };
+  const res2 = await supabase.from('ledger_financeiro').insert(rowUsuario).select('id').single();
+  if (!res2.error) {
+    ledgerUserIdColumn = 'usuario_id';
+    return { success: true, data: res2.data };
+  }
+  console.warn('[LEDGER] insert falhou (airbag)', { step: 'usuario_id', code: res2.error?.code, message: (res2.error?.message || '').slice(0, 80) });
+  return { success: false, error: res2.error };
+}
+
 const createLedgerEntry = async ({ supabase, tipo, usuarioId, valor, referencia, correlationId }) => {
   try {
     const { data: existing, error: existingError } = await supabase
@@ -18,24 +56,20 @@ const createLedgerEntry = async ({ supabase, tipo, usuarioId, valor, referencia,
       return { success: true, id: existing.id, deduped: true };
     }
 
-    const { data, error } = await supabase
-      .from('ledger_financeiro')
-      .insert({
-        tipo,
-        usuario_id: usuarioId,
-        valor: parseFloat(valor),
-        referencia,
-        correlation_id: correlationId,
-        created_at: new Date().toISOString()
-      })
-      .select('id')
-      .single();
+    const payloadBase = {
+      tipo,
+      valor: parseFloat(valor),
+      referencia,
+      correlation_id: correlationId,
+      created_at: new Date().toISOString()
+    };
+    const insertResult = await insertLedgerRow(supabase, payloadBase, usuarioId);
 
-    if (error) {
-      return { success: false, error };
+    if (!insertResult.success) {
+      return { success: false, error: insertResult.error };
     }
 
-    return { success: true, id: data?.id };
+    return { success: true, id: insertResult.data?.id };
   } catch (error) {
     return { success: false, error };
   }
