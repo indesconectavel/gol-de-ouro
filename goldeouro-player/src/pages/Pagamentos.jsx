@@ -12,7 +12,6 @@ const Pagamentos = () => {
   const navigate = useNavigate();
   const { isCollapsed } = useSidebar();
   const [loading, setLoading] = useState(false);
-  const [saldo, setSaldo] = useState(0);
   const [valorRecarga, setValorRecarga] = useState(200);
   const [pagamentos, setPagamentos] = useState([]);
   const [pagamentoAtual, setPagamentoAtual] = useState(null);
@@ -30,13 +29,6 @@ const Pagamentos = () => {
 
   const carregarDados = async () => {
     try {
-      // Em desenvolvimento, usar dados simulados
-      // Sem dados simulados - sempre buscar dados reais
-
-      // Carregar saldo do usuário
-      const response = await apiClient.get(API_ENDPOINTS.PROFILE);
-      setSaldo(response.data.balance || 0);
-
       // Carregar histórico de pagamentos
       const pagamentosResponse = await apiClient.get(API_ENDPOINTS.PIX_USER);
       setPagamentos(pagamentosResponse.data.data.payments || []);
@@ -77,29 +69,6 @@ const Pagamentos = () => {
       toast.error('Erro ao criar pagamento PIX');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const consultarStatusPagamento = async (paymentId) => {
-    try {
-      if (!paymentId) {
-        console.error('ID do pagamento não fornecido');
-        toast.error('ID do pagamento não encontrado');
-        return;
-      }
-      
-      const token = localStorage.getItem('authToken');
-      const response = await apiClient.get(`${API_ENDPOINTS.PIX_STATUS}?paymentId=${paymentId}`);
-
-      if (response.data) {
-        if (response.data.data.status === 'approved') {
-          toast.success('Pagamento aprovado! Saldo atualizado.');
-          carregarDados();
-        }
-        return response.data.data;
-      }
-    } catch (error) {
-      console.error('Erro ao consultar status:', error);
     }
   };
 
@@ -240,14 +209,6 @@ const Pagamentos = () => {
                   </div>
                 )}
 
-                <div className="mt-6 text-center">
-                  <button
-                    onClick={() => consultarStatusPagamento(pagamentoAtual.id)}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
-                  >
-                    🔄 Verificar Status
-                  </button>
-                </div>
               </div>
             </div>
           )}
@@ -343,7 +304,6 @@ const Pagamentos = () => {
                       <th className="text-left py-3 px-4 font-semibold text-gray-700">Data</th>
                       <th className="text-left py-3 px-4 font-semibold text-gray-700">Valor</th>
                       <th className="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -359,14 +319,6 @@ const Pagamentos = () => {
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(pagamento.status)}`}>
                             {getStatusText(pagamento.status)}
                           </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <button
-                            onClick={() => consultarStatusPagamento(pagamento.id)}
-                            className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-                          >
-                            Verificar
-                          </button>
                         </td>
                       </tr>
                     ))}
