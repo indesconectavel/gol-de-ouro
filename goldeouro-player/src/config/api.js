@@ -31,8 +31,10 @@ export const API_ENDPOINTS = {
   GAMES_STATUS: `/api/games/status`,
   GAMES_CHUTAR: `/api/games/shoot`,
   
-  // Saques
+  // Saques (fluxo correto: request + history)
   WITHDRAW: `/api/withdraw`,
+  WITHDRAW_REQUEST: `/api/withdraw/request`,
+  WITHDRAW_HISTORY: `/api/withdraw/history`,
   
   // Health Check
   HEALTH: `/health`,

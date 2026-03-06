@@ -4,6 +4,7 @@ import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import { useSidebar } from '../contexts/SidebarContext'
 import paymentService from '../services/paymentService'
+import { requestWithdraw, getWithdrawHistory } from '../services/withdrawService'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import EmptyState from '../components/EmptyState'
@@ -59,20 +60,17 @@ const Withdraw = () => {
     try {
       setHistoryLoading(true)
       setHistoryError(null)
-      
-      const result = await paymentService.getUserPix()
-      
+      const result = await getWithdrawHistory()
       if (result.success) {
         setWithdrawalHistory(Array.isArray(result.data) ? result.data : [])
       } else {
         setHistoryError(result.error)
-        // Sem fallback - manter lista vazia em caso de erro
         setWithdrawalHistory([])
       }
-      
     } catch (err) {
       console.error('Erro ao carregar histórico de saques:', err)
       setHistoryError('Erro ao carregar histórico de saques')
+      setWithdrawalHistory([])
     } finally {
       setHistoryLoading(false)
     }
@@ -105,20 +103,15 @@ const Withdraw = () => {
         throw new Error('Saldo insuficiente')
       }
 
-      // Criar PIX usando o serviço
-      const result = await paymentService.createPix(
+      const result = await requestWithdraw(
         amount,
         formData.pixKey,
-        `Saque Gol de Ouro - ${formData.pixType}`
+        formData.pixType
       )
 
       if (result.success) {
         setShowSuccess(true)
-        
-        // Atualizar saldo local
-        setBalance(prev => prev - amount)
-        
-        // Recarregar histórico
+        await loadUserData()
         await loadWithdrawalHistory()
         
         // Resetar formulário após sucesso
