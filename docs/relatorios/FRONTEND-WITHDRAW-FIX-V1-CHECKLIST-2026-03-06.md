@@ -8,7 +8,7 @@
 
 | Descrição | SHA |
 |-----------|-----|
-| *(preencher após git commit)* | |
+| fix(player): tela de saque usa POST/GET withdraw/request e history | 258b0cd |
 
 ---
 
