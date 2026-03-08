@@ -3,7 +3,9 @@
 **Data:** 2026-03-08  
 **Branch:** baseline/fykkeg6zb-certified  
 **Commit base:** 0a2a5a1  
-**Commit da certificação:** 1fd83f0 (a ser atualizado se houver segundo commit com relatório)
+**Commit base:** 0a2a5a1  
+**Commit da certificação (código):** 1fd83f0  
+**Commit do relatório:** 88273fd
 
 ---
 
@@ -71,12 +73,12 @@ Validação manual no preview (URL do preview — ver seção 6) deve confirmar:
 
 ## 6. URL do preview
 
-Após `git push origin baseline/fykkeg6zb-certified`, a Vercel gera automaticamente o preview da branch. A URL será do tipo:
+A Vercel gera o preview automaticamente ao detectar o push da branch. Para obter a URL:
 
-- **https://goldeouro-player-&lt;hash&gt;-&lt;team&gt;.vercel.app**  
-  ou o link exibido no dashboard Vercel para a branch `baseline/fykkeg6zb-certified`.
+- **Abrir o PR:** https://github.com/indesconectavel/gol-de-ouro/pull/new/baseline/fykkeg6zb-certified  
+- No **Vercel Dashboard** → projeto **goldeouro-player** → Deployments → deployment da branch `baseline/fykkeg6zb-certified` → usar a URL do preview (ex.: `https://goldeouro-player-*-xxx.vercel.app`).
 
-*(Preencher com a URL efetiva após o push, se disponível.)*
+Validar no preview: login carrega, banner não aparece, layout aprovado, backend responde.
 
 ---
 
@@ -86,7 +88,7 @@ Após `git push origin baseline/fykkeg6zb-certified`, a Vercel gera automaticame
 |------|--------|
 | **Branch** | baseline/fykkeg6zb-certified |
 | **Commit base** | 0a2a5a1 (Merge PR #18 — security/fix-ssrf-vulnerabilities) |
-| **Commit da certificação** | 1fd83f0 |
+| **Commit da certificação** | 1fd83f0 (código) / 88273fd (relatório) |
 | **Mensagem** | baseline(certified): recria baseline funcional FyKKeg6zb sem banner e com login estável |
 
 ---
