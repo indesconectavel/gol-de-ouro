@@ -124,8 +124,9 @@ const Withdraw = () => {
       }
       
     } catch (err) {
-      console.error('Erro ao processar saque:', err)
-      setError(err.message || 'Erro ao processar saque')
+      console.error('Erro ao processar saque:', err);
+      const msg = err.response?.data?.message || err.message || 'Erro ao processar saque';
+      setError(msg === 'Sistema temporariamente indisponível' ? 'Sistema indisponível' : msg);
     } finally {
       setIsSubmitting(false)
     }

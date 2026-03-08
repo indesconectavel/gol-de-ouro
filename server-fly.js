@@ -2107,6 +2107,18 @@ app.post('/api/payments/webhook', async (req, res, next) => {
             console.error('❌ [WEBHOOK] Erro ao atualizar saldo:', saldoError);
             return;
           }
+          // Registrar crédito no ledger para consistência financeira (BLOCO A)
+          const ledgerDeposit = await createLedgerEntry({
+            supabase,
+            tipo: 'deposito',
+            usuarioId: pixRecord.usuario_id,
+            valor: credit,
+            referencia: String(pixRecord.id),
+            correlationId: `dep_${data.id}`
+          });
+          if (!ledgerDeposit.success) {
+            console.error('❌ [WEBHOOK] Erro ao registrar ledger (deposito):', ledgerDeposit.error);
+          }
           console.log('💰 [WEBHOOK] Claim ganhou: pagamento aprovado e saldo creditado:', data.id);
         }
       }

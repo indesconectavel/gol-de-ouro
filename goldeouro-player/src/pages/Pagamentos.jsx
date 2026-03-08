@@ -66,7 +66,13 @@ const Pagamentos = () => {
       }
     } catch (error) {
       console.error('Erro ao criar pagamento:', error);
-      toast.error('Erro ao criar pagamento PIX');
+      const status = error.response?.status;
+      const message = error.response?.data?.message;
+      if (status === 503) {
+        toast.error('Sistema indisponível. Tente novamente em alguns minutos.');
+      } else {
+        toast.error(message || 'Erro ao criar pagamento PIX');
+      }
     } finally {
       setLoading(false);
     }
