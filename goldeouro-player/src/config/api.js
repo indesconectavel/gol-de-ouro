@@ -82,7 +82,7 @@ export const isAuthenticated = () => {
 export const logout = () => {
   localStorage.removeItem('authToken');
   localStorage.removeItem('userData');
-  window.location.href = '/login';
+  window.location.href = '/';
 };
 
 // Função para obter dados do usuário

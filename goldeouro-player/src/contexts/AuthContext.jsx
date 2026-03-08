@@ -33,7 +33,10 @@ export const AuthProvider = ({ children }) => {
       // Verificar se token é válido
       apiClient.get(API_ENDPOINTS.PROFILE)
         .then(response => {
-          setUser(response.data)
+          // Backend retorna { success: true, data: { id, email, ... } }
+          const payload = response.data
+          const userData = payload?.data ?? payload
+          setUser(userData)
         })
         .catch((error) => {
           console.log('🔒 Token inválido ou expirado:', error.response?.status)
@@ -65,7 +68,12 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true, user: userData }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Erro ao fazer login'
+      const status = error.response?.status
+      const message = error.response?.data?.message
+      const errorMessage =
+        status === 503
+          ? 'Sistema indisponível'
+          : message || 'Erro ao fazer login'
       setError(errorMessage)
       return { success: false, error: errorMessage }
     } finally {
@@ -102,6 +110,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('authToken')
+    localStorage.removeItem('userData')
     setUser(null)
     setError(null)
   }

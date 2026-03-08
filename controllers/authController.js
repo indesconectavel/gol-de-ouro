@@ -87,8 +87,8 @@ class AuthController {
           id: newUser.id,
           email: newUser.email,
           username: newUser.username,
-          balance: newUser.balance,
-          role: newUser.role
+          saldo: newUser.saldo,
+          role: newUser.tipo
         }
       });
 

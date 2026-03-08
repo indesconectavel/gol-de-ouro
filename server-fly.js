@@ -1005,6 +1005,11 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Logout (estado apenas no cliente; backend aceita para compatibilidade)
+app.post('/api/auth/logout', (req, res) => {
+  res.status(200).json({ success: true, message: 'Logout realizado' });
+});
+
 // =====================================================
 // ROTAS DE PERFIL DO USUÁRIO
 // =====================================================
