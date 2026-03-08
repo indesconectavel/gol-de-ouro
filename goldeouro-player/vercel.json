@@ -100,6 +100,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://goldeouro-backend-v2.fly.dev/api/:path*"
+    },
+    {
       "source": "/download",
       "destination": "/download.html"
     },

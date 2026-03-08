@@ -65,7 +65,9 @@ export const AuthProvider = ({ children }) => {
       
       return { success: true, user: userData }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Erro ao fazer login'
+      const serverMessage = error.response?.data?.message;
+      const isNetworkError = !error.response && (error.message === 'Network Error' || error.code === 'ERR_NETWORK');
+      const errorMessage = serverMessage || (isNetworkError ? 'Sistema indisponível' : 'Erro ao fazer login');
       setError(errorMessage)
       return { success: false, error: errorMessage }
     } finally {

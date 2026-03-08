@@ -1,4 +1,4 @@
-﻿// Configuração CORRIGIDA - Gol de Ouro Player
+// Configuração CORRIGIDA - Gol de Ouro Player
 const environments = {
   development: {
     API_BASE_URL: 'http://localhost:8080', // BACKEND LOCAL
@@ -77,6 +77,16 @@ const getCurrentEnvironment = () => {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     if (shouldLog) console.log('🔧 Ambiente: DESENVOLVIMENTO LOCAL');
     result = environments.development;
+  } else if (window.location.hostname.includes('vercel.app')) {
+    // Preview Vercel: usar mesmo origem para que /api/* seja proxy para o backend (evita CORS)
+    if (shouldLog) console.log('🔧 Ambiente: PREVIEW VERCEL - API via proxy');
+    result = {
+      ...environments.production,
+      API_BASE_URL: '', // same-origin: requests /api/* passam pelo rewrite do vercel.json
+      USE_MOCKS: false,
+      USE_SANDBOX: false,
+      IS_PRODUCTION: true
+    };
   } else if (window.location.hostname.includes('staging') || window.location.hostname.includes('test')) {
     if (shouldLog) console.log('🔧 Ambiente: STAGING');
     result = environments.staging;
