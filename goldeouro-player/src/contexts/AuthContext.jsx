@@ -30,10 +30,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('authToken')
     if (token) {
-      // Verificar se token é válido
       apiClient.get(API_ENDPOINTS.PROFILE)
         .then(response => {
-          setUser(response.data)
+          const payload = response.data
+          const userData = payload?.data ?? payload
+          setUser(userData)
         })
         .catch((error) => {
           console.log('🔒 Token inválido ou expirado:', error.response?.status)
@@ -102,6 +103,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('authToken')
+    localStorage.removeItem('userData')
     setUser(null)
     setError(null)
   }

@@ -43,16 +43,25 @@ const Dashboard = () => {
       )
       if (profileResponse.data.success) {
         setUser(profileResponse.data.data)
-        setBalance(profileResponse.data.data.saldo || 0)
+        setBalance(Number(profileResponse.data.data.saldo) || 0)
       }
 
-      // Buscar dados PIX do usuário (inclui histórico) - COM RETRY LOGIC E TRATAMENTO DE ERRO ROBUSTO
+      // Backend retorna { data: { payments: [...] } }; Dashboard usa formato { valor, data, status, tipo }
       try {
         const pixResponse = await retryDataRequest(() => 
           apiClient.get(API_ENDPOINTS.PIX_USER)
         )
-        if (pixResponse.data.success) {
-          setRecentBets(pixResponse.data.data.historico_pagamentos || [])
+        if (pixResponse.data.success && pixResponse.data.data) {
+          const payments = pixResponse.data.data.payments || []
+          setRecentBets(payments.map(p => ({
+            id: p.id,
+            valor: Number(p.amount) || 0,
+            data: p.created_at ? new Date(p.created_at).toLocaleString('pt-BR') : '—',
+            status: p.status === 'approved' ? 'processado' : (p.status === 'pending' ? 'pendente' : p.status || '—'),
+            tipo: 'PIX'
+          })))
+        } else {
+          setRecentBets([])
         }
       } catch (pixError) {
         console.warn('⚠️ [DASHBOARD] Erro ao carregar dados PIX após retry:', pixError.message)
@@ -62,13 +71,7 @@ const Dashboard = () => {
 
     } catch (error) {
       console.error('❌ [DASHBOARD] Erro ao carregar dados do usuário após retry:', error)
-      // Fallback para dados mínimos em caso de erro
-      setUser({
-        id: 3,
-        email: 'free10signer@gmail.com',
-        nome: 'free10signer',
-        saldo: 0
-      })
+      setUser(null)
       setBalance(0)
       setRecentBets([])
     } finally {
@@ -172,7 +175,7 @@ const Dashboard = () => {
                   <span className="text-2xl">💰</span>
                   <h2 className="text-white/80 text-lg font-medium">Saldo Disponível</h2>
                 </div>
-                <p className="text-4xl font-bold text-yellow-400 mb-2">R$ {balance.toFixed(2)}</p>
+                <p className="text-4xl font-bold text-yellow-400 mb-2">R$ {(Number(balance) || 0).toFixed(2)}</p>
                 {/* Dados reais serão implementados quando houver histórico */}
               </div>
             </div>

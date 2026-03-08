@@ -15,14 +15,14 @@ const Profile = () => {
   const { isCollapsed } = useSidebar()
   const { userStats, badges, achievements, loading: gamificationLoading } = useAdvancedGamification()
   const [user, setUser] = useState({
-    name: 'Carregando...',
-    email: 'carregando@email.com',
-    balance: 0.00,
+    name: '',
+    email: '',
+    balance: 0,
     totalBets: 0,
     totalWins: 0,
     winRate: 0,
-    joinDate: '2024-01-01',
-    level: 'Bronze',
+    joinDate: '',
+    level: 'Jogador',
     avatar: '👤'
   })
   const [activeTab, setActiveTab] = useState('info')
@@ -32,6 +32,7 @@ const Profile = () => {
     email: ''
   })
   const [loading, setLoading] = useState(true)
+  const [profileError, setProfileError] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -41,39 +42,33 @@ const Profile = () => {
   const loadUserProfile = async () => {
     try {
       setLoading(true)
+      setProfileError(null)
       const response = await apiClient.get(API_ENDPOINTS.PROFILE)
       if (response.data.success) {
         const userData = response.data.data
+        const saldo = Number(userData.saldo) || 0
+        const totalApostas = Number(userData.total_apostas) || 0
+        const totalGanhos = Number(userData.total_ganhos) || 0
         setUser({
-          name: userData.nome || userData.email?.split('@')[0] || 'Usuário',
-          email: userData.email || 'usuario@email.com',
-          balance: userData.saldo || 0,
-          totalBets: userData.total_apostas || 0,
-          totalWins: userData.total_ganhos || 0,
-          winRate: userData.total_apostas > 0 ? Math.round((userData.total_ganhos / userData.total_apostas) * 100) : 0,
-          joinDate: userData.created_at?.split('T')[0] || '2024-01-01',
+          name: userData.nome || userData.username || userData.email?.split('@')[0] || 'Usuário',
+          email: userData.email || '',
+          balance: saldo,
+          totalBets: totalApostas,
+          totalWins: totalGanhos,
+          winRate: totalApostas > 0 ? Math.round((totalGanhos / totalApostas) * 100) : 0,
+          joinDate: userData.created_at?.split('T')[0] || '',
           level: userData.tipo === 'admin' ? 'Admin' : 'Jogador',
           avatar: '👤'
         })
         setEditForm({
-          name: userData.nome || userData.email?.split('@')[0] || 'Usuário',
-          email: userData.email || 'usuario@email.com'
+          name: userData.nome || userData.username || userData.email?.split('@')[0] || 'Usuário',
+          email: userData.email || ''
         })
       }
     } catch (error) {
       console.error('Erro ao carregar perfil:', error)
-             // Fallback para dados mínimos
-             setUser({
-               name: 'free10signer',
-               email: 'free10signer@gmail.com',
-               balance: 0.00,
-               totalBets: 0,
-               totalWins: 0,
-               winRate: 0,
-               joinDate: '2024-01-01',
-               level: 'Jogador',
-               avatar: '👤'
-             })
+      setProfileError('Erro ao carregar perfil. Tente novamente.')
+      setUser(prev => ({ ...prev, name: '—', email: '—', balance: 0 }))
     } finally {
       setLoading(false)
     }
@@ -192,16 +187,22 @@ const Profile = () => {
 
         {/* Card Principal do Usuário - Glassmorphism */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20 shadow-2xl">
+          {profileError && (
+            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm">
+              {profileError}
+              <button type="button" onClick={() => { setProfileError(null); loadUserProfile(); }} className="ml-2 underline">Tentar novamente</button>
+            </div>
+          )}
           <div className="flex items-center justify-between mb-6">
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-white">{user.name}</h2>
-              <p className="text-white/70">{user.email}</p>
+              <h2 className="text-2xl font-bold text-white">{loading ? 'Carregando...' : (user.name || '—')}</h2>
+              <p className="text-white/70">{user.email || '—'}</p>
               <div className="flex items-center space-x-2 mt-1">
                 <span className={`text-sm font-bold ${getLevelColor(user.level)}`}>
                   {user.level}
                 </span>
                 <span className="text-white/50">•</span>
-                <span className="text-white/70 text-sm">Membro desde {user.joinDate}</span>
+                <span className="text-white/70 text-sm">{user.joinDate ? `Membro desde ${user.joinDate}` : ''}</span>
               </div>
             </div>
             <div className="relative pr-4">
@@ -212,7 +213,7 @@ const Profile = () => {
           {/* Estatísticas Principais */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-              <p className="text-2xl font-bold text-yellow-400">R$ {user.balance.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-yellow-400">R$ {(Number(user.balance) || 0).toFixed(2)}</p>
               <p className="text-white/70 text-sm">Saldo Atual</p>
             </div>
             <div className="text-center bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">

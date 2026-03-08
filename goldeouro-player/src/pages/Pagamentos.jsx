@@ -12,28 +12,34 @@ const Pagamentos = () => {
   const navigate = useNavigate();
   const { isCollapsed } = useSidebar();
   const [loading, setLoading] = useState(false);
+  const [loadingDados, setLoadingDados] = useState(true);
   const [valorRecarga, setValorRecarga] = useState(200);
   const [pagamentos, setPagamentos] = useState([]);
   const [pagamentoAtual, setPagamentoAtual] = useState(null);
   const [copiado, setCopiado] = useState(false);
+  const [erroDados, setErroDados] = useState(null);
   const pixCopiaColaRef = useRef(null);
 
   // Valores pré-definidos para recarga (presets)
   const valoresRecarga = [1, 5, 10, 25, 50, 100];
 
   useEffect(() => {
-
     carregarDados();
-  
-}, [carregarDados]);
+  }, []);
 
   const carregarDados = async () => {
     try {
-      // Carregar histórico de pagamentos
+      setLoadingDados(true);
+      setErroDados(null);
       const pagamentosResponse = await apiClient.get(API_ENDPOINTS.PIX_USER);
-      setPagamentos(pagamentosResponse.data.data.payments || []);
+      const data = pagamentosResponse.data?.data;
+      setPagamentos(data?.payments || []);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
+      setErroDados('Erro ao carregar histórico. Tente novamente.');
+      setPagamentos([]);
+    } finally {
+      setLoadingDados(false);
     }
   };
 
@@ -287,8 +293,15 @@ const Pagamentos = () => {
           {/* Histórico de Pagamentos */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Histórico de Pagamentos</h2>
-          
-            {pagamentos.length === 0 ? (
+            {erroDados && (
+              <div className="mb-4 p-3 bg-amber-100 border border-amber-300 rounded-lg text-amber-800 text-sm">
+                {erroDados}
+                <button type="button" onClick={() => carregarDados()} className="ml-2 font-medium underline">Tentar novamente</button>
+              </div>
+            )}
+            {loadingDados ? (
+              <div className="text-center py-12 text-gray-500">Carregando...</div>
+            ) : pagamentos.length === 0 ? (
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">💳</span>
@@ -310,10 +323,10 @@ const Pagamentos = () => {
                     {pagamentos.map((pagamento) => (
                       <tr key={pagamento.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                         <td className="py-3 px-4 text-sm text-gray-600">
-                          {formatarData(pagamento.created_at)}
+                          {pagamento.created_at ? formatarData(pagamento.created_at) : '—'}
                         </td>
                         <td className="py-3 px-4 text-sm font-semibold text-gray-800">
-                          R$ {parseFloat(pagamento.amount).toFixed(2)}
+                          R$ {(Number(pagamento.amount) || 0).toFixed(2)}
                         </td>
                         <td className="py-3 px-4">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(pagamento.status)}`}>
