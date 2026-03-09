@@ -1,0 +1,27 @@
+{
+  "timestamp_utc": "2026-03-06T12:10:00Z",
+  "contagens": {
+    "PAYOUT_CYCLE": 11,
+    "PAYOUT_QUERY": 11,
+    "PAYOUT_SELECT": 0,
+    "PAYOUT_SKIP": 0,
+    "PAYOUT_ROLLBACK_FAIL": 0,
+    "payouts_falha": 5,
+    "enabled_true": true,
+    "db_ok": true,
+    "provider_ok": true,
+    "count_0": true
+  },
+  "linhas_relevantes": [
+    "[PAYOUT][CYCLE] enabled=true db=ok provider=ok",
+    "[PAYOUT][QUERY] statuses=pendente,pending,processando count=0",
+    "[PAYOUT][WORKER] Nenhum saque pendente ou processando",
+    "[PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }"
+  ],
+  "conclusao_automatica": "query_retorna_0_em_producao",
+  "env_config": "ok",
+  "query_status": "count=0",
+  "provider": "ok",
+  "rollback": "nenhum",
+  "inconsistencia": "Sim: worker reporta count=0 para statuses=pendente,pending,processando, mas snapshot pre-deploy mostrou 5 saques em status processando."
+}

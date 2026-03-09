@@ -1,0 +1,66 @@
+{
+  "timestamp": "2026-03-06T00:15:21.578Z",
+  "overall": "pass",
+  "checks": [
+    {
+      "id": "server_ledger_withdraw_request",
+      "name": "server-fly.js: tipo 'withdraw_request' no ledger",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "server_ledger_valor_negativo",
+      "name": "server-fly.js: valor negativo no ledger (-requestedAmount)",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "server_rollback_on_ledger_fail",
+      "name": "server-fly.js: rollback quando ledger falha",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "worker_select_processando",
+      "name": "processPendingWithdrawals: select inclui processando",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "worker_success_concluido",
+      "name": "processPendingWithdrawals: sucesso -> concluido + processed_at + transacao_id",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "worker_error_rejeitado",
+      "name": "processPendingWithdrawals: erro -> rejeitado + motivo_rejeicao",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "worker_idempotencia",
+      "name": "processPendingWithdrawals: idempotência (ignora concluido/rejeitado)",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "logs_payout_saqueid",
+      "name": "Log [PAYOUT] saqueId presente",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "logs_ledger_referencia",
+      "name": "Log [LEDGER] referencia presente",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "server_log_ledger_referencia",
+      "name": "server-fly.js: log [LEDGER] referencia",
+      "pass": true,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "auditoria": "FINANCEIRO-V1-CONFIRMACAO-PRODUCAO-FRONTEND",
+  "data": "2026-03-06",
+  "passo": "PASSO C - Verificação depósito em produção",
+  "modo": "READ-ONLY",
+  "base_url": "https://www.goldeouro.lol",
+  "verificacao_ao_vivo": {
+    "tentativa_fetch_bundle": "timeout ao baixar bundle a partir do ambiente de auditoria",
+    "conclusao_ao_vivo": "inconclusivo"
+  },
+  "evidencia_documentacao": {
+    "bundle_qIGutT6K": {
+      "contem_Verificar_Status": true,
+      "usa_GET_api_payments_pix_status": true,
+      "criacao_pix_qr_copia_cola_historico": true,
+      "classificacao": "incorreto"
+    },
+    "bundle_CHnRaMxK": {
+      "contem_Verificar_Status": false,
+      "usa_GET_api_payments_pix_status": false,
+      "criacao_pix_qr_copia_cola_historico": true,
+      "classificacao": "correto"
+    }
+  },
+  "resposta_pergunta": "Se produção servir index-CHnRaMxK.js: correto. Se servir index-qIGutT6K.js: incorreto. Verificação ao vivo: inconclusivo.",
+  "referencias": [
+    "docs/relatorios/frontend-player-postmerge-deposit.json",
+    "docs/relatorios/FRONTEND-PLAYER-POSTMERGE-VERIFICACAO-2026-03-06.md"
+  ]
+}

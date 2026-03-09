@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 1 - Gate do código",
+  "result": "PASS",
+  "branch_local": "hotfix/financeiro-v1-stabilize",
+  "commits_contained": {
+    "8f51edc": true,
+    "8c020af": true
+  },
+  "files_present": {
+    "goldeouro-player/src/services/withdrawService.js": true,
+    "goldeouro-player/src/pages/Withdraw.jsx": true,
+    "goldeouro-player/src/config/api.js": true,
+    "goldeouro-player/src/pages/Pagamentos.jsx": true
+  },
+  "contracts": {
+    "withdraw_uses_post_request": true,
+    "withdraw_uses_get_history": true,
+    "pagamentos_no_verificar_status": true,
+    "pagamentos_no_get_pix_status": true
+  }
+}

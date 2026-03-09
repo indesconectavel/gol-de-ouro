@@ -1,0 +1,25 @@
+{
+  "auditoria": "PREFLIGHT FINAL READ-ONLY - Integração da tela de saque no código",
+  "data": "2026-03-06",
+  "Withdraw_jsx": {
+    "usa_requestWithdraw": true,
+    "evidencia": "Linha 106: const result = await requestWithdraw(amount, formData.pixKey, formData.pixType)",
+    "usa_getWithdrawHistory": true,
+    "evidencia_historico": "Linha 63: const result = await getWithdrawHistory()",
+    "import": "Linha 7: import { requestWithdraw, getWithdrawHistory } from '../services/withdrawService'",
+    "createPix_no_submit": true,
+    "getUserPix_no_historico": true
+  },
+  "withdrawService_js": {
+    "requestWithdraw_chama": "POST /api/withdraw/request",
+    "evidencia": "apiClient.post(API_ENDPOINTS.WITHDRAW_REQUEST, { valor, chave_pix, tipo_chave })",
+    "getWithdrawHistory_chama": "GET /api/withdraw/history",
+    "evidencia_historico": "apiClient.get(API_ENDPOINTS.WITHDRAW_HISTORY)"
+  },
+  "config_api_js": {
+    "WITHDRAW_REQUEST": "/api/withdraw/request",
+    "WITHDRAW_HISTORY": "/api/withdraw/history"
+  },
+  "createPix_nao_usado_para_saque": true,
+  "tela_saque_corrigida_no_codigo": true
+}

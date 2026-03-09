@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 6 - Verificação tela de depósito",
+  "result": "PASS",
+  "scope": "código publicado no repositório (build local); produção ainda não atualizada",
+  "checks": {
+    "pix_creation_present": true,
+    "qr_copia_cola_present": true,
+    "historico_present": true,
+    "verificar_status_button_absent": true
+  },
+  "evidence": {
+    "criarPagamentoPix": "apiClient.post('/api/payments/pix/criar', ...)",
+    "pix_code_qr_section": "pagamentoAtual.pix_code || qr_code || pix_copy_paste rendered",
+    "historico": "Histórico de Pagamentos table with pagamentos from PIX_USER",
+    "no_verificar_status": "No 'Verificar Status' string in Pagamentos.jsx",
+    "no_get_pix_status": "No GET /api/payments/pix/status call"
+  },
+  "production_live": false,
+  "note": "Simplificação presente no código/build; deploy Vercel falhou, portanto não está em produção."
+}

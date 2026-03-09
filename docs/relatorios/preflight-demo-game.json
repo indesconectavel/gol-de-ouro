@@ -1,0 +1,32 @@
+{
+  "auditoria": "PRE-FLIGHT READ-ONLY - Carregamento do jogo",
+  "data": "2026-03-06",
+  "pagina": "https://www.goldeouro.lol/game",
+  "verificacoes": {
+    "pagina_responde": true,
+    "sem_login": "redireciona para login (conteúdo de login exibido)",
+    "elementos_esperados_codigo": {
+      "campo": true,
+      "goleiro": true,
+      "bola": true,
+      "botoes_chute": true,
+      "zonas_gol": ["TL", "TR", "C", "BL", "BR"],
+      "valores_aposta": [1, 2, 5, 10]
+    },
+    "chamada_endpoint_chute": {
+      "endpoint": "/api/games/shoot",
+      "metodo": "POST",
+      "body": { "direction": "string", "amount": "number" },
+      "fonte": "goldeouro-player/src/services/gameService.js"
+    }
+  },
+  "observacoes": [
+    "Estrutura do jogo (campo, goleiro, bola, botões) confirmada no código do frontend (GameShoot.jsx).",
+    "Inicialização do jogo chama /api/user/profile e /api/metrics; chute chama /api/games/shoot.",
+    "Erros de console e API não executados (auditoria read-only; sem login não acessa /game logado)."
+  ],
+  "resumo": {
+    "jogo_carregavel_com_login": true,
+    "endpoint_chute_mapeado": true
+  }
+}

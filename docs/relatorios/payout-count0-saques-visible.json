@@ -1,0 +1,81 @@
+{
+  "timestamp_utc": "2026-03-06T12:18:29.688Z",
+  "query_exata_worker": {
+    "statusList": [
+      "pendente",
+      "pending",
+      "processando",
+      "processando"
+    ],
+    "count": 0,
+    "error": null
+  },
+  "variacao_somente_count": {
+    "count": 0,
+    "error": null
+  },
+  "ultimos_20_saques": {
+    "total": 9,
+    "error": null,
+    "amostra": [
+      {
+        "id": "8d11c1a2...",
+        "status": "rejeitado",
+        "created_at": "2026-03-05T18:29:16.436+00:00"
+      },
+      {
+        "id": "ed46001f...",
+        "status": "rejeitado",
+        "created_at": "2026-03-05T18:21:40.984+00:00"
+      },
+      {
+        "id": "da70665c...",
+        "status": "rejeitado",
+        "created_at": "2026-03-05T02:37:03.041+00:00"
+      },
+      {
+        "id": "ecd0045f...",
+        "status": "rejeitado",
+        "created_at": "2026-03-05T01:46:58.093+00:00"
+      },
+      {
+        "id": "ea3e4dec...",
+        "status": "rejeitado",
+        "created_at": "2026-03-04T23:52:06.693+00:00"
+      },
+      {
+        "id": "5cff6e2e...",
+        "status": "rejeitado",
+        "created_at": "2026-03-04T05:01:40.119+00:00"
+      },
+      {
+        "id": "2ad05942...",
+        "status": "rejeitado",
+        "created_at": "2026-03-01T16:15:24.942+00:00"
+      },
+      {
+        "id": "22d323da...",
+        "status": "cancelado",
+        "created_at": "2025-11-11T21:37:54.151+00:00"
+      },
+      {
+        "id": "86b0abe6...",
+        "status": "cancelado",
+        "created_at": "2025-11-08T20:33:22.018+00:00"
+      }
+    ]
+  },
+  "filtro_somente_processando": {
+    "count": 0,
+    "error": null
+  },
+  "filtro_somente_pendente": {
+    "count": 0,
+    "error": null
+  },
+  "select_igual_worker_limit1": {
+    "rows": 0,
+    "error": null,
+    "primeira": null
+  }
+}

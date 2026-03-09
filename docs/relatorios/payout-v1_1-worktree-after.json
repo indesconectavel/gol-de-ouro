@@ -1,0 +1,17 @@
+{
+  "timestamp_utc": "2026-03-06T03:16:00Z",
+  "branch": "hotfix/financeiro-v1-stabilize",
+  "head_short": "0f09038",
+  "head_full": "0f09038dea8363fd986763107bb07c580a748226",
+  "modified": [
+    "docs/relatorios/FINANCEIRO-PATCH-V1-2026-03-05.md",
+    "docs/relatorios/PAYOUT-WORKER-PATCH-V1_1-2026-03-06.md",
+    "docs/relatorios/PAYOUT-WORKER-PATCH-V1_1-CHECKLIST-2026-03-06.md"
+  ],
+  "modified_count": 3,
+  "codigo_modificado_restante": [],
+  "apenas_docs_modificados": true,
+  "untracked_count": 178,
+  "package_json_modificado": false,
+  "confirmacao": "Restaram apenas docs modificados e untracked (docs/relatorios, scripts, controllers e 2 arquivos em src/domain/payout untracked). Nenhum arquivo de código trackado modificado."
+}

@@ -1,0 +1,1447 @@
+{
+  "timestamp_utc": "2026-03-06T11:55:33.534Z",
+  "success": true,
+  "error": null,
+  "metadata": {
+    "saques": {
+      "ultimos_100": [
+        {
+          "id": "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-05T18:29:16.436+00:00",
+          "updated_at": "2026-03-05T18:29:24.521434+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***6949"
+        },
+        {
+          "id": "ed46001f-26fe-4301-b784-d972a7aa1807",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-05T18:21:40.984+00:00",
+          "updated_at": "2026-03-05T18:21:54.186834+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***1392"
+        },
+        {
+          "id": "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-05T02:37:03.041+00:00",
+          "updated_at": "2026-03-05T02:37:11.725759+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***2525"
+        },
+        {
+          "id": "ecd0045f-9e80-425c-b2a3-810977351d6f",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-05T01:46:58.093+00:00",
+          "updated_at": "2026-03-05T01:47:09.513561+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***7489"
+        },
+        {
+          "id": "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-04T23:52:06.693+00:00",
+          "updated_at": "2026-03-04T23:52:34.522598+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***7518"
+        },
+        {
+          "id": "5cff6e2e-b188-4b8c-85e5-080aed465a21",
+          "usuario_id": "4ddf***4ad5",
+          "status": "rejeitado",
+          "created_at": "2026-03-04T05:01:40.119+00:00",
+          "updated_at": "2026-03-04T05:02:08.363411+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "e2e-***-001"
+        },
+        {
+          "id": "2ad05942-3d86-4118-baa4-eb2085b72376",
+          "usuario_id": "4ddf***4ad5",
+          "status": "rejeitado",
+          "created_at": "2026-03-01T16:15:24.942+00:00",
+          "updated_at": "2026-03-03T14:43:12.26758+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "13d9***2855"
+        },
+        {
+          "id": "22d323da-aa71-469a-bc50-2af8331293a3",
+          "usuario_id": "632b***1c35",
+          "status": "cancelado",
+          "created_at": "2025-11-11T21:37:54.151+00:00",
+          "updated_at": "2026-02-02T20:51:14.963483+00:00",
+          "processed_at": "2026-02-02T20:51:14.963483+00:00",
+          "transacao_id": null,
+          "valor": 5,
+          "net_amount": 5,
+          "correlation_id": null
+        },
+        {
+          "id": "86b0abe6-c9ff-4452-9bc6-cdfa478c7d27",
+          "usuario_id": "632b***1c35",
+          "status": "cancelado",
+          "created_at": "2025-11-08T20:33:22.018+00:00",
+          "updated_at": "2026-02-02T20:51:14.963483+00:00",
+          "processed_at": "2026-02-02T20:51:14.963483+00:00",
+          "transacao_id": null,
+          "valor": 5,
+          "net_amount": 5,
+          "correlation_id": null
+        }
+      ],
+      "processando": [
+        {
+          "id": "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-04T23:52:06.693+00:00",
+          "updated_at": "2026-03-04T23:52:34.522598+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***7518"
+        },
+        {
+          "id": "ecd0045f-9e80-425c-b2a3-810977351d6f",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-05T01:46:58.093+00:00",
+          "updated_at": "2026-03-05T01:47:09.513561+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***7489"
+        },
+        {
+          "id": "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-05T02:37:03.041+00:00",
+          "updated_at": "2026-03-05T02:37:11.725759+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***2525"
+        },
+        {
+          "id": "ed46001f-26fe-4301-b784-d972a7aa1807",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-05T18:21:40.984+00:00",
+          "updated_at": "2026-03-05T18:21:54.186834+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***1392"
+        },
+        {
+          "id": "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd",
+          "usuario_id": "4ddf***4ad5",
+          "status": "processando",
+          "created_at": "2026-03-05T18:29:16.436+00:00",
+          "updated_at": "2026-03-05T18:29:24.521434+00:00",
+          "processed_at": null,
+          "transacao_id": null,
+          "valor": 10,
+          "net_amount": 8,
+          "correlation_id": "hotf***6949"
+        }
+      ],
+      "total_ultimos_100": 9,
+      "total_processando": 5
+    },
+    "pagamentos_pix": {
+      "total": 100,
+      "resumo_external_ids": 100,
+      "error": null,
+      "ultimos_100_redigidos": [
+        {
+          "id": "1be9***ab6f",
+          "external_id": "1488***7698",
+          "payment_id": "1488***7698",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-03-04T23:56:49.22717+00:00"
+        },
+        {
+          "id": "87ee***0eeb",
+          "external_id": "1486***9270",
+          "payment_id": "1486***9270",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2026-03-03T20:32:29.162628+00:00"
+        },
+        {
+          "id": "eb3c***34d1",
+          "external_id": "1475***4671",
+          "payment_id": "1475***4671",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-02-28T20:11:21.036773+00:00"
+        },
+        {
+          "id": "4c01***ea7a",
+          "external_id": "1482***6552",
+          "payment_id": "1482***6552",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-02-28T18:54:53.03266+00:00"
+        },
+        {
+          "id": "fcb9***9db8",
+          "external_id": "1482***1792",
+          "payment_id": "1482***1792",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-02-28T18:22:02.693785+00:00"
+        },
+        {
+          "id": "5d1f***251d",
+          "external_id": "1475***2021",
+          "payment_id": "1475***2021",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-02-28T17:34:37.438965+00:00"
+        },
+        {
+          "id": "77ff***0b14",
+          "external_id": "1475***1299",
+          "payment_id": "1475***1299",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-02-28T17:27:12.506573+00:00"
+        },
+        {
+          "id": "1d8f***9d7c",
+          "external_id": "1440***8019",
+          "payment_id": "1440***8019",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-02-04T01:12:24.356255+00:00"
+        },
+        {
+          "id": "ac47***6e56",
+          "external_id": "1440***8681",
+          "payment_id": "1440***8681",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-02-03T23:25:06.329662+00:00"
+        },
+        {
+          "id": "3951***301c",
+          "external_id": "1440***6068",
+          "payment_id": "1440***6068",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-29T21:39:52.159366+00:00"
+        },
+        {
+          "id": "3266***13fa",
+          "external_id": "1440***0604",
+          "payment_id": "1440***0604",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-29T21:29:00.612321+00:00"
+        },
+        {
+          "id": "a339***2084",
+          "external_id": "1433***9771",
+          "payment_id": "1433***9771",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2026-01-29T21:24:16.792539+00:00"
+        },
+        {
+          "id": "b278***18a4",
+          "external_id": "1430***0461",
+          "payment_id": "1430***0461",
+          "usuario_id": "eab3***ff9d",
+          "valor": 5,
+          "status": "pending",
+          "created_at": "2026-01-27T15:39:35.785021+00:00"
+        },
+        {
+          "id": "4e12***2f0e",
+          "external_id": "1430***9737",
+          "payment_id": "1430***9737",
+          "usuario_id": "eab3***ff9d",
+          "valor": 30,
+          "status": "pending",
+          "created_at": "2026-01-27T15:39:25.779719+00:00"
+        },
+        {
+          "id": "6cdc***e88a",
+          "external_id": "1430***2371",
+          "payment_id": "1430***2371",
+          "usuario_id": "eab3***ff9d",
+          "valor": 11,
+          "status": "pending",
+          "created_at": "2026-01-27T15:39:18.000503+00:00"
+        },
+        {
+          "id": "9eb0***5532",
+          "external_id": "1430***7997",
+          "payment_id": "1430***7997",
+          "usuario_id": "eab3***ff9d",
+          "valor": 5,
+          "status": "pending",
+          "created_at": "2026-01-27T15:39:10.562933+00:00"
+        },
+        {
+          "id": "4f06***e724",
+          "external_id": "1430***5745",
+          "payment_id": "1430***5745",
+          "usuario_id": "eab3***ff9d",
+          "valor": 5,
+          "status": "pending",
+          "created_at": "2026-01-27T15:38:50.503465+00:00"
+        },
+        {
+          "id": "1c02***1cde",
+          "external_id": "1430***5749",
+          "payment_id": "1430***5749",
+          "usuario_id": "eab3***ff9d",
+          "valor": 5,
+          "status": "pending",
+          "created_at": "2026-01-27T15:38:45.804292+00:00"
+        },
+        {
+          "id": "330e***5d86",
+          "external_id": "1430***9791",
+          "payment_id": "1430***9791",
+          "usuario_id": "3aa9***7df6",
+          "valor": 15,
+          "status": "pending",
+          "created_at": "2026-01-27T15:12:39.622032+00:00"
+        },
+        {
+          "id": "53f2***9370",
+          "external_id": "1430***5657",
+          "payment_id": "1430***5657",
+          "usuario_id": "3aa9***7df6",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2026-01-27T15:08:58.868833+00:00"
+        },
+        {
+          "id": "ddf9***4c6c",
+          "external_id": "1430***8637",
+          "payment_id": "1430***8637",
+          "usuario_id": "3aa9***7df6",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-27T15:08:52.899107+00:00"
+        },
+        {
+          "id": "b8c7***8c29",
+          "external_id": "1430***9500",
+          "payment_id": "1430***9500",
+          "usuario_id": "e553***8dcf",
+          "valor": 5,
+          "status": "approved",
+          "created_at": "2026-01-22T14:36:18.389393+00:00"
+        },
+        {
+          "id": "f55b***057a",
+          "external_id": "1430***4106",
+          "payment_id": "1430***4106",
+          "usuario_id": "35bd***81df",
+          "valor": 13,
+          "status": "pending",
+          "created_at": "2026-01-22T01:34:16.633566+00:00"
+        },
+        {
+          "id": "c97e***1591",
+          "external_id": "1430***0592",
+          "payment_id": "1430***0592",
+          "usuario_id": "35bd***81df",
+          "valor": 13,
+          "status": "pending",
+          "created_at": "2026-01-22T01:30:44.126356+00:00"
+        },
+        {
+          "id": "64ec***fda2",
+          "external_id": "1423***7417",
+          "payment_id": "1423***7417",
+          "usuario_id": "35bd***81df",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-22T01:29:37.107528+00:00"
+        },
+        {
+          "id": "e693***e542",
+          "external_id": "1430***6882",
+          "payment_id": "1430***6882",
+          "usuario_id": "35bd***81df",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2026-01-22T01:26:59.70513+00:00"
+        },
+        {
+          "id": "af29***3697",
+          "external_id": "1423***7301",
+          "payment_id": "1423***7301",
+          "usuario_id": "35bd***81df",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-22T01:21:22.811219+00:00"
+        },
+        {
+          "id": "b75c***35cb",
+          "external_id": "1423***9451",
+          "payment_id": "1423***9451",
+          "usuario_id": "5d36***afdd",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2026-01-22T00:52:41.9717+00:00"
+        },
+        {
+          "id": "0f0a***8f0f",
+          "external_id": "1430***2922",
+          "payment_id": "1430***2922",
+          "usuario_id": "5d36***afdd",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-22T00:52:38.461702+00:00"
+        },
+        {
+          "id": "62b3***3472",
+          "external_id": "1423***6881",
+          "payment_id": "1423***6881",
+          "usuario_id": "5d36***afdd",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-22T00:48:33.59369+00:00"
+        },
+        {
+          "id": "a4a0***ba36",
+          "external_id": "1423***4693",
+          "payment_id": "1423***4693",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 1,
+          "status": "approved",
+          "created_at": "2026-01-21T21:40:28.273331+00:00"
+        },
+        {
+          "id": "e3d8***af2b",
+          "external_id": "1428***1700",
+          "payment_id": "1428***1700",
+          "usuario_id": "7478***3d3a",
+          "valor": 25,
+          "status": "pending",
+          "created_at": "2026-01-20T22:12:40.613141+00:00"
+        },
+        {
+          "id": "4b16***f112",
+          "external_id": "1421***5707",
+          "payment_id": "1421***5707",
+          "usuario_id": "7478***3d3a",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-20T22:12:34.554738+00:00"
+        },
+        {
+          "id": "76e5***24d0",
+          "external_id": "1428***8746",
+          "payment_id": "1428***8746",
+          "usuario_id": "7478***3d3a",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-20T22:12:31.082927+00:00"
+        },
+        {
+          "id": "2161***6779",
+          "external_id": "1419***4653",
+          "payment_id": "1419***4653",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 1,
+          "status": "approved",
+          "created_at": "2026-01-19T15:36:40.517474+00:00"
+        },
+        {
+          "id": "175c***da0f",
+          "external_id": "1424***8506",
+          "payment_id": "1424***8506",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-17T14:30:09.58697+00:00"
+        },
+        {
+          "id": "d51a***bc79",
+          "external_id": "1424***2404",
+          "payment_id": "1424***2404",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-17T14:29:31.87681+00:00"
+        },
+        {
+          "id": "b151***d1ab",
+          "external_id": "1417***1331",
+          "payment_id": "1417***1331",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-17T01:42:15.522508+00:00"
+        },
+        {
+          "id": "0ba5***3bd9",
+          "external_id": "1423***2902",
+          "payment_id": "1423***2902",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 1,
+          "status": "approved",
+          "created_at": "2026-01-16T20:14:11.642891+00:00"
+        },
+        {
+          "id": "63a4***4812",
+          "external_id": "1416***0661",
+          "payment_id": "1416***0661",
+          "usuario_id": "5974***8b8d",
+          "valor": 1,
+          "status": "approved",
+          "created_at": "2026-01-16T14:02:31.562184+00:00"
+        },
+        {
+          "id": "9113***f0e2",
+          "external_id": "1422***7340",
+          "payment_id": "1422***7340",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 1,
+          "status": "approved",
+          "created_at": "2026-01-16T12:41:23.297301+00:00"
+        },
+        {
+          "id": "1364***bb13",
+          "external_id": "1408***1496",
+          "payment_id": "1408***1496",
+          "usuario_id": "91d1***1eb8",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2026-01-06T16:04:24.633032+00:00"
+        },
+        {
+          "id": "7353***5c0e",
+          "external_id": "1408***1086",
+          "payment_id": "1408***1086",
+          "usuario_id": "91d1***1eb8",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-06T16:04:20.723001+00:00"
+        },
+        {
+          "id": "4761***f8d2",
+          "external_id": "1399***0129",
+          "payment_id": "1399***0129",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2026-01-04T19:27:11.048331+00:00"
+        },
+        {
+          "id": "60a2***9c89",
+          "external_id": "1380***6541",
+          "payment_id": "1380***6541",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 25,
+          "status": "pending",
+          "created_at": "2025-12-20T01:11:04.500996+00:00"
+        },
+        {
+          "id": "45cc***e6b3",
+          "external_id": "1380***5619",
+          "payment_id": "1380***5619",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2025-12-20T01:05:46.59172+00:00"
+        },
+        {
+          "id": "b325***5004",
+          "external_id": "1386***4736",
+          "payment_id": "1386***4736",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2025-12-19T15:44:04.844428+00:00"
+        },
+        {
+          "id": "fa5b***4f17",
+          "external_id": "1386***4392",
+          "payment_id": "1386***4392",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2025-12-19T15:44:03.602903+00:00"
+        },
+        {
+          "id": "87d5***5dbe",
+          "external_id": "1385***0220",
+          "payment_id": "1385***0220",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2025-12-19T01:21:27.378217+00:00"
+        },
+        {
+          "id": "ebd3***e33d",
+          "external_id": "1385***7308",
+          "payment_id": "1385***7308",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2025-12-19T01:21:26.218609+00:00"
+        },
+        {
+          "id": "af2e***3a19",
+          "external_id": "1378***7381",
+          "payment_id": "1378***7381",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2025-12-18T23:00:37.447251+00:00"
+        },
+        {
+          "id": "33d7***2145",
+          "external_id": "1378***7605",
+          "payment_id": "1378***7605",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2025-12-18T23:00:36.245436+00:00"
+        },
+        {
+          "id": "1be3***47ed",
+          "external_id": "depo***8587",
+          "payment_id": "1366***3793",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2025-12-10T16:22:28.803351+00:00"
+        },
+        {
+          "id": "943f***35c5",
+          "external_id": "depo***7057",
+          "payment_id": "1366***1121",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "pending",
+          "created_at": "2025-12-10T16:22:07.088319+00:00"
+        },
+        {
+          "id": "ab41***b000",
+          "external_id": "depo***9484",
+          "payment_id": "1366***2813",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2025-12-10T14:25:19.506368+00:00"
+        },
+        {
+          "id": "d1f7***c4a4",
+          "external_id": "depo***6057",
+          "payment_id": "1372***7898",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "expired",
+          "created_at": "2025-12-10T14:24:06.114397+00:00"
+        },
+        {
+          "id": "03ea***e72e",
+          "external_id": "depo***7581",
+          "payment_id": "1372***5404",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "expired",
+          "created_at": "2025-12-10T14:22:27.618418+00:00"
+        },
+        {
+          "id": "d86f***f949",
+          "external_id": "depo***3703",
+          "payment_id": "1366***8351",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "expired",
+          "created_at": "2025-12-10T14:19:03.729774+00:00"
+        },
+        {
+          "id": "0332***7a1c",
+          "external_id": "depo***2428",
+          "payment_id": "1372***0248",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 10,
+          "status": "approved",
+          "created_at": "2025-12-10T14:07:52.470217+00:00"
+        },
+        {
+          "id": "2899***58dd",
+          "external_id": "depo***5126",
+          "payment_id": "1366***3799",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 5,
+          "status": "expired",
+          "created_at": "2025-12-10T13:51:35.159355+00:00"
+        },
+        {
+          "id": "9937***93f8",
+          "external_id": "depo***1030",
+          "payment_id": "1366***1409",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 5,
+          "status": "expired",
+          "created_at": "2025-12-10T13:16:21.06529+00:00"
+        },
+        {
+          "id": "4441***6b26",
+          "external_id": "depo***8718",
+          "payment_id": "1366***5799",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 5,
+          "status": "expired",
+          "created_at": "2025-12-10T11:51:18.7567+00:00"
+        },
+        {
+          "id": "f75a***dca8",
+          "external_id": "depo***5052",
+          "payment_id": "1366***6195",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 5,
+          "status": "expired",
+          "created_at": "2025-12-10T11:15:05.101731+00:00"
+        },
+        {
+          "id": "c894***bb7a",
+          "external_id": "depo***3772",
+          "payment_id": "1366***7105",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 5,
+          "status": "expired",
+          "created_at": "2025-12-10T10:27:53.806102+00:00"
+        },
+        {
+          "id": "e7e8***42d9",
+          "external_id": "depo***3168",
+          "payment_id": "1372***9762",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 5,
+          "status": "expired",
+          "created_at": "2025-12-10T10:16:23.189872+00:00"
+        },
+        {
+          "id": "2a66***b452",
+          "external_id": "depo***0231",
+          "payment_id": "1365***4639",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 5,
+          "status": "approved",
+          "created_at": "2025-12-10T00:29:10.261601+00:00"
+        },
+        {
+          "id": "a766***dce4",
+          "external_id": "depo***7357",
+          "payment_id": "1372***3912",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 5,
+          "status": "approved",
+          "created_at": "2025-12-10T00:12:47.390167+00:00"
+        },
+        {
+          "id": "9114***7413",
+          "external_id": "depo***0534",
+          "payment_id": "1372***6026",
+          "usuario_id": "4ddf***4ad5",
+          "valor": 5,
+          "status": "approved",
+          "created_at": "2025-12-09T23:22:20.569259+00:00"
+        },
+        {
+          "id": "c087***7c70",
+          "external_id": "depo***5907",
+          "payment_id": "1357***7887",
+          "usuario_id": "75b3***e99f",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:59:05.928901+00:00"
+        },
+        {
+          "id": "3798***8f63",
+          "external_id": "depo***6219",
+          "payment_id": "1357***3949",
+          "usuario_id": "04e5***b01e",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:58:46.258132+00:00"
+        },
+        {
+          "id": "7ce9***836b",
+          "external_id": "depo***4671",
+          "payment_id": "1357***5853",
+          "usuario_id": "187f***d25a",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:58:44.726912+00:00"
+        },
+        {
+          "id": "11d2***7543",
+          "external_id": "depo***6579",
+          "payment_id": "1357***8087",
+          "usuario_id": "fe9a***8168",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:58:16.60846+00:00"
+        },
+        {
+          "id": "7c56***8d91",
+          "external_id": "depo***2506",
+          "payment_id": "1363***3592",
+          "usuario_id": "5b59***cf07",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:57:52.544787+00:00"
+        },
+        {
+          "id": "2d63***d277",
+          "external_id": "depo***1101",
+          "payment_id": "1357***9421",
+          "usuario_id": "ae5c***bb98",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:57:51.155137+00:00"
+        },
+        {
+          "id": "a17c***8d98",
+          "external_id": "depo***4375",
+          "payment_id": "1363***7168",
+          "usuario_id": "0b94***8ccf",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:33:14.429997+00:00"
+        },
+        {
+          "id": "88c1***3b7a",
+          "external_id": "depo***3626",
+          "payment_id": "1363***6982",
+          "usuario_id": "fc2b***6963",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:32:23.65878+00:00"
+        },
+        {
+          "id": "a4a0***c4ac",
+          "external_id": "depo***7299",
+          "payment_id": "1363***5204",
+          "usuario_id": "525a***ec88",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:31:27.385078+00:00"
+        },
+        {
+          "id": "2af6***1be6",
+          "external_id": "depo***5160",
+          "payment_id": "1363***4538",
+          "usuario_id": "ce97***6d7e",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:27:25.192218+00:00"
+        },
+        {
+          "id": "ac98***de99",
+          "external_id": "depo***0749",
+          "payment_id": "1363***8586",
+          "usuario_id": "46a3***052b",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:26:40.811264+00:00"
+        },
+        {
+          "id": "33e3***5a8b",
+          "external_id": "depo***8139",
+          "payment_id": "1363***8174",
+          "usuario_id": "3168***5213",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:22:18.405122+00:00"
+        },
+        {
+          "id": "b99d***0012",
+          "external_id": "depo***0330",
+          "payment_id": "1357***8547",
+          "usuario_id": "8e40***3418",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:03:40.367301+00:00"
+        },
+        {
+          "id": "701b***fa5e",
+          "external_id": "depo***5707",
+          "payment_id": "1357***8631",
+          "usuario_id": "2b12***c674",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T20:03:35.757859+00:00"
+        },
+        {
+          "id": "7319***8c6e",
+          "external_id": "depo***1237",
+          "payment_id": "1357***4161",
+          "usuario_id": "a251***2e14",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T19:59:21.284375+00:00"
+        },
+        {
+          "id": "99d5***630b",
+          "external_id": "depo***9796",
+          "payment_id": "1363***5792",
+          "usuario_id": "f009***a96c",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T19:54:49.829669+00:00"
+        },
+        {
+          "id": "2c22***8ccd",
+          "external_id": "depo***8141",
+          "payment_id": "1363***7096",
+          "usuario_id": "cde4***4cdb",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T19:49:08.188909+00:00"
+        },
+        {
+          "id": "e385***c97c",
+          "external_id": "depo***0558",
+          "payment_id": "1363***5564",
+          "usuario_id": "af04***188c",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T19:48:50.591+00:00"
+        },
+        {
+          "id": "162b***274a",
+          "external_id": "depo***7118",
+          "payment_id": "1363***9290",
+          "usuario_id": "9d94***0065",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T19:46:17.342098+00:00"
+        },
+        {
+          "id": "ebf8***11cb",
+          "external_id": "depo***2144",
+          "payment_id": "1363***2486",
+          "usuario_id": "32f0***1473",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-03T18:57:52.214865+00:00"
+        },
+        {
+          "id": "2855***8a43",
+          "external_id": "depo***7567",
+          "payment_id": "1354***4499",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.597469+00:00"
+        },
+        {
+          "id": "8c5d***83fc",
+          "external_id": "depo***7566",
+          "payment_id": "1354***3963",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.596917+00:00"
+        },
+        {
+          "id": "2470***d1dd",
+          "external_id": "depo***7540",
+          "payment_id": "1354***5945",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.56961+00:00"
+        },
+        {
+          "id": "7115***d00c",
+          "external_id": "depo***7538",
+          "payment_id": "1360***0964",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.553741+00:00"
+        },
+        {
+          "id": "79df***9b29",
+          "external_id": "depo***7534",
+          "payment_id": "1360***7138",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.550367+00:00"
+        },
+        {
+          "id": "2cc5***76a5",
+          "external_id": "depo***7311",
+          "payment_id": "1360***8730",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.335338+00:00"
+        },
+        {
+          "id": "e348***c59d",
+          "external_id": "depo***7308",
+          "payment_id": "1360***6718",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.322597+00:00"
+        },
+        {
+          "id": "4364***ab43",
+          "external_id": "depo***7267",
+          "payment_id": "1354***5239",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.286835+00:00"
+        },
+        {
+          "id": "1c4a***6b41",
+          "external_id": "depo***7255",
+          "payment_id": "1354***9991",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.271207+00:00"
+        },
+        {
+          "id": "7984***1965",
+          "external_id": "depo***7205",
+          "payment_id": "1354***9989",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.254757+00:00"
+        },
+        {
+          "id": "8986***ce7f",
+          "external_id": "depo***7210",
+          "payment_id": "1360***4254",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.242003+00:00"
+        },
+        {
+          "id": "d2bc***8b6a",
+          "external_id": "depo***7214",
+          "payment_id": "1360***1246",
+          "usuario_id": "82fb***38a3",
+          "valor": 1,
+          "status": "expired",
+          "created_at": "2025-12-01T19:32:37.234025+00:00"
+        }
+      ]
+    },
+    "ledger_financeiro": {
+      "total": 0,
+      "campos_detectados": "nenhum",
+      "ultimos_100_redigidos": []
+    },
+    "transacoes": {
+      "total": 40,
+      "error": null,
+      "ultimos_100_redigidos": [
+        {
+          "id": "87bd***a928",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T16:17:02.104494+00:00",
+          "referencia": null
+        },
+        {
+          "id": "0413***e370",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T16:16:59.799894+00:00",
+          "referencia": null
+        },
+        {
+          "id": "bf84***1256",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T16:16:57.466767+00:00",
+          "referencia": null
+        },
+        {
+          "id": "aeb0***bf47",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T16:16:54.915146+00:00",
+          "referencia": null
+        },
+        {
+          "id": "64f6***eca0",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:16.763241+00:00",
+          "referencia": null
+        },
+        {
+          "id": "8209***9576",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:16.593587+00:00",
+          "referencia": null
+        },
+        {
+          "id": "eead***3a93",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:16.436348+00:00",
+          "referencia": null
+        },
+        {
+          "id": "deb6***38a5",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:16.289614+00:00",
+          "referencia": null
+        },
+        {
+          "id": "9761***07fd",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:16.136407+00:00",
+          "referencia": null
+        },
+        {
+          "id": "d4ea***761f",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:15.984907+00:00",
+          "referencia": null
+        },
+        {
+          "id": "40c6***60e2",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:15.815227+00:00",
+          "referencia": null
+        },
+        {
+          "id": "89cf***be12",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:15.659574+00:00",
+          "referencia": null
+        },
+        {
+          "id": "d40a***f56f",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:15.340016+00:00",
+          "referencia": null
+        },
+        {
+          "id": "2d8c***9afa",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:52:14.973547+00:00",
+          "referencia": null
+        },
+        {
+          "id": "37cc***4f9a",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:44.584809+00:00",
+          "referencia": null
+        },
+        {
+          "id": "5651***c2de",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:44.451778+00:00",
+          "referencia": null
+        },
+        {
+          "id": "c9af***1054",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:44.306115+00:00",
+          "referencia": null
+        },
+        {
+          "id": "c498***ea38",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:44.15624+00:00",
+          "referencia": null
+        },
+        {
+          "id": "4299***ada9",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:44.014786+00:00",
+          "referencia": null
+        },
+        {
+          "id": "5668***8617",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:43.861448+00:00",
+          "referencia": null
+        },
+        {
+          "id": "ab2f***7ad4",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:43.72974+00:00",
+          "referencia": null
+        },
+        {
+          "id": "1dde***469d",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:43.581869+00:00",
+          "referencia": null
+        },
+        {
+          "id": "d7cf***473e",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:43.387247+00:00",
+          "referencia": null
+        },
+        {
+          "id": "402d***20ff",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:27:43.22585+00:00",
+          "referencia": null
+        },
+        {
+          "id": "9f4d***58b1",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:22:27.826538+00:00",
+          "referencia": null
+        },
+        {
+          "id": "9ed8***7417",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:54.508178+00:00",
+          "referencia": null
+        },
+        {
+          "id": "9fe2***c6dc",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:54.344601+00:00",
+          "referencia": null
+        },
+        {
+          "id": "c6f0***ba33",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:54.105227+00:00",
+          "referencia": null
+        },
+        {
+          "id": "28ed***ad3e",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:53.962792+00:00",
+          "referencia": null
+        },
+        {
+          "id": "ed49***d703",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:53.811806+00:00",
+          "referencia": null
+        },
+        {
+          "id": "4af6***ea55",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:53.659294+00:00",
+          "referencia": null
+        },
+        {
+          "id": "345a***3855",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:53.505191+00:00",
+          "referencia": null
+        },
+        {
+          "id": "3763***0bfd",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:53.353861+00:00",
+          "referencia": null
+        },
+        {
+          "id": "53ea***e73e",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:51.003845+00:00",
+          "referencia": null
+        },
+        {
+          "id": "df3c***89f7",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -1,
+          "created_at": "2025-12-10T14:21:48.671987+00:00",
+          "referencia": null
+        },
+        {
+          "id": "443a***8c77",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -5,
+          "created_at": "2025-12-10T13:51:35.355467+00:00",
+          "referencia": null
+        },
+        {
+          "id": "bea7***20cf",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -5,
+          "created_at": "2025-12-10T13:16:21.216788+00:00",
+          "referencia": null
+        },
+        {
+          "id": "f95c***0fda",
+          "usuario_id": "4ddf***4ad5",
+          "tipo": "debito",
+          "valor": -5,
+          "created_at": "2025-12-10T13:15:21.626403+00:00",
+          "referencia": null
+        },
+        {
+          "id": "fb55***5af3",
+          "usuario_id": "8304***62ee",
+          "tipo": "deposito",
+          "valor": 50,
+          "created_at": "2025-12-04T22:04:39.626809+00:00",
+          "referencia": null
+        },
+        {
+          "id": "c925***ddc6",
+          "usuario_id": "8304***62ee",
+          "tipo": "deposito",
+          "valor": 50,
+          "created_at": "2025-12-04T22:03:30.987106+00:00",
+          "referencia": null
+        }
+      ]
+    },
+    "usuarios_afetados": {
+      "total": 1,
+      "ids": [
+        "4ddf***4ad5"
+      ],
+      "saldos": [
+        {
+          "id": "4ddf***4ad5",
+          "saldo": 153
+        }
+      ]
+    },
+    "ids_criticos_saques_processando": [
+      "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+      "ecd0045f-9e80-425c-b2a3-810977351d6f",
+      "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+      "ed46001f-26fe-4301-b784-d972a7aa1807",
+      "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd"
+    ],
+    "totais": {
+      "saques_ultimos_100": 9,
+      "saques_processando": 5,
+      "ledger_ultimos_100": 0,
+      "transacoes_ultimos_100": 40,
+      "usuarios_afetados": 1
+    }
+  }
+}

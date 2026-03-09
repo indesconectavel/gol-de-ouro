@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-03-06",
+  "audit": "READ-ONLY fingerprint /game produção",
+  "url": "https://www.goldeouro.lol/game",
+  "status_http": 200,
+  "headers": {
+    "Server": "Vercel",
+    "Content-Type": "text/html; charset=utf-8",
+    "X-Vercel-Id": "gru1::4n5vd-1772830122029-dd830a6a02b0",
+    "X-Vercel-Cache": "HIT",
+    "Cache-Control": "no-cache, no-store, must-revalidate",
+    "Content-Length": 9056,
+    "ETag": "\"66931a746a65ebfbf91afb98d2f12186\"",
+    "Last-Modified": "Wed, 04 Mar 2026 22:17:26 GMT",
+    "Content-Security-Policy": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; img-src 'self' data: blob: https:; connect-src 'self' https: wss:; style-src 'self' 'unsafe-inline' https:; font-src 'self' data: https:;",
+    "Strict-Transport-Security": "max-age=63072000",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "X-Xss-Protection": "1; mode=block"
+  },
+  "html_length": 9056,
+  "sha256_html": "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0",
+  "bundle_js": "/assets/index-qIGutT6K.js",
+  "bundle_css": "/assets/index-lDOJDUAS.css",
+  "scripts_in_html": [
+    "/sw-kill-global.js?v=20250124135000",
+    "/force-update.js?v=20250124135000",
+    "/assets/index-qIGutT6K.js",
+    "/registerSW.js"
+  ],
+  "cross_reference": "Consistente com game-fingerprint.json anterior (mesmo bundle e sha256 para /game)."
+}

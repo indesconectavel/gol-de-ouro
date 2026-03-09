@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-03-06",
+  "audit": "READ-ONLY - Causa raiz da falha do check",
+  "failure_cause": "policy_ci",
+  "explanation": "O job falha porque o workflow exige que 'npm audit --audit-level=moderate' termine com exit code 0. O projeto já possui vulnerabilidades reportadas (serialize-javascript, tar) em dependências de desenvolvimento; o npm audit retorna não zero e o step não tem '|| true' nem continue-on-error.",
+  "pr_introduced_problem": false,
+  "evidence": {
+    "pr_commits_touched": "Apenas goldeouro-player/src (Withdraw.jsx, Pagamentos.jsx, withdrawService.js, api.js) e docs. Nenhum commit do PR altera package.json nem package-lock.json.",
+    "package_json_unchanged": "O PR release/frontend-player-demo-2026-03-06 foi criado por cherry-pick de 258b0cd, 8f51edc, 8c020af sobre main; nenhum desses commits modifica dependências.",
+    "vulnerabilities_pre_existing": "serialize-javascript e tar vêm de workbox-build e @capacitor/cli, presentes no lockfile e no projeto antes do PR."
+  },
+  "conclusion": "A falha é causada pela política de CI (bloquear em npm audit) aplicada a dependências antigas já existentes no repositório. O PR de saque/depósito NÃO introduziu essa falha."
+}

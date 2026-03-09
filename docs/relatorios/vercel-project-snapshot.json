@@ -1,0 +1,14 @@
+{
+  "timestamp_utc": "2026-03-06T01:03:00Z",
+  "source": "vercel projects ls + vercel domains ls (goldeouro-admins-projects)",
+  "projects": [
+    {"name": "goldeouro-player", "latest_production_url": "https://app.goldeouro.lol", "updated": "1d", "node_version": "22.x"},
+    {"name": "goldeouro-backend", "latest_production_url": "https://goldeouro-backend.vercel.app", "updated": "1d", "node_version": "24.x"},
+    {"name": "indes", "latest_production_url": "--", "updated": "65d", "node_version": "24.x"},
+    {"name": "goldeouro-admin", "latest_production_url": "https://admin.goldeouro.lol", "updated": "76d", "node_version": "22.x"}
+  ],
+  "domains": [
+    {"domain": "goldeouro.lol", "registrar": "Third Party", "nameservers": "Vercel", "creator": "indesconectavel", "age_days": 183}
+  ],
+  "note": "www.goldeouro.lol e app.goldeouro.lol são prováveis alias/redirects do domínio raiz goldeouro.lol no projeto goldeouro-player. Fingerprint foi feito em https://www.goldeouro.lol/game e /dashboard."
+}

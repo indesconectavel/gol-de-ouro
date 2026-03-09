@@ -1,0 +1,12 @@
+{
+  "timestamp_utc": "2026-03-06T15:05:00.000Z",
+  "app": "goldeouro-backend-v2",
+  "image_before": "goldeouro-backend-v2:deployment-01KK1PE74AB96KX79SBJR92XZ7",
+  "machines_summary": [
+    {"process": "app", "id": "2874551a105768", "version": "314", "state": "stopped"},
+    {"process": "app", "id": "e82d445ae76178", "version": "313", "state": "started", "checks": "1 passing"},
+    {"process": "payout_worker", "id": "e82794da791108", "version": "314", "state": "stopped"}
+  ],
+  "releases_note": "v314 failed; v313 running on one app machine; v305 complete (rollback target)",
+  "rollback_target": "v305"
+}

@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 2 - Estratégia de publicação",
+  "result": "PASS",
+  "method": "Git conectado ao Vercel (push para branch de produção)",
+  "branch_production": "main",
+  "evidence": "origin/HEAD -> origin/main; .github/workflows/frontend-deploy.yml on push branches: [main, dev], production deploy if main",
+  "plan": "Atualizar main local com origin/main; cherry-pick 258b0cd (withdraw fix), 8f51edc (docs), 8c020af (depósito demo); push main para origin"
+}

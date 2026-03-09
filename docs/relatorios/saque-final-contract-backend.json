@@ -1,0 +1,70 @@
+{
+  "auditoria": "SAQUE FINAL CONTRACT CHECK - Contrato do backend (read-only)",
+  "data": "2026-03-06",
+  "POST_api_withdraw_request": {
+    "campos_esperados_body": ["valor", "chave_pix", "tipo_chave"],
+    "fonte": "server-fly.js: const { valor, chave_pix, tipo_chave } = req.body",
+    "validacoes": [
+      "PixValidator.validateWithdrawData({ amount: valor, pixKey: chave_pix, pixType: tipo_chave, userId })",
+      "Valor: PixValidator aceita 0.50 a 1000.00; em seguida server aplica minWithdrawAmount = 10.00",
+      "Valor mínimo efetivo: R$ 10.00",
+      "Saldo: parseFloat(usuario.saldo) >= requestedAmount",
+      "Saque pendente: não pode ter outro saque com status pendente/pending",
+      "Valor líquido: requestedAmount - taxa > 0 (taxa 2.00)"
+    ],
+    "resposta_sucesso": {
+      "status": 201,
+      "body": {
+        "success": true,
+        "message": "Saque solicitado com sucesso",
+        "data": {
+          "id": "uuid",
+          "amount": "number",
+          "fee": "number",
+          "net_amount": "number",
+          "pix_key": "string",
+          "pix_type": "string",
+          "status": "pending",
+          "created_at": "ISO string",
+          "correlation_id": "string"
+        }
+      }
+    },
+    "respostas_erro": [
+      { "status": 400, "message": "validation.error (PixValidator)" },
+      { "status": 400, "message": "Valor mínimo para saque é R$ 10.00" },
+      { "status": 400, "message": "Saldo insuficiente" },
+      { "status": 400, "message": "Valor líquido inválido para saque" },
+      { "status": 409, "message": "Já existe um saque pendente em processamento" },
+      { "status": 409, "message": "Saldo atualizado recentemente. Tente novamente." },
+      { "status": 503, "message": "Sistema temporariamente indisponível" },
+      { "status": 500, "message": "Erro interno do servidor" }
+    ]
+  },
+  "GET_api_withdraw_history": {
+    "resposta_sucesso": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "data": {
+          "saques": [
+            {
+              "id": "uuid",
+              "valor": "number",
+              "amount": "number",
+              "fee": "number | null",
+              "net_amount": "number | null",
+              "status": "string (ex.: pendente, pending, completed, rejected)",
+              "pix_key": "string | null",
+              "pix_type": "string | null",
+              "created_at": "ISO string"
+            }
+          ],
+          "total": "number"
+        }
+      }
+    },
+    "ordenacao": "created_at descending, limit 50"
+  },
+  "PixValidator_tipos_chave": ["cpf", "email", "phone", "random"]
+}

@@ -1,0 +1,12 @@
+{
+  "timestamp_utc": "2026-03-06T15:13:45.123Z",
+  "usuarios_afetados_count": 1,
+  "saldos_por_usuario": {
+    "4ddf83***4ad5": {
+      "saldo_atual": 203
+    }
+  },
+  "conclusao_rollback": "rollback_parcial",
+  "saques_com_rollback": 5,
+  "saques_sem_rollback": 2
+}

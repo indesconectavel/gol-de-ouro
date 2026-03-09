@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-03-06",
+  "audit": "READ-ONLY - Opções seguras para destravar o merge",
+  "options": [
+    {
+      "id": 1,
+      "title": "Ajustar workflow para não bloquear PR por audit",
+      "description": "No step 'Análise de segurança frontend', fazer npm audit não falhar o job: e.g. 'npm audit --audit-level=moderate || echo \"⚠️ Vulnerabilidades encontradas\"' ou adicionar continue-on-error: true ao step.",
+      "risk": "Baixo",
+      "impact": "PR pode ser mergeado; audit continua rodando e aparece no log; vulnerabilidades permanecem até serem tratadas em outro momento.",
+      "recommended_for_v1": true,
+      "affects_game": false,
+      "touches_package_json": false
+    },
+    {
+      "id": 2,
+      "title": "Separar audit do deploy (job opcional ou allow_failure)",
+      "description": "Criar um job separado 'audit-frontend' que roda npm audit com continue-on-error: true, ou marcar o step de audit como não bloqueante.",
+      "risk": "Baixo",
+      "impact": "Mesmo efeito que opção 1; visibilidade do resultado de audit mantida.",
+      "recommended_for_v1": true,
+      "affects_game": false,
+      "touches_package_json": false
+    },
+    {
+      "id": 3,
+      "title": "Atualizar dependências específicas sem breaking change",
+      "description": "Adicionar overrides ou atualizar apenas serialize-javascript / tar (ou @rollup/plugin-terser, workbox-*, @capacitor/cli) para versões que resolvam os CVEs, sem alterar versões major do resto.",
+      "risk": "Médio",
+      "impact": "Pode exigir atualização de workbox ou plugin-terser; risco de mudança no output de build (minificação). Requer testes de build e PWA.",
+      "recommended_for_v1": false,
+      "affects_game": false,
+      "touches_package_json": true
+    },
+    {
+      "id": 4,
+      "title": "Atualizar dependências com possível breaking change",
+      "description": "npm audit fix ou atualização ampla de devDependencies (vite-plugin-pwa, workbox, Capacitor, etc.).",
+      "risk": "Alto",
+      "impact": "Pode quebrar build, PWA ou comportamento; exige regressão completa.",
+      "recommended_for_v1": false,
+      "affects_game": "Possível (se build mudar)",
+      "touches_package_json": true
+    }
+  ],
+  "recommended_option": 1,
+  "reason": "Destrava o merge imediatamente sem alterar código nem dependências; não afeta /game nem o frontend validado; tratamento das vulnerabilidades pode ser feito em um PR dedicado depois."
+}

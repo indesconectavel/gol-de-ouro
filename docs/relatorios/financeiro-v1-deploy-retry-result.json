@@ -1,0 +1,11 @@
+{
+  "timestamp_utc": "2026-03-06T15:15:00.000Z",
+  "estrategia_usada": "normal",
+  "tentativa": "A (flyctl deploy único)",
+  "fallback_dois_passos_necessario": false,
+  "release_nova": "v315",
+  "release_status": "running",
+  "image": "goldeouro-backend-v2:deployment-01KK1V0ERHBXQXMQRD7YQA2H7K",
+  "commit_deployado": "55c5cb80e5d3550baced5ea5752e9bc2d1d7768f",
+  "machines_apos_deploy": "app 2874551a105768 v315 stopped (1 warning); app e82d445ae76178 v313 started (1 passing); payout_worker e82794da791108 v315 stopped"
+}

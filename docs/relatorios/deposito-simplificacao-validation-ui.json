@@ -1,0 +1,25 @@
+{
+  "auditoria": "Validação READ-ONLY - Simplificação tela de depósito (UI)",
+  "data": "2026-03-06",
+  "arquivo_analisado": "goldeouro-player/src/pages/Pagamentos.jsx",
+  "verificar_status_removido": {
+    "busca_texto": ["Verificar Status", "Verificar", "consultarStatusPagamento", "pix/status"],
+    "ocorrencias_encontradas": 0,
+    "status": "OK"
+  },
+  "elementos_ui_presentes": {
+    "header": { "titulo": "Pagamentos PIX", "voltar": "← Voltar", "linhas": "105-121", "status": "OK" },
+    "bloco_pix_criado": { "condicao": "pagamentoAtual", "titulo": "Pagamento PIX Criado", "badge": "Pendente", "valor_e_id": "R$ + ID", "linhas": "124-219", "status": "OK" },
+    "codigo_pix_copia_cola": { "condicao": "pix_code || qr_code || pix_copy_paste", "botao": "📋 Copiar Código PIX", "linhas": "144-179", "status": "OK" },
+    "fallback_email": { "condicao": "sem código", "texto": "PIX Enviado por Email!", "linhas": "181-195", "status": "OK" },
+    "fallback_init_point": { "condicao": "init_point", "link": "Pagar com PIX - Mercado Pago", "linhas": "197-215", "status": "OK" },
+    "recarregar_saldo": { "presets": "1,5,10,25,50,100", "input_valor": "min=1", "botao": "💳 Recarregar R$", "linhas": "221-267", "status": "OK" },
+    "instrucoes_pix": { "titulo": "Como funciona o PIX", "passos": "1-4", "linhas": "269-292", "status": "OK" },
+    "historico": { "titulo": "Histórico de Pagamentos", "colunas": ["Data", "Valor", "Status"], "sem_coluna_acoes": true, "linhas": "294-336", "status": "OK" }
+  },
+  "elementos_removidos_confirmados": [
+    "Botão 'Verificar Status' no bloco Pagamento PIX Criado",
+    "Coluna 'Ações' e botão 'Verificar' na tabela de histórico"
+  ],
+  "conclusao_ui": "OK - Tela simplificada; botão Verificar Status não aparece; demais elementos de depósito preservados."
+}

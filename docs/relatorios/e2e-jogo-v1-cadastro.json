@@ -1,0 +1,15 @@
+{
+  "timestamp_utc": "2026-03-06T16:37:00.000Z",
+  "etapa": "Cadastro",
+  "sucesso": true,
+  "metodo": "POST /api/auth/register",
+  "payload": { "email": "e2e-jogo-v1-*@example.com", "username": "E2E Jogo V1" },
+  "resposta": {
+    "success": true,
+    "message": "Usuário criado com sucesso",
+    "token_present": true,
+    "user": { "id": "51fe6c61-c1ac-42f8-b933-ffb0f215ce1c", "saldo": 0, "tipo": "jogador" }
+  },
+  "registro_no_banco": "Confirmado via resposta (user.id e saldo retornados)",
+  "erro": null
+}

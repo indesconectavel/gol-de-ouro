@@ -1,0 +1,5 @@
+{
+  "timestamp_utc": "2026-03-06T14:06:00.000Z",
+  "executado": false,
+  "motivo": "Deploy nao completou; Fly abortou ao falhar smoke checks no machine payout_worker. Nenhuma release nova foi aplicada (leases cleared). Maquinas permanecem na versao anterior (v313). Rollback para v305 nao foi necessario."
+}

@@ -1,0 +1,21 @@
+{
+  "timestamp_utc": "2026-03-06T14:20:00.000Z",
+  "commit_deployado": "73de7a39efafe58e643f1e10207108da9098a63d",
+  "arquivos_em_src_domain_payout_no_commit_73de7a39": [
+    "src/domain/payout/processPendingWithdrawals.js",
+    "src/domain/payout/reconcileProcessingWithdrawals.js"
+  ],
+  "arquivos_em_src_domain_payout_na_working_tree_atual": [
+    "processPendingWithdrawals.js",
+    "reconcileProcessingWithdrawals.js",
+    "withdrawalStatus.js"
+  ],
+  "arquivo_faltante_no_commit": "withdrawalStatus.js",
+  "status_git_withdrawalStatus": "?? (untracked)",
+  "dependencias_obrigatorias_para_app_subir": [
+    "withdrawalStatus.js — requerido por processPendingWithdrawals.js (require('./withdrawalStatus'))",
+    "processPendingWithdrawals.js — requerido por server-fly.js e payout-worker.js",
+    "reconcileProcessingWithdrawals.js — requerido por server-fly.js (reconciler)"
+  ],
+  "conclusao": "O commit 73de7a39 nao inclui withdrawalStatus.js; a working tree atual tem o arquivo como untracked. O worktree temporario usado no deploy continha apenas os arquivos do commit, portanto a imagem foi buildada sem withdrawalStatus.js, causando MODULE_NOT_FOUND ao subir o app."
+}

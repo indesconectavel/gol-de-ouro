@@ -37,4 +37,4 @@ primary_region = "gru"
     interval = "30s"
     timeout = "10s"
     method = "get"
-    grace_period = "10s"  # ✅ ADICIONADO: Período de graça antes de marcar como falha
+    grace_period = "40s"  # Startup: connectSupabase + testMercadoPago antes de listen

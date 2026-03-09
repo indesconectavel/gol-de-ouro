@@ -1,0 +1,9 @@
+{
+  "timestamp_utc": "2026-03-06T14:06:00.000Z",
+  "executado": false,
+  "motivo": "Deploy Fly falhou antes do smoke (smoke checks do Fly falharam no payout_worker); smoke nosso nao foi executado.",
+  "health": null,
+  "game": null,
+  "dashboard": null,
+  "smoke_pass": false
+}

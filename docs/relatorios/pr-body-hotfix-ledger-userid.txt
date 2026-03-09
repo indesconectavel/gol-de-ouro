@@ -1,0 +1,16 @@
+## Objetivo
+Hotfix: resolve mismatch de coluna no ledger_financeiro (PROD usa `user_id`, outras bases usam `usuario_id`). Inserção passa a tentar `user_id` primeiro e fazer fallback para `usuario_id`, com cache em memória; sem alterar schema nem rotas.
+
+## Alteração
+- **Arquivo único:** `src/domain/payout/processPendingWithdrawals.js`
+- **Commit:** a4b2e5495d1919fe8383f247122c2e0803e3712d
+- Nova função `insertLedgerRow()` + cache `ledgerUserIdColumn`; `createLedgerEntry` usa esse fluxo. Comportamento airbag: não lança exceção, retorna `{ success: false, error }` em falha.
+
+## Checklist rollback
+- [ ] Em caso de regressão: reverter este merge (ou fazer revert commit) e dar push em `main`
+- [ ] Pipeline dispara novo deploy; validar health em https://goldeouro-backend-v2.fly.dev/health
+- [ ] Se necessário rollback Fly: `flyctl releases rollback --app goldeouro-backend-v2` (ver último release estável)
+- [ ] Não encostar na máquina APP stopped (e82d445ae76178); não alterar schema
+
+## App / deploy
+- App: **goldeouro-backend-v2** (Fly). Deploy via pipeline principal (push em `main`).

@@ -1,0 +1,31 @@
+{
+  "auditoria": "VALIDAÇÃO READ-ONLY - Fluxo da tela de saque pós-correção",
+  "data": "2026-03-06",
+  "fluxo_submit": {
+    "tela": "Withdraw.jsx",
+    "handler": "handleSubmit",
+    "funcao_chamada": "requestWithdraw(amount, formData.pixKey, formData.pixType)",
+    "servico": "withdrawService.requestWithdraw",
+    "endpoint": "POST /api/withdraw/request",
+    "body": { "valor": "number", "chave_pix": "string", "tipo_chave": "string" },
+    "evidencia_arquivo": "Withdraw.jsx linhas 105-109",
+    "evidencia_servico": "withdrawService.js linha 44: apiClient.post(API_ENDPOINTS.WITHDRAW_REQUEST, ...)"
+  },
+  "fluxo_historico": {
+    "tela": "Withdraw.jsx",
+    "funcao": "loadWithdrawalHistory",
+    "funcao_chamada": "getWithdrawHistory()",
+    "servico": "withdrawService.getWithdrawHistory",
+    "endpoint": "GET /api/withdraw/history",
+    "evidencia_arquivo": "Withdraw.jsx linhas 61-62",
+    "evidencia_servico": "withdrawService.js linha 70: apiClient.get(API_ENDPOINTS.WITHDRAW_HISTORY)"
+  },
+  "config_endpoints": {
+    "WITHDRAW_REQUEST": "/api/withdraw/request",
+    "WITHDRAW_HISTORY": "/api/withdraw/history",
+    "fonte": "config/api.js linhas 36-37"
+  },
+  "createPix_usado_na_tela_saque": false,
+  "getUserPix_usado_para_historico_saque": false,
+  "classificacao": "OK"
+}

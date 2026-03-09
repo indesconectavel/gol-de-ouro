@@ -1,0 +1,20 @@
+{
+  "audit_date": "2026-03-06",
+  "baseline_oficial": true,
+  "deployment_baseline": "FyKKeg6zb",
+  "js_principal": {
+    "nome": "index-qIGutT6K.js",
+    "path": "/assets/index-qIGutT6K.js",
+    "hash_suffix": "qIGutT6K",
+    "tamanho_bytes": 478903,
+    "sha_disponivel": false
+  },
+  "css_principal": {
+    "nome": "index-lDOJDUAS.css",
+    "path": "/assets/index-lDOJDUAS.css",
+    "hash_suffix": "lDOJDUAS",
+    "sha_disponivel": false
+  },
+  "outros_assets": ["/registerSW.js"],
+  "objetivo": "Referência objetiva para comparar futuros previews/deploys; qualquer build que altere esses hashes deve ser validado contra esta baseline antes de promote."
+}

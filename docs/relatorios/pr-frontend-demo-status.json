@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-03-06",
+  "audit": "READ-ONLY status do PR release/frontend-player-demo-2026-03-06 -> main",
+  "branch_head": "release/frontend-player-demo-2026-03-06",
+  "branch_base": "main",
+  "branch_exists_on_remote": true,
+  "pr_exists": false,
+  "pr_number": null,
+  "pr_title": null,
+  "pr_state": null,
+  "pr_url": null,
+  "status_check_rollup": null,
+  "review_decision": null,
+  "mergeable": null,
+  "ready_for_merge": false,
+  "evidence": {
+    "gh_pr_list": "[]",
+    "gh_pr_view": "no pull requests found for branch \"release/frontend-player-demo-2026-03-06\"",
+    "github_pulls_filter": "0 Open, 0 Closed for head:release/frontend-player-demo-2026-03-06",
+    "git_ls_remote": "refs/heads/release/frontend-player-demo-2026-03-06 exists (200b416...)"
+  },
+  "branch_protection_main": "não verificado nesta sessão (main exige PR conforme relatório anterior)",
+  "recommended_action": "Abrir o PR: https://github.com/indesconectavel/gol-de-ouro/compare/main...release/frontend-player-demo-2026-03-06"
+}

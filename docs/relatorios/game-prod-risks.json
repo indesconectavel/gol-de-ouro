@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-03-06",
+  "audit": "READ-ONLY riscos remanescentes para demo do jogo",
+  "riscos": {
+    "baixo": [
+      "Frontend financeiro antigo ainda em produção (saque/depósito não atualizados); não impacta /game.",
+      "Tela de saque ainda não publicada (endpoint errado em produção); isolada do fluxo do jogo.",
+      "Depósito ainda com botão 'Verificar Status'; isolado do fluxo do jogo.",
+      "Cache Vercel (X-Vercel-Cache: HIT) pode servir HTML/bundle em cache; comportamento esperado."
+    ],
+    "medio": [
+      "Demo parcial: jogo e login/dashboard podem ser demonstrados; saque e depósito mostram versão antiga se o usuário navegar até elas.",
+      "Se o PR do frontend financeiro for mergeado e deployado depois, haverá novo bundle; /game continuará funcional (mesmo app, rebuild natural)."
+    ],
+    "alto": []
+  },
+  "resumo": {
+    "game_preservado": true,
+    "demo_jogo_possivel": true,
+    "financeiro_antigo_afeta_game": false
+  },
+  "recomendacao": "O jogo está seguro para demonstração. Para demo focada apenas em /game, login e dashboard: sem risco. Para demo que inclua saque/depósito: informar que as telas financeiras ainda estão na versão antiga até publicação do PR."
+}

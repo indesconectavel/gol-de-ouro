@@ -1,0 +1,9 @@
+{
+  "deployment_id": "FyKKeg6zb",
+  "deployment_id_full": "dpl_FyKKeg6zbT5emQUoLcZ4K8Q16jLX",
+  "is_current": "designado_como_baseline_oficial",
+  "project_name": "goldeouro-player",
+  "environment": "production",
+  "validated_baseline": true,
+  "observacoes": "FyKKeg6zb designado como baseline oficial validada do frontend player. Estado em produção na data da auditoria serve bundle index-qIGutT6K.js / index-lDOJDUAS.css, consistente com o build documentado para FyKKeg6zb. ID completo de referência em docs: dpl_FyKKeg6zbT5emQUoLcZ4K8Q16jLX (vercel-deployments-50.json). Auditoria READ-ONLY; não foi possível confirmar no dashboard Vercel qual deployment está marcado como Production Current."
+}

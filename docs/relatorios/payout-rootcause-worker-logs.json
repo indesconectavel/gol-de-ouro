@@ -1,0 +1,149 @@
+{
+  "timestamp": "2026-03-06T02:38:41.011Z",
+  "app": "goldeouro-backend-v2",
+  "lines_analisadas": 100,
+  "contagens": {
+    "PAYOUT_WORKER": 81,
+    "payouts_falha": 14,
+    "erro_mp": 0,
+    "timeout": 0,
+    "LEDGER": 0,
+    "insert_falhou": 0,
+    "CHECK": 0,
+    "violates": 0,
+    "processando": 0,
+    "concluido": 0,
+    "rejeitado": 0,
+    "updateSaqueStatus": 0,
+    "transacao_id": 0,
+    "processed_at": 0,
+    "ROLLBACK": 0,
+    "FALHOU": 0,
+    "Nenhum saque": 27,
+    "Payout iniciado": 0,
+    "Saque selecionado": 0
+  },
+  "linhas_relevantes": [
+    {
+      "raw": "\u001b[2m2026-03-06T02:31:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:31:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:32:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:32:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:32:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:32:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:33:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:33:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:33:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:33:46Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:33:46Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:34:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:34:16Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:34:16Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:34:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:34:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:35:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:35:16Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:35:16Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:35:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:35:46Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:35:46Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:36:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:36:16Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:36:16Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:36:46Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:36:46Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:37:16Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:37:16Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "ts": null
+    },
+    {
+      "raw": "\u001b[2m2026-03-06T02:37:46Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+      "ts": null
+    }
+  ],
+  "conclusao_falha_mais_provavel": "worker_roda_mas_nao_processa_ou_retorna_sem_saque"
+}

@@ -1,0 +1,7 @@
+{
+  "audit_date": "2026-03-06",
+  "rollback_deployment_id": "FyKKeg6zb",
+  "rollback_recommendation": "Em caso de regressão no frontend do player, promover novamente o deployment FyKKeg6zb para Production no Vercel (projeto goldeouro-player). Se FyKKeg6zb não estiver disponível (expirado/removido), fazer redeploy a partir do commit que gerou o build com bundle index-qIGutT6K.js / index-lDOJDUAS.css e promover esse deployment.",
+  "baseline_compare_required": true,
+  "observacao": "Nenhum novo promote deve ocorrer sem validar /game, /dashboard, login e bundle/fingerprint contra esta baseline."
+}

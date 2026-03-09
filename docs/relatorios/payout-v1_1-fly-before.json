@@ -1,0 +1,14 @@
+{
+  "timestamp_utc": "2026-03-06T11:55:00Z",
+  "app": "goldeouro-backend-v2",
+  "hostname": "goldeouro-backend-v2.fly.dev",
+  "release_atual": "v312",
+  "release_atual_status": "failed",
+  "ultima_release_complete_estavel": "v305",
+  "rollback_version_se_necessario": "v305",
+  "machines": [
+    { "process": "app", "id": "2874551a105768", "version": "312", "state": "started" },
+    { "process": "app", "id": "e82d445ae76178", "version": "312", "state": "stopped" },
+    { "process": "payout_worker", "id": "e82794da791108", "version": "312", "state": "started" }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-03-06T12:09:01.848Z",
+  "patch_v1_1_visivel": true,
+  "sinais_presentes": {
+    "PAYOUT_CYCLE": 11,
+    "PAYOUT_QUERY": 11,
+    "PAYOUT_SELECT": 0,
+    "PAYOUT_SKIP": 0,
+    "PAYOUT_ROLLBACK_FAIL": 0
+  },
+  "total_saques_presos": 0,
+  "cycle_enabled": true,
+  "cycle_db_fail": false,
+  "cycle_provider_fail": false,
+  "query_count_valor": 0,
+  "causa_confirmada_final": "indefinida",
+  "proximo_patch_minimo": [
+    "Nenhum; validar se saques foram processados ou rejeitados após deploy"
+  ]
+}

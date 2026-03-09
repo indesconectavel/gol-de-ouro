@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-03-05T22:53:33.357Z",
+  "app": "goldeouro-backend-v2",
+  "lines_analisadas": 100,
+  "contagens": {
+    "PAYOUT_WORKER": 82,
+    "RECON": 14,
+    "LEDGER": 0,
+    "Erro_registrar_saque": 0,
+    "insert_falhou": 0,
+    "updateSaqueStatus_indisponivel": 0,
+    "CHECK": 0,
+    "violates": 0
+  },
+  "exemplares_redigidas": [
+    "\u001b[2m2026-03-05T22:46:36Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente",
+    "\u001b[2m2026-03-05T22:46:36Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+    "\u001b[2m2026-03-05T22:46:36Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+    "\u001b[2m2026-03-05T22:46:36Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Fim do ciclo",
+    "\u001b[2m2026-03-05T22:46:50Z\u001b[0m app[2874551a105768] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]❌ [RECON] ID de pagamento inválido (não é número): deposito_4ddf8330-ae94-4e92-a010-bdc7fa254ad5_1765383727057",
+    "\u001b[2m2026-03-05T22:47:05Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+    "\u001b[2m2026-03-05T22:47:06Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente",
+    "\u001b[2m2026-03-05T22:47:06Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+    "\u001b[2m2026-03-05T22:47:06Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+    "\u001b[2m2026-03-05T22:47:06Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Fim do ciclo",
+    "\u001b[2m2026-03-05T22:47:20Z\u001b[0m app[2874551a105768] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]❌ [RECON] ID de pagamento inválido (não é número): deposito_4ddf8330-ae94-4e92-a010-bdc7fa254ad5_1765383727057",
+    "\u001b[2m2026-03-05T22:47:35Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+    "\u001b[2m2026-03-05T22:47:35Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente",
+    "\u001b[2m2026-03-05T22:47:35Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+    "\u001b[2m2026-03-05T22:47:35Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+    "\u001b[2m2026-03-05T22:47:35Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Fim do ciclo",
+    "\u001b[2m2026-03-05T22:47:50Z\u001b[0m app[2874551a105768] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]❌ [RECON] ID de pagamento inválido (não é número): deposito_4ddf8330-ae94-4e92-a010-bdc7fa254ad5_1765383727057",
+    "\u001b[2m2026-03-05T22:48:05Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+    "\u001b[2m2026-03-05T22:48:06Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+    "\u001b[2m2026-03-05T22:48:06Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente"
+  ]
+}

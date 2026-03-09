@@ -1,0 +1,19 @@
+{
+  "audit_date": "2026-03-06",
+  "deployment_id": "FyKKeg6zb",
+  "deployment_id_full": "dpl_FyKKeg6zbT5emQUoLcZ4K8Q16jLX",
+  "commit_origin_determinado": false,
+  "commit_origin_inferido": "0a2a5a1effb18f78e6df7d7081cd9c04e657e800",
+  "commit_origin_inferido_mensagem": "Merge pull request #18 from indesconectavel/security/fix-ssrf-vulnerabilities",
+  "commit_origin_inferido_data": "2025-11-15T12:43:50-03:00",
+  "branch_origem_inferida": "main",
+  "referencia_documental_estavel": "d8ceb3bb65a888069ab8f9d84e6561476b822568",
+  "referencia_documental_mensagem": "chore: checkpoint pre-v1 stable",
+  "referencia_documental_data": "2026-02-05T22:24:34-03:00",
+  "ultimo_commit_player_antes_do_build": "7dbb4ec9aa24c29127cdf56855ea08bf7ae65676",
+  "ultimo_commit_player_mensagem": "fix: corrigir CSP para permitir scripts externos (PostHog e GTM)",
+  "ultimo_commit_player_data": "2025-11-15T11:59:41-03:00",
+  "build_date_vercel": "2026-01-16T05:25:34Z",
+  "fonte_build_date": "Last-Modified do bundle JS em produção (POST-ROLLBACK-VERCEL-FyKKeg6zb-VALIDATION)",
+  "observacoes": "Não há commits no path goldeouro-player entre 2025-11-15 e 2026-02-05. O commit exato que o Vercel usou para o build de 16 Jan 2026 não está gravado no repositório; a equivalência foi inferida a partir de documentação (DIFF-PR29: 0a2a5a1 ou anterior). d8ceb3b é o checkpoint documentado como 'estável' mas é posterior ao build (2026-02-05)."
+}

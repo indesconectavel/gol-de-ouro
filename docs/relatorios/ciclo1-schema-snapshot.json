@@ -1,0 +1,387 @@
+{
+  "timestamp": "2026-03-05T22:53:15.256Z",
+  "credentials_ok": true,
+  "tables": {
+    "usuarios": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "email",
+          "type": "string"
+        },
+        {
+          "name": "senha_hash",
+          "type": "string"
+        },
+        {
+          "name": "saldo",
+          "type": "number"
+        },
+        {
+          "name": "tipo",
+          "type": "string"
+        },
+        {
+          "name": "ativo",
+          "type": "boolean"
+        },
+        {
+          "name": "email_verificado",
+          "type": "boolean"
+        },
+        {
+          "name": "telefone",
+          "type": "unknown"
+        },
+        {
+          "name": "data_nascimento",
+          "type": "unknown"
+        },
+        {
+          "name": "avatar_url",
+          "type": "unknown"
+        },
+        {
+          "name": "created_at",
+          "type": "string"
+        },
+        {
+          "name": "updated_at",
+          "type": "string"
+        },
+        {
+          "name": "last_login",
+          "type": "unknown"
+        },
+        {
+          "name": "total_apostas",
+          "type": "number"
+        },
+        {
+          "name": "total_ganhos",
+          "type": "number"
+        },
+        {
+          "name": "total_partidas",
+          "type": "number"
+        },
+        {
+          "name": "total_gols",
+          "type": "number"
+        },
+        {
+          "name": "ranking",
+          "type": "number"
+        },
+        {
+          "name": "username",
+          "type": "string"
+        },
+        {
+          "name": "senha",
+          "type": "unknown"
+        },
+        {
+          "name": "password_hash",
+          "type": "unknown"
+        },
+        {
+          "name": "account_status",
+          "type": "string"
+        }
+      ],
+      "sample_keys": [
+        "id",
+        "email",
+        "senha_hash",
+        "saldo",
+        "tipo",
+        "ativo",
+        "email_verificado",
+        "telefone",
+        "data_nascimento",
+        "avatar_url",
+        "created_at",
+        "updated_at",
+        "last_login",
+        "total_apostas",
+        "total_ganhos",
+        "total_partidas",
+        "total_gols",
+        "ranking",
+        "username",
+        "senha",
+        "password_hash",
+        "account_status"
+      ],
+      "has_saldo": true,
+      "has_balance": false
+    },
+    "saques": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "usuario_id",
+          "type": "string"
+        },
+        {
+          "name": "transacao_id",
+          "type": "unknown"
+        },
+        {
+          "name": "valor",
+          "type": "number"
+        },
+        {
+          "name": "chave_pix",
+          "type": "string"
+        },
+        {
+          "name": "tipo_chave",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "motivo_rejeicao",
+          "type": "unknown"
+        },
+        {
+          "name": "processed_at",
+          "type": "string"
+        },
+        {
+          "name": "created_at",
+          "type": "string"
+        },
+        {
+          "name": "updated_at",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "number"
+        },
+        {
+          "name": "pix_key",
+          "type": "string"
+        },
+        {
+          "name": "pix_type",
+          "type": "string"
+        },
+        {
+          "name": "correlation_id",
+          "type": "unknown"
+        },
+        {
+          "name": "fee",
+          "type": "number"
+        },
+        {
+          "name": "net_amount",
+          "type": "number"
+        }
+      ],
+      "sample_keys": [
+        "id",
+        "usuario_id",
+        "transacao_id",
+        "valor",
+        "chave_pix",
+        "tipo_chave",
+        "status",
+        "motivo_rejeicao",
+        "processed_at",
+        "created_at",
+        "updated_at",
+        "amount",
+        "pix_key",
+        "pix_type",
+        "correlation_id",
+        "fee",
+        "net_amount"
+      ],
+      "has_saldo": false,
+      "has_balance": false
+    },
+    "pagamentos_pix": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "usuario_id",
+          "type": "string"
+        },
+        {
+          "name": "transacao_id",
+          "type": "unknown"
+        },
+        {
+          "name": "payment_id",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "valor",
+          "type": "number"
+        },
+        {
+          "name": "qr_code",
+          "type": "string"
+        },
+        {
+          "name": "qr_code_base64",
+          "type": "unknown"
+        },
+        {
+          "name": "pix_copy_paste",
+          "type": "string"
+        },
+        {
+          "name": "expires_at",
+          "type": "unknown"
+        },
+        {
+          "name": "approved_at",
+          "type": "unknown"
+        },
+        {
+          "name": "created_at",
+          "type": "string"
+        },
+        {
+          "name": "updated_at",
+          "type": "string"
+        },
+        {
+          "name": "amount",
+          "type": "number"
+        },
+        {
+          "name": "external_id",
+          "type": "string"
+        }
+      ],
+      "sample_keys": [
+        "id",
+        "usuario_id",
+        "transacao_id",
+        "payment_id",
+        "status",
+        "valor",
+        "qr_code",
+        "qr_code_base64",
+        "pix_copy_paste",
+        "expires_at",
+        "approved_at",
+        "created_at",
+        "updated_at",
+        "amount",
+        "external_id"
+      ],
+      "has_saldo": false,
+      "has_balance": false
+    },
+    "ledger_financeiro": {
+      "columns": [],
+      "sample_keys": [],
+      "has_saldo": false,
+      "has_balance": false
+    },
+    "transacoes": {
+      "columns": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "usuario_id",
+          "type": "string"
+        },
+        {
+          "name": "tipo",
+          "type": "string"
+        },
+        {
+          "name": "valor",
+          "type": "number"
+        },
+        {
+          "name": "saldo_anterior",
+          "type": "number"
+        },
+        {
+          "name": "saldo_posterior",
+          "type": "number"
+        },
+        {
+          "name": "descricao",
+          "type": "string"
+        },
+        {
+          "name": "referencia",
+          "type": "unknown"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "metadata",
+          "type": "unknown"
+        },
+        {
+          "name": "created_at",
+          "type": "string"
+        },
+        {
+          "name": "processed_at",
+          "type": "unknown"
+        },
+        {
+          "name": "referencia_id",
+          "type": "unknown"
+        },
+        {
+          "name": "referencia_tipo",
+          "type": "unknown"
+        }
+      ],
+      "sample_keys": [
+        "id",
+        "usuario_id",
+        "tipo",
+        "valor",
+        "saldo_anterior",
+        "saldo_posterior",
+        "descricao",
+        "referencia",
+        "status",
+        "metadata",
+        "created_at",
+        "processed_at",
+        "referencia_id",
+        "referencia_tipo"
+      ],
+      "has_saldo": false,
+      "has_balance": false
+    }
+  },
+  "constraints": [],
+  "erros": [],
+  "ledger_user_column": null
+}

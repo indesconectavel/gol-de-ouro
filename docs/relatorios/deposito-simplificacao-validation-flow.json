@@ -1,0 +1,39 @@
+{
+  "auditoria": "Validação READ-ONLY - Fluxo de depósito pós-simplificação",
+  "data": "2026-03-06",
+  "criacao_pix": {
+    "funcao": "criarPagamentoPix",
+    "linhas": "39-72",
+    "validacao_minimo": "valorRecarga < 1 → toast erro",
+    "request": "POST /api/payments/pix/criar",
+    "payload": "amount, description",
+    "sucesso": "setPagamentoAtual(response.data.data); toast.success; carregarDados(); scrollIntoView",
+    "erro": "toast.error(response.data.message ou genérica)",
+    "status": "OK"
+  },
+  "carregar_dados": {
+    "funcao": "carregarDados",
+    "linhas": "29-37",
+    "chamadas": "GET API_ENDPOINTS.PIX_USER apenas",
+    "estado_atualizado": "setPagamentos(pagamentosResponse.data.data.payments || [])",
+    "sem_chamada_profile": true,
+    "sem_saldo": true,
+    "status": "OK"
+  },
+  "exibicao_resposta_pix": {
+    "valor_e_id": "R$ valorRecarga, ID pagamentoAtual.id",
+    "codigo": "pix_code || qr_code || pix_copy_paste em <code>",
+    "botao_copiar": "Copiar Código PIX com navigator.clipboard.writeText",
+    "fallbacks": "Email; init_point link Mercado Pago",
+    "status": "OK"
+  },
+  "historico": {
+    "fonte": "estado pagamentos (carregarDados → PIX_USER)",
+    "colunas": "Data (formatarData), Valor (amount), Status (getStatusColor/getStatusText)",
+    "empty_state": "Nenhum pagamento encontrado",
+    "status": "OK"
+  },
+  "funcoes_removidas_confirmadas": ["consultarStatusPagamento"],
+  "estado_removido_confirmado": ["saldo, setSaldo"],
+  "conclusao_fluxo": "OK - Fluxo principal de criação de PIX, exibição de código e histórico preservado."
+}

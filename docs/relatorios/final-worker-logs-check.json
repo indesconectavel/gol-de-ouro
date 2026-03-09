@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-03-06T02:28:49.377Z",
+  "app": "goldeouro-backend-v2",
+  "lines_analisadas": 100,
+  "contagens": {
+    "PAYOUT_WORKER": 82,
+    "payouts_falha": 14,
+    "LEDGER": 0,
+    "insert_falhou": 0,
+    "updateSaqueStatus_indisponivel": 0,
+    "CHECK": 0,
+    "violates": 0,
+    "Erro_registrar_saque": 0
+  },
+  "exemplares_redigidas": [
+    "\u001b[2m2026-03-06T02:21:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+    "\u001b[2m2026-03-06T02:21:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+    "\u001b[2m2026-03-06T02:21:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Fim do ciclo",
+    "\u001b[2m2026-03-06T02:22:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+    "\u001b[2m2026-03-06T02:22:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente",
+    "\u001b[2m2026-03-06T02:22:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+    "\u001b[2m2026-03-06T02:22:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+    "\u001b[2m2026-03-06T02:22:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Fim do ciclo",
+    "\u001b[2m2026-03-06T02:22:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+    "\u001b[2m2026-03-06T02:22:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente",
+    "\u001b[2m2026-03-06T02:22:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+    "\u001b[2m2026-03-06T02:22:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+    "\u001b[2m2026-03-06T02:22:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Fim do ciclo",
+    "\u001b[2m2026-03-06T02:23:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+    "\u001b[2m2026-03-06T02:23:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente",
+    "\u001b[2m2026-03-06T02:23:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+    "\u001b[2m2026-03-06T02:23:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+    "\u001b[2m2026-03-06T02:23:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Fim do ciclo",
+    "\u001b[2m2026-03-06T02:23:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+    "\u001b[2m2026-03-06T02:23:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente",
+    "\u001b[2m2026-03-06T02:23:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+    "\u001b[2m2026-03-06T02:23:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+    "\u001b[2m2026-03-06T02:23:45Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Fim do ciclo",
+    "\u001b[2m2026-03-06T02:24:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Início do ciclo",
+    "\u001b[2m2026-03-06T02:24:15Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Nenhum saque pendente"
+  ]
+}

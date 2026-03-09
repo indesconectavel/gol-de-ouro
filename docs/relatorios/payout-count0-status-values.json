@@ -1,0 +1,19 @@
+{
+  "timestamp_utc": "2026-03-06T12:18:31.016Z",
+  "distinct_status": [
+    "rejeitado",
+    "cancelado"
+  ],
+  "contagem_por_status": {
+    "rejeitado": 7,
+    "cancelado": 2
+  },
+  "total_linhas": 9,
+  "valores_esperados_worker": [
+    "pendente",
+    "pending",
+    "processando",
+    "processando"
+  ],
+  "conclusao": "Valor processando NAO encontrado; verificar case/espacos."
+}

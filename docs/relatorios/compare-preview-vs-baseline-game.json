@@ -1,0 +1,31 @@
+{
+  "audit_date": "2026-03-06",
+  "baseline": {
+    "path": "/game",
+    "bundle": "/assets/index-qIGutT6K.js",
+    "bundle_length_bytes": 478903,
+    "elementos_centrais": ["saldo", "apostas", "campo", "goleiro", "bola", "botões/zonas de chute", "menu principal"],
+    "indicios_bundle": { "has_game": true, "has_games_shoot": true }
+  },
+  "preview": {
+    "path": "/game",
+    "bundle": "/assets/index-DVt6EjKW.js",
+    "bundle_length_bytes": 379518,
+    "indicios_bundle": {
+      "has_game": true,
+      "has_games_shoot": true,
+      "has_withdraw_request": false,
+      "has_verificar_status": true,
+      "has_version_warning": true
+    },
+    "observacao": "Preview contém VersionWarning e banner 'VERSÃO ATUALIZADA'; não contém /api/withdraw/request; contém 'Verificar Status'. Regressão visual/layout já documentada para este build (INCIDENTE-REGRESSAO-GAME-READONLY-2026-03-04)."
+  },
+  "comparacao_detalhada": {
+    "layout_geral": "diferente (preview inclui barra de versão e código VersionWarning ativo)",
+    "saldo_apostas_campo_goleiro_bola": "presentes no bundle (has_game, has_games_shoot); implementação distinta do bundle baseline",
+    "menu_principal": "presente",
+    "elementos_validados_baseline": "não idênticos (bundle diferente, comportamento e layout podem diferir)"
+  },
+  "classificacao_game": "regressao",
+  "motivo": "Bundle do preview difere da baseline; contém VersionWarning ativo e barra de versão reportada como regressão; não contém correção de saque (/api/withdraw/request); contém 'Verificar Status' (depósito não simplificado). Layout/experiência do /game não garantidos como idênticos à baseline validada."
+}

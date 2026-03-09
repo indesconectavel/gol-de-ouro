@@ -55,7 +55,7 @@ const ForgotPassword = () => {
             Enviamos um link de recuperação para <strong>{email}</strong>
           </p>
           <Link
-            to="/login"
+            to="/"
             className="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -120,7 +120,7 @@ const ForgotPassword = () => {
           {/* Back to Login */}
           <div className="text-center">
             <Link
-              to="/login"
+              to="/"
               className="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />

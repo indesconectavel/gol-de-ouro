@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-03-06T02:28:43.774Z",
+  "user_column": "user_id",
+  "janelas": {
+    "24h": {
+      "total_registros": 0,
+      "por_usuario": [],
+      "top_tipos": [],
+      "top_referencias": []
+    },
+    "168h": {
+      "total_registros": 0,
+      "por_usuario": [],
+      "top_tipos": [],
+      "top_referencias": []
+    },
+    "720h": {
+      "total_registros": 0,
+      "por_usuario": [],
+      "top_tipos": [],
+      "top_referencias": []
+    }
+  },
+  "erros": []
+}

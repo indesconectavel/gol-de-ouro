@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 3 - Publicar (push)",
+  "result": "PASS",
+  "branch_local": "main",
+  "branch_remote": "release/frontend-player-demo-2026-03-06",
+  "push_direct_to_main": false,
+  "reason": "main is protected; changes must be made through a pull request",
+  "commit_final_published": "200b416",
+  "commits_pushed": [
+    "b8a64b5 fix(player): tela de saque usa POST/GET withdraw/request e history",
+    "e9ef6ef docs: checklist withdraw fix - preencher SHA 258b0cd",
+    "200b416 fix(deposito): simplificar tela Pagamentos para demo V1"
+  ],
+  "push_success": true,
+  "pr_url": "https://github.com/indesconectavel/gol-de-ouro/pull/new/release/frontend-player-demo-2026-03-06",
+  "note": "Para publicar em produção: abrir PR release/frontend-player-demo-2026-03-06 -> main, aprovar e fazer merge. O Vercel fará o deploy após o merge."
+}

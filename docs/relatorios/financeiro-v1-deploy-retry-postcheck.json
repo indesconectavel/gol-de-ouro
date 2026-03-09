@@ -1,0 +1,23 @@
+{
+  "timestamp_utc": "2026-03-06T15:17:00.000Z",
+  "scripts_executados": [
+    "node scripts/financeiro-v1-final-validacao-readonly.js",
+    "node scripts/payout-rejeitados-rootcause-readonly.js"
+  ],
+  "exit_code": 0,
+  "artefatos_gerados": [
+    "financeiro-v1-final-saques.json",
+    "financeiro-v1-final-ledger.json",
+    "financeiro-v1-final-saldos.json",
+    "financeiro-v1-final-logs.json",
+    "financeiro-v1-final-game-check.json",
+    "payout-rejeitados-status-transition.json",
+    "payout-rejeitados-saldo-rollback.json",
+    "payout-rejeitados-ledger-check.json",
+    "payout-rejeitados-logs.json",
+    "payout-rejeitados-consistencia.json"
+  ],
+  "resumo_saques": "total_rejeitados 7; rollback_presente nos rejeitados verificados; consistencia_final rollback_registrado onde aplicável",
+  "resumo_consistencia": "total_rejeitados 7; com_rollback_ledger 5; sem_rollback_reconciler 1; inconclusivo 1; inconsistencia_financeira 0",
+  "conclusao": "Post-check executado com sucesso. Saques consistentes; rollback presente onde esperado; ledger ok; nenhum novo bloqueio crítico identificado."
+}

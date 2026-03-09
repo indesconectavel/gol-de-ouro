@@ -1,0 +1,147 @@
+{
+  "timestamp": "2026-03-05T22:53:16.126Z",
+  "base_url": "https://goldeouro-backend-v2.fly.dev",
+  "bearer_defined": false,
+  "results": [
+    {
+      "endpoint": "/health",
+      "method_tested": "GET",
+      "status_code": 200,
+      "response_time_ms": 404,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": true,
+      "exists": true,
+      "error": null
+    },
+    {
+      "endpoint": "/api/monitoring/health",
+      "method_tested": "GET",
+      "status_code": 200,
+      "response_time_ms": 115,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": true,
+      "exists": true,
+      "error": null
+    },
+    {
+      "endpoint": "/api/user/profile",
+      "method_tested": "GET",
+      "status_code": 401,
+      "response_time_ms": 31,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": false,
+      "exists": true,
+      "error": null
+    },
+    {
+      "endpoint": "/api/withdraw/history",
+      "method_tested": "GET",
+      "status_code": 401,
+      "response_time_ms": 32,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": false,
+      "exists": true,
+      "error": null
+    },
+    {
+      "endpoint": "/api/payments/pix/usuario",
+      "method_tested": "GET",
+      "status_code": 401,
+      "response_time_ms": 33,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": false,
+      "exists": true,
+      "error": null
+    },
+    {
+      "endpoint": "/api/withdraw/request",
+      "method_tested": "OPTIONS",
+      "status_code": 204,
+      "response_time_ms": 30,
+      "headers": {
+        "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": true,
+      "exists": true,
+      "error": null
+    },
+    {
+      "endpoint": "/api/payments/pix/criar",
+      "method_tested": "OPTIONS",
+      "status_code": 204,
+      "response_time_ms": 29,
+      "headers": {
+        "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": true,
+      "exists": true,
+      "error": null
+    },
+    {
+      "endpoint": "/api/payments/webhook",
+      "method_tested": "OPTIONS",
+      "status_code": 204,
+      "response_time_ms": 29,
+      "headers": {
+        "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": true,
+      "exists": true,
+      "error": null
+    },
+    {
+      "endpoint": "/api/metrics",
+      "method_tested": "GET",
+      "status_code": 200,
+      "response_time_ms": 208,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": true,
+      "exists": true,
+      "error": null
+    },
+    {
+      "endpoint": "/",
+      "method_tested": "GET",
+      "status_code": 200,
+      "response_time_ms": 30,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "read_only_safe": true,
+      "auth_used": false,
+      "ok": true,
+      "exists": true,
+      "error": null
+    }
+  ]
+}

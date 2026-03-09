@@ -1,0 +1,23 @@
+{
+  "audit_date": "2026-03-06",
+  "baseline": {
+    "base_url": "https://www.goldeouro.lol",
+    "/": { "status": 200, "carrega": true, "spa_correta": true, "observacao": "Login; bundle index-qIGutT6K.js" },
+    "/game": { "status": 200, "carrega": true, "spa_correta": true },
+    "/dashboard": { "status": 200, "carrega": true, "spa_correta": true }
+  },
+  "preview": {
+    "base_url": "https://goldeouro-player-ez1oc96t1-goldeouro-admins-projects.vercel.app",
+    "/": { "status": 200, "carrega": true, "spa_correta": true, "observacao": "Login; bundle index-DVt6EjKW.js; banner VERSÃO ATUALIZADA" },
+    "/game": { "status": 404, "carrega": "via SPA a partir de /", "spa_correta": "sim (rota client-side)", "observacao": "GET direto 404; navegação a partir de / carrega o app" },
+    "/dashboard": { "status": 404, "carrega": "via SPA a partir de /", "spa_correta": "sim", "observacao": "GET direto 404" }
+  },
+  "comparacao": {
+    "raiz_ok": true,
+    "game_acesso_direto": "baseline 200, preview 404 (comportamento SPA aceitável)",
+    "dashboard_acesso_direto": "baseline 200, preview 404",
+    "fallback_estranho": "não",
+    "tela_errada": "não"
+  },
+  "conclusao_rotas": "Preview serve SPA na raiz; /game e /dashboard são rotas client-side. Diferença de status em GET direto (404 vs 200) é config/rewrite, não falha crítica; conteúdo do jogo está no bundle do preview."
+}

@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 4 - Revalidação",
+  "pr_number": 31,
+  "pr_title": "fix(player): withdraw endpoint fix + deposit demo simplification",
+  "pr_url": "https://github.com/indesconectavel/gol-de-ouro/pull/31",
+  "pr_received_new_commit": true,
+  "new_commit_on_pr": "1f633be fix(ci): frontend-deploy - nao bloquear PR por npm audit em devDeps antigas",
+  "checks_rerunning": true,
+  "workflow_runs_initial": [
+    { "name": "CI", "status": "in_progress", "run_id": 22784314060 },
+    { "name": "🎨 Frontend Deploy (Vercel)", "status": "in_progress", "run_id": 22784314048 },
+    { "name": "🔒 Segurança e Qualidade", "status": "in_progress", "run_id": 22784314072 }
+  ],
+  "note": "Status capturado logo após o push; aguardar conclusão dos runs para validar se o job Testes Frontend passa."
+}

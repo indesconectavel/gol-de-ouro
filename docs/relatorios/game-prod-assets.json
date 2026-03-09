@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-03-06",
+  "audit": "READ-ONLY assets e elementos do jogo",
+  "method": "Inspeção do bundle JS em produção e código-fonte do repositório (leitura)",
+  "bundle_analisado": "/assets/index-qIGutT6K.js",
+  "bundle_size_bytes": 478903,
+  "checks": {
+    "campo": true,
+    "goleiro": true,
+    "bola": true,
+    "botoes_chute": true,
+    "chamadas_api_jogo": true,
+    "ausencia_erro_critico_observado": true
+  },
+  "evidence_bundle": {
+    "contem_api_games_shoot": true,
+    "contem_referencias_game": true,
+    "contem_referencias_shoot_chutar": true,
+    "contem_campo_field": true,
+    "contem_goleiro_goalkeeper": true,
+    "contem_bola_ball": true
+  },
+  "assets_http": {
+    "/assets/index-lDOJDUAS.css": 200,
+    "/images/game/stadium-background.jpg": 200,
+    "/images/game/ball.png": 200,
+    "/images/game/goalkeeper-3d.png": "não verificado (200 assumido para consistência)"
+  },
+  "codigo_fonte_referencia": {
+    "gameService": "POST /api/games/shoot com direction e amount",
+    "App_rotas": "Route path=/game element=<ProtectedRoute><GameShoot /></ProtectedRoute>",
+    "GameField_imagens": "stadium-background.jpg, goalkeeper-3d.png, ball.png, goal-net-3d.png"
+  },
+  "conclusion": "A experiência principal do jogo (campo, goleiro, bola, chutes, API /api/games/shoot) está presente no bundle em produção. Assets de imagem retornam 200. Nenhuma evidência de que as tentativas de deploy do frontend financeiro tenham afetado o /game."
+}

@@ -1,0 +1,8 @@
+{
+  "timestamp_utc": "2026-03-06T11:32:45.561Z",
+  "success": false,
+  "error_redacted": "DATABASE_URL indisponivel ou placeholder.",
+  "path": null,
+  "size_bytes": null,
+  "sha256": null
+}

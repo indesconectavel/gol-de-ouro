@@ -1,0 +1,22 @@
+{
+  "timestamp_utc": "2026-03-06T13:25:28.920Z",
+  "releases": [
+    "VERSION\tSTATUS  \tDESCRIPTION\tUSER                     \tDATE              ",
+    "v313   \tfailed  \tRelease    \tindesconectavel@gmail.com\t1h29m ago        \t",
+    "v312   \tfailed  \tRelease    \tindesconectavel@gmail.com\tMar 4 2026 21:03 \t",
+    "v311   \tfailed  \tRelease    \tindesconectavel@gmail.com\tMar 3 2026 23:54 \t",
+    "v310   \tfailed  \tRelease    \tindesconectavel@gmail.com\tMar 3 2026 23:44 \t",
+    "v309   \tfailed  \tRelease    \tindesconectavel@gmail.com\tMar 3 2026 23:28 \t",
+    "v308   \tfailed  \tRelease    \tindesconectavel@gmail.com\tMar 3 2026 15:11 \t",
+    "v307   \tfailed  \tRelease    \tindesconectavel@gmail.com\tMar 3 2026 15:06 \t",
+    "v306   \tfailed  \tRelease    \tindesconectavel@gmail.com\tMar 3 2026 14:43 \t",
+    "v305   \tcomplete\tRelease    \tindesconectavel@gmail.com\tFeb 25 2026 19:50\t",
+    "v304   \tfailed  \tRelease    \tindesconectavel@gmail.com\tFeb 6 2026 06:42 \t",
+    "v303   \tfailed  \tRelease    \tindesconectavel@gmail.com\tFeb 6 2026 06:42 \t",
+    "v302   \tcomplete\tRelease    \tindesconectavel@gmail.com\tFeb 3 2026 22:42 \t",
+    "v301   \tcomplete\tRelease    \tindesconectavel@gmail.com\tFeb 3 2026 22:41 \t",
+    "v300   \tfailed  \tRelease    \tindesconectavel@gmail.com\tFeb 3 2026 20:10 \t"
+  ],
+  "latest_version": "VERSION\tSTATUS  \tDESCRIPTION\tUSER                     \tDATE              ",
+  "error": null
+}

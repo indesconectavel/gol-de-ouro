@@ -1,0 +1,18 @@
+{
+  "timestamp_utc": "2026-03-06T15:13:45.123Z",
+  "patch_v1_2_no_codigo": {
+    "present": true,
+    "rejectWithRollbackIfNeeded": true,
+    "log_PAYOUT_RECON": true,
+    "ledgerHasRollback": true
+  },
+  "padroes_buscar_fly": [
+    "[PAYOUT][RECON]",
+    "rollback=true",
+    "rollback=already_done",
+    "motivo=timeout_reconciliacao",
+    "RECONCILE"
+  ],
+  "instrucao": "fly logs -a <app> | grep -E \"PAYOUT\\]\\[RECON|RECONCILE\"",
+  "duplicidade_rollback": "createLedgerEntry deduplica por (correlation_id, tipo, referencia); ledgerHasRollback evita segunda execução de rollbackWithdraw."
+}

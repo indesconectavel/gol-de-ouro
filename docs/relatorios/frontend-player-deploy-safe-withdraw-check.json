@@ -1,0 +1,8 @@
+{
+  "auditoria": "FRONTEND PLAYER DEPLOY SAFE - Verificação se correção da tela de saque está em produção",
+  "data": "2026-03-06",
+  "withdraw_fix_em_producao": false,
+  "evidencia": "Deployment de produção atual (ez1oc96t1) tem idade '1d' no snapshot de 2026-03-06 01:03 UTC, portanto foi deployado antes de 2026-03-06. O commit da correção (258b0cd) é de 2026-03-06 14:45:26 -0300. Logo o código em produção foi gerado antes do commit da correção e não contém withdrawService nem as alterações em Withdraw.jsx/config.api.js.",
+  "evidencia_complementar": "Não foi feita inspeção do bundle JS em produção (read-only; conteúdo minificado). A conclusão baseia-se exclusivamente na cronologia: deploy atual anterior ao commit da correção.",
+  "risco": "Em produção a tela de saque ainda chama createPix/getUserPix (endpoints de depósito). Deploy do commit 8f51edc ou 258b0cd é necessário para que a tela use POST /api/withdraw/request e GET /api/withdraw/history."
+}

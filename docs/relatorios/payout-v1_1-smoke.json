@@ -1,0 +1,16 @@
+﻿{
+    "timestamp_utc":  "2026-03-06T12:08:24.9477096Z",
+    "dashboard":  {
+                      "server":  "Vercel",
+                      "html_sha256":  "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0",
+                      "statusCode":  200
+                  },
+    "health":  {
+                   "statusCode":  200
+               },
+    "game":  {
+                 "server":  "Vercel",
+                 "html_sha256":  "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0",
+                 "statusCode":  200
+             }
+}

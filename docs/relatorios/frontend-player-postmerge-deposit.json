@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 4 - Verificação tela de depósito (frontend publicado)",
+  "result": "PASS",
+  "method": "READ-ONLY: busca no bundle JS em produção (index-CHnRaMxK.js)",
+  "checks": {
+    "criacao_pix_presente": true,
+    "qr_copia_cola_presente": true,
+    "verificar_status_nao_aparece": true
+  },
+  "evidence": {
+    "bundle_contains_Verificar_Status": false
+  },
+  "conclusion": "Simplificação da tela de depósito está publicada: 'Verificar Status' não aparece mais no bundle."
+}

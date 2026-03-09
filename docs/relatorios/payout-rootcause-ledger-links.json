@@ -1,0 +1,24 @@
+{
+  "timestamp": "2026-03-06T12:00:00.000Z",
+  "fonte": "codigo_processPendingWithdrawals_readonly",
+  "worker_tenta_escrever_ledger_para_saque": true,
+  "quando": "Apenas no caminho de FALHA do payout (payoutResult.success !== true)",
+  "etapas": [
+    {
+      "ordem": 1,
+      "acao": "createLedgerEntry({ tipo: 'falha_payout', usuarioId, valor: netAmount, referencia: saqueId, correlationId })",
+      "arquivo": "src/domain/payout/processPendingWithdrawals.js",
+      "linhas": "359-365",
+      "observacao": "Inserido ANTES do rollbackWithdraw. Se insert falhar, createLedgerEntry retorna { success: false }; o codigo nao verifica retorno e segue para rollbackWithdraw."
+    },
+    {
+      "ordem": 2,
+      "acao": "rollbackWithdraw(...)",
+      "arquivo": "src/domain/payout/processPendingWithdrawals.js",
+      "linhas": "366",
+      "observacao": "Dentro de rollback: createLedgerEntry(tipo rollback) para valor e opcionalmente fee; depois update saques status=REJECTED, processed_at."
+    }
+  ],
+  "onde_falha_ledger": "insertLedgerRow (processPendingWithdrawals 22-55): tenta user_id depois usuario_id; em falha loga '[LEDGER] insert falhou (airbag)' e retorna { success: false }. Quem chama createLedgerEntry nao aborta o fluxo por isso.",
+  "conclusao": "O worker TENTA escrever no ledger para os 5 saques quando o payout FALHA (falha_payout + rollback). Se o rollback.update(saques) falhar apos isso, o saque permanece em processando. Ledger pode ter entradas falha_payout ou rollback para esses saques se o insert tiver sucesso; se a tabela ledger estiver vazia (0 registros 24h/7d/30d), ou o insert esta falhando (ex: coluna user_id vs usuario_id, constraint) ou o fluxo nao esta chegando ate createPixWithdraw (ex: PAYOUT_PIX_ENABLED=false retorna antes)."
+}

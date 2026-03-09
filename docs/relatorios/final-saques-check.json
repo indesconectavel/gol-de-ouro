@@ -1,0 +1,146 @@
+{
+  "timestamp": "2026-03-06T02:28:41.043Z",
+  "total_por_status": [
+    {
+      "status": "processando",
+      "count": 5
+    },
+    {
+      "status": "cancelado",
+      "count": 2
+    },
+    {
+      "status": "rejeitado",
+      "count": 2
+    }
+  ],
+  "presos_mais_30_min": 5,
+  "saques_presos": [
+    {
+      "id": "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-04T23:52:06.693+00:00",
+      "processed_at": null,
+      "transacao_id": null
+    },
+    {
+      "id": "ecd0045f-9e80-425c-b2a3-810977351d6f",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T01:46:58.093+00:00",
+      "processed_at": null,
+      "transacao_id": null
+    },
+    {
+      "id": "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T02:37:03.041+00:00",
+      "processed_at": null,
+      "transacao_id": null
+    },
+    {
+      "id": "ed46001f-26fe-4301-b784-d972a7aa1807",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T18:21:40.984+00:00",
+      "processed_at": null,
+      "transacao_id": null
+    },
+    {
+      "id": "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T18:29:16.436+00:00",
+      "processed_at": null,
+      "transacao_id": null
+    }
+  ],
+  "processed_at_null": 7,
+  "transacao_id_null": 9,
+  "ultimos_20_mascarados": [
+    {
+      "id": "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T18:29:16.436+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "amount": 10
+    },
+    {
+      "id": "ed46001f-26fe-4301-b784-d972a7aa1807",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T18:21:40.984+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "amount": 10
+    },
+    {
+      "id": "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T02:37:03.041+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "amount": 10
+    },
+    {
+      "id": "ecd0045f-9e80-425c-b2a3-810977351d6f",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T01:46:58.093+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "amount": 10
+    },
+    {
+      "id": "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-04T23:52:06.693+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "amount": 10
+    },
+    {
+      "id": "5cff6e2e-b188-4b8c-85e5-080aed465a21",
+      "usuario_id": "***4ad5",
+      "status": "rejeitado",
+      "created_at": "2026-03-04T05:01:40.119+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "amount": 10
+    },
+    {
+      "id": "2ad05942-3d86-4118-baa4-eb2085b72376",
+      "usuario_id": "***4ad5",
+      "status": "rejeitado",
+      "created_at": "2026-03-01T16:15:24.942+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "amount": 10
+    },
+    {
+      "id": "22d323da-aa71-469a-bc50-2af8331293a3",
+      "usuario_id": "***1c35",
+      "status": "cancelado",
+      "created_at": "2025-11-11T21:37:54.151+00:00",
+      "processed_at": "2026-02-02T20:51:14.963483+00:00",
+      "transacao_id": null,
+      "amount": 5
+    },
+    {
+      "id": "86b0abe6-c9ff-4452-9bc6-cdfa478c7d27",
+      "usuario_id": "***1c35",
+      "status": "cancelado",
+      "created_at": "2025-11-08T20:33:22.018+00:00",
+      "processed_at": "2026-02-02T20:51:14.963483+00:00",
+      "transacao_id": null,
+      "amount": 5
+    }
+  ],
+  "erros": []
+}

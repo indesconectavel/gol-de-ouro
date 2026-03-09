@@ -1,0 +1,16 @@
+{
+  "audit_date": "2026-03-06",
+  "preview_deployment_id": "ez1oc96t1",
+  "risco_de_promote": "alto",
+  "fatores": [
+    "Diferença de bundle em relação à baseline (index-DVt6EjKW.js vs index-qIGutT6K.js)",
+    "Regressão já documentada para este build: barra de versão e layout (INCIDENTE-REGRESSAO-GAME-READONLY-2026-03-04)",
+    "Preview não contém correção de saque (/api/withdraw/request) nem simplificação de depósito (ainda contém 'Verificar Status')",
+    "VersionWarning ativo no preview; baseline validada sem esse comportamento",
+    "Fingerprint e SHA256 do HTML diferentes da baseline oficial"
+  ],
+  "mudancas_esperadas": "nenhuma informada para este preview",
+  "mudancas_inesperadas": "Bundle distinto; barra de versão; ausência das correções de saque/depósito publicadas na baseline",
+  "evidencia_regressao_visual_funcional": "sim (barra de versão e layout reportados em incidente anterior)",
+  "recomendacao": "NÃO promover este preview (ez1oc96t1) para produção como substituição da baseline FyKKeg6zb. Em caso de produção atual estar neste deployment, considerar rollback para baseline FyKKeg6zb (ou deployment que sirva index-qIGutT6K.js)."
+}

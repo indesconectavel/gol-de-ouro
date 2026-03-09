@@ -1,0 +1,27 @@
+{
+  "audit_date": "2026-03-06",
+  "escopo": "Estado real da produção",
+  "baseline_oficial": {
+    "deployment_id": "FyKKeg6zb",
+    "bundle_js": "index-qIGutT6K.js",
+    "bundle_css": "index-lDOJDUAS.css",
+    "contem_withdraw_request": false,
+    "contem_deposito_simplificado": false,
+    "observacao": "Baseline designada como oficial; bundle antigo (saque via createPix, depósito com Verificar Status)."
+  },
+  "frontend_atual_producao": {
+    "deployment_listado": "ez1oc96t1 (em relatórios anteriores)",
+    "bundle_possivel_qIGutT6K": "Servido em algumas verificações (fingerprint SHA256 BEBE03...); sem withdraw/request.",
+    "bundle_possivel_CHnRaMxK": "Documentado pós-merge (FRONTEND-PLAYER-POSTMERGE): withdraw/request e withdraw/history presentes; 'Verificar Status' removido.",
+    "bundle_possivel_DVt6EjKW": "Preview ez1oc96t1 (COMPARE-PREVIEW): sem withdraw/request.",
+    "conclusao": "Estado em produção pode variar (cache/CDN ou deployment atual). Para V1 financeiro concluído em produção é necessário que o bundle servido contenha /api/withdraw/request e /api/withdraw/history e depósito sem 'Verificar Status'."
+  },
+  "backend_producao": {
+    "app": "goldeouro-backend-v2.fly.dev",
+    "release": "v315 (ENCERRAMENTO-ETAPA-FINANCEIRA-V1)",
+    "depositos_pix": "OK",
+    "saques_pix": "Funcionais com rollback (V1.2)",
+    "worker_reconciler": "OK"
+  },
+  "estado_financeiro_visivel_ao_usuario": "Se o bundle em produção for o antigo (qIGutT6K ou DVt6EjKW): usuário vê tela de saque que envia para createPix (errado) e depósito com 'Verificar Status'. Se for CHnRaMxK: saque correto (withdraw/request) e depósito simplificado."
+}

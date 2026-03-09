@@ -1,0 +1,45 @@
+{
+  "auditoria": "SAQUE FINAL CONTRACT CHECK - Contrato do frontend (read-only)",
+  "data": "2026-03-06",
+  "payload_submit": {
+    "fonte": "withdrawService.requestWithdraw → apiClient.post(WITHDRAW_REQUEST, body)",
+    "campos": {
+      "valor": "parseFloat(amount) - number",
+      "chave_pix": "String(pixKey).trim() - string",
+      "tipo_chave": "pixType || 'cpf' - string (cpf | email | phone | random)"
+    },
+    "nomes_campos": ["valor", "chave_pix", "tipo_chave"]
+  },
+  "validacoes_frontend": {
+    "campos_obrigatorios": "amount e pixKey (Withdraw.jsx 91-94)",
+    "valor_maior_zero": "amount <= 0 → 'Valor deve ser maior que zero'",
+    "saldo_suficiente": "amount > balance → 'Saldo insuficiente'",
+    "valor_minimo_exibido": "paymentService.getConfig().minAmount (produção: 10.00)",
+    "input_min": "min=\"10\" no input (Withdraw.jsx)"
+  },
+  "mensagens_erro": [
+    "Todos os campos são obrigatórios",
+    "Valor deve ser maior que zero",
+    "Saldo insuficiente",
+    "result.error (mensagem do backend) ou 'Erro ao processar saque'"
+  ],
+  "mensagem_sucesso": "Modal 'Saque Solicitado!' + 'Sua solicitação foi enviada com sucesso. Você receberá o valor em até 24 horas.'",
+  "consumo_historico_ui": {
+    "fonte": "withdrawalHistory (state) preenchido por getWithdrawHistory()",
+    "campos_usados_na_renderizacao": [
+      "withdrawal.id (key e div)",
+      "withdrawal.amount (R$ X.XX, toFixed(2))",
+      "withdrawal.method (texto ao lado de pixKey)",
+      "withdrawal.pixKey",
+      "withdrawal.date",
+      "withdrawal.status (getStatusColor, getStatusIcon, texto)"
+    ],
+    "formatos_esperados": {
+      "amount": "number (para toFixed(2))",
+      "status": "string: 'Processado' | 'Pendente' | 'Cancelado' ou default",
+      "date": "string (ex.: formatada pt-BR)",
+      "method": "string",
+      "pixKey": "string"
+    }
+  }
+}

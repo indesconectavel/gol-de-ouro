@@ -1,0 +1,20 @@
+{
+  "timestamp_utc": "2026-03-06T16:38:00.000Z",
+  "etapa": "Deposito PIX",
+  "sucesso": true,
+  "metodo": "POST /api/payments/pix/criar",
+  "payload": { "amount": 5 },
+  "resposta": {
+    "success": true,
+    "message": "PIX criado com sucesso!",
+    "data_id": 149142718210,
+    "qr_code_present": true,
+    "qr_code_base64_present": true,
+    "status": "pending"
+  },
+  "valor_depositado": 5,
+  "tempo_confirmacao": "N/A (confirmacao requer pagamento real)",
+  "saldo_antes": 0,
+  "saldo_depois": "N/A (pendente)",
+  "observacao": "Geracao de PIX e QR Code OK; webhook nao testado"
+}

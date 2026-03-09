@@ -1,0 +1,17 @@
+{
+  "auditoria": "AUDITORIA READ-ONLY - Classificação de risco da integração saque",
+  "data": "2026-03-06",
+  "classificacao_final": "POSSÍVEL ERRO",
+  "criterios": {
+    "ok": "Tela chama endpoint correto de saque (POST /api/withdraw/request)",
+    "possivel_erro": "Tela chama createPix ou endpoint de depósito"
+  },
+  "evidencias": [
+    "Withdraw.jsx linha 107-111: comentário 'Criar PIX usando o serviço' e chamada paymentService.createPix(...) no handleSubmit da tela de Saque.",
+    "paymentService.js linha 26/100: pixEndpoint = '/api/payments/pix/criar'; createPix usa apiClient.post(this.config.pixEndpoint, ...).",
+    "Backend: POST /api/withdraw/request existe em server-fly.js para solicitação de saque; POST /api/payments/pix/criar é para criação de PIX de depósito.",
+    "config/api.js define WITHDRAW: '/api/withdraw' mas nenhum código usa esse constante para enviar a solicitação de saque.",
+    "Cypress withdraw.cy.js intercepta POST **/api/payments/pix/criar como 'withdrawRequest', confirmando que o teste E2E espera a tela de saque chamar o endpoint de depósito."
+  ],
+  "impacto": "Ao clicar em Solicitar Saque, o frontend cria um PIX de depósito (QR/código para pagar) em vez de registrar uma solicitação de saque. O usuário não consegue sacar; o backend de saque (/api/withdraw/request) não é chamado."
+}

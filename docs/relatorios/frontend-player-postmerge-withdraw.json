@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 3 - Verificação tela de saque (frontend publicado)",
+  "result": "PASS",
+  "method": "READ-ONLY: busca no bundle JS em produção (index-CHnRaMxK.js)",
+  "checks": {
+    "submit_uses_withdraw_request": true,
+    "history_uses_withdraw_history": true
+  },
+  "evidence": {
+    "bundle_contains_api_withdraw_request": true,
+    "bundle_contains_api_withdraw_history": true
+  },
+  "conclusion": "Correção da tela de saque está publicada: bundle contém /api/withdraw/request e /api/withdraw/history."
+}

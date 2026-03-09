@@ -1,0 +1,46 @@
+{
+  "timestamp_utc": "2026-03-06T15:13:45.273Z",
+  "nota": "Logs reais devem ser buscados no Fly Dashboard (payout_worker e app). Este arquivo lista padrões a buscar.",
+  "padroes": [
+    "rejeitado",
+    "ROLLBACK",
+    "payout falhou",
+    "motivo_rejeicao",
+    "timeout_reconciliacao",
+    "[RECONCILE]",
+    "[PAYOUT][FALHOU]",
+    "[SAQUE][ROLLBACK]",
+    "PAYOUT_ROLLBACK_FAIL"
+  ],
+  "ids_para_buscar": [
+    {
+      "id_8": "8d11c1a2",
+      "correlation_8": "hotfix-l"
+    },
+    {
+      "id_8": "ed46001f",
+      "correlation_8": "hotfix-l"
+    },
+    {
+      "id_8": "da70665c",
+      "correlation_8": "hotfix-l"
+    },
+    {
+      "id_8": "ecd0045f",
+      "correlation_8": "hotfix-l"
+    },
+    {
+      "id_8": "ea3e4dec",
+      "correlation_8": "hotfix-l"
+    },
+    {
+      "id_8": "5cff6e2e",
+      "correlation_8": "e2e-saqu"
+    },
+    {
+      "id_8": "2ad05942",
+      "correlation_8": "13d9d333"
+    }
+  ],
+  "instrucao": "fly logs -a <app> | grep -E \"rejeitado|ROLLBACK|RECONCILE|PAYOUT\""
+}

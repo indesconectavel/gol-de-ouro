@@ -1,0 +1,11 @@
+{
+  "timestamp_utc": "2026-03-06T14:10:00.000Z",
+  "lines_captured": 200,
+  "PAYOUT_RECON": 0,
+  "rollback_true": 0,
+  "rollback_already_done": 0,
+  "PAYOUT_CYCLE": 0,
+  "PAYOUT_QUERY": 0,
+  "causa_falha_deploy": "app crashou com Error: Cannot find module './withdrawalStatus' em processPendingWithdrawals.js; payout_worker nao escuta em 8080 (smoke check Fly falhou)",
+  "sample": "(logs Fly capturados apos deploy abortado; maquinas voltaram a versao anterior)"
+}

@@ -1,0 +1,61 @@
+{
+  "auditoria": "DEPOSITO FINAL CONTRACT CHECK - Riscos para demonstração do depósito",
+  "data": "2026-03-06",
+  "riscos": [
+    {
+      "id": "R1",
+      "descricao": "Atraso de confirmação do PIX (webhook/saldo)",
+      "nivel": "medio",
+      "mitigacao": "Avisar na demo que o crédito pode levar alguns segundos a ~1 minuto; ter Plano B mostrando apenas QR/código sem pagamento real."
+    },
+    {
+      "id": "R2",
+      "descricao": "QR Code ou código PIX não retornado (Mercado Pago falha)",
+      "nivel": "alto",
+      "mitigacao": "Health check do backend confirma mercadoPago connected; em falha, backend retorna 503/500; exibir mensagem amigável."
+    },
+    {
+      "id": "R3",
+      "descricao": "Copy-paste ausente na resposta",
+      "nivel": "baixo",
+      "mitigacao": "Backend envia pix_code, qr_code, pix_copy_paste; UI usa qualquer um. Se todos null (MP não retornar), UI mostra fallback 'PIX Enviado por Email'."
+    },
+    {
+      "id": "R4",
+      "descricao": "Valor mínimo/máximo (frontend 1, backend 1–1000)",
+      "nivel": "baixo",
+      "mitigacao": "Alinhado; usar valor entre 1 e 1000 na demo."
+    },
+    {
+      "id": "R5",
+      "descricao": "Mensagem de erro pouco amigável (500/503)",
+      "nivel": "medio",
+      "mitigacao": "Frontend exibe response.data.message ou genérica; backend envia mensagens fixas. Em erro MP, backend não expõe detalhe (segurança)."
+    },
+    {
+      "id": "R6",
+      "descricao": "Webhook não demonstrável ao vivo",
+      "nivel": "medio",
+      "mitigacao": "Plano B: mostrar QR/código e explicar que o crédito ocorre via webhook após pagamento; não depender de PIX real na hora."
+    },
+    {
+      "id": "R7",
+      "descricao": "Dependência Mercado Pago indisponível",
+      "nivel": "alto",
+      "mitigacao": "Verificar /health (mercadoPago: connected) antes da demo; ter Plano B sem pagamento real."
+    },
+    {
+      "id": "R8",
+      "descricao": "Histórico/status não atualizando (GET status inexistente no server-fly)",
+      "nivel": "medio",
+      "mitigacao": "Botão 'Verificar Status' chama GET .../pix/status?paymentId=...; se endpoint não existir no server-fly, pode 404. Recarregar página ou listar histórico (GET usuario) para ver atualizações após webhook."
+    },
+    {
+      "id": "R9",
+      "descricao": "Saldo na tela de Pagamentos mostra 0 (frontend usa .balance, backend .data.saldo)",
+      "nivel": "medio",
+      "mitigacao": "Se backend retorna { data: { saldo } }, frontend deveria usar response.data.data.saldo; senão exibir saldo do dashboard ou corrigir contrato."
+    }
+  ],
+  "resumo": { "baixo": 2, "medio": 5, "alto": 2 }
+}

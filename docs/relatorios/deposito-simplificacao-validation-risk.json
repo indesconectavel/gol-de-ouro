@@ -1,0 +1,15 @@
+{
+  "auditoria": "Validação READ-ONLY - Riscos pós-simplificação",
+  "data": "2026-03-06",
+  "riscos_reduzidos": [
+    { "item": "Chamada GET /api/payments/pix/status", "antes": "Botão poderia retornar 404 no server-fly", "depois": "Nenhuma chamada ao endpoint", "nivel": "baixo", "status": "mitigado" },
+    { "item": "Leitura response.data.balance", "antes": "Campo inexistente na resposta do backend", "depois": "Removida; saldo não era exibido na tela", "nivel": "baixo", "status": "mitigado" }
+  ],
+  "riscos_inalterados": [
+    { "item": "Criação PIX depende do backend e Mercado Pago", "nivel": "inalterado", "mitigacao": "Health check antes da demo" },
+    { "item": "Histórico depende de GET PIX_USER", "nivel": "inalterado", "mitigacao": "Endpoint já usado e estável" }
+  ],
+  "fluxo_principal_quebrado": false,
+  "novos_riscos_introduzidos": [],
+  "conclusao_risco": "OK - Simplificação reduziu superfície de falha sem introduzir novos riscos; fluxo principal intacto."
+}

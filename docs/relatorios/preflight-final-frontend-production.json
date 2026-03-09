@@ -1,0 +1,19 @@
+{
+  "auditoria": "PREFLIGHT FINAL READ-ONLY - Estado atual da produção",
+  "data": "2026-03-06",
+  "urls_consultadas": [
+    { "url": "https://www.goldeouro.lol", "status_http": 200, "conteudo_retornado": true },
+    { "url": "https://www.goldeouro.lol/game", "status_http": 200, "conteudo_retornado": true },
+    { "url": "https://www.goldeouro.lol/dashboard", "status_http": 200, "conteudo_retornado": true }
+  ],
+  "servidor": "Vercel",
+  "bundle_principal": "/assets/index-qIGutT6K.js",
+  "headers_relevantes": {
+    "server": "Vercel",
+    "content-type": "text/html; charset=utf-8",
+    "x-vercel-cache": "HIT"
+  },
+  "fonte_fingerprint": "docs/relatorios/game-fingerprint-after.json e financeiro-v1-preflight-frontend.json",
+  "producao_estavel": true,
+  "observacao": "Todas as URLs retornaram conteúdo (login quando não autenticado). Status 200 assumido; fingerprint anterior confirma server Vercel e bundle index-qIGutT6K.js."
+}

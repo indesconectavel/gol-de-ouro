@@ -1,0 +1,23 @@
+{
+  "audit_date": "2026-03-06",
+  "path": "/game",
+  "baseline_oficial": true,
+  "bundle_carregado": "/assets/index-qIGutT6K.js",
+  "estrutura_pagina": "SPA React; rota /game renderizada no cliente após carregar o app a partir de /.",
+  "elementos_centrais_esperados": [
+    "saldo",
+    "apostas",
+    "campo",
+    "goleiro",
+    "bola",
+    "botões/zonas de chute",
+    "menu principal"
+  ],
+  "indicios_funcionais_no_bundle": {
+    "has_game": true,
+    "has_games_shoot": true,
+    "bundle_length_bytes": 478903
+  },
+  "layout_validado": "O /game atual corresponde ao layout/experiência validada pelo usuário; baseline oficial registrado para comparação em futuros deploys.",
+  "observacao": "Acesso direto via GET a /game retorna 200 na data da auditoria; conteúdo do jogo é parte do mesmo bundle que a raiz."
+}

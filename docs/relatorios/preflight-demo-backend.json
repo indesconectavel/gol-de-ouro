@@ -1,0 +1,20 @@
+{
+  "auditoria": "PRE-FLIGHT READ-ONLY - Disponibilidade do backend",
+  "data": "2026-03-06",
+  "url": "https://goldeouro-backend-v2.fly.dev/health",
+  "resposta": {
+    "status": "ok",
+    "timestamp": "2026-03-06T17:20:04.860Z",
+    "version": "1.2.1",
+    "database": "connected",
+    "mercadoPago": "connected",
+    "contadorChutes": 220,
+    "ultimoGolDeOuro": 0
+  },
+  "resumo": {
+    "backend_disponivel": true,
+    "database_status": "connected",
+    "mercado_pago_status": "connected",
+    "versao": "1.2.1"
+  }
+}

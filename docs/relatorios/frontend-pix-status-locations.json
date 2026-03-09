@@ -1,0 +1,73 @@
+{
+  "auditoria": "AUDITORIA FRONTEND - Depósito / PIX Status (read-only)",
+  "data": "2026-03-06",
+  "objetivo": "Localizar botão Verificar Status, endpoint pix/status e funções relacionadas",
+  "ocorrencias_pix_status": [
+    {
+      "arquivo": "goldeouro-player/src/config/api.js",
+      "caminho_completo": "e:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\config\\api.js",
+      "linha_inicial": 22,
+      "linha_final": 22,
+      "trecho": "PIX_STATUS: `/api/payments/pix/status`,",
+      "funcao_utilizada": "Export API_ENDPOINTS (constante)"
+    },
+    {
+      "arquivo": "goldeouro-player/src/services/paymentService.js",
+      "caminho_completo": "e:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\services\\paymentService.js",
+      "linha_inicial": 28,
+      "linha_final": 28,
+      "trecho": "pixStatusEndpoint: '/api/payments/pix/status',",
+      "funcao_utilizada": "getPaymentConfig() - ambiente produção"
+    },
+    {
+      "arquivo": "goldeouro-player/src/services/paymentService.js",
+      "caminho_completo": "e:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\services\\paymentService.js",
+      "linha_inicial": 44,
+      "linha_final": 44,
+      "trecho": "pixStatusEndpoint: '/api/payments/pix/status',",
+      "funcao_utilizada": "getPaymentConfig() - ambiente sandbox"
+    },
+    {
+      "arquivo": "goldeouro-player/src/services/paymentService.js",
+      "caminho_completo": "e:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\services\\paymentService.js",
+      "linha_inicial": 60,
+      "linha_final": 60,
+      "trecho": "pixStatusEndpoint: '/api/payments/pix/status',",
+      "funcao_utilizada": "getPaymentConfig() - ambiente mock"
+    },
+    {
+      "arquivo": "goldeouro-player/src/services/paymentService.js",
+      "caminho_completo": "e:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\services\\paymentService.js",
+      "linha_inicial": 122,
+      "linha_final": 126,
+      "trecho": "const response = await apiClient.get(`${this.config.pixStatusEndpoint}/${transactionId}`, { timeout: this.config.timeout });",
+      "funcao_utilizada": "getPixStatus(transactionId) - chama GET /api/payments/pix/status/:id"
+    },
+    {
+      "arquivo": "goldeouro-player/src/pages/Pagamentos.jsx",
+      "caminho_completo": "e:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\pages\\Pagamentos.jsx",
+      "linha_inicial": 81,
+      "linha_final": 103,
+      "trecho": "const consultarStatusPagamento = async (paymentId) => { ... const response = await apiClient.get(`${API_ENDPOINTS.PIX_STATUS}?paymentId=${paymentId}`); ... }",
+      "funcao_utilizada": "consultarStatusPagamento(paymentId)"
+    },
+    {
+      "arquivo": "goldeouro-player/src/pages/Pagamentos.jsx",
+      "linha_inicial": 248,
+      "linha_final": 252,
+      "trecho": "<button onClick={() => consultarStatusPagamento(pagamentoAtual.id)} ... >🔄 Verificar Status</button>",
+      "funcao_utilizada": "Botão no bloco 'Pagamento PIX Criado'"
+    },
+    {
+      "arquivo": "goldeouro-player/src/pages/Pagamentos.jsx",
+      "linha_inicial": 364,
+      "linha_final": 368,
+      "trecho": "<button onClick={() => consultarStatusPagamento(pagamento.id)} ... >Verificar</button>",
+      "funcao_utilizada": "Botão na tabela de histórico (coluna Ações)"
+    }
+  ],
+  "resposta_perguntas": {
+    "arquivo_cria_botao_verificar_status": "goldeouro-player/src/pages/Pagamentos.jsx (linhas 248 e 364-368)",
+    "funcao_chama_get_pix_status": "consultarStatusPagamento(paymentId) em Pagamentos.jsx (linha 90): apiClient.get(`${API_ENDPOINTS.PIX_STATUS}?paymentId=${paymentId}`). Nota: Pagamentos usa query string (?paymentId=); paymentService.getPixStatus usa path (/:id)."
+  }
+}

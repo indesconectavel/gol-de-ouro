@@ -1,0 +1,16 @@
+{
+  "auditoria": "FRONTEND PLAYER DEPLOY SAFE - Produção atual (read-only)",
+  "data": "2026-03-06",
+  "fonte_snapshot_vercel": "docs/relatorios/vercel-deployments-snapshot.json (2026-03-06T01:03:00Z)",
+  "current_deployment_id": "ez1oc96t1",
+  "project_name": "goldeouro-player",
+  "project_full": "goldeouro-admins-projects/goldeouro-player",
+  "domain": "https://www.goldeouro.lol",
+  "domains_servidos": ["goldeouro.lol", "www.goldeouro.lol", "app.goldeouro.lol"],
+  "status": "Ready",
+  "environment": "Production",
+  "age_no_snapshot": "1d",
+  "url_deployment": "https://goldeouro-player-ez1oc96t1-goldeouro-admins-projects.vercel.app",
+  "server": "Vercel",
+  "observacoes": "Produção atual é ez1oc96t1. Snapshot de deployments foi coletado em 2026-03-06 01:03 UTC; não foi executado comando Vercel nesta auditoria (read-only). Headers de /game e /dashboard indicam server: Vercel, x-vercel-cache: HIT."
+}

@@ -1,0 +1,17 @@
+{
+  "audit_date": "2026-03-06",
+  "repo_raiz": "e:\\Chute de Ouro\\goldeouro-backend",
+  "head_atual": "b0448dc9a7270c5b3c30e15fe2be02fb62baeef9",
+  "head_mensagem": "fix(ci): frontend-deploy - nao bloquear PR por npm audit em devDeps antigas",
+  "head_data": "2026-03-06T19:10:33-03:00",
+  "branch_atual": "hotfix/financeiro-v1-stabilize",
+  "commit_baseline_referencia": "d8ceb3b",
+  "commit_baseline_existe": true,
+  "commit_baseline_sha": "d8ceb3bb65a888069ab8f9d84e6561476b822568",
+  "commit_inferido_origem_fykkeg6zb": "0a2a5a1",
+  "commit_inferido_existe": true,
+  "head_igual_baseline": false,
+  "head_igual_commit_origem_inferido": false,
+  "tags_relevantes": ["v1.2.0", "v1.2.1", "v1.1.1-stable-goleiro-reverted", "v1.1.1", "Modo-Jogador-v1.0.0"],
+  "estado_repo_em_relacao_baseline": "HEAD atual está à frente da baseline: branch hotfix/financeiro-v1-stabilize com commits posteriores ao checkpoint d8ceb3b e ao merge 3ae3786; inclui correções de saque, depósito e CI. A baseline FyKKeg6zb (bundle index-qIGutT6K.js) corresponde a um estado do repositório anterior a esses commits."
+}

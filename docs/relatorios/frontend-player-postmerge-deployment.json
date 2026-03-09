@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 1 - Identificar novo deployment",
+  "method": "READ-ONLY: inspeção do site em produção",
+  "bundle_served": "/assets/index-CHnRaMxK.js",
+  "bundle_size_bytes": 380066,
+  "previous_bundle": "/assets/index-qIGutT6K.js",
+  "deployment_id": null,
+  "deployment_url": "https://www.goldeouro.lol",
+  "x_vercel_id": "gru1::sfblh-1772836756256-24f93c9c7a4c",
+  "x_vercel_cache": "HIT",
+  "evidence_new_deploy": "Bundle alterado para index-CHnRaMxK.js; página exibe 'VERSÃO ATUALIZADA v1.2.0•DEPLOY REALIZADO EM 06/03/2026'",
+  "note": "deployment_id não exposto via headers públicos; bundle novo confirma deploy pós-merge."
+}

@@ -1,0 +1,15 @@
+{
+  "timestamp_utc": "2026-03-06T15:16:00.000Z",
+  "resumo": "Logs Fly após deploy v315. App e82d445ae76178 (v313) em execução com [RECON], LOGIN, PIX. Máquinas v315 (2874551a105768 app, e82794da791108 payout_worker) deixadas stopped (machine was in a non-started state prior to the update so leaving the new version stopped).",
+  "encontrados": {
+    "PAYOUT_RECON": true,
+    "rollback_true": false,
+    "rollback_already_done": false,
+    "PAYOUT_CYCLE": false,
+    "PAYOUT_QUERY": false,
+    "MODULE_NOT_FOUND": false,
+    "smoke_fail_worker": false,
+    "CHECK_violates": false
+  },
+  "nota": "RECON aparece como [RECON] ID de pagamento inválido (depósito). Nenhum erro crítico de payout ou MODULE_NOT_FOUND."
+}

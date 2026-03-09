@@ -1,0 +1,15 @@
+{
+  "auditoria": "FRONTEND PLAYER DEPLOY SAFE - Plano seguro de rollback (read-only, não executado)",
+  "data": "2026-03-06",
+  "deployment_atual_preservar": "ez1oc96t1",
+  "deployment_atual_url": "https://goldeouro-player-ez1oc96t1-goldeouro-admins-projects.vercel.app",
+  "possible_target_deploy": "Após o deploy do player com commit 8f51edc, o novo deployment terá um ID gerado pelo Vercel. Para rollback: promover novamente o deployment ez1oc96t1 para Production no dashboard Vercel (Redeploy ou Promote to Production).",
+  "checks_pos_deploy": [
+    "GET https://www.goldeouro.lol/ → 200, página de login",
+    "GET https://www.goldeouro.lol/game → 200, HTML SPA com bundle JS",
+    "GET https://www.goldeouro.lol/dashboard → 200, HTML SPA",
+    "Login: fluxo completo (email/senha → redirecionamento)",
+    "Tela de saque: logado, abrir /withdraw; submeter formulário e confirmar na rede que a requisição é POST /api/withdraw/request (não POST /api/payments/pix/criar)"
+  ],
+  "rollback_criterio": "Rollback imediato se: (1) /game ou /dashboard retornar 5xx ou página em branco; (2) login deixar de funcionar; (3) erros em console ou rede que impeçam uso crítico. Promover de volta o deployment ez1oc96t1 para Production."
+}

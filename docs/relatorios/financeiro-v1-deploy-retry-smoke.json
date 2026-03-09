@@ -1,0 +1,12 @@
+{
+  "timestamp_utc": "2026-03-06T15:15:00.000Z",
+  "health_url": "https://goldeouro-backend-v2.fly.dev/health",
+  "health_status": 200,
+  "health_version": "1.2.1",
+  "game_url": "https://www.goldeouro.lol/game",
+  "game_status": 200,
+  "dashboard_url": "https://www.goldeouro.lol/dashboard",
+  "dashboard_status": 200,
+  "fingerprint_preservado": true,
+  "smoke_passed": true
+}

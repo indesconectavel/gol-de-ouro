@@ -1,0 +1,11 @@
+{
+  "timestamp_utc": "2026-03-06T11:54:00Z",
+  "branch": "hotfix/financeiro-v1-stabilize",
+  "head_commit": "0f09038dea8363fd986763107bb07c580a748226",
+  "commit_alvo": "0f09038dea8363fd986763107bb07c580a748226",
+  "branch_ok": true,
+  "head_equals_alvo": true,
+  "codigo_modificado": false,
+  "modified_apenas_docs_ou_scripts": true,
+  "gate_result": "PASS"
+}

@@ -1,0 +1,8 @@
+{
+  "timestamp_utc": "2026-03-06T12:18:29.619Z",
+  "rls_verificado_via_api": false,
+  "motivo": "Supabase REST API nao expoe pg_policies. Verificar no Dashboard: Table Editor > saques > RLS.",
+  "service_role_comportamento": "Em Supabase, service_role bypassa RLS por padrao.",
+  "se_count_0_com_service_role": "Causa provavel nao e RLS; verificar valores de status e filtros.",
+  "politicas_sugeridas_auditoria": "Dashboard > Authentication > Policies em saques; ou SQL Editor: SELECT * FROM pg_policies WHERE tablename = 'saques';"
+}

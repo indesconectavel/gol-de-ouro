@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-03-06",
+  "audit": "READ-ONLY - Dependências vulneráveis (serialize-javascript, tar)",
+  "vulnerable_packages": [
+    {
+      "name": "serialize-javascript",
+      "version_in_lockfile": "6.0.2",
+      "direct_dependency": false,
+      "transitive_chain": [
+        "goldeouro-player (devDependencies)",
+        "vite-plugin-pwa",
+        "workbox-* (workbox-build)",
+        "@rollup/plugin-terser",
+        "serialize-javascript"
+      ],
+      "used_by": "Build (Rollup/Terser via workbox-build)",
+      "context": "Ferramenta de build; usado em tempo de build pelo workbox-build (PWA/service worker), não em runtime do app.",
+      "dev": true
+    },
+    {
+      "name": "tar",
+      "version_in_lockfile": "7.5.7",
+      "override_in_package_json": "tar: ^7.5.7 (em overrides)",
+      "direct_dependency": false,
+      "transitive_chain": [
+        "goldeouro-player (devDependencies)",
+        "@capacitor/cli",
+        "tar"
+      ],
+      "used_by": "Ferramenta mobile (Capacitor CLI)",
+      "context": "Dependência do @capacitor/cli; usado em tempo de desenvolvimento/build mobile, não em runtime web do player.",
+      "dev": true
+    }
+  ],
+  "summary": {
+    "serialize_javascript": "Transitiva: workbox-build -> @rollup/plugin-terser -> serialize-javascript. Build/PWA.",
+    "tar": "Transitiva: @capacitor/cli -> tar. Já existe override para ^7.5.7 no package.json; lockfile resolve 7.5.7."
+  },
+  "ligacao_ao_player": "Ambas são devDependencies: apenas build e ferramentas (PWA, Capacitor). Nenhuma é dependência de produção do bundle do frontend em runtime."
+}

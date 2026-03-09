@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 5 - Smoke test (produção atual)",
+  "result": "PASS",
+  "urls": [
+    { "url": "https://www.goldeouro.lol/", "status": 200, "content_loaded": true, "fingerprint": "Gol de Ouro - Jogador, GOL DE OURO, Faça login para continuar" },
+    { "url": "https://www.goldeouro.lol/game", "status": 200, "content_loaded": true, "fingerprint": "Gol de Ouro - Jogador, GOL DE OURO, Faça login" },
+    { "url": "https://www.goldeouro.lol/dashboard", "status": 200, "content_loaded": true, "fingerprint": "Gol de Ouro - Jogador, GOL DE OURO, Faça login" }
+  ],
+  "note": "Produção ainda em deployment anterior (ez1oc96t1); novo deploy ocorrerá após merge do PR."
+}

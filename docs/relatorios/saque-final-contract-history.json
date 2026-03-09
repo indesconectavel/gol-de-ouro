@@ -1,0 +1,42 @@
+{
+  "auditoria": "SAQUE FINAL CONTRACT CHECK - Histórico de saque (formato backend x UI)",
+  "data": "2026-03-06",
+  "backend_retorna": {
+    "data.saques[]": {
+      "id": "uuid",
+      "valor": "number",
+      "amount": "number",
+      "fee": "number | null",
+      "net_amount": "number | null",
+      "status": "string (ex.: pendente)",
+      "pix_key": "string | null",
+      "pix_type": "string | null",
+      "created_at": "ISO string"
+    }
+  },
+  "withdrawService_mapeia_para": {
+    "id": "row.id",
+    "amount": "row.amount ?? row.valor ?? 0",
+    "method": "'PIX' (fixo)",
+    "pixKey": "row.pix_key ?? row.chave_pix ?? ''",
+    "date": "formatDate(row.created_at) - toLocaleString('pt-BR')",
+    "status": "mapStatus(row.status) - Pendente | Processado | Cancelado"
+  },
+  "UI_espera": {
+    "withdrawal.id": "key e elemento",
+    "withdrawal.amount": "number (toFixed(2))",
+    "withdrawal.method": "string",
+    "withdrawal.pixKey": "string",
+    "withdrawal.date": "string",
+    "withdrawal.status": "Processado | Pendente | Cancelado | default"
+  },
+  "mapStatus_backend_to_ui": {
+    "pending|pendente|processing": "Pendente",
+    "completed|completed_ok": "Processado",
+    "rejected|cancelled|canceled|failed": "Cancelado",
+    "outros": "includes('pend')? Pendente : includes('process')? Processado : Pendente"
+  },
+  "nullability": "amount usa ?? 0; pixKey usa ?? ''; date formatDate retorna string. UI não acessa campos opcionais sem fallback. Status: compatível.",
+  "ordem": "Backend order by created_at desc; frontend não reordena. Status: compatível.",
+  "conclusao": "Formato do histórico retornado pelo backend é compatível com o mapeamento em withdrawService e com o que a tela Withdraw.jsx renderiza."
+}

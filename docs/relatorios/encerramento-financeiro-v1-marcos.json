@@ -1,0 +1,23 @@
+{
+  "timestamp_utc": "2026-03-06T16:00:00.000Z",
+  "timeline": [
+    { "marco": "auditoria_inicial", "descricao": "Auditorias financeiras e mapa de escritas (balance/saldo)", "ref": "FINANCEIRO-RECONSTRUCAO-PLANO, FINANCEIRO-MAPA-ESCRITAS-BALANCE" },
+    { "marco": "descoberta_problemas", "descricao": "Saques presos, worker count=0, reconciler sem rollback, ledger vazio", "ref": "PAYOUT-WORKER-ROOTCAUSE, PAYOUT-REJEITADOS-ROOTCAUSE, FINANCEIRO-E2E-FINAL" },
+    { "marco": "patch_v1_1", "descricao": "Payout worker: observabilidade, query defensiva, anti-zumbi", "ref": "PAYOUT-WORKER-PATCH-V1_1, commit processPendingWithdrawals + payout-worker" },
+    { "marco": "patch_v1_2", "descricao": "Reconciler com rollback de saldo e ledger (rejectWithRollbackIfNeeded)", "ref": "PAYOUT-V1_2-PATCH-RECON-ROLLBACK, commit 73de7a39" },
+    { "marco": "deploy_fail_v1_2", "descricao": "Deploy final falhou: MODULE_NOT_FOUND (withdrawalStatus.js), smoke worker", "ref": "DEPLOY-FINAL-FAIL-ROOTCAUSE" },
+    { "marco": "patch_deployability_v1_2_1", "descricao": "withdrawalStatus.js no repo, fly.toml documentado", "ref": "DEPLOYABILITY-PATCH-V1_2_1, commits bdcd8b2, 55c5cb8" },
+    { "marco": "deploy_final_retry", "descricao": "Deploy v315 concluído; smoke passou; frontend preservado", "ref": "FINANCEIRO-V1-DEPLOY-FINAL-RETRY" },
+    { "marco": "validacao_final", "descricao": "Validação E2E e final; GO para encerramento V1", "ref": "FINANCEIRO-V1-FINAL-VALIDACAO, FINANCEIRO-E2E-FINAL" },
+    { "marco": "conclusao_etapa", "descricao": "Relatório oficial de encerramento da etapa financeira V1", "ref": "ENCERRAMENTO-ETAPA-FINANCEIRA-V1-OFICIAL-2026-03-06" }
+  ],
+  "commits_relevantes": [
+    { "sha_curto": "73de7a39", "sha_completo": "73de7a39efafe58e643f1e10207108da9098a63d", "descricao": "Patch V1.2 reconciler rollback" },
+    { "sha_curto": "bdcd8b2", "sha_completo": "bdcd8b2413a42158f4757b68e46159937f301eba", "descricao": "withdrawalStatus.js (deployability)" },
+    { "sha_curto": "55c5cb8", "sha_completo": "55c5cb80e5d3550baced5ea5752e9bc2d1d7768f", "descricao": "fly.toml docs process groups (deployability)" }
+  ],
+  "releases_relevantes": [
+    { "version": "v315", "status": "running", "descricao": "Release final em produção (imagem com V1.2.1)" },
+    { "version": "v305", "status": "complete", "descricao": "Release segura para rollback" }
+  ]
+}

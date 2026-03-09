@@ -1,0 +1,17 @@
+﻿{
+    "timestamp_utc":  "2026-03-06T11:53:55.6245741Z",
+    "dashboard":  {
+                      "x_vercel_id":  "gru1::fq9ww-1772798034701-1a7a786593de",
+                      "server":  "Vercel",
+                      "x_vercel_cache":  "HIT",
+                      "statusCode":  200,
+                      "html_sha256":  "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0"
+                  },
+    "game":  {
+                 "x_vercel_id":  "gru1::fq9ww-1772798034578-f83d6f3166ab",
+                 "server":  "Vercel",
+                 "x_vercel_cache":  "HIT",
+                 "statusCode":  200,
+                 "html_sha256":  "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0"
+             }
+}

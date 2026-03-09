@@ -1,0 +1,43 @@
+{
+  "audit_date": "2026-03-06",
+  "escopo": "Gap entre estado atual e sistema financeiro V1 concluído em produção",
+  "itens": [
+    {
+      "id": "F1",
+      "descricao": "Confirmar/garantir que o frontend em produção serve o bundle com saque correto (POST /api/withdraw/request, GET /api/withdraw/history) e depósito simplificado (sem 'Verificar Status')",
+      "classificacao": "bloqueante",
+      "observacao": "Se produção estiver com bundle qIGutT6K ou ez1oc96t1 (DVt6EjKW), o fluxo de saque em produção está errado (createPix)."
+    },
+    {
+      "id": "F2",
+      "descricao": "Promover deployment que contenha bundle index-CHnRaMxK (ou equivalente) para produção, se o current não o for",
+      "classificacao": "bloqueante_se_F1_nao_atendido",
+      "observacao": "Ação dependente da verificação F1."
+    },
+    {
+      "id": "B1",
+      "descricao": "1 saque histórico (timeout reconciler pré-V1.2) sem rollback de saldo",
+      "classificacao": "nao_bloqueante",
+      "observacao": "Documentado em ENCERRAMENTO; correção manual opcional."
+    },
+    {
+      "id": "B2",
+      "descricao": "1 saque inconclusivo (erro API)",
+      "classificacao": "nao_bloqueante",
+      "observacao": "Revisão manual se necessário."
+    },
+    {
+      "id": "O1",
+      "descricao": "Reconcile depósito: external_id não numérico gera ruído de log",
+      "classificacao": "apenas_operacional",
+      "observacao": "Não bloqueia V1."
+    },
+    {
+      "id": "O2",
+      "descricao": "Validar em produção (browser) que /withdraw chama POST /api/withdraw/request ao submeter",
+      "classificacao": "apenas_operacional_demo",
+      "observacao": "Confirmação final para demo/GO-LIVE."
+    }
+  ],
+  "resumo": "Principal gap: garantir que o frontend em produção está servindo o bundle com endpoints de saque corretos. Backend está estável (v315, rollback, worker/reconciler). Riscos residuais do backend são não bloqueantes."
+}

@@ -1,0 +1,20 @@
+{
+  "timestamp_utc": "2026-03-06T15:00:00.000Z",
+  "passo0_frontend": {
+    "game_url": "https://www.goldeouro.lol/game",
+    "game_status": 200,
+    "game_vercel_header": "gru1::6qpmq-1772809542820-b07a564bc4ef",
+    "dashboard_url": "https://www.goldeouro.lol/dashboard",
+    "dashboard_status": 200,
+    "dashboard_vercel_header": "gru1::mv9ff-1772809542925-539625bb43fe",
+    "passed": true
+  },
+  "passo1_git": {
+    "head": "55c5cb80e5d3550baced5ea5752e9bc2d1d7768f",
+    "branch": "hotfix/financeiro-v1-stabilize",
+    "expected_head": "55c5cb80e5d3550baced5ea5752e9bc2d1d7768f",
+    "files_in_commit": ["fly.toml", "src/domain/payout/processPendingWithdrawals.js", "src/domain/payout/reconcileProcessingWithdrawals.js", "src/domain/payout/withdrawalStatus.js"],
+    "working_tree_src_fly_clean": true,
+    "passed": true
+  }
+}

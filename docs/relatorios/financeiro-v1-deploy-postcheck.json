@@ -1,0 +1,16 @@
+{
+  "timestamp_utc": "2026-03-06T14:10:00.000Z",
+  "saques": {
+    "total_rejeitados": 7,
+    "com_rollback": 5,
+    "sem_rollback": 2
+  },
+  "consistencia": {
+    "conclusao_rollback": "rollback_parcial",
+    "conclusao_ledger": "ledger_ok"
+  },
+  "rollback_presente": true,
+  "ledger_ok": true,
+  "sem_bloqueio_critico": true,
+  "nota": "Post-check baseado em scripts executados anteriormente; deploy nao completou, estado financeiro permanece o do pre-deploy."
+}

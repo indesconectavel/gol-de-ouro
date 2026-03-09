@@ -1,0 +1,24 @@
+{
+  "timestamp_utc": "2026-03-06T13:46:24.016Z",
+  "gate_frontend": {
+    "game": {
+      "statusCode": 200,
+      "sha256": "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0"
+    },
+    "dashboard": {
+      "statusCode": 200,
+      "sha256": "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0"
+    },
+    "pass": true
+  },
+  "gate_git": {
+    "branch_atual": "hotfix/financeiro-v1-stabilize",
+    "head_atual": "73de7a39efafe58e643f1e10207108da9098a63d",
+    "commit_alvo_encontrado": true,
+    "working_tree_suja": true,
+    "deploy_partindo_do_commit_exato": true,
+    "estrategia_usada": "worktree temporária no commit 73de7a39efafe58e643f1e10207108da9098a63d (deploy a partir dela, sem arquivos locais)",
+    "pass": true
+  },
+  "gate_pass": true
+}

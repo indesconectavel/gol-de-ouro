@@ -1,0 +1,17 @@
+{
+  "audit_date": "2026-03-06",
+  "preview_alvo": {
+    "deployment_id": "ez1oc96t1",
+    "url": "https://goldeouro-player-ez1oc96t1-goldeouro-admins-projects.vercel.app",
+    "branch": "não informado (deployment de produção listado no snapshot)",
+    "commit": "não informado",
+    "status": "Ready",
+    "environment": "Production",
+    "identificacao": "Deployment atualmente listado como produção no snapshot vercel-deployments-snapshot.json; utilizado como preview alvo por ausência de URL de preview informada pelo usuário."
+  },
+  "baseline_referencia": {
+    "deployment_id": "FyKKeg6zb",
+    "deployment_ref": "dpl_FyKKeg6zbT5emQUoLcZ4K8Q16jLX",
+    "documento": "docs/relatorios/BASELINE-FRONTEND-FYKKeg6zb-OFICIAL-2026-03-06.md"
+  }
+}

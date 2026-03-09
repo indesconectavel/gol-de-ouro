@@ -1,0 +1,17 @@
+{
+  "timestamp_utc": "2026-03-06T15:13:45.123Z",
+  "patch_v1_2_no_codigo": {
+    "present": true,
+    "rejectWithRollbackIfNeeded": true,
+    "log_PAYOUT_RECON": true,
+    "ledgerHasRollback": true
+  },
+  "base_url_configurada": false,
+  "game": {
+    "nota": "VALIDATION_BASE_URL nao definido; GET /game e /dashboard nao executados."
+  },
+  "dashboard": {
+    "nota": "Definir VALIDATION_BASE_URL para validar endpoints."
+  },
+  "fingerprint_estavel": "nao_validado_sem_url"
+}

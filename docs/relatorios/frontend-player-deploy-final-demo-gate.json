@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 1 - Gate do código",
+  "result": "PASS",
+  "checks": {
+    "files_present": {
+      "src/services/withdrawService.js": true,
+      "src/pages/Withdraw.jsx": true,
+      "src/config/api.js": true,
+      "src/pages/Pagamentos.jsx": true
+    },
+    "withdraw_uses_post_request": true,
+    "withdraw_uses_get_history": true,
+    "pagamentos_no_verificar_status": true,
+    "pagamentos_no_get_pix_status": true
+  },
+  "evidence": {
+    "withdrawService": "requestWithdraw → apiClient.post(API_ENDPOINTS.WITHDRAW_REQUEST, ...); getWithdrawHistory → apiClient.get(API_ENDPOINTS.WITHDRAW_HISTORY)",
+    "api_config": "WITHDRAW_REQUEST: '/api/withdraw/request', WITHDRAW_HISTORY: '/api/withdraw/history'",
+    "Pagamentos_jsx": "No occurrence of 'Verificar Status' or GET /api/payments/pix/status; uses PIX_USER and POST /api/payments/pix/criar only"
+  }
+}

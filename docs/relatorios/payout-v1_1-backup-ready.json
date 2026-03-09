@@ -1,0 +1,10 @@
+{
+  "timestamp_utc": "2026-03-06T11:33:00Z",
+  "BACKUP_READY": false,
+  "env_updated": false,
+  "backup_secret_ready": false,
+  "source_audit_found": false,
+  "backup_test_success": false,
+  "gate_env_gitignored": true,
+  "blocker": "DATABASE_URL ausente ou vazio no .env. Adicione a connection string do PostgreSQL (Supabase: Dashboard > Project Settings > Database > Connection string) em .env como DATABASE_URL=postgresql://... sem commitar o arquivo."
+}

@@ -1,0 +1,64 @@
+{
+  "auditoria": "AUDITORIA READ-ONLY - Serviços de pagamento/saque no frontend",
+  "data": "2026-03-06",
+  "arquivos_encontrados": [
+    {
+      "arquivo": "goldeouro-player/src/services/paymentService.js",
+      "tipo": "serviço",
+      "funcoes_exportadas": [
+        {
+          "nome": "createPix",
+          "endpoint": "/api/payments/pix/criar",
+          "metodo_http": "POST",
+          "finalidade": "Criar PIX (depósito) - gera QR/código para usuário pagar"
+        },
+        {
+          "nome": "getPixStatus",
+          "endpoint": "/api/payments/pix/status/${transactionId}",
+          "metodo_http": "GET",
+          "finalidade": "Verificar status de um PIX"
+        },
+        {
+          "nome": "getUserPix",
+          "endpoint": "/api/payments/pix/usuario",
+          "metodo_http": "GET",
+          "finalidade": "Listar PIX do usuário (pagamentos/depósitos)"
+        },
+        {
+          "nome": "validatePixKey",
+          "endpoint": null,
+          "metodo_http": null,
+          "finalidade": "Validação local de chave PIX"
+        },
+        {
+          "nome": "getConfig",
+          "endpoint": null,
+          "metodo_http": null,
+          "finalidade": "Retornar configuração do serviço"
+        }
+      ]
+    },
+    {
+      "arquivo": "goldeouro-player/src/services/apiClient.js",
+      "tipo": "cliente HTTP",
+      "funcoes_exportadas": "axios instance (get, post, etc.)",
+      "endpoints_especificos": "Nenhum; apenas baseURL e interceptors. Corrige URL /pix/usuario para /api/payments/pix/usuario."
+    },
+    {
+      "arquivo": "goldeouro-player/src/config/api.js",
+      "tipo": "configuração",
+      "endpoints_definidos": {
+        "WITHDRAW": "/api/withdraw",
+        "PIX_CREATE": "/api/payments/pix/criar",
+        "PIX_USER": "/api/payments/pix/usuario"
+      },
+      "observacao": "WITHDRAW está definido mas não é usado pela tela de saque. Backend espera /api/withdraw/request."
+    }
+  ],
+  "withdrawService_js": "Não encontrado. Não existe withdrawService.js no frontend.",
+  "resumo": {
+    "existe_funcao_createPix": true,
+    "existe_funcao_requestWithdraw_ou_equivalente": false,
+    "endpoint_saque_correto_no_backend": "POST /api/withdraw/request"
+  }
+}

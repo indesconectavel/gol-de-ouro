@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 1 - Gate",
+  "result": "PASS",
+  "branch_release_local": false,
+  "branch_release_remote": true,
+  "branch_remote_ref": "remotes/origin/release/frontend-player-demo-2026-03-06",
+  "commit_b0448dc_exists": true,
+  "commit_message": "fix(ci): frontend-deploy - nao bloquear PR por npm audit em devDeps antigas",
+  "working_tree": "modified docs (2) + untracked; checkout pode exigir stash"
+}

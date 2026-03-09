@@ -493,23 +493,24 @@ app.post('/api/auth/forgot-password', [
 
     // Enviar email real com link de recuperação
     const emailResult = await emailService.sendPasswordResetEmail(email, user.username, resetToken);
+
+    // Se o envio falhou, retornar erro honesto ao cliente (não mentir que enviou)
+    if (!emailResult.success) {
+      const sanitizedEmailErr = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
+      console.error('❌ [FORGOT-PASSWORD] Falha ao enviar email para', sanitizedEmailErr, ':', emailResult.error);
+      return res.status(503).json({
+        success: false,
+        message: 'Não foi possível enviar o e-mail de recuperação. Tente novamente mais tarde.'
+      });
+    }
     
     // ✅ CORREÇÃO STRING ESCAPING: Sanitizar dados antes de usar em logs
     const sanitizedEmail = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
     const sanitizedToken = typeof resetToken === 'string' ? resetToken.substring(0, 20) + '...' : '***';
     
-    // ✅ CORREÇÃO FORMAT STRING: Combinar mensagem e variáveis em string única antes de logar
-    if (emailResult.success) {
-      const logMessage = `📧 [FORGOT-PASSWORD] Email enviado para ${sanitizedEmail}: ${emailResult.messageId}`;
-      console.log(logMessage);
-    } else {
-      const logMessage = `⚠️ [FORGOT-PASSWORD] Falha ao enviar email para ${sanitizedEmail}: ${emailResult.error}`;
-      console.log(logMessage);
-      // Logar token como fallback (truncado por segurança)
-      const tokenMessage = `🔗 [FORGOT-PASSWORD] Link de recuperação: https://goldeouro.lol/reset-password?token=${sanitizedToken}`;
-      console.log(tokenMessage);
-    }
-
+    const logMessage = `📧 [FORGOT-PASSWORD] Email enviado para ${sanitizedEmail}: ${emailResult.messageId}`;
+    console.log(logMessage);
+    
     const successMessage = `✅ [FORGOT-PASSWORD] Token de recuperação gerado para: ${sanitizedEmail}`;
     console.log(successMessage);
     
@@ -587,14 +588,19 @@ app.post('/api/auth/reset-password', [
       });
     }
 
-    // Marcar token como usado
-    const { error: markUsedError } = await supabase
-      .from('password_reset_tokens')
-      .update({ used: true })
-      .eq('token', token);
-
+    // Marcar token como usado (com retry para consistência)
+    let markUsedError = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const result = await supabase
+        .from('password_reset_tokens')
+        .update({ used: true })
+        .eq('token', token);
+      markUsedError = result.error;
+      if (!markUsedError) break;
+      if (attempt === 0) await new Promise(r => setTimeout(r, 300));
+    }
     if (markUsedError) {
-      console.error('❌ [RESET-PASSWORD] Erro ao marcar token como usado:', markUsedError);
+      console.error('❌ [RESET-PASSWORD] Erro ao marcar token como usado (após retry):', markUsedError);
     }
 
     console.log(`✅ [RESET-PASSWORD] Senha alterada com sucesso para usuário ${tokenData.user_id}`);

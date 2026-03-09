@@ -1,0 +1,11 @@
+{
+  "timestamp_utc": "2026-03-06T15:13:45.273Z",
+  "total_rejeitados": 7,
+  "com_rollback_ledger": 5,
+  "sem_rollback_reconciler": 1,
+  "inconclusivo": 1,
+  "inconsistencia_financeira": 0,
+  "detalhe_inconsistentes": [],
+  "conclusao_rollback": "NÃO OK (rejeições do reconciler sem rollback)",
+  "conclusao_ledger": "VERIFICAR"
+}

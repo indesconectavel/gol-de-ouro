@@ -1,0 +1,18 @@
+{
+  "auditoria": "FINANCEIRO-V1-CONFIRMACAO-PRODUCAO-FRONTEND",
+  "data": "2026-03-06",
+  "passo": "PASSO E - Decisão final",
+  "modo": "READ-ONLY",
+  "decisao": {
+    "frontend_financeiro_correto_em_producao": "condicional",
+    "explicacao": "Se o bundle atualmente servido em www.goldeouro.lol for index-CHnRaMxK.js: sim. Se for index-qIGutT6K.js: não. Verificação ao vivo nesta auditoria não pôde ser concluída (timeout nas requisições).",
+    "bundle_atual_confirmado_ao_vivo": false,
+    "bundle_inferido_da_documentacao_mais_recente": "index-CHnRaMxK.js (FRONTEND-PLAYER-POSTMERGE-VERIFICACAO)",
+    "game_preservado": "sim",
+    "explicacao_game": "Documentação (AUDITORIA-FINAL-GAME, FRONTEND-PLAYER-POSTMERGE) confirma que /game está preservado; bundle único da SPA contém rotas e código do jogo; sem alteração de código em /game no ciclo financeiro V1.",
+    "financeiro_v1_concluido": "condicional",
+    "explicacao_v1": "Backend e fluxo (patch V1.2, rollback, ledger) considerados concluídos em FINANCEIRO-V1-FINAL-VALIDACAO. Frontend: concluído no código (commit 8f51edc/258b0cd); em produção depende do bundle servido (CHnRaMxK = sim, qIGutT6K = não).",
+    "se_nao_qual_deployment_promover": "Promover o deployment que serve o bundle index-CHnRaMxK.js (build do merge com correção de saque e depósito simplificado). Não promover ez1oc96t1 se este servir index-DVt6EjKW ou qIGutT6K sem as correções."
+  },
+  "proxima_acao_minima_recomendada": "Confirmar no navegador (abrir https://www.goldeouro.lol, DevTools > Network, recarregar e ver qual arquivo index-*.js é carregado). Se for index-CHnRaMxK.js: frontend correto está em produção; considerar financeiro V1 concluído. Se for index-qIGutT6K.js: promover para produção o deployment que serve index-CHnRaMxK.js (build pós-merge do player)."
+}

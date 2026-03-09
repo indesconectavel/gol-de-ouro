@@ -1,0 +1,6 @@
+{
+  "timestamp_utc": "2026-03-06T15:17:00.000Z",
+  "houve_rollback": false,
+  "motivo": "Smoke passou (health 200, game 200, dashboard 200). Não foi necessário rollback para v305.",
+  "rollback_target_definido": "v305"
+}

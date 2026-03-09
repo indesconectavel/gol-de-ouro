@@ -1,0 +1,40 @@
+{
+  "auditoria": "DEPOSITO FINAL CONTRACT CHECK - Contrato do frontend (read-only)",
+  "data": "2026-03-06",
+  "tela_deposito": "Pagamentos.jsx (rota /pagamentos ou equivalente)",
+  "payload_criar_pix": {
+    "fonte": "Pagamentos.jsx criarPagamentoPix() - apiClient.post('/api/payments/pix/criar', body)",
+    "campos": {
+      "amount": "valorRecarga - number",
+      "description": "string - 'Recarga de saldo - R$ X.XX'"
+    },
+    "nomes_campos": ["amount", "description"]
+  },
+  "nota": "Pagamentos.jsx NÃO usa paymentService.createPix; chama apiClient.post diretamente com apenas amount e description.",
+  "validacoes_frontend": {
+    "valor_minimo": "valorRecarga < 1 → toast 'Valor mínimo de recarga é R$ 1,00'",
+    "input_min": "min=\"1\" no input",
+    "presets": "valoresRecarga = [1, 5, 10, 25, 50, 100]"
+  },
+  "mensagens_erro_sucesso": {
+    "sucesso_criar": "toast.success('Pagamento PIX criado com sucesso!')",
+    "erro_criar": "toast.error(response.data.message ou 'Erro ao criar pagamento PIX')",
+    "erro_catch": "toast.error('Erro ao criar pagamento PIX')"
+  },
+  "consumo_resposta_ui": {
+    "setPagamentoAtual": "response.data.data",
+    "campos_usados": [
+      "pagamentoAtual.id",
+      "pagamentoAtual.pix_code || qr_code || pix_copy_paste (código copia e cola)",
+      "pagamentoAtual.qr_code_base64 (QR Code imagem, se existir)",
+      "pagamentoAtual.init_point (link Mercado Pago, fallback)"
+    ],
+    "exibicao": "Bloco 'Pagamento PIX Criado' com valor, ID, código PIX para copiar, botão Verificar Status"
+  },
+  "historico": {
+    "endpoint": "GET API_ENDPOINTS.PIX_USER (/api/payments/pix/usuario)",
+    "consumo": "pagamentosResponse.data.data.payments",
+    "campos_esperados_por_item": ["id", "created_at", "amount", "status"]
+  },
+  "saldo": "response.data.balance (API_ENDPOINTS.PROFILE) - backend pode retornar data.saldo em data.data"
+}

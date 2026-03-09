@@ -1,0 +1,9 @@
+{
+  "timestamp_utc": "2026-03-06T11:38:07.169Z",
+  "env_updated": false,
+  "reason": "Nenhuma connection string valida encontrada em .env ou .env.production.",
+  "source_used": null,
+  "gate_safe_to_write": true,
+  "detected": false,
+  "format_valid": false
+}

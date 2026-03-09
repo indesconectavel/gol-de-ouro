@@ -1,0 +1,172 @@
+{
+  "timestamp": "2026-03-05T21:16:57.982Z",
+  "saques_por_status": [
+    {
+      "status": "processando",
+      "count": 5
+    },
+    {
+      "status": "rejeitado",
+      "count": 2
+    },
+    {
+      "status": "cancelado",
+      "count": 2
+    }
+  ],
+  "processando_mais_de_x_min": {
+    "min": 30,
+    "total": 5,
+    "amostra": [
+      {
+        "id": "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd",
+        "status": "processando",
+        "created_at": "2026-03-05T18:29:16.436+00:00",
+        "usuario_id": "***4ad5",
+        "amount": 10
+      },
+      {
+        "id": "ed46001f-26fe-4301-b784-d972a7aa1807",
+        "status": "processando",
+        "created_at": "2026-03-05T18:21:40.984+00:00",
+        "usuario_id": "***4ad5",
+        "amount": 10
+      },
+      {
+        "id": "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+        "status": "processando",
+        "created_at": "2026-03-05T02:37:03.041+00:00",
+        "usuario_id": "***4ad5",
+        "amount": 10
+      },
+      {
+        "id": "ecd0045f-9e80-425c-b2a3-810977351d6f",
+        "status": "processando",
+        "created_at": "2026-03-05T01:46:58.093+00:00",
+        "usuario_id": "***4ad5",
+        "amount": 10
+      },
+      {
+        "id": "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+        "status": "processando",
+        "created_at": "2026-03-04T23:52:06.693+00:00",
+        "usuario_id": "***4ad5",
+        "amount": 10
+      }
+    ]
+  },
+  "ultimos_50_mascarados": [
+    {
+      "id": "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd",
+      "status": "processando",
+      "created_at": "2026-03-05T18:29:16.436+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "usuario_id": "***4ad5",
+      "amount": 10
+    },
+    {
+      "id": "ed46001f-26fe-4301-b784-d972a7aa1807",
+      "status": "processando",
+      "created_at": "2026-03-05T18:21:40.984+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "usuario_id": "***4ad5",
+      "amount": 10
+    },
+    {
+      "id": "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+      "status": "processando",
+      "created_at": "2026-03-05T02:37:03.041+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "usuario_id": "***4ad5",
+      "amount": 10
+    },
+    {
+      "id": "ecd0045f-9e80-425c-b2a3-810977351d6f",
+      "status": "processando",
+      "created_at": "2026-03-05T01:46:58.093+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "usuario_id": "***4ad5",
+      "amount": 10
+    },
+    {
+      "id": "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+      "status": "processando",
+      "created_at": "2026-03-04T23:52:06.693+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "usuario_id": "***4ad5",
+      "amount": 10
+    },
+    {
+      "id": "5cff6e2e-b188-4b8c-85e5-080aed465a21",
+      "status": "rejeitado",
+      "created_at": "2026-03-04T05:01:40.119+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "usuario_id": "***4ad5",
+      "amount": 10
+    },
+    {
+      "id": "2ad05942-3d86-4118-baa4-eb2085b72376",
+      "status": "rejeitado",
+      "created_at": "2026-03-01T16:15:24.942+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "usuario_id": "***4ad5",
+      "amount": 10
+    },
+    {
+      "id": "22d323da-aa71-469a-bc50-2af8331293a3",
+      "status": "cancelado",
+      "created_at": "2025-11-11T21:37:54.151+00:00",
+      "processed_at": "2026-02-02T20:51:14.963483+00:00",
+      "transacao_id": null,
+      "usuario_id": "***1c35",
+      "amount": 5
+    },
+    {
+      "id": "86b0abe6-c9ff-4452-9bc6-cdfa478c7d27",
+      "status": "cancelado",
+      "created_at": "2025-11-08T20:33:22.018+00:00",
+      "processed_at": "2026-02-02T20:51:14.963483+00:00",
+      "transacao_id": null,
+      "usuario_id": "***1c35",
+      "amount": 5
+    }
+  ],
+  "status_vs_check": {
+    "permitidos": [
+      "pendente",
+      "processando",
+      "concluido",
+      "rejeitado",
+      "cancelado"
+    ],
+    "encontrados": [
+      "processando",
+      "rejeitado",
+      "cancelado"
+    ]
+  },
+  "fly_logs": {
+    "lines_count": 101,
+    "patterns": {
+      "PAYOUT_WORKER": 82,
+      "updateSaqueStatus_indisponivel": 0,
+      "Erro_registrar_saque": 0,
+      "LEDGER_insert_falhou": 0
+    },
+    "sample": [
+      "\u001b[2m2026-03-05T21:16:31Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Resumo { payouts_sucesso: 0, payouts_falha: 5 }",
+      "\u001b[2m2026-03-05T21:16:31Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo",
+      "\u001b[2m2026-03-05T21:16:31Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]🟦 [PAYOUT][WORKER] Fim do ciclo",
+      "\u001b[2m2026-03-05T21:16:47Z\u001b[0m app[2874551a105768] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m]❌ [RECON] ID de pagamento inválido (não é número): deposito_4ddf8330-ae94-4e92-a010-bdc7fa254ad5_1765383727057",
+      ""
+    ]
+  },
+  "erros": []
+}

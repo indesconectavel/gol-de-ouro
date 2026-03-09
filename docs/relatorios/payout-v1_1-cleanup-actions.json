@@ -1,0 +1,20 @@
+{
+  "timestamp_utc": "2026-03-06T03:16:00Z",
+  "gate_commit_alvo": "PASS",
+  "branch": "hotfix/financeiro-v1-stabilize",
+  "head": "0f09038dea8363fd986763107bb07c580a748226",
+  "acoes": [
+    {
+      "comando": "git checkout HEAD -- package.json",
+      "motivo": "Restaurar package.json do commit 0f09038 para que o deploy não inclua alterações locais indesejadas.",
+      "resultado": "ok"
+    }
+  ],
+  "arquivos_nao_tocados": [
+    "docs/relatorios/* (preservados)",
+    "scripts/* (preservados)",
+    "src/domain/payout/processPendingWithdrawals.js",
+    "src/workers/payout-worker.js"
+  ],
+  "resumo": "Limpeza cirúrgica: apenas package.json restaurado do HEAD. Docs e scripts read-only preservados."
+}

@@ -1,0 +1,42 @@
+{
+  "auditoria": "PRE-FLIGHT READ-ONLY - Fluxo financeiro (sem transações reais)",
+  "data": "2026-03-06",
+  "endpoints_verificados": {
+    "geracao_deposito_pix": {
+      "rota": "POST /api/payments/pix/criar",
+      "requer_auth": true,
+      "validacoes_codigo": ["valor >= 1", "valor <= 1000", "token Mercado Pago configurado"],
+      "ativo": true
+    },
+    "saldo": {
+      "rota": "GET /api/user/profile",
+      "campo_saldo": "data.saldo",
+      "requer_auth": true,
+      "ativo": true
+    },
+    "solicitacao_saque": {
+      "rota": "POST /api/withdraw/request",
+      "body": { "valor": "number", "chave_pix": "string", "tipo_chave": "string" },
+      "validacoes_codigo": ["valor mínimo R$ 10", "validação PixValidator", "saldo suficiente", "idempotência por correlation_id"],
+      "requer_auth": true,
+      "ativo": true
+    },
+    "historico_saques": {
+      "rota": "GET /api/withdraw/history",
+      "requer_auth": true,
+      "ativo": true
+    }
+  },
+  "validacoes_confirmadas_codigo": [
+    "Validação de saldo antes do chute (server-fly.js shoot)",
+    "Validação de saldo antes do saque (server-fly.js withdraw/request)",
+    "Validação de chave PIX via PixValidator (withdraw)",
+    "Ledger e rollback em caso de falha no saque (processPendingWithdrawals)"
+  ],
+  "transacoes_reais_executadas": 0,
+  "resumo": {
+    "endpoints_financeiros_ativos": true,
+    "validacoes_saldo_presentes": true,
+    "validacao_chave_pix_presente": true
+  }
+}

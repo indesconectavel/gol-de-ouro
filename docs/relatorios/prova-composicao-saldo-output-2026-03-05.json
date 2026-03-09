@@ -1,0 +1,72 @@
+{
+  "timestamp": "2026-03-05T20:29:01.366Z",
+  "user_id": "78fc62e7-334e-453f-ae8a-66047d765aec",
+  "janela_dias": 30,
+  "since": "2026-02-03T20:29:01.364Z",
+  "saldo_atual": 1000,
+  "componentes": {
+    "depositos_aprovados": 0,
+    "saques_concluidos": 0,
+    "saques_pendentes": 0,
+    "premios_jogo_chutes": 0,
+    "premios_transacoes": 0,
+    "premios_ledger": 0,
+    "ajustes_ledger": 0,
+    "outros_ledger": 0
+  },
+  "soma_componentes": 0,
+  "GAP": 1000,
+  "tabela_resumo": [
+    {
+      "componente": "depositos_aprovados",
+      "valor": 0
+    },
+    {
+      "componente": "saques_concluidos",
+      "valor": 0
+    },
+    {
+      "componente": "saques_pendentes",
+      "valor": 0
+    },
+    {
+      "componente": "premios_jogo_chutes",
+      "valor": 0
+    },
+    {
+      "componente": "premios_transacoes",
+      "valor": 0
+    },
+    {
+      "componente": "premios_ledger",
+      "valor": 0
+    },
+    {
+      "componente": "ajustes_ledger",
+      "valor": 0
+    },
+    {
+      "componente": "outros_ledger",
+      "valor": 0
+    },
+    {
+      "componente": "soma_componentes",
+      "valor": 0
+    },
+    {
+      "componente": "saldo_atual",
+      "valor": 1000
+    },
+    {
+      "componente": "GAP",
+      "valor": 1000
+    }
+  ],
+  "hipoteses_gap": [
+    "Saldo inicial ou créditos anteriores fora da janela de 30 dias.",
+    "Tabela ou rota que atualiza usuarios.saldo não auditada (ex.: outro tipo em transacoes/ledger).",
+    "Ajustes manuais ou migrações históricas.",
+    "Arredondamento ou múltiplas fontes de verdade (ledger vs saldo em memória)."
+  ],
+  "erros": []
+}

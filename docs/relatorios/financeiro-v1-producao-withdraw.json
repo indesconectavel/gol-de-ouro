@@ -1,0 +1,33 @@
+{
+  "auditoria": "FINANCEIRO-V1-CONFIRMACAO-PRODUCAO-FRONTEND",
+  "data": "2026-03-06",
+  "passo": "PASSO B - Verificação saque em produção",
+  "modo": "READ-ONLY",
+  "base_url": "https://www.goldeouro.lol",
+  "verificacao_ao_vivo": {
+    "tentativa_fetch_bundle": "timeout ao baixar bundle a partir do ambiente de auditoria",
+    "conclusao_ao_vivo": "inconclusivo"
+  },
+  "evidencia_documentacao": {
+    "bundle_qIGutT6K": {
+      "descricao": "Bundle documentado em AUDITORIA-FINAL-GAME e FRONTEND-PLAYER-DEPLOY-SAFE",
+      "contem_api_withdraw_request": false,
+      "contem_api_withdraw_history": false,
+      "requestWithdraw_getWithdrawHistory": "ausente",
+      "classificacao": "ausente"
+    },
+    "bundle_CHnRaMxK": {
+      "descricao": "Bundle documentado em FRONTEND-PLAYER-POSTMERGE-VERIFICACAO (pós-merge)",
+      "contem_api_withdraw_request": true,
+      "contem_api_withdraw_history": true,
+      "requestWithdraw_getWithdrawHistory": "presente",
+      "classificacao": "presente"
+    }
+  },
+  "resposta_pergunta": "Se produção servir index-CHnRaMxK.js: presente. Se servir index-qIGutT6K.js: ausente. Verificação ao vivo: inconclusivo.",
+  "referencias": [
+    "docs/relatorios/FRONTEND-PLAYER-DEPLOY-SAFE-READONLY-2026-03-06.md",
+    "docs/relatorios/FRONTEND-PLAYER-POSTMERGE-VERIFICACAO-2026-03-06.md",
+    "docs/relatorios/frontend-player-postmerge-withdraw.json"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "auditoria": "PRE-FLIGHT READ-ONLY - Riscos para a demonstração",
+  "data": "2026-03-06",
+  "riscos": [
+    {
+      "id": "R1",
+      "descricao": "Atraso na confirmação do PIX (depósito)",
+      "classificacao": "medio",
+      "mitigacao": "Avisar sócios que pode levar alguns segundos a ~1 minuto; ter Plano B (mostrar QR sem pagamento real)."
+    },
+    {
+      "id": "R2",
+      "descricao": "Saldo insuficiente para chute ou saque",
+      "classificacao": "baixo",
+      "mitigacao": "Preparar conta demo com saldo antes da reunião ou usar depósito PIX real (valor baixo)."
+    },
+    {
+      "id": "R3",
+      "descricao": "Sessão expirada durante a demo",
+      "classificacao": "medio",
+      "mitigacao": "Fazer login pouco antes da apresentação; evitar longas pausas; recarregar e logar de novo se necessário."
+    },
+    {
+      "id": "R4",
+      "descricao": "Latência da API (Fly.io ou rede)",
+      "classificacao": "medio",
+      "mitigacao": "Conexão estável; repetir ação se timeout; health já confirmado ok."
+    },
+    {
+      "id": "R5",
+      "descricao": "Dependência externa Mercado Pago indisponível",
+      "classificacao": "alto",
+      "mitigacao": "Health mostrou mercadoPago connected; ter Plano B sem PIX real; não fazer deploy/alterar código."
+    },
+    {
+      "id": "R6",
+      "descricao": "Tela de saque do frontend usar endpoint de depósito",
+      "classificacao": "medio",
+      "mitigacao": "Verificar antes da demo: Withdraw.jsx chama paymentService.createPix (depósito); backend expõe POST /api/withdraw/request para saque. Confirmar qual endpoint a build em produção usa para a tela de saque."
+    },
+    {
+      "id": "R7",
+      "descricao": "Chave PIX inválida no saque (rejeição esperada)",
+      "classificacao": "baixo",
+      "mitigacao": "Usar chave PIX válida (e-mail, CPF ou celular); mensagem de erro é comportamento esperado para chave inválida."
+    }
+  ],
+  "resumo": {
+    "total_riscos": 7,
+    "baixo": 2,
+    "medio": 4,
+    "alto": 1
+  }
+}

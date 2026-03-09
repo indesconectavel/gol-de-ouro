@@ -1,0 +1,167 @@
+{
+  "timestamp": "2026-03-06T02:28:32.319Z",
+  "base_url": "https://goldeouro-backend-v2.fly.dev",
+  "bearer_defined": false,
+  "results": [
+    {
+      "endpoint": "/health",
+      "method_tested": "GET",
+      "status_code": 200,
+      "response_time_ms": 414,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "auth_required": false,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": true,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": false
+    },
+    {
+      "endpoint": "/api/monitoring/health",
+      "method_tested": "GET",
+      "status_code": 200,
+      "response_time_ms": 140,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "auth_required": false,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": true,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": false
+    },
+    {
+      "endpoint": "/api/user/profile",
+      "method_tested": "GET",
+      "status_code": 401,
+      "response_time_ms": 38,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "auth_required": true,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": false,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": false
+    },
+    {
+      "endpoint": "/api/withdraw/history",
+      "method_tested": "GET",
+      "status_code": 401,
+      "response_time_ms": 32,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "auth_required": true,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": false,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": true
+    },
+    {
+      "endpoint": "/api/payments/pix/usuario",
+      "method_tested": "GET",
+      "status_code": 401,
+      "response_time_ms": 32,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "auth_required": true,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": false,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": true
+    },
+    {
+      "endpoint": "/api/withdraw/request",
+      "method_tested": "OPTIONS",
+      "status_code": 204,
+      "response_time_ms": 31,
+      "headers": {
+        "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS"
+      },
+      "auth_required": false,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": true,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": true
+    },
+    {
+      "endpoint": "/api/payments/webhook",
+      "method_tested": "OPTIONS",
+      "status_code": 204,
+      "response_time_ms": 29,
+      "headers": {
+        "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS"
+      },
+      "auth_required": false,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": true,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": true
+    },
+    {
+      "endpoint": "/webhooks/mercadopago",
+      "method_tested": "OPTIONS",
+      "status_code": 204,
+      "response_time_ms": 41,
+      "headers": {
+        "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS"
+      },
+      "auth_required": false,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": true,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": true
+    },
+    {
+      "endpoint": "/api/metrics",
+      "method_tested": "GET",
+      "status_code": 200,
+      "response_time_ms": 120,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "auth_required": false,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": true,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": false
+    },
+    {
+      "endpoint": "/",
+      "method_tested": "GET",
+      "status_code": 200,
+      "response_time_ms": 44,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "auth_required": false,
+      "auth_used": false,
+      "read_only_safe": true,
+      "ok": true,
+      "exists": true,
+      "error": null,
+      "observacao_fluxo_financeiro": false
+    }
+  ]
+}

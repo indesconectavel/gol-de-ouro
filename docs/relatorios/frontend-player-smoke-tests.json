@@ -1,0 +1,13 @@
+{
+  "auditoria": "FRONTEND PLAYER - Smoke tests pós-deploy",
+  "data": "2026-03-06",
+  "observacao": "Deploy via CLI não concluído; smoke test executado contra produção atual (ez1oc96t1).",
+  "urls": [
+    { "url": "https://www.goldeouro.lol/", "status_http": 200, "conteudo_retornado": true, "erro_critico": false },
+    { "url": "https://www.goldeouro.lol/game", "status_http": 200, "conteudo_retornado": true, "erro_critico": false },
+    { "url": "https://www.goldeouro.lol/dashboard", "status_http": 200, "conteudo_retornado": true, "erro_critico": false }
+  ],
+  "bundle_carregado": "Produção atual ainda serve index-qIGutT6K.js (deployment anterior). Novo build local gerou index-ByOYQ-52.js (não publicado).",
+  "console_erros": "não verificado (sem execução de browser com console)",
+  "resultado_smoke": "PASS (rotas respondem 200 e retornam conteúdo SPA/login)."
+}

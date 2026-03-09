@@ -1,0 +1,30 @@
+{
+  "timestamp_utc": "2026-03-06T01:03:00Z",
+  "project": "goldeouro-admins-projects/goldeouro-player",
+  "source": "vercel list --environment=production (primeira página)",
+  "production_deployments": [
+    {"deployment_id": "ez1oc96t1", "age": "1d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-ez1oc96t1-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "p4epfrx3w", "age": "28d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-p4epfrx3w-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "1uf6g12za", "age": "48d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-1uf6g12za-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "54bu45yuy", "age": "48d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-54bu45yuy-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "qzxeykdy0", "age": "48d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-qzxeykdy0-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "p2dqg2tig", "age": "48d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-p2dqg2tig-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "l773nulvv", "age": "48d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-l773nulvv-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "2ksvr220j", "age": "48d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-2ksvr220j-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "m38czzm4q", "age": "49d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-m38czzm4q-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "bsxa1c8o6", "age": "49d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-bsxa1c8o6-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "2321sb0zu", "age": "49d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-2321sb0zu-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "m28e5t7ic", "age": "60d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-m28e5t7ic-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "o7e9xcqqf", "age": "60d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-o7e9xcqqf-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "ng80xrirb", "age": "60d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-ng80xrirb-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "prcfo0ikl", "age": "60d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-prcfo0ikl-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "b0jqt342g", "age": "65d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-b0jqt342g-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "ro1rqrcza", "age": "65d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-ro1rqrcza-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "504q9b0j4", "age": "74d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-504q9b0j4-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "hhllj6bll", "age": "74d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-hhllj6bll-goldeouro-admins-projects.vercel.app"},
+    {"deployment_id": "awqd9q2hy", "age": "74d", "status": "Ready", "environment": "Production", "url": "https://goldeouro-player-awqd9q2hy-goldeouro-admins-projects.vercel.app"}
+  ],
+  "FyKKeg6zb_present": false,
+  "current_production_deployment_id": "ez1oc96t1",
+  "conclusion": "FyKKeg6zb NÃO aparece na lista de deployments de produção. O deployment de produção mais recente é ez1oc96t1 (1d). Para congelar em FyKKeg6zb seria necessário (1) garantir que esse deployment ainda exista no projeto e (2) promover esse deployment para Production no dashboard Vercel (rollback)."
+}

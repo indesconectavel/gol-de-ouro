@@ -1,0 +1,35 @@
+{
+  "timestamp_utc": "2026-03-06T16:00:00.000Z",
+  "riscos_residuais": [
+    {
+      "id": "R1",
+      "item": "1 saque historico rejeitado pelo reconciler (timeout) sem rollback",
+      "impacto_real": "Possivel debito sem devolucao para 1 usuario (pre-patch V1.2)",
+      "bloqueia_v1": false,
+      "recomendacao_futura": "Opcional: correcao manual se o negocio exigir"
+    },
+    {
+      "id": "R2",
+      "item": "1 saque inconclusivo (motivo API MercadoLibre), ledger vazio",
+      "impacto_real": "Inconclusivo; sem evidencia de inconsistencia",
+      "bloqueia_v1": false,
+      "recomendacao_futura": "Revisao manual se necessario"
+    },
+    {
+      "id": "R3",
+      "item": "Reconcile deposito: external_id nao numerico gera ruido de log",
+      "impacto_real": "Pendencias deposito_uuid_* nao resolvidas pelo recon; sem duplo credito",
+      "bloqueia_v1": false,
+      "recomendacao_futura": "Normalizacao de external_id ou idempotencia por payment_id"
+    },
+    {
+      "id": "R4",
+      "item": "Hardening deploy / smoke do payout_worker no Fly",
+      "impacto_real": "Deploy em dois passos pode ser necessario",
+      "bloqueia_v1": false,
+      "recomendacao_futura": "Deploy --process-groups app depois payout_worker se smoke falhar"
+    }
+  ],
+  "total": 4,
+  "bloqueantes_v1": 0
+}

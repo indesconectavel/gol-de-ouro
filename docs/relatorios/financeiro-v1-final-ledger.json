@@ -1,0 +1,14 @@
+{
+  "timestamp_utc": "2026-03-06T15:13:45.123Z",
+  "total_amostra": 10,
+  "contagem_por_tipo": {
+    "rollback": 5,
+    "falha_payout": 5
+  },
+  "tipos_esperados_presentes": {
+    "withdraw_request": false,
+    "falha_payout": true,
+    "rollback": true
+  },
+  "conclusao_ledger": "ledger_ok"
+}

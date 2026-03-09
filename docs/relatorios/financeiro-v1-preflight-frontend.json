@@ -1,0 +1,32 @@
+{
+  "timestamp_utc": "2026-03-06T13:25:28.920Z",
+  "game": {
+    "url": "https://www.goldeouro.lol/game",
+    "statusCode": 200,
+    "headers": {
+      "content-type": "text/html; charset=utf-8",
+      "server": "Vercel",
+      "x-vercel-id": "gru1::8z9dl-1772803528206-e68c0522ba80",
+      "x-vercel-cache": "HIT",
+      "content-length": "9056"
+    },
+    "bodyLength": 8985,
+    "sha256": "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0",
+    "server": "Vercel"
+  },
+  "dashboard": {
+    "url": "https://www.goldeouro.lol/dashboard",
+    "statusCode": 200,
+    "headers": {
+      "content-type": "text/html; charset=utf-8",
+      "server": "Vercel",
+      "x-vercel-id": "gru1::2vxt6-1772803528257-2bd8b06318cc",
+      "x-vercel-cache": "HIT",
+      "content-length": "9056"
+    },
+    "bodyLength": 8985,
+    "sha256": "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0",
+    "server": "Vercel"
+  },
+  "preservado": true
+}

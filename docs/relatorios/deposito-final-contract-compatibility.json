@@ -1,0 +1,26 @@
+{
+  "auditoria": "DEPOSITO FINAL CONTRACT CHECK - Compatibilidade frontend x backend",
+  "data": "2026-03-06",
+  "request_criar_pix": [
+    { "campo": "amount", "frontend_envia": true, "backend_espera": true, "status": "compatível" },
+    { "campo": "description", "frontend_envia": true, "backend_usa": false, "status": "compatível (backend ignora)" }
+  ],
+  "valor_minimo": { "frontend": 1, "backend": 1, "status": "compatível" },
+  "valor_maximo": { "frontend": "sem validação explícita (presets até 100)", "backend": 1000, "status": "compatível com ressalva (frontend pode enviar até 1000 se usuário digitar)" },
+  "resposta_sucesso": {
+    "backend_retorna": "id, amount, qr_code, qr_code_base64, pix_copy_paste, pix_code, status, created_at",
+    "ui_usa": "id, pix_code | qr_code | pix_copy_paste, qr_code_base64, init_point",
+    "status": "compatível (backend envia pix_code e pix_copy_paste; UI usa qualquer um)"
+  },
+  "historico": {
+    "backend_retorna": "data.payments[] (campos da tabela pagamentos_pix: id, amount, valor, status, created_at, etc.)",
+    "ui_espera": "id, created_at, amount, status",
+    "status": "compatível"
+  },
+  "saldo_na_tela": {
+    "frontend_usa": "response.data.balance",
+    "backend_profile_retorna": "data.saldo (em data.data do /api/user/profile)",
+    "status": "compatível com ressalva (frontend usa .balance; backend pode retornar .data.saldo; se backend só enviar saldo em data, saldo na tela Pagamentos pode aparecer 0)"
+  },
+  "conclusao": "Contrato de criação de PIX e resposta alinhado. Ressalvas: descrição ignorada pelo backend (ok); saldo pode exigir response.data.data.saldo no frontend; endpoint GET status pode não existir no server-fly."
+}

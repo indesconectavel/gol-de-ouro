@@ -1,0 +1,10 @@
+{
+  "timestamp_utc": "2026-03-06T12:18:29.617Z",
+  "worker_usa_SUPABASE_SERVICE_ROLE_KEY": true,
+  "worker_usa_SUPABASE_URL": true,
+  "local_tem_SUPABASE_URL": true,
+  "local_tem_SUPABASE_SERVICE_ROLE_KEY": true,
+  "mesmo_projeto_esperado": true,
+  "schema_explicito_worker": "public",
+  "nota": "App e worker usam mesmo .env no Fly; diferença seria apenas de processo (app vs payout_worker)."
+}

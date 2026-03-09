@@ -1,0 +1,15 @@
+{
+  "timestamp_utc": "2026-03-06T16:39:00.000Z",
+  "etapa": "Saque",
+  "solicitacao": {
+    "metodo": "POST /api/withdraw/request",
+    "payload": { "valor": 10, "chave_pix": "e2e-jogo-v1@example.com", "tipo_chave": "email" },
+    "resposta": { "success": false, "message": "Provedor de email não reconhecido", "status": 400 }
+  },
+  "registro_tabela_saques": "N/A (requisição rejeitada na validação da chave PIX)",
+  "processamento_worker": "N/A (saque não criado)",
+  "status_final": "400 (validação funcionando)",
+  "valor_solicitado": 10,
+  "atualizacao_saldo": "N/A",
+  "observacao": "Endpoint responde; validação de chave PIX e valor mínimo ativa; com saldo e chave válida o fluxo seguiria para tabela saques e worker"
+}

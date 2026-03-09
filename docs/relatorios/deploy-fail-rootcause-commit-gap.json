@@ -1,0 +1,8 @@
+{
+  "timestamp_utc": "2026-03-06T14:20:00.000Z",
+  "commit_73de7a39_sozinho_deployavel": "nao",
+  "arquivo_faltou": "src/domain/payout/withdrawalStatus.js",
+  "motivo": "processPendingWithdrawals.js faz require('./withdrawalStatus'). No commit 73de7a39 o tree em src/domain/payout/ contem apenas processPendingWithdrawals.js e reconcileProcessingWithdrawals.js; withdrawalStatus.js nunca foi commitado (esta untracked na working tree).",
+  "outros_arquivos_fora_do_commit": "Nenhum outro arquivo critico identificado fora do commit. Os demais requires (server-fly.js, payout-worker.js, reconcileProcessingWithdrawals.js) apontam para arquivos que estao no commit ou em dependencias npm.",
+  "commit_ou_estado_com_conjunto_correto": "O estado local atual (branch hotfix/financeiro-v1-stabilize, HEAD 73de7a39) contem withdrawalStatus.js na pasta src/domain/payout/ como arquivo nao rastreado. O 'commit minimo correto' para o proximo deploy e: incluir withdrawalStatus.js no repositorio (git add src/domain/payout/withdrawalStatus.js e git commit) gerando um novo commit (ex.: 73de7a39 + 1 commit), ou fazer um unico commit que contenha 73de7a39 + withdrawalStatus.js (amend ou novo commit com esse arquivo). O conjunto correto de arquivos em src/domain/payout/ para o backend subir e: withdrawalStatus.js, processPendingWithdrawals.js, reconcileProcessingWithdrawals.js."
+}

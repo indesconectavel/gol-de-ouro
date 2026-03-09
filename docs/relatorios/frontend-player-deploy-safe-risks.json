@@ -1,0 +1,46 @@
+{
+  "auditoria": "FRONTEND PLAYER DEPLOY SAFE - Riscos de um deploy do frontend agora",
+  "data": "2026-03-06",
+  "riscos": [
+    {
+      "id": "R1",
+      "descricao": "Regressão do /game (layout, barra de versão, comportamento)",
+      "nivel": "baixo",
+      "impacto": "Usuários veem interface diferente ou quebrada no jogo.",
+      "mitigacao": "A correção da tela de saque não altera /game (Withdraw.jsx, withdrawService, config/api apenas). Deploy a partir do mesmo repositório que já está em produção (branch hotfix), com mudanças isoladas. Validar /game logo após deploy."
+    },
+    {
+      "id": "R2",
+      "descricao": "Regressão do login",
+      "nivel": "baixo",
+      "impacto": "Impossibilidade de autenticar.",
+      "mitigacao": "Nenhuma alteração em rotas ou serviços de login no commit 258b0cd/8f51edc. Validar login após deploy."
+    },
+    {
+      "id": "R3",
+      "descricao": "Current mudar para deployment errado (promoção indesejada)",
+      "nivel": "médio",
+      "impacto": "Produção aponta para build quebrado ou antigo.",
+      "mitigacao": "Deploy explícito da branch hotfix/financeiro-v1-stabilize no commit 8f51edc; confirmar no Vercel que o deployment promovido é o esperado. Preservar ID do deployment atual (ez1oc96t1) para rollback."
+    },
+    {
+      "id": "R4",
+      "descricao": "Tela de saque continuar antiga (cache ou deploy falho)",
+      "nivel": "médio",
+      "impacto": "Usuários continuam com createPix em vez de withdraw/request.",
+      "mitigacao": "Após deploy, validar em produção: abrir /withdraw, inspecionar rede e confirmar chamada a /api/withdraw/request ao submeter. Limpar cache do navegador se necessário."
+    },
+    {
+      "id": "R5",
+      "descricao": "Pipeline automático promover build indesejado",
+      "nivel": "baixo",
+      "impacto": "CI/CD promove outro branch ou commit.",
+      "mitigacao": "Confirmar que o deploy é manual ou que o pipeline está configurado para a branch/commit corretos. Não promover production automaticamente sem validação."
+    }
+  ],
+  "resumo": {
+    "baixo": 3,
+    "medio": 2,
+    "alto": 0
+  }
+}

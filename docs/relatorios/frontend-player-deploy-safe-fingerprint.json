@@ -1,0 +1,34 @@
+{
+  "auditoria": "FRONTEND PLAYER DEPLOY SAFE - Fingerprint do frontend atual em produção",
+  "data": "2026-03-06",
+  "fonte": "Relatórios existentes (game-fingerprint-after.json, financeiro-v1-preflight-frontend.json) e conteúdo acessível em read-only",
+  "base_url": "https://www.goldeouro.lol",
+  "endpoints": {
+    "/": {
+      "status_code": 200,
+      "server": "Vercel",
+      "content_type": "text/html; charset=utf-8",
+      "observacao": "Conteúdo de login exibido (SPA)."
+    },
+    "/game": {
+      "status_code": 200,
+      "server": "Vercel",
+      "headers_tipicos": ["server: Vercel", "x-vercel-id", "x-vercel-cache: HIT", "content-type: text/html; charset=utf-8"],
+      "bundle_js": "/assets/index-qIGutT6K.js",
+      "sha256_html": "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0",
+      "html_length": 8985
+    },
+    "/dashboard": {
+      "status_code": 200,
+      "server": "Vercel",
+      "headers_tipicos": ["server: Vercel", "x-vercel-id", "x-vercel-cache: HIT", "content-type: text/html; charset=utf-8"],
+      "bundle_js": "/assets/index-qIGutT6K.js",
+      "sha256_html": "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0",
+      "html_length": 8985
+    },
+    "/withdraw": {
+      "observacao": "SPA: mesma base HTML que /game e /dashboard; rota tratada no client. Não foi feita requisição específica nesta auditoria; fingerprint igual ao das demais rotas do player."
+    }
+  },
+  "objetivo": "Referência para confirmar preservação do frontend após deploy ou rollback (comparar status, bundle_js e sha256_html)."
+}

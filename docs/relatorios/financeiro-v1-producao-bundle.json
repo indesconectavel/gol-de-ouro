@@ -1,0 +1,36 @@
+{
+  "auditoria": "FINANCEIRO-V1-CONFIRMACAO-PRODUCAO-FRONTEND",
+  "data": "2026-03-06",
+  "passo": "PASSO A - Bundle atual em produção",
+  "modo": "READ-ONLY",
+  "base_url": "https://www.goldeouro.lol",
+  "verificacao_ao_vivo": {
+    "fetch_html_game": "timeout ou não executado",
+    "fetch_bundle": "timeout ao baixar bundle",
+    "conclusao_ao_vivo": "inconclusivo"
+  },
+  "bundle_documentado_em_relatorios": [
+    {
+      "bundle_js": "/assets/index-qIGutT6K.js",
+      "bundle_css": "/assets/index-lDOJDUAS.css",
+      "sha256_html_game": "bebe03d33ac9bbf67be1ac78fdd1bca0dc9eca615eaf5df9024a80710f346ee0",
+      "fonte": "AUDITORIA-FINAL-GAME-PRODUCAO-READONLY-2026-03-06, game-prod-fingerprint.json, FRONTEND-PLAYER-DEPLOY-SAFE",
+      "corresponde_ao_bundle_corrigido": false,
+      "deployment_associado": "ez1oc96t1 (em relatórios anteriores)"
+    },
+    {
+      "bundle_js": "/assets/index-CHnRaMxK.js",
+      "bundle_css": "não documentado",
+      "fonte": "FRONTEND-PLAYER-POSTMERGE-VERIFICACAO-2026-03-06, frontend-player-postmerge-deployment.json",
+      "corresponde_ao_bundle_corrigido": true,
+      "deployment_associado": null,
+      "evidencia": "Página exibe 'VERSÃO ATUALIZADA v1.2.0•DEPLOY REALIZADO EM 06/03/2026'"
+    }
+  ],
+  "resumo": "Dois bundles aparecem na documentação: qIGutT6K (antigo, sem correções) e CHnRaMxK (corrigido, pós-merge). Não foi possível confirmar ao vivo qual está servido em 2026-03-06.",
+  "referencias": [
+    "docs/relatorios/frontend-player-deploy-safe-fingerprint.json",
+    "docs/relatorios/game-prod-fingerprint.json",
+    "docs/relatorios/frontend-player-postmerge-deployment.json"
+  ]
+}

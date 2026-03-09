@@ -1,0 +1,21 @@
+{
+  "auditoria": "PREFLIGHT FINAL READ-ONLY - Commit validado para deploy",
+  "data": "2026-03-06",
+  "branch": "hotfix/financeiro-v1-stabilize",
+  "head_atual": "8f51edc04fa293ee06c25a21b499ca8e29b04ed3",
+  "commit_258b0cd_presente": true,
+  "commit_8f51edc_presente": true,
+  "commit_validado": "8f51edc04fa293ee06c25a21b499ca8e29b04ed3",
+  "commit_alternativo": "258b0cd624a251f6f64b0c8e7d9582c1ab41e888",
+  "arquivos_correção_saque_no_commit_258b0cd": [
+    "goldeouro-player/src/services/withdrawService.js",
+    "goldeouro-player/src/config/api.js",
+    "goldeouro-player/src/pages/Withdraw.jsx"
+  ],
+  "fluxo_confirmado": {
+    "submit": "POST /api/withdraw/request (via requestWithdraw → API_ENDPOINTS.WITHDRAW_REQUEST)",
+    "historico": "GET /api/withdraw/history (via getWithdrawHistory → API_ENDPOINTS.WITHDRAW_HISTORY)"
+  },
+  "createPix_nao_usado_para_saque": true,
+  "getUserPix_nao_usado_para_historico_saque": true
+}

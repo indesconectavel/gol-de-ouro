@@ -1,0 +1,17 @@
+{
+  "audit_date": "2026-03-06",
+  "deployment_baseline": "FyKKeg6zb",
+  "bundle_js_oficial": "index-qIGutT6K.js",
+  "bundle_css_oficial": "index-lDOJDUAS.css",
+  "build_gerador": "Vite (goldeouro-player)",
+  "build_command": "vite build",
+  "build_command_fonte": "goldeouro-player/package.json scripts.build",
+  "node_version_repo": "não fixado no package.json (engines não consultado)",
+  "vite_version": "^5.0.8",
+  "vite_config": "goldeouro-player/vite.config.ts",
+  "hash_bundle_origem": "qIGutT6K é sufixo de conteúdo gerado pelo Rollup/Vite em tempo de build; não há metadado no repo que armazene qual commit gera esse hash.",
+  "environment_build": "production (Vercel)",
+  "build_date_observed": "2026-01-16T05:25:34Z",
+  "build_date_fonte": "Last-Modified do asset em produção (POST-ROLLBACK-VERCEL-FyKKeg6zb)",
+  "observacoes": "Para reproduzir o bundle index-qIGutT6K.js seria necessário buildar o commit de origem (inferido 0a2a5a1 ou 7dbb4ec) com as mesmas dependências e variáveis de ambiente; o hash de saída do Vite depende do conteúdo dos módulos."
+}

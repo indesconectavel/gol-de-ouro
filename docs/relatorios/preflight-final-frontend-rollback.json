@@ -1,0 +1,11 @@
+{
+  "auditoria": "PREFLIGHT FINAL READ-ONLY - Rollback disponível",
+  "data": "2026-03-06",
+  "deployment_atual_preservado": "ez1oc96t1",
+  "url_deployment": "https://goldeouro-player-ez1oc96t1-goldeouro-admins-projects.vercel.app",
+  "project_name": "goldeouro-player",
+  "status_no_snapshot": "Ready",
+  "pode_ser_promovido_novamente": true,
+  "observacao": "Deployment ez1oc96t1 é o current de produção (fonte: vercel-deployments-snapshot.json). Em caso de problema pós-deploy do novo build, promover novamente ez1oc96t1 para Production no dashboard Vercel restaura o estado anterior. Nenhuma ação de promoção foi executada nesta auditoria (read-only).",
+  "rollback_disponivel": true
+}

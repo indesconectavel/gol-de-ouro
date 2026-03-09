@@ -1,0 +1,37 @@
+{
+  "auditoria": "VALIDAÇÃO READ-ONLY - Serviços relacionados à tela de saque",
+  "data": "2026-03-06",
+  "servicos_utilizados_pela_tela_withdraw": [
+    {
+      "arquivo": "goldeouro-player/src/services/withdrawService.js",
+      "funcoes_usadas_na_tela": ["requestWithdraw", "getWithdrawHistory"],
+      "requestWithdraw": {
+        "endpoint": "API_ENDPOINTS.WITHDRAW_REQUEST = /api/withdraw/request",
+        "metodo": "POST",
+        "usado_em": "handleSubmit (Withdraw.jsx)"
+      },
+      "getWithdrawHistory": {
+        "endpoint": "API_ENDPOINTS.WITHDRAW_HISTORY = /api/withdraw/history",
+        "metodo": "GET",
+        "usado_em": "loadWithdrawalHistory (Withdraw.jsx)"
+      }
+    },
+    {
+      "arquivo": "goldeouro-player/src/services/paymentService.js",
+      "funcoes_usadas_na_tela": ["getConfig", "isSandboxMode"],
+      "uso": "Apenas exibição: valor mínimo para saque e indicador sandbox. NÃO usado para submit nem histórico.",
+      "createPix_usado": false,
+      "getUserPix_usado": false
+    },
+    {
+      "arquivo": "goldeouro-player/src/services/apiClient.js",
+      "uso": "Cliente HTTP usado por withdrawService (e por paymentService em outras telas)."
+    }
+  ],
+  "config_api": {
+    "arquivo": "goldeouro-player/src/config/api.js",
+    "WITHDRAW_REQUEST": "/api/withdraw/request",
+    "WITHDRAW_HISTORY": "/api/withdraw/history"
+  },
+  "conclusao": "A tela de saque utiliza exclusivamente withdrawService para submit e histórico; endpoints de depósito (createPix, getUserPix) não são chamados no fluxo de saque."
+}

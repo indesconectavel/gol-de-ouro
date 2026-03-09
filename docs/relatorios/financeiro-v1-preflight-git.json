@@ -1,0 +1,10 @@
+{
+  "timestamp_utc": "2026-03-06T13:25:28.920Z",
+  "branch_atual": "hotfix/financeiro-v1-stabilize",
+  "head_atual": "73de7a39efafe58e643f1e10207108da9098a63d",
+  "status_limpo": false,
+  "status_output_lines": 311,
+  "commit_v1_2_esperado": "73de7a39efafe58e643f1e10207108da9098a63d",
+  "head_eh_v1_2": true,
+  "ultimo_commit": "73de7a3 fix(payout): V1.2 reconciler rollback - devolve saldo e registra ledger ao rejeitar por timeout/valor/PIX/erro"
+}

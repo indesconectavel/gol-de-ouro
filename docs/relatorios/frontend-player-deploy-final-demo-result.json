@@ -1,0 +1,11 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 3 - Deploy Vercel",
+  "result": "FAIL",
+  "deployment_id": null,
+  "deployment_url": null,
+  "duration_seconds": null,
+  "strategy_used": "vercel deploy from goldeouro-player then from repo root with ./goldeouro-player",
+  "error": "The provided path \"...\\goldeouro-player\\goldeouro-player\" does not exist. Project has Root Directory = goldeouro-player; CLI appends it to cwd when deploying from player folder.",
+  "recommendation": "Publish via Git push to the branch connected to Vercel (e.g. main), so Vercel builds from cloud with correct Root Directory. Or in Vercel dashboard set Root Directory to empty and deploy from repo root (upload size may exceed limit)."
+}

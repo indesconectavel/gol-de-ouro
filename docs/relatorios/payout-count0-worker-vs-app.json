@@ -1,0 +1,7 @@
+{
+  "timestamp_utc": "2026-03-06T12:18:31.017Z",
+  "cliente_utilizado": "service_role (mesmo que worker)",
+  "resultado_count_com_este_cliente": 0,
+  "app_e_worker_no_fly": "Usam as mesmas env vars por processo.",
+  "conclusao": "Com service_role localmente retorna 0: dados ou filtro explicam count=0."
+}

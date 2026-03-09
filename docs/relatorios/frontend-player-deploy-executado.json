@@ -1,0 +1,31 @@
+{
+  "auditoria": "FRONTEND PLAYER DEPLOY - Execução",
+  "data": "2026-03-06",
+  "commit_publicado": "8f51edc04fa293ee06c25a21b499ca8e29b04ed3",
+  "commit_correção": "258b0cd624a251f6f64b0c8e7d9582c1ab41e888",
+  "deployment_preservado_rollback": "ez1oc96t1",
+  "passo_1_commit": {
+    "confirmado": true,
+    "arquivos_correção": ["goldeouro-player/src/services/withdrawService.js", "goldeouro-player/src/pages/Withdraw.jsx", "goldeouro-player/src/config/api.js"],
+    "fluxo": "POST /api/withdraw/request, GET /api/withdraw/history"
+  },
+  "passo_2_build": {
+    "executado": true,
+    "comando": "npm run build",
+    "resultado": "sucesso",
+    "tempo_aproximado_s": 25,
+    "assets_gerados": ["dist/assets/index-ByOYQ-52.js", "dist/assets/index-BplTpheb.css", "dist/index.html", "dist/sw.js", "dist/registerSW.js"],
+    "bundle_principal": "index-ByOYQ-52.js"
+  },
+  "passo_3_deploy_vercel": {
+    "executado": true,
+    "resultado": "falha",
+    "motivo": "CLI: ao rodar de goldeouro-player, erro 'The provided path ... goldeouro-player\\goldeouro-player does not exist' (Root Directory do projeto). Ao rodar da raiz do repo, erro 'File size (15161359057) is greater than 2 GiB' (upload do monorepo inteiro).",
+    "deployment_id": null,
+    "deployment_url": null,
+    "recomendacao": "Publicar via Git push para a branch conectada ao Vercel (trigger de build no Vercel) ou ajustar Root Directory no projeto Vercel e executar deploy a partir do diretório correto."
+  },
+  "producao_atual_inalterada": true,
+  "deployment_id_novo": null,
+  "deployment_url_novo": null
+}

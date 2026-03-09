@@ -1,0 +1,9 @@
+{
+  "audit_date": "2026-03-06",
+  "decisao_final": "PRONTO COM RESSALVAS",
+  "justificativa": "Backend financeiro V1 está implementado, validado e em produção (release v315, rollback, worker, reconciler, ledger). Frontend no repositório está correto (withdraw/request, withdraw/history, depósito simplificado). A ressalva é que o estado do frontend em produção pode não ser o bundle com essas correções (depende do deployment/cache); é necessário confirmar que www.goldeouro.lol está servindo o bundle que chama /api/withdraw/request e não createPix.",
+  "o_que_falta_para_concluir": "Confirmar que o deployment de produção do player (Vercel) serve o bundle com saque correto e depósito simplificado; se não servir, promover o deployment correspondente (ex.: o que gera index-CHnRaMxK.js) sem regredir /game.",
+  "menor_proxima_acao": "Verificar em https://www.goldeouro.lol (DevTools → Network) se ao solicitar saque em /withdraw a requisição é POST para /api/withdraw/request. Se for POST para /api/payments/pix/criar, promover deployment com o bundle correto para produção.",
+  "da_para_concluir_sem_tocar_no_game": "sim",
+  "observacao": "Nenhuma alteração em /game é necessária para concluir o financeiro V1; a conclusão depende apenas de garantir que o frontend em produção usa os endpoints corretos de saque e a tela de depósito simplificada."
+}

@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-03-06",
+  "audit": "READ-ONLY estrutura /game",
+  "url": "https://www.goldeouro.lol/game",
+  "checks": {
+    "rota_game_existe": true,
+    "bundle_react_carregado": true,
+    "fallback_inesperado": false,
+    "tela_errada": false,
+    "barra_versao_antiga_reaparecendo": false,
+    "redirecionamento_incorreto": false
+  },
+  "evidence": {
+    "html_servido": "SPA com div#root; script type=module aponta para index-qIGutT6K.js",
+    "rotas_app": "Route path=/game -> GameShoot (ProtectedRoute); /gameshoot -> GameShoot",
+    "bundle_contem_api_games_shoot": true,
+    "bundle_contem_sinais_jogo": true,
+    "status_200": true,
+    "content_type": "text/html; charset=utf-8"
+  },
+  "cross_reference": "Fingerprint idêntico ao relatório anterior (game-fingerprint.json): mesmo bundle_js e sha256. Nenhuma alteração na estrutura do /game.",
+  "conclusion": "A página /game em produção continua servindo o frontend esperado (React SPA, rota /game, bundle atual). Sem indício de fallback, tela errada ou redirecionamento incorreto."
+}

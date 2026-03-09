@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-03-06T12:09:01.180Z",
+  "app": "goldeouro-backend-v2",
+  "lines_analisadas": 100,
+  "patch_v1_1_sinais": {
+    "PAYOUT_CYCLE": 11,
+    "PAYOUT_QUERY": 11,
+    "PAYOUT_SELECT": 0,
+    "PAYOUT_SKIP": 0,
+    "PAYOUT_ROLLBACK_FAIL": 0
+  },
+  "amostras_por_sinal": {
+    "PAYOUT_CYCLE": [
+      "\u001b[2m2026-03-06T12:03:52Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][CYCLE] enabled=true db=ok provider=ok",
+      "\u001b[2m2026-03-06T12:04:22Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][CYCLE] enabled=true db=ok provider=ok",
+      "\u001b[2m2026-03-06T12:04:52Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][CYCLE] enabled=true db=ok provider=ok",
+      "\u001b[2m2026-03-06T12:05:22Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][CYCLE] enabled=true db=ok provider=ok",
+      "\u001b[2m2026-03-06T12:05:52Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][CYCLE] enabled=true db=ok provider=ok"
+    ],
+    "PAYOUT_QUERY": [
+      "\u001b[2m2026-03-06T12:03:52Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][QUERY] statuses=pendente,pending,processando count=0",
+      "\u001b[2m2026-03-06T12:04:22Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][QUERY] statuses=pendente,pending,processando count=0",
+      "\u001b[2m2026-03-06T12:04:52Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][QUERY] statuses=pendente,pending,processando count=0",
+      "\u001b[2m2026-03-06T12:05:23Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][QUERY] statuses=pendente,pending,processando count=0",
+      "\u001b[2m2026-03-06T12:05:53Z\u001b[0m app[e82794da791108] \u001b[32mgru\u001b[0m [\u001b[34minfo\u001b[0m][PAYOUT][QUERY] statuses=pendente,pending,processando count=0"
+    ],
+    "PAYOUT_SELECT": [],
+    "PAYOUT_SKIP": [],
+    "PAYOUT_ROLLBACK_FAIL": []
+  },
+  "patch_visivel": true
+}

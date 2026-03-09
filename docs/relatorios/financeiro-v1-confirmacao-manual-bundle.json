@@ -1,0 +1,24 @@
+{
+  "auditoria": "FINANCEIRO-V1-CONFIRMACAO-MANUAL-BUNDLE",
+  "data": "2026-03-06",
+  "modo": "READ-ONLY",
+  "objetivo": "Registro oficial da checagem manual do bundle em produção e conclusão se o frontend financeiro correto está publicado",
+  "base_url": "https://www.goldeouro.lol",
+  "entrada_operador": {
+    "bundle_carregado": "[OPERADOR: ex.: index-CHnRaMxK.js ou index-qIGutT6K.js]",
+    "saque_publicado": "[OPERADOR: sim | nao]",
+    "deposito_simplificado_publicado": "[OPERADOR: sim | nao]"
+  },
+  "interpretacao": {
+    "frontend_antigo": "bundle qIGutT6K ou saque/depósito não conforme",
+    "frontend_corrigido": "bundle CHnRaMxK (ou equivalente) e saque_publicado=sim e deposito_simplificado_publicado=sim"
+  },
+  "conclusao": {
+    "financeiro_v1_concluido": "[PREENCHER: sim | nao]",
+    "observacao": "sim se bundle corrigido + saque sim + depósito sim; caso contrário nao"
+  },
+  "proxima_acao": {
+    "valor": "[PREENCHER: nenhuma | promover_deployment_correto]",
+    "detalhe": "Se concluído=sim: nenhuma. Se concluído=nao: promover no Vercel o deployment que serve o build corrigido."
+  }
+}

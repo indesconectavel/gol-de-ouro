@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-03-06T02:38:39.800Z",
+  "presos_mais_30_min": [
+    {
+      "id": "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-04T23:52:06.693+00:00",
+      "updated_at": "2026-03-04T23:52:34.522598+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "valor": 10,
+      "amount": 10,
+      "net_amount": 8,
+      "fee": 2,
+      "correlation_id": "***7518",
+      "pix_key_preview": "free***",
+      "pix_type": "email"
+    },
+    {
+      "id": "ecd0045f-9e80-425c-b2a3-810977351d6f",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T01:46:58.093+00:00",
+      "updated_at": "2026-03-05T01:47:09.513561+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "valor": 10,
+      "amount": 10,
+      "net_amount": 8,
+      "fee": 2,
+      "correlation_id": "***7489",
+      "pix_key_preview": "free***",
+      "pix_type": "email"
+    },
+    {
+      "id": "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T02:37:03.041+00:00",
+      "updated_at": "2026-03-05T02:37:11.725759+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "valor": 10,
+      "amount": 10,
+      "net_amount": 8,
+      "fee": 2,
+      "correlation_id": "***2525",
+      "pix_key_preview": "free***",
+      "pix_type": "email"
+    },
+    {
+      "id": "ed46001f-26fe-4301-b784-d972a7aa1807",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T18:21:40.984+00:00",
+      "updated_at": "2026-03-05T18:21:54.186834+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "valor": 10,
+      "amount": 10,
+      "net_amount": 8,
+      "fee": 2,
+      "correlation_id": "***1392",
+      "pix_key_preview": "free***",
+      "pix_type": "email"
+    },
+    {
+      "id": "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd",
+      "usuario_id": "***4ad5",
+      "status": "processando",
+      "created_at": "2026-03-05T18:29:16.436+00:00",
+      "updated_at": "2026-03-05T18:29:24.521434+00:00",
+      "processed_at": null,
+      "transacao_id": null,
+      "valor": 10,
+      "amount": 10,
+      "net_amount": 8,
+      "fee": 2,
+      "correlation_id": "***6949",
+      "pix_key_preview": "free***",
+      "pix_type": "email"
+    }
+  ],
+  "ledger_por_saque": {
+    "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c": [],
+    "ecd0045f-9e80-425c-b2a3-810977351d6f": [],
+    "da70665c-5202-46ab-ac86-7cf16ff3be6a": [],
+    "ed46001f-26fe-4301-b784-d972a7aa1807": [],
+    "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd": []
+  },
+  "transacoes_por_saque": {
+    "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c": [],
+    "ecd0045f-9e80-425c-b2a3-810977351d6f": [],
+    "da70665c-5202-46ab-ac86-7cf16ff3be6a": [],
+    "ed46001f-26fe-4301-b784-d972a7aa1807": [],
+    "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd": []
+  },
+  "erros": []
+}

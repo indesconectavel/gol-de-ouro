@@ -1,0 +1,17 @@
+{
+  "timestamp_utc": "2026-03-06T14:20:00.000Z",
+  "fly_toml_app": "goldeouro-backend-v2",
+  "processes": {
+    "app": "npm start",
+    "payout_worker": "node src/workers/payout-worker.js"
+  },
+  "services": {
+    "internal_port": 8080,
+    "processes": ["app"],
+    "nota": "O bloco [[services]] tem processes = [\"app\"], portanto o servico HTTP (porta 8080) e os http_checks estao restritos ao process group \"app\"."
+  },
+  "comportamento_payout_worker": "O payout-worker executa apenas node src/workers/payout-worker.js; nao inicia servidor HTTP e nao escuta em nenhuma porta. E um processo de background (intervalo de ciclo).",
+  "por_que_fly_marcou_smoke_fail_no_payout_worker": "Durante o deploy, o Fly atualizou as machines em sequencia. Na documentacao Fly, services com processes = [\"app\"] deveriam aplicar checks apenas ao grupo app; porem no log do deploy apareceu 'Running smoke checks on machine e82794da791108' (payout_worker) e 'the app appears to be crashing' / 'not listening on the expected address (0.0.0.0:8080)'. Possiveis causas: (1) Fly aplica um smoke check padrao a todas as machines na fase de deploy, independente do processes do services; (2) ou a mesma imagem e usada em todos os process groups e o Fly espera que toda machine escute em 8080 apos o start. Resultado: a machine payout_worker nao escuta em 8080, entao o smoke check falhou.",
+  "worker_deveria_expor_8080": "Nao. O worker e apenas um job em loop; expor 8080 nele seria desnecessario e aumentaria superficie de ataque.",
+  "conclusao": "O fly.toml ja restringe services a processes = [\"app\"]. Se o Fly ainda assim executar smoke check na machine do payout_worker, e necessario desabilitar checks para esse process group (por ex. via [vm] ou checks com processes especificos) ou aceitar que o deploy rode smoke apenas nas machines do grupo app."
+}

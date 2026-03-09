@@ -1,0 +1,65 @@
+{
+  "auditoria": "AUDITORIA FRONTEND - Uso de balance/saldo (read-only)",
+  "data": "2026-03-06",
+  "response_data_balance": [
+    {
+      "arquivo": "goldeouro-player/src/pages/Pagamentos.jsx",
+      "caminho_completo": "e:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\pages\\Pagamentos.jsx",
+      "linha_inicial": 36,
+      "linha_final": 38,
+      "trecho": "// Carregar saldo do usuário\nconst response = await apiClient.get(API_ENDPOINTS.PROFILE);\nsetSaldo(response.data.balance || 0);",
+      "funcao_utilizada": "carregarDados()",
+      "observacao": "Backend retorna saldo em response.data.data.saldo; response.data.balance é undefined → saldo na tela fica 0. Estado 'saldo' não é exibido no JSX da página (apenas setado)."
+    }
+  ],
+  "response_data_data_saldo": [
+    {
+      "arquivo": "goldeouro-player/src/pages/Withdraw.jsx",
+      "caminho_completo": "e:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\pages\\Withdraw.jsx",
+      "linha_inicial": 42,
+      "linha_final": 45,
+      "trecho": "// Buscar saldo real do usuário\nconst response = await apiClient.get(API_ENDPOINTS.PROFILE)\nif (response.data.success) {\n  setBalance(response.data.data.saldo || 0)",
+      "funcao_utilizada": "loadUserData()"
+    },
+    {
+      "arquivo": "goldeouro-player/src/pages/Dashboard.jsx",
+      "caminho_completo": "e:\\Chute de Ouro\\goldeouro-backend\\goldeouro-player\\src\\pages\\Dashboard.jsx",
+      "linha_inicial": 44,
+      "linha_final": 46,
+      "trecho": "if (profileResponse.data.success) {\n  setUser(profileResponse.data.data)\n  setBalance(profileResponse.data.data.saldo || 0)",
+      "funcao_utilizada": "loadUserData()"
+    }
+  ],
+  "outros_saldo_balance": [
+    {
+      "arquivo": "goldeouro-player/src/pages/Profile.jsx",
+      "linhas": "50, 215",
+      "trecho": "balance: userData.saldo || 0 (setUser); exibição: user.balance.toFixed(2)",
+      "funcao": "carregarDados / render"
+    },
+    {
+      "arquivo": "goldeouro-player/src/pages/GameShoot.jsx",
+      "linhas": "106, 112",
+      "trecho": "setBalance(userData.saldo); userData vem do profile/API",
+      "funcao": "carregamento inicial"
+    },
+    {
+      "arquivo": "goldeouro-player/src/services/gameService.js",
+      "linhas": "40, 250, 282",
+      "trecho": "this.userBalance = response.data.data.saldo; saldo: userData.saldo; this.userBalance = userData.saldo",
+      "funcao": "getUserBalance / updateUserBalance"
+    }
+  ],
+  "componentes_que_exibem_saldo_na_ui": [
+    { "arquivo": "goldeouro-player/src/pages/Dashboard.jsx", "linha": 175, "elemento": "R$ {balance.toFixed(2)}" },
+    { "arquivo": "goldeouro-player/src/pages/Withdraw.jsx", "linha": 231, "elemento": "R$ {balance.toFixed(2)}" },
+    { "arquivo": "goldeouro-player/src/pages/Profile.jsx", "linha": 215, "elemento": "R$ {user.balance.toFixed(2)}" },
+    { "arquivo": "goldeouro-player/src/pages/GameShoot.jsx", "linha": 340, "elemento": "R$ {balance.toFixed(2)}" },
+    { "arquivo": "goldeouro-player/src/pages/GameShootFallback.jsx", "linha": 142, "elemento": "balance (moeda BRL)" },
+    { "arquivo": "goldeouro-player/src/pages/Game.jsx", "linha": 279, "elemento": "R$ {balance.toFixed(2)}" }
+  ],
+  "resposta_perguntas": {
+    "onde_saldo_lido_com_response_data_balance": "Pagamentos.jsx, linha 38, em carregarDados()",
+    "existe_algun_local_response_data_data_saldo": "Sim: Withdraw.jsx (45), Dashboard.jsx (46), gameService.js (40, 250, 282). Profile e GameShoot usam userData.saldo (origem pode ser profile API que retorna data.saldo)."
+  }
+}

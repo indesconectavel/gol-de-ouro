@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-03-06T02:30:00.000Z",
+  "auditoria_e2e_final": true,
+  "prova_t0_t10_t40_executada_nesta_sessao": false,
+  "motivo": "prova-saldo-persistencia-readonly.js requer BEARER ou PROVA_USER_ID; rodou em background/timeout sem reexecucao completa",
+  "fonte_alternativa": "ciclo1-saldo-prova.json (prova anterior supabase_polling)",
+  "conclusao_saldo": "saldo persiste no banco (usuarios.saldo); prova anterior mostrou valor estavel 1000 em polling; sem BEARER nao foi possivel validar GET /api/user/profile T0/T+10/T+40",
+  "bearer_defined": false,
+  "prova_user_id_defined": false,
+  "resumo": {
+    "saldo_aumenta_no_banco": "sim_evidenciado_em_ciclo_anterior",
+    "saldo_efeito_visual_cache": "parcialmente_estavel",
+    "saldo_inconclusivo_esta_auditoria": "apenas_por_ausencia_de_BEARER_para_profile"
+  }
+}

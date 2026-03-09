@@ -1,0 +1,15 @@
+{
+  "timestamp_utc": "2026-03-06T13:25:28.920Z",
+  "validacao_script_ok": true,
+  "presos_script_ok": true,
+  "resumo": {
+    "saques_total_rejeitados": 7,
+    "saques_com_rollback": 5,
+    "saques_sem_rollback": 2,
+    "rejeitados_pelo_reconciler": 1,
+    "conclusao_rollback": "rollback_parcial",
+    "conclusao_ledger": "ledger_ok",
+    "saques_presos_mais_30min": 0,
+    "bloqueios_remanescentes": "historicos_ou_inconclusivos"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "audit_date": "2026-03-06",
+  "base_url": "https://www.goldeouro.lol",
+  "rotas_oficiais_validadas": [
+    {
+      "path": "/",
+      "status": 200,
+      "carrega_corretamente": true,
+      "servem_frontend_correto": true,
+      "observacao": "Página de login; bundle index-qIGutT6K.js carregado."
+    },
+    {
+      "path": "/game",
+      "status": 200,
+      "carrega_corretamente": true,
+      "servem_frontend_correto": true,
+      "observacao": "Rota da SPA; acesso via navegação client-side a partir de /."
+    },
+    {
+      "path": "/dashboard",
+      "status": 200,
+      "carrega_corretamente": true,
+      "servem_frontend_correto": true,
+      "observacao": "Rota da SPA; acesso via navegação client-side a partir de /."
+    }
+  ],
+  "comportamento_esperado": "Raiz exibe login; /game e /dashboard são rotas do mesmo bundle (React SPA). GET direto a /game e /dashboard pode retornar 200 ou 404 conforme rewrites Vercel; uso normal é acessar / e navegar no cliente."
+}

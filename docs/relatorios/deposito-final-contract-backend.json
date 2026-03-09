@@ -1,0 +1,52 @@
+{
+  "auditoria": "DEPOSITO FINAL CONTRACT CHECK - Contrato do backend (read-only)",
+  "data": "2026-03-06",
+  "POST_api_payments_pix_criar": {
+    "fonte": "server-fly.js",
+    "campos_esperados_body": ["amount"],
+    "opcional": "cpf (req.body.cpf)",
+    "validacoes": [
+      "amount presente e amount >= 1",
+      "amount <= 1000",
+      "Token Mercado Pago configurado",
+      "mercadoPagoConnected"
+    ],
+    "valor_minimo": 1,
+    "valor_maximo": 1000,
+    "resposta_sucesso": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "message": "PIX criado com sucesso!",
+        "data": {
+          "id": "payment.id (Mercado Pago)",
+          "amount": "number",
+          "qr_code": "transaction_data.qr_code",
+          "qr_code_base64": "transaction_data.qr_code_base64",
+          "pix_copy_paste": "transaction_data.qr_code",
+          "pix_code": "transaction_data.qr_code",
+          "status": "pending",
+          "created_at": "ISO string"
+        }
+      }
+    },
+    "respostas_erro": [
+      { "status": 400, "message": "Valor inválido" },
+      { "status": 400, "message": "Valor máximo: R$ 1.000,00" },
+      { "status": 503, "message": "Sistema de pagamento temporariamente indisponível..." },
+      { "status": 500, "message": "Erro ao criar PIX. Tente novamente em alguns minutos." }
+    ]
+  },
+  "GET_api_payments_pix_usuario": {
+    "resposta_sucesso": {
+      "success": true,
+      "data": {
+        "payments": "array de registros pagamentos_pix (select *)",
+        "total": "number"
+      }
+    },
+    "em_erro_tabela": "retorna payments: [], total: 0"
+  },
+  "GET_pix_status": "Não encontrado em server-fly.js (apenas POST criar e GET usuario). Rota existe em routes/paymentRoutes.js mas server-fly usa rotas inline.",
+  "webhook": "POST /api/payments/webhook - atualiza status e saldo após notificação Mercado Pago."
+}

@@ -1,0 +1,7 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 7 - Rollback plan",
+  "rollback_necessary": false,
+  "deployment_preserved_for_rollback": "ez1oc96t1",
+  "reason": "No new deployment was published; Vercel deploy failed. Production unchanged."
+}

@@ -1,0 +1,27 @@
+{
+  "audit_date": "2026-03-06",
+  "escopo": "Frontend financeiro V1 (player)",
+  "tela_deposito": {
+    "esta_correto_no_codigo": true,
+    "esta_correto_em_producao": "depende_do_bundle",
+    "detalhe_codigo": "Pagamentos.jsx usa paymentService.createPix e API_ENDPOINTS.PIX_USER; POST /api/payments/pix/criar, GET /api/payments/pix/usuario. Simplificação demo: remoção do botão 'Verificar Status' (commit 8c020af)."
+  },
+  "tela_saque": {
+    "esta_correto_no_codigo": true,
+    "esta_correto_em_producao": "depende_do_bundle",
+    "detalhe_codigo": "Withdraw.jsx usa requestWithdraw e getWithdrawHistory (withdrawService.js); POST /api/withdraw/request, GET /api/withdraw/history; API_ENDPOINTS.WITHDRAW_REQUEST e WITHDRAW_HISTORY em config/api.js."
+  },
+  "historico": {
+    "saque": "getWithdrawHistory() → GET /api/withdraw/history; lista em Withdraw.jsx.",
+    "deposito": "GET /api/payments/pix/usuario; exibido em Pagamentos.jsx."
+  },
+  "saldo_visivel": {
+    "detalhe": "Profile (API_ENDPOINTS.PROFILE → data.data.saldo); Withdraw e Dashboard carregam saldo via profile; Pagamentos usa response.data.data.saldo (correção recomendada em DIFF-PR29: data.data.saldo)."
+  },
+  "integracao_endpoints": {
+    "deposito": "POST /api/payments/pix/criar, GET /api/payments/pix/usuario",
+    "saque": "POST /api/withdraw/request, GET /api/withdraw/history",
+    "correto_no_repositorio": true
+  },
+  "o_que_falta_publicar": "Se produção estiver servindo bundle antigo (index-qIGutT6K.js ou index-DVt6EjKW.js), a tela de saque ainda chama createPix (errado) e o depósito tem 'Verificar Status'. O bundle com correções (withdrawService, endpoints corretos, depósito simplificado) é index-CHnRaMxK.js (documentado em FRONTEND-PLAYER-POSTMERGE-VERIFICACAO-2026-03-06). É necessário que o deployment em produção sirva esse bundle (ou equivalente) para o frontend financeiro estar 'correto em produção'."
+}

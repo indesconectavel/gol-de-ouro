@@ -1,0 +1,57 @@
+{
+  "timestamp_utc": "2026-03-06T01:45:00Z",
+  "source": "Varredura em .github/workflows e scripts (repositório goldeouro-backend; player em goldeouro-player/)",
+  "workflows_that_deploy_vercel_prod": [
+    {
+      "file": ".github/workflows/frontend-deploy.yml",
+      "trigger": "push branches [main, dev], paths: goldeouro-player/**, .github/workflows/frontend-deploy.yml",
+      "job": "deploy-production",
+      "condition": "github.ref == 'refs/heads/main'",
+      "vercel_flags": "--prod --yes",
+      "action": "amondnet/vercel-action@v25",
+      "working_directory": "goldeouro-player",
+      "evidence": "vercel-args: '--prod --yes'",
+      "mechanism": "Qualquer push/merge em main que altere goldeouro-player/** dispara deploy e promoção automática para produção."
+    },
+    {
+      "file": ".github/workflows/main-pipeline.yml",
+      "trigger": "push branches [main], workflow_dispatch",
+      "job": "build-and-deploy",
+      "vercel_flags": "--prod --yes",
+      "command": "npx vercel --prod --yes",
+      "working_directory": "./goldeouro-player",
+      "evidence": "npx vercel --prod --yes",
+      "mechanism": "Todo push em main (sem filtro de path) executa deploy do backend (Fly) e do frontend (Vercel --prod). Ou seja, mesmo mudanças só no backend disparam deploy do player para produção."
+    },
+    {
+      "file": ".github/workflows/deploy-on-demand.yml",
+      "trigger": "workflow_dispatch only",
+      "job": "deploy-player-vercel",
+      "vercel_flags": "--prod",
+      "action": "amondnet/vercel-action@v25",
+      "working_directory": "./goldeouro-player",
+      "evidence": "vercel-args: \"--prod\"",
+      "mechanism": "Deploy manual; quem dispara escolhe produção."
+    }
+  ],
+  "workflows_vercel_preview_only": [
+    {
+      "file": ".github/workflows/frontend-deploy.yml",
+      "job": "deploy-development",
+      "condition": "github.ref == 'refs/heads/dev'",
+      "vercel_flags": "--target preview",
+      "evidence": "vercel-args: '--target preview'"
+    }
+  ],
+  "rollback_workflow": {
+    "file": ".github/workflows/rollback.yml",
+    "trigger": "workflow_run completed (main-pipeline) com conclusion != success",
+    "vercel_step": "vercel promote $PREVIOUS_DEPLOYMENT --yes",
+    "evidence": "Promove penúltimo deployment de produção para produção (rollback automático)."
+  },
+  "vercel_json_found": [
+    "goldeouro-player/vercel.json (referenciado em docs; conteúdo não alterado nesta auditoria)",
+    "player-dist-deploy/vercel.json"
+  ],
+  "conclusion": "Produção está atrelada à branch main. Dois mecanismos promovem automaticamente para prod: (1) frontend-deploy.yml em push main com mudanças em goldeouro-player/**; (2) main-pipeline.yml em todo push main. Não há gate manual nem aprovação obrigatória antes de --prod."
+}

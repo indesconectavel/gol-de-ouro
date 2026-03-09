@@ -1,0 +1,19 @@
+{
+  "auditoria": "SAQUE FINAL CONTRACT CHECK - Compatibilidade frontend x backend",
+  "data": "2026-03-06",
+  "comparacao_request": [
+    { "campo": "valor", "frontend_envia": "number (parseFloat(amount))", "backend_espera": "valor (req.body)", "status": "compatível" },
+    { "campo": "chave_pix", "frontend_envia": "string (trim)", "backend_espera": "chave_pix", "status": "compatível" },
+    { "campo": "tipo_chave", "frontend_envia": "cpf | email | phone | random", "backend_espera": "tipo_chave, PixValidator aceita cpf/email/phone/random", "status": "compatível" }
+  ],
+  "nomenclatura": "Frontend usa exatamente valor, chave_pix, tipo_chave (mesmos nomes que backend). Status: compatível.",
+  "valor_minimo": {
+    "frontend": "10 (paymentService.getConfig().minAmount em produção, input min=10)",
+    "backend": "10.00 (minWithdrawAmount)",
+    "status": "compatível"
+  },
+  "ressalva_valor_minimo": "PixValidator no backend aceita 0.50 a 1000; o server-fly aplica depois min 10. Frontend já valida 10, então fluxo normal alinhado. Se alguém chamar API com 5, backend retorna 400 com mensagem clara.",
+  "mensagens_erro": "Frontend exibe err.response?.data?.message ou err.message. Backend retorna message em JSON. Status: compatível.",
+  "estrutura_resposta_sucesso": "Frontend verifica response.data.success e usa response.data.data; backend retorna { success, message, data }. Status: compatível.",
+  "conclusao_compatibilidade": "Contrato do request e da resposta de sucesso/erro são compatíveis entre frontend e backend."
+}

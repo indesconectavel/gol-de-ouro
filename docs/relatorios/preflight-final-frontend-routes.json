@@ -1,0 +1,12 @@
+{
+  "auditoria": "PREFLIGHT FINAL READ-ONLY - Rotas críticas do player",
+  "data": "2026-03-06",
+  "rotas": [
+    { "rota": "/", "url": "https://www.goldeouro.lol", "status": 200, "carregamento": "OK", "conteudo": "Página de login (SPA)" },
+    { "rota": "/game", "url": "https://www.goldeouro.lol/game", "status": 200, "carregamento": "OK", "conteudo": "SPA; sem login redireciona para login" },
+    { "rota": "/dashboard", "url": "https://www.goldeouro.lol/dashboard", "status": 200, "carregamento": "OK", "conteudo": "SPA; sem login redireciona para login" }
+  ],
+  "tempo_resposta": "não medido nesta auditoria (read-only)",
+  "erros_console": "não verificados (auditoria sem execução de browser com console)",
+  "rotas_criticas_funcionando": true
+}

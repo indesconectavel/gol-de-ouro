@@ -1,0 +1,23 @@
+{
+  "auditoria": "AUDITORIA READ-ONLY - Fluxo completo da tela de saque",
+  "data": "2026-03-06",
+  "fluxo_real_mapeado": {
+    "acao_usuario": "Preencher valor, chave PIX e clicar em 'Solicitar Saque'",
+    "passo_1": "Withdraw.jsx - handleSubmit(e)",
+    "passo_2": "paymentService.createPix(amount, formData.pixKey, `Saque Gol de Ouro - ${formData.pixType}`)",
+    "passo_3": "paymentService.js - createPix() chama apiClient.post(this.config.pixEndpoint, payload)",
+    "passo_4": "pixEndpoint = '/api/payments/pix/criar'",
+    "passo_5": "apiClient.post('/api/payments/pix/criar', payload)",
+    "endpoint_chamado": "POST /api/payments/pix/criar",
+    "endpoint_esperado_para_saque": "POST /api/withdraw/request"
+  },
+  "fluxo_historico_saques": {
+    "acao": "Carregar histórico na tela",
+    "passo_1": "Withdraw.jsx - loadWithdrawalHistory()",
+    "passo_2": "paymentService.getUserPix()",
+    "passo_3": "apiClient.get('/api/payments/pix/usuario')",
+    "endpoint_chamado": "GET /api/payments/pix/usuario",
+    "endpoint_esperado_para_historico_saques": "GET /api/withdraw/history"
+  },
+  "conclusao_fluxo": "A tela de saque NÃO chama o endpoint correto de saque. Chama o endpoint de depósito PIX (criar e listar pagamentos PIX)."
+}

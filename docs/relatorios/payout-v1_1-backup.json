@@ -1,0 +1,9 @@
+{
+  "backup_result": "FAIL",
+  "reason": "DATABASE_URL not set in environment (.env). Backup nao executado.",
+  "backup_path": null,
+  "size_bytes": null,
+  "sha256": null,
+  "timestamp_utc": "2026-03-06T11:22:00Z",
+  "aborted_pipeline": true
+}

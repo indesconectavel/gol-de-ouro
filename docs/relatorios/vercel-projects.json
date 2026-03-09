@@ -1,0 +1,32 @@
+{
+  "timestamp_utc": "2026-03-06T01:45:00Z",
+  "source": "vercel projects ls (goldeouro-admins-projects)",
+  "projects": [
+    {
+      "name": "goldeouro-player",
+      "latest_production_url": "https://app.goldeouro.lol",
+      "updated": "1d",
+      "node_version": "22.x",
+      "serves_domains": ["goldeouro.lol", "www.goldeouro.lol", "app.goldeouro.lol"]
+    },
+    {
+      "name": "goldeouro-backend",
+      "latest_production_url": "https://goldeouro-backend.vercel.app",
+      "updated": "1d",
+      "node_version": "24.x"
+    },
+    {
+      "name": "indes",
+      "latest_production_url": "--",
+      "updated": "65d",
+      "node_version": "24.x"
+    },
+    {
+      "name": "goldeouro-admin",
+      "latest_production_url": "https://admin.goldeouro.lol",
+      "updated": "76d",
+      "node_version": "22.x"
+    }
+  ],
+  "conclusion": "goldeouro.lol, www.goldeouro.lol e app.goldeouro.lol são servidos pelo projeto goldeouro-player (Vercel)."
+}

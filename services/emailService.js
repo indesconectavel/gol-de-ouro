@@ -1,66 +1,124 @@
 // SISTEMA DE ENVIO DE EMAILS - GOL DE OURO v1.2.0
 // ================================================
 // Data: 24/10/2025
-// Status: SISTEMA DE EMAILS IMPLEMENTADO
+// Status: SMTP SAFE MODE — dependência opcional e resiliente
 // Versão: v1.2.0-email-system
-// GPT-4o Auto-Fix: Sistema completo de envio de emails
+// Hardening 2026-03-09: estado explícito, ensureReady, verify não fatal, getStatus
 
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
 
+const FRONTEND_BASE_URL = process.env.FRONTEND_URL || process.env.FRONTEND_BASE_URL || 'https://goldeouro.lol';
+
+const DEFAULT_FROM = process.env.SMTP_USER || 'goldeouro.game@gmail.com';
+
 class EmailService {
   constructor() {
     this.transporter = null;
     this.isConfigured = false;
+    this.isVerified = false;
+    this.lastVerifyError = null;
+    this.lastVerifyAt = null;
+    this.lastSendError = null;
+    this._verifyPromise = null;
     this.initializeTransporter();
   }
 
-  // Inicializar transporter de email
+  // Inicializar transporter (não bloqueia boot; verify em background com catch)
   initializeTransporter() {
     try {
-      // Configurações do Gmail (pode ser alterado para outros provedores)
+      const hasCredentials = !!(process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD);
+      if (!hasCredentials) {
+        console.warn('⚠️ [EMAIL] SMTP não configurado (SMTP_PASS ou GMAIL_APP_PASSWORD ausente). Servidor continuará rodando.');
+        this.isConfigured = false;
+        this.isVerified = false;
+        return;
+      }
+
       this.transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
           user: process.env.SMTP_USER || 'goldeouro.game@gmail.com',
           pass: process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD
         },
-        tls: {
-          rejectUnauthorized: false
-        }
+        tls: { rejectUnauthorized: false }
       });
 
-      // Verificar configuração
-      this.transporter.verify((error, success) => {
-        if (error) {
-          console.error('❌ [EMAIL] Erro na configuração do email:', error);
-          this.isConfigured = false;
-        } else {
-          console.log('✅ [EMAIL] Servidor de email configurado com sucesso');
-          this.isConfigured = true;
-        }
+      // Verificação em background: nunca bloqueia startup; nunca deixa unhandled rejection
+      this._verifyPromise = new Promise((resolve, reject) => {
+        this.transporter.verify((err) => {
+          this.lastVerifyAt = Date.now();
+          if (err) {
+            this.lastVerifyError = err && err.message ? err.message : String(err);
+            this.isConfigured = false;
+            this.isVerified = false;
+            console.error('❌ [EMAIL] Verificação SMTP falhou (servidor continuará rodando):', this.lastVerifyError);
+            reject(err);
+          } else {
+            this.lastVerifyError = null;
+            this.isConfigured = true;
+            this.isVerified = true;
+            console.log('✅ [EMAIL] SMTP verificado e pronto para envio');
+            resolve();
+          }
+        });
+      }).catch((err) => {
+        this.lastVerifyError = err && err.message ? err.message : String(err);
+        this.isConfigured = false;
+        this.isVerified = false;
+        return undefined;
       });
-
     } catch (error) {
-      console.error('❌ [EMAIL] Erro ao inicializar email service:', error);
+      const msg = error && error.message ? error.message : String(error);
+      console.error('❌ [EMAIL] Erro ao inicializar email service:', msg);
       this.isConfigured = false;
+      this.isVerified = false;
+      this.lastVerifyError = msg;
     }
   }
 
-  // Enviar email de recuperação de senha
+  /**
+   * Garante que o serviço está pronto para envio. Não lança exceção.
+   * @returns {{ ready: boolean, error?: string }}
+   */
+  async ensureReady() {
+    if (!this.transporter) {
+      return { ready: false, error: 'Serviço de e-mail não configurado. Configure SMTP_USER e SMTP_PASS (ou GMAIL_APP_PASSWORD).' };
+    }
+    if (this._verifyPromise) {
+      try {
+        await this._verifyPromise;
+      } catch (_) {
+        return { ready: false, error: 'Serviço de e-mail indisponível (verificação SMTP falhou).' };
+      }
+    }
+    if (!this.isConfigured || !this.isVerified) {
+      return {
+        ready: false,
+        error: this.lastVerifyError || 'Serviço de e-mail não configurado ou indisponível.'
+      };
+    }
+    return { ready: true };
+  }
+
+  // Enviar email de recuperação de senha (retorno padronizado; nunca throw)
   async sendPasswordResetEmail(email, username, resetToken) {
-    if (!this.isConfigured) {
-      console.warn('⚠️ [EMAIL] Serviço de email não configurado, apenas logando token');
-      console.log(`📧 [EMAIL] Token para ${email}: ${resetToken}`);
-      return { success: true, message: 'Email simulado (serviço não configurado)' };
+    const ready = await this.ensureReady();
+    if (!ready.ready) {
+      if (process.env.NODE_ENV !== 'production') {
+        const truncated = typeof resetToken === 'string' ? resetToken.substring(0, 12) + '...' : '***';
+        console.log('📧 [EMAIL] Reset não enviado (SMTP indisponível). Link (dev):', `${FRONTEND_BASE_URL}/reset-password?token=${truncated}`);
+      } else {
+        console.warn('⚠️ [EMAIL] SMTP indisponível; recuperação de senha não enviada para', email ? `${email.substring(0, 3)}***` : 'destinatário');
+      }
+      return { success: false, error: ready.error || 'Serviço de e-mail não configurado ou indisponível.' };
     }
 
     try {
-      const resetLink = `https://goldeouro.lol/reset-password?token=${resetToken}`;
-      
+      const resetLink = `${FRONTEND_BASE_URL.replace(/\/+$/, '')}/reset-password?token=${resetToken}`;
       const mailOptions = {
-        from: `"Gol de Ouro" <${process.env.SMTP_USER || 'goldeouro.game@gmail.com'}>`,
+        from: `"Gol de Ouro" <${DEFAULT_FROM}>`,
         to: email,
         subject: '🔐 Recuperação de Senha - Gol de Ouro',
         html: this.generatePasswordResetHTML(username, resetLink),
@@ -68,37 +126,38 @@ class EmailService {
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      console.log(`✅ [EMAIL] Email de recuperação enviado para ${email}:`, result.messageId);
-      
-      return { 
-        success: true, 
+      this.lastSendError = null;
+      console.log('✅ [EMAIL] Recuperação de senha enviada para', email ? `${email.substring(0, 5)}***` : 'destinatário', 'messageId:', result.messageId || '-');
+
+      return {
+        success: true,
         messageId: result.messageId,
         message: 'Email de recuperação enviado com sucesso'
       };
-
     } catch (error) {
-      console.error('❌ [EMAIL] Erro ao enviar email de recuperação:', error);
-      return { 
-        success: false, 
-        error: error.message,
+      const msg = error && error.message ? error.message : String(error);
+      this.lastSendError = msg;
+      console.error('❌ [EMAIL] Falha ao enviar recuperação de senha:', msg);
+      return {
+        success: false,
+        error: msg,
         message: 'Erro ao enviar email de recuperação'
       };
     }
   }
 
-  // Enviar email de verificação de conta
+  // Enviar email de verificação de conta (retorno padronizado; nunca throw)
   async sendVerificationEmail(email, username, verificationToken) {
-    if (!this.isConfigured) {
-      console.warn('⚠️ [EMAIL] Serviço de email não configurado, apenas logando token');
-      console.log(`📧 [EMAIL] Token de verificação para ${email}: ${verificationToken}`);
-      return { success: true, message: 'Email simulado (serviço não configurado)' };
+    const ready = await this.ensureReady();
+    if (!ready.ready) {
+      console.warn('⚠️ [EMAIL] SMTP indisponível; verificação de conta não enviada.');
+      return { success: false, error: ready.error || 'Serviço de e-mail não configurado ou indisponível.' };
     }
 
     try {
-      const verificationLink = `https://goldeouro.lol/verify-email?token=${verificationToken}`;
-      
+      const verificationLink = `${FRONTEND_BASE_URL.replace(/\/+$/, '')}/verify-email?token=${verificationToken}`;
       const mailOptions = {
-        from: `"Gol de Ouro" <${process.env.SMTP_USER || 'goldeouro.game@gmail.com'}>`,
+        from: `"Gol de Ouro" <${DEFAULT_FROM}>`,
         to: email,
         subject: '✅ Verifique sua conta - Gol de Ouro',
         html: this.generateVerificationHTML(username, verificationLink),
@@ -106,19 +165,21 @@ class EmailService {
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      console.log(`✅ [EMAIL] Email de verificação enviado para ${email}:`, result.messageId);
-      
-      return { 
-        success: true, 
+      this.lastSendError = null;
+      console.log('✅ [EMAIL] Verificação de conta enviada para', email ? `${email.substring(0, 5)}***` : 'destinatário', 'messageId:', result.messageId || '-');
+
+      return {
+        success: true,
         messageId: result.messageId,
         message: 'Email de verificação enviado com sucesso'
       };
-
     } catch (error) {
-      console.error('❌ [EMAIL] Erro ao enviar email de verificação:', error);
-      return { 
-        success: false, 
-        error: error.message,
+      const msg = error && error.message ? error.message : String(error);
+      this.lastSendError = msg;
+      console.error('❌ [EMAIL] Falha ao enviar verificação de conta:', msg);
+      return {
+        success: false,
+        error: msg,
         message: 'Erro ao enviar email de verificação'
       };
     }
@@ -305,17 +366,35 @@ Este é um email automático, não responda a esta mensagem.
     `;
   }
 
-  // Verificar se o serviço está configurado
+  // Verificar se o serviço está configurado (compatibilidade)
   isEmailConfigured() {
     return this.isConfigured;
   }
 
-  // Obter estatísticas do serviço
-  getStats() {
+  /**
+   * Estado do serviço para auditoria e debug. Não lança exceção.
+   * @returns {{ configured: boolean, verified: boolean, provider: string, fromAddress: string, frontendBaseUrl: string, lastVerifyError: string|null, lastSendError: string|null, lastVerifyAt: number|null }}
+   */
+  getStatus() {
     return {
       configured: this.isConfigured,
-      service: 'gmail',
-      user: process.env.SMTP_USER || 'goldeouro.game@gmail.com'
+      verified: this.isVerified,
+      provider: 'gmail',
+      fromAddress: DEFAULT_FROM,
+      frontendBaseUrl: FRONTEND_BASE_URL,
+      lastVerifyError: this.lastVerifyError || null,
+      lastSendError: this.lastSendError || null,
+      lastVerifyAt: this.lastVerifyAt || null
+    };
+  }
+
+  // Compatibilidade: getStats mantém shape anterior e acrescenta campos de status
+  getStats() {
+    const status = this.getStatus();
+    return {
+      ...status,
+      service: status.provider,
+      user: status.fromAddress
     };
   }
 }

@@ -1,0 +1,33 @@
+{
+  "auditoria": "PRE-FLIGHT READ-ONLY - Disponibilidade do site",
+  "data": "2026-03-06",
+  "ambiente": "produção",
+  "urls": [
+    {
+      "url": "https://www.goldeouro.lol",
+      "status_http": 200,
+      "conteudo_retornado": true,
+      "erros_carregamento": [],
+      "observacao": "Página de login exibida; conteúdo HTML válido."
+    },
+    {
+      "url": "https://www.goldeouro.lol/game",
+      "status_http": 200,
+      "conteudo_retornado": true,
+      "erros_carregamento": [],
+      "observacao": "Sem login redireciona para tela de login; comportamento esperado."
+    },
+    {
+      "url": "https://www.goldeouro.lol/dashboard",
+      "status_http": 200,
+      "conteudo_retornado": true,
+      "erros_carregamento": [],
+      "observacao": "Sem login redireciona para tela de login; comportamento esperado."
+    }
+  ],
+  "resumo": {
+    "site_disponivel": true,
+    "todas_urls_respondem": true,
+    "tempo_resposta": "não medido nesta auditoria (ferramenta read-only)"
+  }
+}

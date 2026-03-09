@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-03-06",
+  "step": "PASSO 5 - Verificação tela de saque",
+  "result": "PASS",
+  "scope": "código publicado no repositório (build local); produção ainda não atualizada",
+  "checks": {
+    "withdraw_screen_loads": true,
+    "uses_post_withdraw_request": true,
+    "uses_get_withdraw_history": true
+  },
+  "evidence": {
+    "withdrawService_requestWithdraw": "apiClient.post(API_ENDPOINTS.WITHDRAW_REQUEST, { valor, chave_pix, tipo_chave })",
+    "withdrawService_getWithdrawHistory": "apiClient.get(API_ENDPOINTS.WITHDRAW_HISTORY)",
+    "Withdraw_jsx": "requestWithdraw and getWithdrawHistory imported and used for submit and history"
+  },
+  "production_live": false,
+  "note": "Correção presente no código/build; deploy Vercel falhou, portanto não está em produção."
+}

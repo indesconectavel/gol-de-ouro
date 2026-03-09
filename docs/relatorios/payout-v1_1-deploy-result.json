@@ -1,0 +1,8 @@
+{
+  "timestamp_utc": "2026-03-06T12:10:00Z",
+  "deploy_exit": "completed",
+  "release_nova": "v313",
+  "release_anterior": "v312",
+  "image": "registry.fly.io/goldeouro-backend-v2:deployment-01KK1G1ZJGJRZQ2K21E8VY3C26",
+  "rollback_acionado": false
+}

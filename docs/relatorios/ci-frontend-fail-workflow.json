@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-03-06",
+  "audit": "READ-ONLY - Workflow e job que falham",
+  "workflow_file": ".github/workflows/frontend-deploy.yml",
+  "workflow_name": "🎨 Frontend Deploy (Vercel)",
+  "trigger": "pull_request, branches: [main], paths: ['goldeouro-player/**']",
+  "job_id": "test-frontend",
+  "job_name": "🧪 Testes Frontend",
+  "runs_on": "ubuntu-latest",
+  "steps_order": [
+    "📥 Checkout código",
+    "🔧 Setup Node.js",
+    "📦 Instalar dependências frontend",
+    "🔍 Análise de segurança frontend",
+    "🧪 Executar testes frontend",
+    "🔍 Verificar sintaxe",
+    "🏗️ Build de teste",
+    "📊 Análise de bundle"
+  ],
+  "step_that_runs_npm_audit": "🔍 Análise de segurança frontend",
+  "step_index": 4,
+  "commands_in_audit_step": [
+    "cd goldeouro-player",
+    "npm audit --audit-level=moderate",
+    "echo \"✅ Análise de segurança do frontend concluída\""
+  ],
+  "npm_audit_config": "npm audit --audit-level=moderate (sem || true; exit code não zero falha o job)",
+  "evidence_lines": "Linhas 42-46 do arquivo .github/workflows/frontend-deploy.yml"
+}

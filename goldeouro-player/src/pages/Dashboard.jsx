@@ -4,6 +4,7 @@ import Logo from '../components/Logo'
 import Navigation from '../components/Navigation'
 import VersionBanner from '../components/VersionBanner'
 import { useSidebar } from '../contexts/SidebarContext'
+import { useAuth } from '../contexts/AuthContext'
 import apiClient from '../services/apiClient'
 import { API_ENDPOINTS } from '../config/api'
 import { retryDataRequest } from '../utils/retryLogic'
@@ -11,6 +12,7 @@ import { quickDashboardTest } from '../utils/dashboardTest'
 
 const Dashboard = () => {
   const { isCollapsed } = useSidebar()
+  const { logout } = useAuth()
   const [balance, setBalance] = useState(0.00)
   const [user, setUser] = useState(null)
   const [recentBets, setRecentBets] = useState([])
@@ -76,29 +78,9 @@ const Dashboard = () => {
     }
   }
 
-  const handleLogout = async () => {
-    try {
-      const token = localStorage.getItem('authToken')
-      
-      if (token) {
-        // Chamar endpoint de logout no backend
-        await apiClient.post('/auth/logout', { token })
-      }
-      
-      // Limpar dados locais
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('user')
-      
-      // Redirecionar para login
-      navigate('/')
-      
-    } catch (error) {
-      console.error('Erro no logout:', error)
-      // Mesmo com erro, fazer logout local
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('user')
-      navigate('/')
-    }
+  const handleLogout = () => {
+    logout()
+    navigate('/')
   }
 
 

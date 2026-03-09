@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-03-06T00:15:00.000Z",
+  "commit_sha": "80215a4",
+  "arquivos_alterados_no_patch": [
+    "server-fly.js",
+    "src/domain/payout/processPendingWithdrawals.js"
+  ],
+  "total_insertions": 26,
+  "total_deletions": 37,
+  "resumo_high_level": {
+    "server-fly.js": "Uma entrada ledger withdraw_request com valor negativo; rollback se ledger falhar; log [LEDGER] referencia (8 chars). Remoção das entradas saque e taxa separadas.",
+    "processPendingWithdrawals.js": "Select e lock incluem status processando; idempotência concluido/rejeitado; logs [PAYOUT] saqueId e [LEDGER] referencia."
+  },
+  "nao_quebrou_game": true,
+  "nao_quebrou_game_evidencia": "Nenhum arquivo em routes/gameRoutes, controllers/gameController, nem paths contendo /game ou goldeouro-player foram alterados no commit 80215a4. Apenas server-fly.js e src/domain/payout/processPendingWithdrawals.js.",
+  "rotas_game_inalteradas": true,
+  "player_inalterado": true
+}

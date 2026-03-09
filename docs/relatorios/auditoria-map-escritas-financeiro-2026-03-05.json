@@ -1,0 +1,1776 @@
+{
+  "timestamp": "2026-03-05T21:16:23.088Z",
+  "total_escritas": 251,
+  "por_tipo": {
+    "outro": 233,
+    "saque": 3,
+    "worker": 15
+  },
+  "por_tabela": {
+    "usuarios": 166,
+    "pagamentos_pix": 32,
+    "saques": 26,
+    "transacoes": 10,
+    "ledger_financeiro": 8,
+    "users": 9
+  },
+  "escritas": [
+    {
+      "arquivo": "backup-pre-limpeza-20251023-172730\\scripts\\configurar-credenciais-reais.js",
+      "linha_aproximada": 60,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backup-pre-limpeza-20251023-172730\\scripts\\obsoletos\\verificacao-estrutura-usuarios.js",
+      "linha_aproximada": 24,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backup-pre-limpeza-20251023-172730\\scripts\\test-supabase-direct.js",
+      "linha_aproximada": 29,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backup-pre-limpeza-20251023-172730\\scripts\\test-supabase-user-credentials.js",
+      "linha_aproximada": 34,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\backup-pre-limpeza-20251023-172730\\scripts\\configurar-credenciais-reais.js",
+      "linha_aproximada": 60,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\backup-pre-limpeza-20251023-172730\\scripts\\obsoletos\\verificacao-estrutura-usuarios.js",
+      "linha_aproximada": 24,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\backup-pre-limpeza-20251023-172730\\scripts\\test-supabase-direct.js",
+      "linha_aproximada": 29,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\backup-pre-limpeza-20251023-172730\\scripts\\test-supabase-user-credentials.js",
+      "linha_aproximada": 34,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\authController.js",
+      "linha_aproximada": 31,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 251,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 313,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 68,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 115,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 170,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 227,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 338,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 271,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 358,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\controllers\\paymentController.js",
+      "linha_aproximada": 266,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\criar-usuario-beta-tester.js",
+      "linha_aproximada": 28,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\criar-usuario-beta-tester.js",
+      "linha_aproximada": 62,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\database\\supabase-config.js",
+      "linha_aproximada": 24,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "upsert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\database\\supabase-config.js",
+      "linha_aproximada": 67,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "upsert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\database\\supabase-config.js",
+      "linha_aproximada": 109,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "upsert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\monitoring-system.js",
+      "linha_aproximada": 388,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\monitoring-system.js",
+      "linha_aproximada": 400,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\monitoring-system.js",
+      "linha_aproximada": 406,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\router-database.js",
+      "linha_aproximada": 87,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\router-database.js",
+      "linha_aproximada": 253,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\router-database.js",
+      "linha_aproximada": 377,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\router.js",
+      "linha_aproximada": 87,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\router.js",
+      "linha_aproximada": 255,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\router.js",
+      "linha_aproximada": 398,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\scripts\\configurar-credenciais-reais.js",
+      "linha_aproximada": 60,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\scripts\\obsoletos\\verificacao-estrutura-usuarios.js",
+      "linha_aproximada": 24,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\scripts\\test-supabase-direct.js",
+      "linha_aproximada": 29,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\scripts\\test-supabase-user-credentials.js",
+      "linha_aproximada": 34,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly-deploy.js",
+      "linha_aproximada": 43,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly-deploy.js",
+      "linha_aproximada": 350,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly-deploy.js",
+      "linha_aproximada": 618,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly-deploy.js",
+      "linha_aproximada": 839,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly-deploy.js",
+      "linha_aproximada": 708,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly-deploy.js",
+      "linha_aproximada": 776,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly-deploy.js",
+      "linha_aproximada": 827,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly-deploy.js",
+      "linha_aproximada": 619,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly-deploy.js",
+      "linha_aproximada": 852,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 437,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 566,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 647,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 703,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 888,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1010,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1174,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1340,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1476,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1551,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1743,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2078,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2380,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2449,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2807,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1807,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1886,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2062,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2325,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1419,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1525,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1658,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2150,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2231,
+      "tipo": "saque",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2178,
+      "tipo": "outro",
+      "tabela_coluna": "ledger_financeiro",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 939,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1341,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1509,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 1552,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2090,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 2388,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\server-fly.js",
+      "linha_aproximada": 939,
+      "tipo": "outro",
+      "tabela_coluna": "users",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\auth-service-unified.js",
+      "linha_aproximada": 63,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\auth-service-unified.js",
+      "linha_aproximada": 143,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\auth-service-unified.js",
+      "linha_aproximada": 226,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\auth-service-unified.js",
+      "linha_aproximada": 337,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\pix-service-real.js",
+      "linha_aproximada": 56,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\pix-service-real.js",
+      "linha_aproximada": 220,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\pix-service-real.js",
+      "linha_aproximada": 337,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\pix-service-real.js",
+      "linha_aproximada": 390,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\pix-service-real.js",
+      "linha_aproximada": 221,
+      "tipo": "outro",
+      "tabela_coluna": "users",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\pix-service-real.js",
+      "linha_aproximada": 391,
+      "tipo": "outro",
+      "tabela_coluna": "users",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\pix-service.js",
+      "linha_aproximada": 107,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\pix-service.js",
+      "linha_aproximada": 108,
+      "tipo": "outro",
+      "tabela_coluna": "users",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\services\\ranking-service.js",
+      "linha_aproximada": 27,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\src\\ai\\analytics-ai.js",
+      "linha_aproximada": 116,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 49,
+      "tipo": "worker",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 91,
+      "tipo": "worker",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 134,
+      "tipo": "worker",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 210,
+      "tipo": "worker",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 6,
+      "tipo": "worker",
+      "tabela_coluna": "ledger_financeiro",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 62,
+      "tipo": "worker",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\tests\\automated-test-suite.js",
+      "linha_aproximada": 170,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\PRE-V1-STABLE\\2026-02-05-2224\\tests\\automated-test-suite.js",
+      "linha_aproximada": 171,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\backup-pre-limpeza-20251023-172730\\scripts\\configurar-credenciais-reais.js",
+      "linha_aproximada": 60,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\backup-pre-limpeza-20251023-172730\\scripts\\obsoletos\\verificacao-estrutura-usuarios.js",
+      "linha_aproximada": 24,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\backup-pre-limpeza-20251023-172730\\scripts\\test-supabase-direct.js",
+      "linha_aproximada": 29,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\backup-pre-limpeza-20251023-172730\\scripts\\test-supabase-user-credentials.js",
+      "linha_aproximada": 34,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\criar-usuario-beta-tester.js",
+      "linha_aproximada": 28,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\criar-usuario-beta-tester.js",
+      "linha_aproximada": 62,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\monitoring-system.js",
+      "linha_aproximada": 388,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\monitoring-system.js",
+      "linha_aproximada": 400,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\monitoring-system.js",
+      "linha_aproximada": 406,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\router-database.js",
+      "linha_aproximada": 87,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\router-database.js",
+      "linha_aproximada": 253,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\router-database.js",
+      "linha_aproximada": 377,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\router.js",
+      "linha_aproximada": 87,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\router.js",
+      "linha_aproximada": 255,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\router.js",
+      "linha_aproximada": 398,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly-deploy.js",
+      "linha_aproximada": 43,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly-deploy.js",
+      "linha_aproximada": 350,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly-deploy.js",
+      "linha_aproximada": 618,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly-deploy.js",
+      "linha_aproximada": 839,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly-deploy.js",
+      "linha_aproximada": 708,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly-deploy.js",
+      "linha_aproximada": 776,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly-deploy.js",
+      "linha_aproximada": 827,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly-deploy.js",
+      "linha_aproximada": 619,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly-deploy.js",
+      "linha_aproximada": 852,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 437,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 566,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 647,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 703,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 888,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1010,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1174,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1340,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1476,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1551,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1743,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2078,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2380,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2449,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2807,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1807,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1886,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2062,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2325,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1419,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1525,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1658,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2150,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2231,
+      "tipo": "saque",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2178,
+      "tipo": "outro",
+      "tabela_coluna": "ledger_financeiro",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 939,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1341,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1509,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 1552,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2090,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 2388,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "backups\\RELEASE-AUDIT-2026-02-05\\server-fly.js",
+      "linha_aproximada": 939,
+      "tipo": "outro",
+      "tabela_coluna": "users",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "controllers\\authController.js",
+      "linha_aproximada": 31,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 251,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 313,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 68,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 115,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 170,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 227,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 338,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 271,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 358,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "controllers\\paymentController.js",
+      "linha_aproximada": 266,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "criar-usuario-beta-tester.js",
+      "linha_aproximada": 28,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "criar-usuario-beta-tester.js",
+      "linha_aproximada": 62,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "database\\supabase-config.js",
+      "linha_aproximada": 24,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "upsert"
+    },
+    {
+      "arquivo": "database\\supabase-config.js",
+      "linha_aproximada": 67,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "upsert"
+    },
+    {
+      "arquivo": "database\\supabase-config.js",
+      "linha_aproximada": 109,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "upsert"
+    },
+    {
+      "arquivo": "monitoring-system.js",
+      "linha_aproximada": 388,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "monitoring-system.js",
+      "linha_aproximada": 400,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "monitoring-system.js",
+      "linha_aproximada": 406,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "router-database.js",
+      "linha_aproximada": 87,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "router-database.js",
+      "linha_aproximada": 253,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "router-database.js",
+      "linha_aproximada": 377,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "router.js",
+      "linha_aproximada": 87,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "router.js",
+      "linha_aproximada": 255,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "router.js",
+      "linha_aproximada": 398,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "scripts\\configurar-credenciais-reais.js",
+      "linha_aproximada": 60,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "scripts\\obsoletos\\verificacao-estrutura-usuarios.js",
+      "linha_aproximada": 24,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "scripts\\test-supabase-direct.js",
+      "linha_aproximada": 29,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "scripts\\test-supabase-user-credentials.js",
+      "linha_aproximada": 34,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly-deploy.js",
+      "linha_aproximada": 43,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly-deploy.js",
+      "linha_aproximada": 350,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly-deploy.js",
+      "linha_aproximada": 618,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly-deploy.js",
+      "linha_aproximada": 839,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly-deploy.js",
+      "linha_aproximada": 708,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly-deploy.js",
+      "linha_aproximada": 776,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly-deploy.js",
+      "linha_aproximada": 827,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly-deploy.js",
+      "linha_aproximada": 619,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "server-fly-deploy.js",
+      "linha_aproximada": 852,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 451,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 580,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 661,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 717,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 902,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1024,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1188,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1354,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1489,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1564,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1756,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2091,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2402,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2471,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2829,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1820,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1899,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2075,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2347,
+      "tipo": "outro",
+      "tabela_coluna": "pagamentos_pix",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1432,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1538,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1671,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2163,
+      "tipo": "outro",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2253,
+      "tipo": "saque",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2191,
+      "tipo": "outro",
+      "tabela_coluna": "ledger_financeiro",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 953,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1355,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1522,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 1565,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2103,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 2410,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "server-fly.js",
+      "linha_aproximada": 953,
+      "tipo": "outro",
+      "tabela_coluna": "users",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "services\\auth-service-unified.js",
+      "linha_aproximada": 63,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "services\\auth-service-unified.js",
+      "linha_aproximada": 143,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "services\\auth-service-unified.js",
+      "linha_aproximada": 226,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "services\\auth-service-unified.js",
+      "linha_aproximada": 337,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "services\\pix-service-real.js",
+      "linha_aproximada": 56,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "services\\pix-service-real.js",
+      "linha_aproximada": 220,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "services\\pix-service-real.js",
+      "linha_aproximada": 337,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "services\\pix-service-real.js",
+      "linha_aproximada": 390,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "services\\pix-service-real.js",
+      "linha_aproximada": 221,
+      "tipo": "outro",
+      "tabela_coluna": "users",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "services\\pix-service-real.js",
+      "linha_aproximada": 391,
+      "tipo": "outro",
+      "tabela_coluna": "users",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "services\\pix-service.js",
+      "linha_aproximada": 107,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "services\\pix-service.js",
+      "linha_aproximada": 108,
+      "tipo": "outro",
+      "tabela_coluna": "users",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "services\\ranking-service.js",
+      "linha_aproximada": 27,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "src\\ai\\analytics-ai.js",
+      "linha_aproximada": 116,
+      "tipo": "outro",
+      "tabela_coluna": "transacoes",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 140,
+      "tipo": "worker",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 124,
+      "tipo": "worker",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 189,
+      "tipo": "worker",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 237,
+      "tipo": "worker",
+      "tabela_coluna": "saques",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 27,
+      "tipo": "worker",
+      "tabela_coluna": "ledger_financeiro",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 36,
+      "tipo": "worker",
+      "tabela_coluna": "ledger_financeiro",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 50,
+      "tipo": "worker",
+      "tabela_coluna": "ledger_financeiro",
+      "operacao": "insert"
+    },
+    {
+      "arquivo": "src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 63,
+      "tipo": "worker",
+      "tabela_coluna": "ledger_financeiro",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "src\\domain\\payout\\processPendingWithdrawals.js",
+      "linha_aproximada": 153,
+      "tipo": "worker",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    },
+    {
+      "arquivo": "tests\\automated-test-suite.js",
+      "linha_aproximada": 170,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update"
+    },
+    {
+      "arquivo": "tests\\automated-test-suite.js",
+      "linha_aproximada": 171,
+      "tipo": "outro",
+      "tabela_coluna": "usuarios",
+      "operacao": "update/insert"
+    }
+  ]
+}

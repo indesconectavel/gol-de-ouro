@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-03-06T12:00:00.000Z",
+  "fonte": "codigo_e_logs_readonly",
+  "token_env": {
+    "variavel": "MERCADOPAGO_PAYOUT_ACCESS_TOKEN",
+    "arquivo": "src/workers/payout-worker.js",
+    "linhas": "26-29",
+    "uso": "Worker exige token ao iniciar; sem ele process.exit(1)."
+  },
+  "token_no_servico": {
+    "arquivo": "services/pix-mercado-pago.js",
+    "linhas": "6-9",
+    "codigo": "MP_CONFIG.accessToken = process.env.MERCADOPAGO_PAYOUT_ACCESS_TOKEN",
+    "isConfigured": "Linhas 13-17: retorna true apenas se token existe E (startsWith('APP_USR-') OU startsWith('APP_USR_'))",
+    "risco": "Se token de payout em producao for outro formato (ex: token de transfers), isConfigured() = false e createPixWithdraw lanca 'Token do Mercado Pago nao configurado'."
+  },
+  "guard_payout_enabled": {
+    "variavel": "PAYOUT_PIX_ENABLED",
+    "arquivo": "src/workers/payout-worker.js linha 63",
+    "valor_esperado": "string 'true' (case-insensitive)",
+    "efeito": "Se false, processPendingWithdrawals retorna disabled e nao seleciona saques."
+  },
+  "provider_campo": {
+    "api": "POST https://api.mercadopago.com/v1/transfers",
+    "arquivo": "services/pix-mercado-pago.js",
+    "linhas": "282-302",
+    "body": "amount, description, external_reference (saqueId_correlationId), receiver.pix_key, receiver.pix_key_type (CPF|CNPJ|EMAIL|PHONE|EVP)",
+    "retorno_sucesso": "transfer.id em data.id; usado como transacao_id no update do saque."
+  },
+  "erro_tipico": {
+    "catch": "services/pix-mercado-pago.js 325-331",
+    "retorno": "{ success: false, error: error.response?.data?.message || error.message }",
+    "observacao": "Auth (401), timeout, request invalido ou falha MP retornam aqui; nao ha log do corpo da resposta no catch."
+  },
+  "sinais_indiretos_logs": "Buscar em payout-rootcause-worker-logs.json: erro_mp, timeout, PAYOUT][FALHOU], status_original_do_provedor."
+}

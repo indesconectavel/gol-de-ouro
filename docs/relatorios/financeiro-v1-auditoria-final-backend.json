@@ -1,0 +1,48 @@
+{
+  "audit_date": "2026-03-06",
+  "escopo": "Backend financeiro V1",
+  "depositos_pix": {
+    "esta_correto": true,
+    "esta_validado": true,
+    "esta_em_producao": true,
+    "detalhe": "POST /api/payments/pix/criar, GET /api/payments/pix/usuario, webhook credita saldo; reconcilePendingPayments para pendentes; claim atômico evita duplo crédito."
+  },
+  "saques_pix": {
+    "esta_correto": true,
+    "esta_validado": true,
+    "esta_em_producao": true,
+    "detalhe": "POST /api/withdraw/request (débito saldo, insert saques, createLedgerEntry); GET /api/withdraw/history; worker processPendingWithdrawals; rollback com rejectWithRollbackIfNeeded (V1.2)."
+  },
+  "worker": {
+    "esta_correto": true,
+    "esta_validado": true,
+    "esta_em_producao": true,
+    "detalhe": "processPendingWithdrawals (PAYOUT_PIX_ENABLED); createPixWithdraw; updateSaqueStatus; rollbackWithdraw em falha; logs [PAYOUT][CYCLE]/[QUERY]."
+  },
+  "reconciler": {
+    "esta_correto": true,
+    "esta_validado": true,
+    "esta_em_producao": true,
+    "detalhe": "reconcilePendingPayments (depósito); reconcileProcessingWithdrawals para saques presos; rejectWithRollbackIfNeeded (V1.2); setInterval conforme MP_RECONCILE_INTERVAL_MS."
+  },
+  "rollback": {
+    "esta_correto": true,
+    "esta_validado": true,
+    "esta_em_producao": true,
+    "detalhe": "rollbackWithdraw em processPendingWithdrawals; rejectWithRollbackIfNeeded no reconciler; ledgerHasRollback idempotência; release v305 documentada como rollback seguro."
+  },
+  "ledger": {
+    "esta_correto": true,
+    "esta_validado": true,
+    "esta_em_producao": true,
+    "detalhe": "createLedgerEntry (user_id/usuario_id fallback); tipos withdraw_request, taxa_saque, payout_confirmado, rollback, falha_payout; insert no POST /api/withdraw/request e no worker/reconciler."
+  },
+  "saldo": {
+    "esta_correto": true,
+    "esta_validado": true,
+    "esta_em_producao": true,
+    "detalhe": "usuarios.saldo; crédito via webhook/reconcile (depósito); débito no withdraw/request; rollback devolve saldo em rejeição."
+  },
+  "release_fly": "v315 (ENCERRAMENTO-ETAPA-FINANCEIRA-V1); rollback seguro v305.",
+  "riscos_residuais_backend": "1 saque histórico (timeout reconciler) sem rollback; 1 inconclusivo; não bloqueantes (ENCERRAMENTO)."
+}

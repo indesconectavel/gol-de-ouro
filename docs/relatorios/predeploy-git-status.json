@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-03-06T00:15:00.000Z",
+  "branch": "hotfix/financeiro-v1-stabilize",
+  "head_sha_short": "80215a4",
+  "head_sha_long": "80215a41f610223d593abd67df45a6abf5a0e88d",
+  "dirty": true,
+  "dirty_note": "Working tree tem modificações em docs/relatorios e package.json; commit do patch (80215a4) contém apenas os 3 arquivos listados.",
+  "arquivos_no_commit_do_patch": [
+    "server-fly.js",
+    "src/domain/payout/processPendingWithdrawals.js",
+    "docs/relatorios/FINANCEIRO-PATCH-V1-2026-03-05.md"
+  ],
+  "arquivos_modificados_working_tree": [
+    "docs/relatorios/FINANCEIRO-PATCH-V1-2026-03-05.md",
+    "package.json"
+  ]
+}

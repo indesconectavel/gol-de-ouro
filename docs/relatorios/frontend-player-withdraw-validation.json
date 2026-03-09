@@ -1,0 +1,15 @@
+{
+  "auditoria": "FRONTEND PLAYER - Validação tela de saque (código e produção)",
+  "data": "2026-03-06",
+  "no_codigo": {
+    "submit_chama": "requestWithdraw() → POST /api/withdraw/request",
+    "historico_chama": "getWithdrawHistory() → GET /api/withdraw/history",
+    "confirmado": true
+  },
+  "em_producao": {
+    "nova_versao_publicada": false,
+    "observacao": "Deploy via CLI falhou; produção atual (ez1oc96t1) ainda não contém a correção da tela de saque. Após publicar novo deployment (via Git ou CLI corrigido), a tela de saque passará a usar os endpoints corretos."
+  },
+  "validacao_submit_em_producao": "Não aplicável até novo deploy.",
+  "validacao_historico_em_producao": "Não aplicável até novo deploy."
+}

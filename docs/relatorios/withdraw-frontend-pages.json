@@ -1,0 +1,30 @@
+{
+  "auditoria": "AUDITORIA READ-ONLY - Páginas do frontend relacionadas a saque",
+  "data": "2026-03-06",
+  "paginas_encontradas": [
+    {
+      "arquivo": "goldeouro-player/src/pages/Withdraw.jsx",
+      "rota": "/withdraw",
+      "titulo_tela": "Solicitar Saque",
+      "botao_principal": "submit do formulário (type=\"submit\") - texto '💸 Solicitar Saque'",
+      "funcao_ao_clicar": "handleSubmit",
+      "servico_chamado_no_submit": "paymentService.createPix(amount, formData.pixKey, `Saque Gol de Ouro - ${formData.pixType}`)",
+      "servico_chamado_historico": "paymentService.getUserPix() em loadWithdrawalHistory()"
+    },
+    {
+      "arquivo": "goldeouro-player/src/pages/Profile.jsx",
+      "relacao": "Aba 'withdrawals' com withdrawalHistory - array vazio estático (não carregado do backend de saques)"
+    },
+    {
+      "arquivo": "goldeouro-player/src/pages/Dashboard.jsx",
+      "relacao": "Botão que navega para /withdraw (navigate('/withdraw'))"
+    }
+  ],
+  "rotas": [
+    { "path": "/withdraw", "componente": "Withdraw", "arquivo": "App.jsx / lazyImports Withdraw.jsx" }
+  ],
+  "resumo": {
+    "tela_principal_saque": "Withdraw.jsx",
+    "botao_saque_dispara": "handleSubmit → paymentService.createPix"
+  }
+}

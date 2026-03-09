@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSidebar } from '../contexts/SidebarContext'
-import apiClient from '../services/apiClient'
+import { useAuth } from '../contexts/AuthContext'
 
 const Navigation = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { isCollapsed, toggleSidebar } = useSidebar()
+  const { logout } = useAuth()
 
   // Ícones SVG profissionais similares ao painel de controle
   const Icons = {
@@ -59,29 +60,9 @@ const Navigation = () => {
         : 'text-white hover:bg-yellow-600'
     }`
 
-  const handleLogout = async () => {
-    try {
-      const token = localStorage.getItem('authToken')
-      
-      if (token) {
-        // Chamar endpoint de logout no backend
-        await apiClient.post('/auth/logout', { token })
-      }
-      
-      // Limpar dados locais
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('user')
-      
-      // Redirecionar para login
-      navigate('/')
-      
-    } catch (error) {
-      console.error('Erro no logout:', error)
-      // Mesmo com erro, fazer logout local
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('user')
-      navigate('/')
-    }
+  const handleLogout = () => {
+    logout()
+    navigate('/')
   }
 
 

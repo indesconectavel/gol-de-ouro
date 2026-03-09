@@ -1,0 +1,148 @@
+{
+  "timestamp_utc": "2026-03-06T15:13:45.273Z",
+  "por_saque": {
+    "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd": {
+      "id_short": "8d11c1***2bdd",
+      "usuario_id": "4ddf83***4ad5",
+      "motivo_rejeicao": "payout falhou",
+      "linhas": [
+        {
+          "tipo": "falha_payout",
+          "valor": 8,
+          "referencia": "8d11c1***2bdd",
+          "created_at": "2026-03-06T11:58:23.142+00:00"
+        },
+        {
+          "tipo": "rollback",
+          "valor": 10,
+          "referencia": "8d11c1***2bdd",
+          "created_at": "2026-03-06T11:58:23.27+00:00"
+        }
+      ],
+      "tem_withdraw_request": false,
+      "tem_falha_payout": true,
+      "tem_rollback": true,
+      "ledger_esperado_worker": "withdraw_request + falha_payout + rollback",
+      "ledger_esperado_reconciler": "apenas withdraw_request (reconciler não chama rollback)"
+    },
+    "ed46001f-26fe-4301-b784-d972a7aa1807": {
+      "id_short": "ed4600***1807",
+      "usuario_id": "4ddf83***4ad5",
+      "motivo_rejeicao": "payout falhou",
+      "linhas": [
+        {
+          "tipo": "falha_payout",
+          "valor": 8,
+          "referencia": "ed4600***1807",
+          "created_at": "2026-03-06T11:57:53.16+00:00"
+        },
+        {
+          "tipo": "rollback",
+          "valor": 10,
+          "referencia": "ed4600***1807",
+          "created_at": "2026-03-06T11:57:53.288+00:00"
+        }
+      ],
+      "tem_withdraw_request": false,
+      "tem_falha_payout": true,
+      "tem_rollback": true,
+      "ledger_esperado_worker": "withdraw_request + falha_payout + rollback",
+      "ledger_esperado_reconciler": "apenas withdraw_request (reconciler não chama rollback)"
+    },
+    "da70665c-5202-46ab-ac86-7cf16ff3be6a": {
+      "id_short": "da7066***be6a",
+      "usuario_id": "4ddf83***4ad5",
+      "motivo_rejeicao": "payout falhou",
+      "linhas": [
+        {
+          "tipo": "falha_payout",
+          "valor": 8,
+          "referencia": "da7066***be6a",
+          "created_at": "2026-03-06T11:57:23.13+00:00"
+        },
+        {
+          "tipo": "rollback",
+          "valor": 10,
+          "referencia": "da7066***be6a",
+          "created_at": "2026-03-06T11:57:23.283+00:00"
+        }
+      ],
+      "tem_withdraw_request": false,
+      "tem_falha_payout": true,
+      "tem_rollback": true,
+      "ledger_esperado_worker": "withdraw_request + falha_payout + rollback",
+      "ledger_esperado_reconciler": "apenas withdraw_request (reconciler não chama rollback)"
+    },
+    "ecd0045f-9e80-425c-b2a3-810977351d6f": {
+      "id_short": "ecd004***1d6f",
+      "usuario_id": "4ddf83***4ad5",
+      "motivo_rejeicao": "payout falhou",
+      "linhas": [
+        {
+          "tipo": "falha_payout",
+          "valor": 8,
+          "referencia": "ecd004***1d6f",
+          "created_at": "2026-03-06T11:56:53.112+00:00"
+        },
+        {
+          "tipo": "rollback",
+          "valor": 10,
+          "referencia": "ecd004***1d6f",
+          "created_at": "2026-03-06T11:56:53.255+00:00"
+        }
+      ],
+      "tem_withdraw_request": false,
+      "tem_falha_payout": true,
+      "tem_rollback": true,
+      "ledger_esperado_worker": "withdraw_request + falha_payout + rollback",
+      "ledger_esperado_reconciler": "apenas withdraw_request (reconciler não chama rollback)"
+    },
+    "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c": {
+      "id_short": "ea3e4d***4f2c",
+      "usuario_id": "4ddf83***4ad5",
+      "motivo_rejeicao": "payout falhou",
+      "linhas": [
+        {
+          "tipo": "falha_payout",
+          "valor": 8,
+          "referencia": "ea3e4d***4f2c",
+          "created_at": "2026-03-06T11:56:23.342+00:00"
+        },
+        {
+          "tipo": "rollback",
+          "valor": 10,
+          "referencia": "ea3e4d***4f2c",
+          "created_at": "2026-03-06T11:56:23.517+00:00"
+        }
+      ],
+      "tem_withdraw_request": false,
+      "tem_falha_payout": true,
+      "tem_rollback": true,
+      "ledger_esperado_worker": "withdraw_request + falha_payout + rollback",
+      "ledger_esperado_reconciler": "apenas withdraw_request (reconciler não chama rollback)"
+    },
+    "5cff6e2e-b188-4b8c-85e5-080aed465a21": {
+      "id_short": "5cff6e***5a21",
+      "usuario_id": "4ddf83***4ad5",
+      "motivo_rejeicao": "Si quieres conocer los recursos de la API que se encuentran disponibles visita el Sitio de Desarrolladores de MercadoLibre (https://developers.mercadopago.com)",
+      "linhas": [],
+      "tem_withdraw_request": false,
+      "tem_falha_payout": false,
+      "tem_rollback": false,
+      "ledger_esperado_worker": "withdraw_request + falha_payout + rollback",
+      "ledger_esperado_reconciler": "apenas withdraw_request (reconciler não chama rollback)"
+    },
+    "2ad05942-3d86-4118-baa4-eb2085b72376": {
+      "id_short": "2ad059***2376",
+      "usuario_id": "4ddf83***4ad5",
+      "motivo_rejeicao": "timeout_reconciliacao",
+      "linhas": [],
+      "tem_withdraw_request": false,
+      "tem_falha_payout": false,
+      "tem_rollback": false,
+      "ledger_esperado_worker": "withdraw_request + falha_payout + rollback",
+      "ledger_esperado_reconciler": "apenas withdraw_request (reconciler não chama rollback)"
+    }
+  },
+  "erros": []
+}

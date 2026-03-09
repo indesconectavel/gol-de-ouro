@@ -1,0 +1,63 @@
+{
+  "auditoria": "SAQUE FINAL CONTRACT CHECK - Riscos para demonstração do saque",
+  "data": "2026-03-06",
+  "riscos": [
+    {
+      "id": "R1",
+      "descricao": "Chave PIX inválida (formato ou disponibilidade)",
+      "nivel": "medio",
+      "impacto_demo": "Backend retorna 400 com validation.error; frontend exibe result.error. Mensagem pode ser técnica (ex.: 'Provedor de email não reconhecido').",
+      "mitigacao": "Usar chave PIX válida na demo (e-mail real, CPF válido ou telefone). Testar antes com conta de demonstração."
+    },
+    {
+      "id": "R2",
+      "descricao": "Saldo insuficiente",
+      "nivel": "baixo",
+      "impacto_demo": "Frontend valida antes; se passar, backend retorna 400 'Saldo insuficiente'. Mensagem clara.",
+      "mitigacao": "Garantir conta com saldo suficiente antes da demo (depósito PIX ou conta preparada)."
+    },
+    {
+      "id": "R3",
+      "descricao": "Valor mínimo (R$ 10)",
+      "nivel": "baixo",
+      "impacto_demo": "Frontend mostra min 10 e input min=10; backend rejeita < 10. Alinhado.",
+      "mitigacao": "Informar na demo que o mínimo é R$ 10,00."
+    },
+    {
+      "id": "R4",
+      "descricao": "Mensagem de erro não amigável",
+      "nivel": "medio",
+      "impacto_demo": "Algumas mensagens do PixValidator podem ser técnicas (ex.: disponibilidade da chave).",
+      "mitigacao": "Evitar chaves que acionem validações complexas; usar e-mail ou CPF conhecidamente válidos."
+    },
+    {
+      "id": "R5",
+      "descricao": "Histórico vazio",
+      "nivel": "baixo",
+      "impacto_demo": "Lista vazia é renderizada sem erro (map retorna vazio). UX aceitável.",
+      "mitigacao": "Se desejável, fazer um saque de teste antes da demo para exibir um item no histórico."
+    },
+    {
+      "id": "R6",
+      "descricao": "Status não mapeado (novo status do backend)",
+      "nivel": "baixo",
+      "impacto_demo": "mapStatus cai em default (Pendente ou por includes); getStatusColor/getStatusIcon usam default (cinza/❓).",
+      "mitigacao": "Backend V1 usa pendente/pending, completed, rejected; frontend mapeia. Risco baixo."
+    },
+    {
+      "id": "R7",
+      "descricao": "Já existe saque pendente (409)",
+      "nivel": "medio",
+      "impacto_demo": "Se usuário já tiver um saque pendente, backend retorna 409 'Já existe um saque pendente em processamento'. Frontend exibe result.error.",
+      "mitigacao": "Usar conta sem saque pendente na demo ou aguardar processamento do saque anterior."
+    },
+    {
+      "id": "R8",
+      "descricao": "Conflito de saldo (409 - Tente novamente)",
+      "nivel": "baixo",
+      "impacto_demo": "Raro; ocorre se saldo mudar entre leitura e débito. Mensagem: 'Saldo atualizado recentemente. Tente novamente.'",
+      "mitigacao": "Evitar múltiplos envios rápidos; em caso de 409, pedir novo tentar."
+    }
+  ],
+  "resumo": { "baixo": 4, "medio": 3, "alto": 0 }
+}

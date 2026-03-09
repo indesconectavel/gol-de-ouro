@@ -1,0 +1,15 @@
+{
+  "auditoria": "VALIDAÇÃO READ-ONLY - Risco residual da tela de saque",
+  "data": "2026-03-06",
+  "risco_anterior": "Tela chamava createPix (depósito) e getUserPix (lista de depósitos) em vez de endpoints de saque.",
+  "risco_apos_correcao": "Nenhum risco identificado no fluxo de integração da tela de saque com o backend.",
+  "validacoes_realizadas": [
+    "Submit chama requestWithdraw → POST /api/withdraw/request",
+    "Histórico chama getWithdrawHistory → GET /api/withdraw/history",
+    "paymentService.createPix não é invocado no submit",
+    "paymentService.getUserPix não é invocado no carregamento do histórico"
+  ],
+  "classificacao_final": "OK",
+  "pronto_para_demo": true,
+  "observacao": "paymentService permanece importado em Withdraw.jsx apenas para getConfig().minAmount e isSandboxMode() (UI). Não representa risco para o fluxo de saque."
+}

@@ -1,0 +1,27 @@
+{
+  "audit_date": "2026-03-06",
+  "base_url": "https://www.goldeouro.lol",
+  "routes": {
+    "/": {
+      "status_http": 200,
+      "server": "Vercel",
+      "cache_control": "no-cache, no-store, must-revalidate",
+      "x_vercel_id": "gru1::r9xhn-1772839044469-dd91d3a4bc53",
+      "x_vercel_cache": "HIT",
+      "html_length_bytes": 8985,
+      "sha256_html": "BEBE03D33AC9BBF67BE1AC78FDD1BCA0DC9ECA615EAF5DF9024A80710F346EE0",
+      "bundle_js_principal": "/assets/index-qIGutT6K.js",
+      "bundle_css_principal": "/assets/index-lDOJDUAS.css",
+      "outros_scripts": ["/registerSW.js"]
+    },
+    "/game": {
+      "status_http": 200,
+      "observacao": "SPA; conteúdo servido via mesmo app da raiz; rota client-side."
+    },
+    "/dashboard": {
+      "status_http": 200,
+      "observacao": "SPA; conteúdo servido via mesmo app da raiz; rota client-side."
+    }
+  },
+  "fingerprint_resumo": "Baseline oficial: bundle index-qIGutT6K.js, CSS index-lDOJDUAS.css; SHA256 HTML raiz BEBE03D33AC9BBF67BE1AC78FDD1BCA0DC9ECA615EAF5DF9024A80710F346EE0."
+}

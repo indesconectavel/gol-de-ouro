@@ -1,0 +1,23 @@
+{
+  "auditoria": "DEPOSITO FINAL CONTRACT CHECK - Resposta de depósito (QR, código, status)",
+  "data": "2026-03-06",
+  "backend_retorna": {
+    "id": "payment.id (Mercado Pago)",
+    "amount": "number",
+    "qr_code": "string (código PIX copia e cola)",
+    "qr_code_base64": "string (imagem QR Code base64)",
+    "pix_copy_paste": "string (mesmo que qr_code)",
+    "pix_code": "string (mesmo que qr_code)",
+    "status": "pending",
+    "created_at": "ISO string"
+  },
+  "ui_consome": {
+    "id": "exibido como 'ID: {id}'",
+    "pix_code ou qr_code ou pix_copy_paste": "exibido em <code>, botão Copiar",
+    "qr_code_base64": "não usado explicitamente no trecho lido (pode ser usado para renderizar imagem QR)",
+    "init_point": "fallback - link 'Pagar com PIX - Mercado Pago' (backend atual não retorna init_point na resposta JSON; Mercado Pago pode retornar em point_of_interaction)"
+  },
+  "compatibilidade": "Backend envia qr_code, pix_copy_paste, pix_code (todos o mesmo valor). UI usa pix_code || qr_code || pix_copy_paste. Compatível. QR Code para exibição visual: backend envia qr_code_base64; UI pode usar para <img src={data:image/...}> se implementado.",
+  "status": "pending na resposta; UI mostra 'Pendente'. Histórico usa status approved/pending/rejected. Compatível.",
+  "valor_e_data": "amount e created_at presentes na resposta; UI exibe valor e ID. Compatível."
+}

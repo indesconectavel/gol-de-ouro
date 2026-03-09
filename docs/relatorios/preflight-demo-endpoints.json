@@ -1,0 +1,111 @@
+{
+  "auditoria": "PRE-FLIGHT READ-ONLY - Endpoints essenciais para a demo",
+  "data": "2026-03-06",
+  "base_url": "https://goldeouro-backend-v2.fly.dev",
+  "endpoints": [
+    {
+      "categoria": "autenticacao",
+      "metodo": "POST",
+      "rota": "/api/auth/register",
+      "status_esperado": "201 ou 200",
+      "requer_auth": false,
+      "ativo": true,
+      "fonte": "server-fly.js"
+    },
+    {
+      "categoria": "autenticacao",
+      "metodo": "POST",
+      "rota": "/api/auth/login",
+      "status_esperado": "200",
+      "requer_auth": false,
+      "ativo": true,
+      "fonte": "server-fly.js"
+    },
+    {
+      "categoria": "perfil_saldo",
+      "metodo": "GET",
+      "rota": "/api/user/profile",
+      "status_esperado": "200",
+      "requer_auth": true,
+      "ativo": true,
+      "fonte": "server-fly.js"
+    },
+    {
+      "categoria": "deposito",
+      "metodo": "POST",
+      "rota": "/api/payments/pix/criar",
+      "status_esperado": "200",
+      "requer_auth": true,
+      "ativo": true,
+      "fonte": "server-fly.js"
+    },
+    {
+      "categoria": "deposito",
+      "metodo": "GET",
+      "rota": "/api/payments/pix/usuario",
+      "status_esperado": "200",
+      "requer_auth": true,
+      "ativo": true,
+      "fonte": "server-fly.js"
+    },
+    {
+      "categoria": "jogo_chute",
+      "metodo": "POST",
+      "rota": "/api/games/shoot",
+      "status_esperado": "200",
+      "requer_auth": true,
+      "ativo": true,
+      "fonte": "server-fly.js"
+    },
+    {
+      "categoria": "saque",
+      "metodo": "POST",
+      "rota": "/api/withdraw/request",
+      "status_esperado": "200",
+      "requer_auth": true,
+      "ativo": true,
+      "fonte": "server-fly.js"
+    },
+    {
+      "categoria": "saque",
+      "metodo": "GET",
+      "rota": "/api/withdraw/history",
+      "status_esperado": "200",
+      "requer_auth": true,
+      "ativo": true,
+      "fonte": "server-fly.js"
+    },
+    {
+      "categoria": "health",
+      "metodo": "GET",
+      "rota": "/health",
+      "status_esperado": "200",
+      "requer_auth": false,
+      "ativo": true,
+      "verificado": true
+    },
+    {
+      "categoria": "meta",
+      "metodo": "GET",
+      "rota": "/meta",
+      "status_esperado": "200",
+      "requer_auth": false,
+      "ativo": true,
+      "verificado": true
+    },
+    {
+      "categoria": "metricas",
+      "metodo": "GET",
+      "rota": "/api/metrics",
+      "status_esperado": "200",
+      "requer_auth": false,
+      "ativo": true,
+      "verificado": true
+    }
+  ],
+  "resumo": {
+    "total_mapeados": 11,
+    "verificados_get_sem_auth": 3,
+    "endpoints_protegidos_requerem_token": true
+  }
+}

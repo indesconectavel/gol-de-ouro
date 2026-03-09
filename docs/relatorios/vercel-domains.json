@@ -1,0 +1,15 @@
+{
+  "timestamp_utc": "2026-03-06T01:45:00Z",
+  "source": "vercel domains ls (goldeouro-admins-projects)",
+  "domains": [
+    {
+      "domain": "goldeouro.lol",
+      "registrar": "Third Party",
+      "nameservers": "Vercel",
+      "expiration_date": "-",
+      "creator": "indesconectavel",
+      "age_days": 183
+    }
+  ],
+  "note": "Subdominios www e app sao alias no projeto; nao aparecem como dominios raiz na listagem."
+}

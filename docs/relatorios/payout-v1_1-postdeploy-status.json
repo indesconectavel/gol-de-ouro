@@ -1,0 +1,14 @@
+{
+  "timestamp_utc": "2026-03-06T12:10:00Z",
+  "cinco_saques_continuam": true,
+  "fonte_snapshot_antes": "payout-v1_1-financial-snapshot-before.json tinha 5 em processando",
+  "count_da_query_aparece": true,
+  "count_valor": 0,
+  "houve_SELECT": false,
+  "houve_SKIP": false,
+  "houve_rollback_failed": false,
+  "mudanca_processed_at": false,
+  "mudanca_transacao_id": false,
+  "patch_v1_1_visivel": true,
+  "causa_mais_provavel": "query_retorna_0_em_producao: a query do worker (statuses=pendente,pending,processando) retorna count=0 no Fly, enquanto o snapshot lógico pre-deploy mostrou 5 saques em status processando. Possível RLS na tabela saques para o role do worker ou diferença de contexto (pooler/direto)."
+}

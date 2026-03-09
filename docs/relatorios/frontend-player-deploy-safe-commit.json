@@ -1,0 +1,20 @@
+{
+  "auditoria": "FRONTEND PLAYER DEPLOY SAFE - Commit correto para deploy (read-only)",
+  "data": "2026-03-06",
+  "branch_atual": "hotfix/financeiro-v1-stabilize",
+  "head_atual": "8f51edc04fa293ee06c25a21b499ca8e29b04ed3",
+  "head_atual_mensagem": "docs: checklist withdraw fix - preencher SHA 258b0cd",
+  "commit_withdraw_fix_sha": "258b0cd624a251f6f64b0c8e7d9582c1ab41e888",
+  "commit_withdraw_fix_data": "2026-03-06 14:45:26 -0300",
+  "commit_withdraw_fix_found": true,
+  "commit_recomendado_para_deploy": "8f51edc04fa293ee06c25a21b499ca8e29b04ed3",
+  "commit_recomendado_mensagem": "docs: checklist withdraw fix - preencher SHA 258b0cd",
+  "arquivos_relevantes_no_commit_258b0cd": [
+    "goldeouro-player/src/services/withdrawService.js",
+    "goldeouro-player/src/config/api.js",
+    "goldeouro-player/src/pages/Withdraw.jsx",
+    "docs/relatorios/FRONTEND-WITHDRAW-FIX-V1-2026-03-06.md",
+    "docs/relatorios/FRONTEND-WITHDRAW-FIX-V1-CHECKLIST-2026-03-06.md"
+  ],
+  "observacao": "O HEAD 8f51edc inclui o commit 258b0cd (correção da tela de saque). Deployar a branch hotfix/financeiro-v1-stabilize no commit 8f51edc (ou 258b0cd) leva a correção ao frontend."
+}

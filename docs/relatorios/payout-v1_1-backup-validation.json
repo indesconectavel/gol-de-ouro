@@ -1,0 +1,8 @@
+{
+  "timestamp_utc": "2026-03-06T11:38:07.177Z",
+  "success": false,
+  "path": null,
+  "size_bytes": null,
+  "sha256": null,
+  "error_redacted": "DATABASE_URL indisponivel ou formato invalido."
+}

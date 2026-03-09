@@ -1,0 +1,30 @@
+{
+  "timestamp_utc": "2026-03-06T16:00:00.000Z",
+  "relatorios_principais": [
+    "docs/relatorios/ENCERRAMENTO-ETAPA-FINANCEIRA-V1-OFICIAL-2026-03-06.md",
+    "docs/relatorios/FINANCEIRO-RECONSTRUCAO-PLANO-READONLY-2026-03-05.md",
+    "docs/relatorios/FINANCEIRO-MAPA-ESCRITAS-BALANCE-READONLY-2026-03-05.md",
+    "docs/relatorios/FINANCEIRO-E2E-FINAL-READONLY-2026-03-06.md",
+    "docs/relatorios/PAYOUT-WORKER-ROOTCAUSE-READONLY-2026-03-06.md",
+    "docs/relatorios/PAYOUT-REJEITADOS-ROOTCAUSE-READONLY-2026-03-06.md",
+    "docs/relatorios/PAYOUT-WORKER-PATCH-V1_1-2026-03-06.md",
+    "docs/relatorios/PAYOUT-V1_2-PATCH-RECON-ROLLBACK-2026-03-06.md",
+    "docs/relatorios/FINANCEIRO-V1-FINAL-VALIDACAO-2026-03-06.md",
+    "docs/relatorios/FINANCEIRO-V1-PREFLIGHT-READONLY-2026-03-06.md",
+    "docs/relatorios/FINANCEIRO-V1-DEPLOY-FINAL-RETRY-2026-03-06.md",
+    "docs/relatorios/DEPLOY-FINAL-FAIL-ROOTCAUSE-READONLY-2026-03-06.md",
+    "docs/relatorios/DEPLOYABILITY-PATCH-V1_2_1-2026-03-06.md",
+    "docs/relatorios/VERCEL-FREEZE-PIPELINE-AUDIT-READONLY-2026-03-06.md",
+    "docs/relatorios/FRONTEND-VERCEL-INVESTIGACAO-REGRESSAO-GAME-READONLY-2026-03-06.md"
+  ],
+  "commits_oficiais": {
+    "patch_v1_2": "73de7a39efafe58e643f1e10207108da9098a63d",
+    "deployability_withdrawalStatus": "bdcd8b2413a42158f4757b68e46159937f301eba",
+    "deployability_fly_toml": "55c5cb80e5d3550baced5ea5752e9bc2d1d7768f"
+  },
+  "release_fly_final": "v315",
+  "release_rollback_segura": "v305",
+  "branch_referencia": "hotfix/financeiro-v1-stabilize",
+  "imagem_fly_final": "goldeouro-backend-v2:deployment-01KK1V0ERHBXQXMQRD7YQA2H7K",
+  "frontend_deployment_referencia": "Vercel goldeouro-player produção (www.goldeouro.lol); não promovido durante etapa V1"
+}

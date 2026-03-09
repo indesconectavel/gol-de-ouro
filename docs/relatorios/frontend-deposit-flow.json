@@ -1,0 +1,40 @@
+{
+  "auditoria": "AUDITORIA FRONTEND - Fluxo de depósito PIX (read-only)",
+  "data": "2026-03-06",
+  "chamadas_criar_pix": [
+    {
+      "arquivo": "goldeouro-player/src/pages/Pagamentos.jsx",
+      "linha_inicial": 57,
+      "linha_final": 60,
+      "trecho": "const response = await apiClient.post('/api/payments/pix/criar', { amount: valorRecarga, description: `Recarga de saldo - R$ ${valorRecarga.toFixed(2)}` });",
+      "funcao_utilizada": "criarPagamentoPix()",
+      "usa_paymentService": false
+    }
+  ],
+  "paymentService_createPix": {
+    "definido_em": "goldeouro-player/src/services/paymentService.js",
+    "linhas": "74-119",
+    "chamado_por_pagina_deposito": false,
+    "observacao": "Pagamentos.jsx NÃO usa paymentService.createPix; usa apiClient.post diretamente. createPix é usado apenas para saque (Withdraw) ou não usado em nenhuma página de depósito."
+  },
+  "arquivos_que_importam_paymentService": [
+    {
+      "arquivo": "goldeouro-player/src/pages/Withdraw.jsx",
+      "uso": "getConfig(), isSandboxMode() - não chama createPix para depósito"
+    },
+    {
+      "arquivo": "goldeouro-player/src/services/withdrawService.js",
+      "uso": "Comentário de documentação apenas"
+    }
+  ],
+  "getUserPix_paymentService": {
+    "definido_em": "paymentService.js linhas 145-165",
+    "chamado_em_paginas": "Nenhuma página chama getUserPix(); Pagamentos.jsx usa apiClient.get(API_ENDPOINTS.PIX_USER) diretamente."
+  },
+  "fluxo_deposito_resumido": [
+    "1. Pagamentos.jsx carrega: GET PROFILE (setSaldo com .balance - incorreto), GET PIX_USER (setPagamentos com .data.payments)",
+    "2. Usuário clica Recarregar: criarPagamentoPix() → POST /api/payments/pix/criar com amount e description",
+    "3. Resposta: setPagamentoAtual(response.data.data); exibe QR/código; botão Verificar Status chama consultarStatusPagamento(id) → GET PIX_STATUS?paymentId=id",
+    "4. Histórico: cada item tem botão Verificar que chama consultarStatusPagamento(pagamento.id)"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "audit_date": "2026-03-06",
+  "baseline": {
+    "deployment_id": "FyKKeg6zb",
+    "base_url": "https://www.goldeouro.lol (estado baseline documentado)",
+    "routes": {
+      "/": { "status_http": 200, "server": "Vercel", "x_vercel_cache": "HIT", "html_length_bytes": 8985, "sha256_html": "BEBE03D33AC9BBF67BE1AC78FDD1BCA0DC9ECA615EAF5DF9024A80710F346EE0", "bundle_js": "/assets/index-qIGutT6K.js", "bundle_css": "/assets/index-lDOJDUAS.css" },
+      "/game": { "status_http": 200 },
+      "/dashboard": { "status_http": 200 }
+    }
+  },
+  "preview": {
+    "deployment_id": "ez1oc96t1",
+    "base_url": "https://goldeouro-player-ez1oc96t1-goldeouro-admins-projects.vercel.app",
+    "routes": {
+      "/": { "status_http": 200, "server": "Vercel", "x_vercel_id": "gru1::rkn7h-1772839564327-05637ce07afc", "x_vercel_cache": "HIT", "html_length_bytes": 1132, "sha256_html": "FD63C907FEB1F2A55C2E0970C39B88A4E8CE7ECFF607A7AC62CCAA48140A27F4", "bundle_js": "/assets/index-DVt6EjKW.js", "bundle_css": "/assets/index-BplTpheb.css" },
+      "/game": { "status_http": 404 },
+      "/dashboard": { "status_http": 404 }
+    }
+  },
+  "comparacao": {
+    "status_raiz": "ambos 200",
+    "sha256_html_raiz": "diferente (baseline BEBE03..., preview FD63C9...)",
+    "bundle_js": "diferente (baseline index-qIGutT6K.js, preview index-DVt6EjKW.js)",
+    "bundle_css": "diferente (baseline index-lDOJDUAS.css, preview index-BplTpheb.css)",
+    "html_length_raiz": "diferente (baseline 8985, preview 1132)"
+  },
+  "classificacao_fingerprint": "diferente_preocupante",
+  "motivo": "Bundles e HTML distintos; preview contém banner 'VERSÃO ATUALIZADA' e assets com hashes diferentes da baseline oficial; GET direto a /game e /dashboard retorna 404 no preview (baseline 200)."
+}

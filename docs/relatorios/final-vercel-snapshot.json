@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-03-06T02:30:00.000Z",
+  "fonte": "documentacao_relatorio_FRONTEND_VERCEL_INVESTIGACAO_REGRESSAO_GAME_READONLY_2026_03_06",
+  "projeto": "goldeouro-player",
+  "dominio_producao": "goldeouro.lol",
+  "deployment_production_current": "ez1oc96t1",
+  "FyKKeg6zb_na_lista_prod": false,
+  "observacao": "Nenhum comando Vercel CLI executado nesta auditoria; dados extraidos do relatorio de investigacao anterior. Esta auditoria nao promove deploy nem altera Vercel."
+}

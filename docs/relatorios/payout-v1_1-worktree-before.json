@@ -1,0 +1,44 @@
+{
+  "timestamp_utc": "2026-03-06T03:15:00Z",
+  "branch": "hotfix/financeiro-v1-stabilize",
+  "head_short": "0f09038",
+  "head_full": "0f09038dea8363fd986763107bb07c580a748226",
+  "commit_alvo": "0f09038dea8363fd986763107bb07c580a748226",
+  "modified": [
+    "docs/relatorios/FINANCEIRO-PATCH-V1-2026-03-05.md",
+    "docs/relatorios/PAYOUT-WORKER-PATCH-V1_1-2026-03-06.md",
+    "docs/relatorios/PAYOUT-WORKER-PATCH-V1_1-CHECKLIST-2026-03-06.md",
+    "package.json"
+  ],
+  "staged": [],
+  "untracked_count": 178,
+  "untracked_sample": [
+    "controllers/adminSaquesController.js",
+    "docs/relatorios/*.md",
+    "docs/relatorios/*.json",
+    "scripts/*.js",
+    "scripts/*.ps1",
+    "src/domain/payout/reconcileProcessingWithdrawals.js",
+    "src/domain/payout/withdrawalStatus.js"
+  ],
+  "classificacao": {
+    "codigo_modificado": ["package.json"],
+    "docs_modificados": [
+      "docs/relatorios/FINANCEIRO-PATCH-V1-2026-03-05.md",
+      "docs/relatorios/PAYOUT-WORKER-PATCH-V1_1-2026-03-06.md",
+      "docs/relatorios/PAYOUT-WORKER-PATCH-V1_1-CHECKLIST-2026-03-06.md"
+    ],
+    "codigo_untracked": [
+      "controllers/adminSaquesController.js",
+      "src/domain/payout/reconcileProcessingWithdrawals.js",
+      "src/domain/payout/withdrawalStatus.js"
+    ],
+    "docs_untracked": "docs/relatorios/* (preservar)",
+    "scripts_readonly_untracked": "scripts/* (preservar)",
+    "outros": []
+  },
+  "arquivos_no_commit_0f09038": [
+    "src/domain/payout/processPendingWithdrawals.js",
+    "src/workers/payout-worker.js"
+  ]
+}

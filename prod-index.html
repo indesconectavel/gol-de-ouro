@@ -1,0 +1,181 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <!-- ✅ KILL SWITCH INLINE - Remove Service Workers antigos ANTES de qualquer coisa -->
+    <!-- CRÍTICO: Inline para não ser interceptado pelo Service Worker antigo -->
+    <script>
+      (function() {
+        'use strict';
+        
+        // ✅ CORREÇÃO CRÍTICA: Detectar se está usando bundle antigo e forçar atualização
+        // Este código funciona mesmo se o HTML antigo estiver sendo servido
+        const currentScript = document.currentScript || (function() {
+          const scripts = document.getElementsByTagName('script');
+          return scripts[scripts.length - 1];
+        })();
+        
+        // ✅ CORREÇÃO CRÍTICA: Detectar bundle antigo IMEDIATAMENTE e forçar atualização
+        // Verificar ANTES de qualquer código executar
+        (function checkBundleImmediately() {
+          const moduleScripts = document.querySelectorAll('script[type="module"][src*="index-"]');
+          let hasOldBundle = false;
+          
+          moduleScripts.forEach(function(script) {
+            const src = script.src || script.getAttribute('src') || '';
+            // Verificar se é bundle ANTIGO (DOXRH9LH ou qualquer outro antigo conhecido)
+            if (src.includes('index-DOXRH9LH.js') || 
+                src.includes('index-B74THvjy.js') || 
+                src.includes('index-BVaTwX4C.js') ||
+                src.includes('index-BK79O84G.js') ||
+                src.includes('index-Bvz1uanR.js') ||
+                src.includes('index-Duj1CNUZ.js') ||
+                src.includes('index-DtPXGL4e.js') ||
+                src.includes('index-sPoNFTTD.js') ||
+                src.includes('index-Hh8aXNzV.js')) {
+              hasOldBundle = true;
+              console.error('[KILL-SW-INLINE] ❌ BUNDLE ANTIGO DETECTADO:', src);
+            }
+          });
+          
+          // Se há bundle antigo, forçar limpeza IMEDIATA
+          if (hasOldBundle && !window.__REDIRECTING_TO_KILL_SW__) {
+            window.__REDIRECTING_TO_KILL_SW__ = true;
+            console.error('[KILL-SW-INLINE] 🚨 REDIRECIONANDO PARA KILL-SW POR BUNDLE ANTIGO');
+            console.error('[KILL-SW-INLINE] Bundle antigo detectado:', Array.from(moduleScripts).map(s => s.src || s.getAttribute('src')).join(', '));
+            
+            // Limpar tudo ANTES de redirecionar
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                console.log('[KILL-SW-INLINE] Encontrados', regs.length, 'Service Workers para desregistrar');
+                regs.forEach(function(reg) { 
+                  console.log('[KILL-SW-INLINE] Desregistrando SW antigo:', reg.scope);
+                  reg.unregister(); 
+                });
+                if ('caches' in window) {
+                  caches.keys().then(function(names) {
+                    console.log('[KILL-SW-INLINE] Encontrados', names.length, 'caches para deletar');
+                    names.forEach(function(name) { 
+                      console.log('[KILL-SW-INLINE] Deletando cache:', name);
+                      caches.delete(name); 
+                    });
+                    // Redirecionar para kill-sw.html
+                    console.log('[KILL-SW-INLINE] Redirecionando para /kill-sw.html');
+                    window.location.replace('/kill-sw.html?reason=bundle-antigo&t=' + Date.now());
+                  });
+                } else {
+                  window.location.replace('/kill-sw.html?reason=bundle-antigo&t=' + Date.now());
+                }
+              });
+            } else {
+              window.location.replace('/kill-sw.html?reason=bundle-antigo&t=' + Date.now());
+            }
+            return; // Não continuar execução
+          }
+          
+          // Verificar novamente após 500ms para garantir
+          setTimeout(function() {
+            const scripts = document.querySelectorAll('script[type="module"][src*="index-"]');
+            let stillOld = false;
+            scripts.forEach(function(script) {
+              const src = script.src || script.getAttribute('src') || '';
+              if (src.includes('index-DOXRH9LH.js') || 
+                  src.includes('index-B74THvjy.js') || 
+                  src.includes('index-BVaTwX4C.js') ||
+                  src.includes('index-BK79O84G.js') ||
+                  src.includes('index-Bvz1uanR.js') ||
+                  src.includes('index-Duj1CNUZ.js') ||
+                  src.includes('index-DtPXGL4e.js') ||
+                  src.includes('index-sPoNFTTD.js') ||
+                  src.includes('index-Hh8aXNzV.js')) {
+                stillOld = true;
+              }
+            });
+            
+            if (stillOld) {
+              console.error('[KILL-SW-INLINE] 🚨 BUNDLE ANTIGO AINDA PRESENTE APÓS 500ms');
+              window.location.replace('/kill-sw.html?reason=bundle-antigo-delayed');
+            }
+          }, 500);
+        })();
+        
+        console.log('[KILL-SW-INLINE] Iniciando remoção forçada de Service Workers antigos...');
+        
+        if ('serviceWorker' in navigator) {
+          // Desregistrar TODOS os Service Workers IMEDIATAMENTE
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            console.log('[KILL-SW-INLINE] Encontrados', registrations.length, 'Service Workers');
+            
+            registrations.forEach(function(registration) {
+              console.log('[KILL-SW-INLINE] Desregistrando:', registration.scope);
+              registration.unregister().then(function(success) {
+                if (success) {
+                  console.log('[KILL-SW-INLINE] ✅ Service Worker desregistrado:', registration.scope);
+                } else {
+                  console.warn('[KILL-SW-INLINE] ⚠️ Falha ao desregistrar:', registration.scope);
+                }
+              });
+            });
+            
+            // Limpar TODOS os caches IMEDIATAMENTE
+            if (caches && caches.keys) {
+              caches.keys().then(function(cacheNames) {
+                console.log('[KILL-SW-INLINE] Encontrados', cacheNames.length, 'caches');
+                
+                cacheNames.forEach(function(cacheName) {
+                  console.log('[KILL-SW-INLINE] Deletando cache:', cacheName);
+                  caches.delete(cacheName).then(function(success) {
+                    if (success) {
+                      console.log('[KILL-SW-INLINE] ✅ Cache deletado:', cacheName);
+                    }
+                  });
+                });
+              });
+            }
+            
+            // Limpar sessionStorage e localStorage (apenas flags de SW)
+            try {
+              sessionStorage.removeItem('sw-registered');
+              sessionStorage.removeItem('sw-version');
+              sessionStorage.removeItem('env_isInitialized');
+              sessionStorage.removeItem('env_hasLoggedOnce');
+              sessionStorage.removeItem('backend_forced');
+              localStorage.removeItem('sw-registered');
+              localStorage.removeItem('sw-version');
+              // NÃO limpar API_BASE_URL - agora é gerenciado via variável de ambiente
+              console.log('[KILL-SW-INLINE] ✅ Flags de SW limpas');
+            } catch (e) {
+              console.warn('[KILL-SW-INLINE] ⚠️ Erro ao limpar storage:', e);
+            }
+          });
+        }
+        
+        // Backend agora é configurado via variável de ambiente VITE_API_BASE_URL
+        // Não forçar mais aqui para evitar conflitos
+      })();
+    </script>
+    <!-- ✅ SW KILL GLOBAL - Script que SEMPRE é servido da rede (não do cache) -->
+    <!-- CRÍTICO: Este script NUNCA está no precache do SW antigo -->
+    <script src="/sw-kill-global.js?v=20250124135000"></script>
+    <!-- ✅ FORCE UPDATE - Script que SEMPRE é servido da rede (não do cache) -->
+    <script src="/force-update.js?v=20250124135000"></script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSP REMOVIDO PARA DESENVOLVIMENTO E MVP -->
+    <meta name="theme-color" content="#ffd700" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="cache-bust" content="2025-01-24-13-50">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Gol de Ouro - Jogador</title>
+    <script type="module" crossorigin src="/assets/index-qIGutT6K.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-lDOJDUAS.css">
+  <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+

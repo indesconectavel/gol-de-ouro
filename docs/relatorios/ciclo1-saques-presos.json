@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-03-06T13:25:40.814Z",
+  "presos_mais_de_min": 30,
+  "total_presos": 0,
+  "saques": [],
+  "ledger_por_saque": {},
+  "indicios": {
+    "falha_mp_payout": [],
+    "falha_ledger_insert": [],
+    "violacao_check_status": [],
+    "ausencia_processed_at": [],
+    "ausencia_transacao_id": []
+  },
+  "user_column_ledger": "user_id",
+  "erros": []
+}

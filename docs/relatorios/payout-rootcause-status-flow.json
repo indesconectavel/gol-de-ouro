@@ -1,0 +1,82 @@
+{
+  "timestamp": "2026-03-06T12:00:00.000Z",
+  "fonte": "mapeamento_codigo_readonly",
+  "fluxo": [
+    {
+      "etapa": "seleciona_saques",
+      "arquivo": "src/domain/payout/processPendingWithdrawals.js",
+      "linhas": "236-241",
+      "codigo": ".from('saques').select(...).in('status', [PENDING, 'pending', PROCESSING, 'processando']).order('created_at', { ascending: true }).limit(1)",
+      "risco": "baixo",
+      "hipotese": "Retorna 1 saque mais antigo; status processando esta na lista."
+    },
+    {
+      "etapa": "guard_payout_disabled",
+      "arquivo": "src/domain/payout/processPendingWithdrawals.js",
+      "linhas": "212-221",
+      "codigo": "if (!payoutEnabled) return { success: false, disabled: true }",
+      "risco": "alto",
+      "hipotese": "Se PAYOUT_PIX_ENABLED !== 'true', retorna sem processar; payouts_falha no Resumo e log Ciclo concluido com falhas."
+    },
+    {
+      "etapa": "lock",
+      "arquivo": "src/domain/payout/processPendingWithdrawals.js",
+      "linhas": "306-318",
+      "codigo": "supabase.from('saques').update({ status: PROCESSING }).eq('id', saqueId).in('status', [PENDING, 'pending', PROCESSING, 'processando']).select('id').single()",
+      "risco": "medio",
+      "hipotese": "Se lockError ou !locked retorna processed: false (Tentativa duplicada); saque continua processando."
+    },
+    {
+      "etapa": "chama_mercado_pago",
+      "arquivo": "src/domain/payout/processPendingWithdrawals.js",
+      "linhas": "323-324",
+      "codigo": "createPixWithdraw(netAmount, pixKey, pixType, userId, saqueId, correlationId)",
+      "risco": "alto",
+      "hipotese": "Servico em services/pix-mercado-pago.js createPixWithdraw (223-332): POST /v1/transfers; se falhar retorna { success: false, error }."
+    },
+    {
+      "etapa": "incrementa_payouts_falha",
+      "arquivo": "src/domain/payout/processPendingWithdrawals.js",
+      "linhas": "364-365",
+      "codigo": "payoutCounters.fail++",
+      "risco": "alto",
+      "hipotese": "So executa se payoutResult?.success !== true: apos createLedgerEntry(falha_payout), rollbackWithdraw, depois fail++."
+    },
+    {
+      "etapa": "atualiza_processed_at_transacao_id",
+      "arquivo": "src/domain/payout/processPendingWithdrawals.js",
+      "linhas": "324-336",
+      "codigo": "updateSaqueStatus({ newStatus: COMPLETED, processed_at: now, transacao_id: transacaoId, onlyWhenStatus: PROCESSING })",
+      "risco": "medio",
+      "hipotese": "So se payoutResult.success === true; updateSaqueStatus em 100-131 usa .eq('status', onlyWhenStatus); se status no banco nao for processando, update nao afeta linhas."
+    },
+    {
+      "etapa": "rollback",
+      "arquivo": "src/domain/payout/processPendingWithdrawals.js",
+      "linhas": "361-366",
+      "codigo": "createLedgerEntry(falha_payout); rollbackWithdraw(...); payoutCounters.fail++",
+      "risco": "alto",
+      "hipotese": "rollbackWithdraw (134-204): atualiza usuarios.saldo, ledger rollback, depois saques.update({ status: REJECTED, processed_at, motivo_rejeicao }).eq('id', saqueId). Se esse update falhar, saque fica processando e payouts_falha ja foi incrementado."
+    },
+    {
+      "etapa": "nenhum_saque_processado",
+      "arquivo": "src/workers/payout-worker.js",
+      "linhas": "80-83",
+      "codigo": "if (result?.processed === false) console.log('Nenhum saque processado neste ciclo')",
+      "risco": "alto",
+      "hipotese": "processed === false quando: pendentes.length === 0 (255-259) ou lock duplicado (317-318). Ou seja, worker nao esta vendo os 5 saques (query retorna 0) ou sempre da lock duplicado."
+    }
+  ],
+  "constantes_status": {
+    "arquivo": "src/domain/payout/withdrawalStatus.js",
+    "PENDING": "pendente",
+    "PROCESSING": "processando",
+    "COMPLETED": "concluido",
+    "REJECTED": "rejeitado"
+  },
+  "resumo_hipoteses": [
+    "Se PAYOUT_PIX_ENABLED=false: worker retorna cedo com disabled; nao explica payouts_falha:5 nem saques presos.",
+    "Se query retorna 0: possivel RLS ou filtro inesperado; log seria Nenhum saque pendente ou processando e processed: false.",
+    "Se createPixWithdraw falha (MP/token): entra em rollback; se rollback.update(saques) falhar, saque fica processando e payouts_falha++."
+  ]
+}

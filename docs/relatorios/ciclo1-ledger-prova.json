@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-03-05T22:53:29.287Z",
+  "janela_horas": 168,
+  "user_column": "user_id",
+  "por_usuario": [],
+  "top_tipos": [],
+  "top_referencias": [],
+  "suspeitas": {
+    "repeticao_correlation_tipo_ref": [],
+    "creditos_sem_referencia": 0,
+    "microcreditos_sequencia": 0
+  },
+  "erros": []
+}
