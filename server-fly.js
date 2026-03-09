@@ -858,6 +858,7 @@ app.post('/api/auth/register', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    const sanitizedEmailLogin = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
 
     // APENAS SUPABASE REAL - SEM FALLBACK
     if (!dbConnected || !supabase) {
@@ -876,8 +877,6 @@ app.post('/api/auth/login', async (req, res) => {
       .single();
 
     if (userError || !user) {
-      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-      const sanitizedEmailLogin = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
       const logMessageLoginNotFound = `❌ [LOGIN] Usuário não encontrado: ${sanitizedEmailLogin}`;
       console.log(logMessageLoginNotFound);
       return res.status(401).json({
