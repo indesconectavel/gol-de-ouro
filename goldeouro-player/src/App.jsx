@@ -11,6 +11,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Game from './pages/Game'
+import GameFinal from './pages/GameFinal'
 import GameShoot from './pages/GameShoot'
 import GameShootFallback from './pages/GameShootFallback'
 import GameShootTest from './pages/GameShootTest'
@@ -48,7 +49,7 @@ function App() {
                 } />
                 <Route path="/game" element={
                   <ProtectedRoute>
-                    <GameShoot />
+                    <GameFinal />
                   </ProtectedRoute>
                 } />
                 <Route path="/gameshoot" element={
