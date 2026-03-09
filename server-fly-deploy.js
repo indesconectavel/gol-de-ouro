@@ -117,13 +117,23 @@ app.use(helmet({
 app.use(compression());
 app.set('trust proxy', true);
 
-// CORS configurado
+// CORS configurado: allowlist explícita + previews Vercel (.vercel.app)
+const ALLOWED_ORIGINS_EXPLICIT = [
+  'https://goldeouro.lol',
+  'https://www.goldeouro.lol',
+  'https://admin.goldeouro.lol',
+  'https://app.goldeouro.lol'
+];
+
+const corsOriginCallback = (origin, callback) => {
+  if (!origin) return callback(null, true);
+  if (ALLOWED_ORIGINS_EXPLICIT.includes(origin)) return callback(null, true);
+  if (typeof origin === 'string' && origin.startsWith('https://') && origin.endsWith('.vercel.app')) return callback(null, true);
+  callback(null, false);
+};
+
 app.use(cors({
-  origin: [
-    'https://goldeouro.lol',
-    'https://www.goldeouro.lol',
-    'https://admin.goldeouro.lol'
-  ],
+  origin: corsOriginCallback,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']

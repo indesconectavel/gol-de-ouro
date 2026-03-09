@@ -207,23 +207,44 @@ app.use(compression());
 // Trust proxy configurado corretamente para Fly.io (1 = confiar apenas no primeiro proxy)
 app.set('trust proxy', 1);
 
-// CORS configurado
+// CORS configurado: allowlist explícita + previews Vercel (.vercel.app)
+const ALLOWED_ORIGINS_EXPLICIT = [
+  'https://goldeouro.lol',
+  'https://www.goldeouro.lol',
+  'https://admin.goldeouro.lol',
+  'https://app.goldeouro.lol'
+];
+
 const parseCorsOrigins = () => {
   const csv = process.env.CORS_ORIGIN || '';
   const list = csv.split(',').map(s => s.trim()).filter(Boolean);
-  return list.length > 0 ? list : [
-    'https://goldeouro.lol',
-    'https://www.goldeouro.lol',
-    'https://admin.goldeouro.lol'
-  ];
+  return list.length > 0 ? list : ALLOWED_ORIGINS_EXPLICIT;
 };
 
-app.use(cors({
-  origin: parseCorsOrigins(),
+const allowedOriginsList = parseCorsOrigins();
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Requests sem header Origin (ex.: same-origin, curl, Postman) são aceitos sem header CORS
+    if (!origin) {
+      return callback(null, true);
+    }
+    // Allowlist explícita (domínios oficiais + CORS_ORIGIN do ambiente)
+    if (allowedOriginsList.includes(origin)) {
+      return callback(null, true);
+    }
+    // Previews Vercel: permitir apenas origens HTTPS que terminam em .vercel.app
+    if (typeof origin === 'string' && origin.startsWith('https://') && origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    callback(null, false);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Idempotency-Key']
-}));
+};
+
+app.use(cors(corsOptions));
 
 // Rate limiting melhorado
 const limiter = rateLimit({
