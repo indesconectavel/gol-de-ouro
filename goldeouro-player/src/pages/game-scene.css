@@ -331,8 +331,8 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 
 /* ===== BARRA DE PROGRESSO REMOVIDA - SISTEMA OCULTO ===== */
 
-/* ===== ANIMAÇÕES GOL DE OURO ===== */
-.gs-golden-goal {
+/* ===== ANIMAÇÕES GOL DE OURO (escopo stage: NUNCA aplicado ao overlay em #game-overlay-root) ===== */
+.game-stage .gs-golden-goal {
   position: absolute;
   top: 20%;
   left: 50%;
@@ -343,7 +343,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   animation: goldenGoalPop 1.5s ease-out;
 }
 
-.gs-golden-victory {
+.game-stage .gs-golden-victory {
   position: absolute;
   top: 30%;
   left: 50%;
