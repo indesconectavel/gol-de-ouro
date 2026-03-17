@@ -534,18 +534,19 @@
   width:200px; height:200px; z-index:9; pointer-events:none;
   animation:ganhouPop 5s ease-out forwards; }
 
-@keyframes pop{ 0%{transform:scale(.6);opacity:0;} 100%{transform:scale(1);opacity:1;} }
+/* Centralização preservada durante animação (overlays via createPortal com fixed 50% + translate -50% -50%) */
+@keyframes pop{ 0%{transform:translate(-50%,-50%) scale(.6);opacity:0;} 100%{transform:translate(-50%,-50%) scale(1);opacity:1;} }
 @keyframes gooolPop{ 
-  0%{transform:scale(.6);opacity:0; filter:brightness(1.2);} 
-  30%{transform:scale(1.1);opacity:1; filter:brightness(1.5);}
-  70%{transform:scale(1);opacity:1; filter:brightness(1.2);}
-  100%{transform:scale(.8);opacity:0; filter:brightness(1);} 
+  0%{transform:translate(-50%,-50%) scale(.6);opacity:0; filter:brightness(1.2);} 
+  30%{transform:translate(-50%,-50%) scale(1.1);opacity:1; filter:brightness(1.5);}
+  70%{transform:translate(-50%,-50%) scale(1);opacity:1; filter:brightness(1.2);}
+  100%{transform:translate(-50%,-50%) scale(.8);opacity:0; filter:brightness(1);} 
 }
 @keyframes ganhouPop{ 
-  0%{transform:scale(.3);opacity:0; filter:brightness(1.2);} 
-  20%{transform:scale(1.1);opacity:1; filter:brightness(1.5);}
-  80%{transform:scale(1);opacity:1; filter:brightness(1.2);}
-  100%{transform:scale(1);opacity:1; filter:brightness(1);} 
+  0%{transform:translate(-50%,-50%) scale(.3);opacity:0; filter:brightness(1.2);} 
+  20%{transform:translate(-50%,-50%) scale(1.1);opacity:1; filter:brightness(1.5);}
+  80%{transform:translate(-50%,-50%) scale(1);opacity:1; filter:brightness(1.2);}
+  100%{transform:translate(-50%,-50%) scale(1);opacity:1; filter:brightness(1);} 
 }
 @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.7;} }
 
