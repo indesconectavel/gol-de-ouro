@@ -537,7 +537,17 @@ const GameFinal = () => {
   const canShoot = gamePhase === GAME_PHASE.IDLE && balance >= betAmount;
   
   return (
-    <div className="game-viewport" style={{ width: '100vw', height: '100dvh', overflow: 'hidden' }}>
+    <div
+      className="game-viewport"
+      style={{
+        width: '100vw',
+        height: '100dvh',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
       {/* FASE 1: GAME SCALE - Aplica transform: scale() */}
       <div 
         className="game-scale"
@@ -743,110 +753,115 @@ const GameFinal = () => {
             </div>
           </div>
           
-          {/* Overlays - Portal com centralização absoluta */}
-          {typeof document !== 'undefined' && document.body && (
-            <>
-              {/* Overlay GOL */}
-              {showGoool && createPortal(
-                <img
-                  src={gooolImg}
-                  alt="Gol!"
-                  className="gs-goool"
-                  style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 10000,
-                    pointerEvents: 'none',
-                    width: `${OVERLAYS.SIZE.GOOOL.width}px`,
-                    height: `${OVERLAYS.SIZE.GOOOL.height}px`,
-                    objectFit: 'contain',
-                    animation: 'gooolPop 1.2s ease-out forwards',
-                    display: 'block',
-                    visibility: 'visible',
-                    opacity: 1
-                  }}
-                />,
-                document.body
-              )}
-              
-              {/* Overlay GANHOU (aparece após goool.png) */}
-              {showGanhou && createPortal(
-                <img
-                  src={ganhouImg}
-                  alt="Ganhou!"
-                  className="gs-ganhou"
-                  style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 10001,
-                    pointerEvents: 'none',
-                    width: `${OVERLAYS.SIZE.GANHOU.width}px`,
-                    height: `${OVERLAYS.SIZE.GANHOU.height}px`,
-                    objectFit: 'contain',
-                    animation: 'ganhouPop 5s ease-out forwards',
-                    display: 'block',
-                    visibility: 'visible',
-                    opacity: 1
-                  }}
-                />,
-                document.body
-              )}
-              
-              {/* Overlay DEFENDEU */}
-              {showDefendeu && createPortal(
-                <img
-                  src={defendeuImg}
-                  alt="Defendeu!"
-                  className="gs-defendeu"
-                  style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 10000,
-                    pointerEvents: 'none',
-                    width: `${OVERLAYS.SIZE.DEFENDEU.width}px`,
-                    height: `${OVERLAYS.SIZE.DEFENDEU.height}px`,
-                    objectFit: 'contain',
-                    animation: 'pop 0.8s ease-out forwards',
-                    display: 'block',
-                    visibility: 'visible',
-                    opacity: 1
-                  }}
-                />,
-                document.body
-              )}
-              
-              {/* Overlay GOL DE OURO */}
-              {showGoldenGoal && createPortal(
-                <img
-                  src={goldenGoalImg}
-                  alt="Gol de Ouro!"
-                  className="gs-golden-goal"
-                  style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 10002,
-                    pointerEvents: 'none',
-                    width: `${OVERLAYS.SIZE.GOLDEN_GOAL.width}px`,
-                    height: `${OVERLAYS.SIZE.GOLDEN_GOAL.height}px`,
-                    objectFit: 'contain',
-                    animation: 'ganhouPop 5s ease-out forwards',
-                    display: 'block',
-                    visibility: 'visible',
-                    opacity: 1
-                  }}
-                />,
-                document.body
-              )}
-            </>
-          )}
+          {/* Overlays - Portal para container dedicado (evita containing block por ancestrais com transform) */}
+          {(() => {
+            const overlayContainer = typeof document !== 'undefined'
+              ? (document.getElementById('game-overlay-root') || document.body)
+              : null;
+            return overlayContainer && (
+              <>
+                {/* Overlay GOL */}
+                {showGoool && createPortal(
+                  <img
+                    src={gooolImg}
+                    alt="Gol!"
+                    className="gs-goool"
+                    style={{
+                      position: 'fixed',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      zIndex: 10000,
+                      pointerEvents: 'none',
+                      width: `${OVERLAYS.SIZE.GOOOL.width}px`,
+                      height: `${OVERLAYS.SIZE.GOOOL.height}px`,
+                      objectFit: 'contain',
+                      animation: 'gooolPop 1.2s ease-out forwards',
+                      display: 'block',
+                      visibility: 'visible',
+                      opacity: 1
+                    }}
+                  />,
+                  overlayContainer
+                )}
+                
+                {/* Overlay GANHOU (aparece após goool.png) */}
+                {showGanhou && createPortal(
+                  <img
+                    src={ganhouImg}
+                    alt="Ganhou!"
+                    className="gs-ganhou"
+                    style={{
+                      position: 'fixed',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      zIndex: 10001,
+                      pointerEvents: 'none',
+                      width: `${OVERLAYS.SIZE.GANHOU.width}px`,
+                      height: `${OVERLAYS.SIZE.GANHOU.height}px`,
+                      objectFit: 'contain',
+                      animation: 'ganhouPop 5s ease-out forwards',
+                      display: 'block',
+                      visibility: 'visible',
+                      opacity: 1
+                    }}
+                  />,
+                  overlayContainer
+                )}
+                
+                {/* Overlay DEFENDEU */}
+                {showDefendeu && createPortal(
+                  <img
+                    src={defendeuImg}
+                    alt="Defendeu!"
+                    className="gs-defendeu"
+                    style={{
+                      position: 'fixed',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      zIndex: 10000,
+                      pointerEvents: 'none',
+                      width: `${OVERLAYS.SIZE.DEFENDEU.width}px`,
+                      height: `${OVERLAYS.SIZE.DEFENDEU.height}px`,
+                      objectFit: 'contain',
+                      animation: 'pop 0.8s ease-out forwards',
+                      display: 'block',
+                      visibility: 'visible',
+                      opacity: 1
+                    }}
+                  />,
+                  overlayContainer
+                )}
+                
+                {/* Overlay GOL DE OURO */}
+                {showGoldenGoal && createPortal(
+                  <img
+                    src={goldenGoalImg}
+                    alt="Gol de Ouro!"
+                    className="gs-golden-goal"
+                    style={{
+                      position: 'fixed',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      zIndex: 10002,
+                      pointerEvents: 'none',
+                      width: `${OVERLAYS.SIZE.GOLDEN_GOAL.width}px`,
+                      height: `${OVERLAYS.SIZE.GOLDEN_GOAL.height}px`,
+                      objectFit: 'contain',
+                      animation: 'ganhouPop 5s ease-out forwards',
+                      display: 'block',
+                      visibility: 'visible',
+                      opacity: 1
+                    }}
+                  />,
+                  overlayContainer
+                )}
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>

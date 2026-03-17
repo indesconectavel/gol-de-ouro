@@ -1,5 +1,13 @@
 /* ===== escopo /game ===== */
 body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
+
+/* Container dedicado para overlays (createPortal): sem transform/filter para não alterar containing block do position:fixed */
+#game-overlay-root {
+  pointer-events: none;
+  position: static;
+  transform: none;
+}
+
 .game-page { position:fixed; inset:0; display:flex; background:transparent; }
 
 /* bloquear retrato somente aqui */
