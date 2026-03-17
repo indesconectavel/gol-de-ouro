@@ -753,12 +753,12 @@ const GameFinal = () => {
             </div>
           </div>
           
-          {/* Overlays - Portal para container dedicado (evita containing block por ancestrais com transform) */}
+          {/* Overlays - Portal SEMPRE em #game-overlay-root (filho direto de body, fora de #root e de qualquer transform) */}
           {(() => {
             const overlayContainer = typeof document !== 'undefined'
-              ? (document.getElementById('game-overlay-root') || document.body)
+              ? document.getElementById('game-overlay-root')
               : null;
-            return overlayContainer && (
+            return overlayContainer ? (
               <>
                 {/* Overlay GOL */}
                 {showGoool && createPortal(
@@ -860,7 +860,7 @@ const GameFinal = () => {
                   overlayContainer
                 )}
               </>
-            );
+            ) : null;
           })()}
         </div>
       </div>
