@@ -86,11 +86,24 @@ class GameService {
         throw new Error('Saldo insuficiente');
       }
 
-      // Enviar chute para o backend
-      const response = await apiClient.post('/api/games/shoot', {
-        direction: direction,
-        amount: betValue
-      });
+      // Gerar chave de idempotência por tentativa de chute
+      // - 1 tentativa de chute = 1 chave
+      // - retry automático do mesmo request reutiliza a mesma chave (axios reenvia o mesmo config)
+      const idempotencyKey = `shot-${Date.now()}-${Math.random().toString(36).slice(2)}-${direction}-${betValue}`;
+
+      // Enviar chute para o backend com X-Idempotency-Key
+      const response = await apiClient.post(
+        '/api/games/shoot',
+        {
+          direction: direction,
+          amount: betValue
+        },
+        {
+          headers: {
+            'X-Idempotency-Key': idempotencyKey
+          }
+        }
+      );
 
       if (response.data.success) {
         const result = response.data.data;
