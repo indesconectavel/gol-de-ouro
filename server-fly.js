@@ -109,6 +109,8 @@ const {
 
 let supabase = supabaseAdmin;
 let dbConnected = false;
+let isAppReady = false;
+let httpServer = null;
 
 // Conectar Supabase com validação
 async function connectSupabase() {
@@ -367,6 +369,16 @@ let lotesAtivos = new Map();
 let contadorChutesGlobal = 0; // Zerado - sem dados simulados
 let ultimoGolDeOuro = 0; // Zerado - sem dados simulados
 
+// Blindagem concorrência: cache de chaves de idempotência (TTL 120s) para evitar replay/retry duplicando chute
+const IDEMPOTENCY_TTL_MS = 120000;
+const idempotencyProcessed = new Map(); // key -> { ts }
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, val] of idempotencyProcessed.entries()) {
+    if (now - val.ts > IDEMPOTENCY_TTL_MS) idempotencyProcessed.delete(key);
+  }
+}, 60000);
+
 // Configurações dos lotes por valor de aposta
 const batchConfigs = {
   1: { size: 10, totalValue: 10, winChance: 0.1, description: "10% chance" },
@@ -409,8 +421,8 @@ function getOrCreateLoteByValue(amount) {
       config: config,
       chutes: [],
       status: 'active',
-      // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomInt ao invés de Math.random()
-      winnerIndex: crypto.randomInt(0, config.size), // CORRIGIDO: Aleatório seguro por lote
+      // V1: gol sempre no último chute do lote (10º chute para valor 1)
+      winnerIndex: config.size - 1,
       createdAt: new Date().toISOString(),
       totalArrecadado: 0,
       premioTotal: 0
@@ -1110,26 +1122,40 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
 // SISTEMA DE JOGO CORRIGIDO
 // =====================================================
 
+// Direções válidas para chute (alinhado ao LoteIntegrityValidator e frontend)
+const VALID_DIRECTIONS = ['TL', 'TR', 'C', 'BL', 'BR'];
+
 // Endpoint para chutar
 app.post('/api/games/shoot', authenticateToken, async (req, res) => {
   try {
     const { direction, amount } = req.body;
     
     // Validar entrada
-    if (!direction || !amount) {
+    if (!direction || amount === undefined || amount === null) {
       return res.status(400).json({
         success: false,
         message: 'Direção e valor são obrigatórios'
       });
     }
 
-    // Validar valor de aposta
-    if (!batchConfigs[amount]) {
+    // Validar direção no backend (defesa em profundidade; frontend já valida)
+    const directionNormalized = String(direction).trim().toUpperCase();
+    if (!VALID_DIRECTIONS.includes(directionNormalized)) {
       return res.status(400).json({
         success: false,
-        message: 'Valor de aposta inválido. Use: 1, 2, 5 ou 10'
+        message: 'Direção inválida. Use: TL, TR, C, BL ou BR'
       });
     }
+
+    // V1: apenas R$ 1,00 por chute — rejeitar qualquer outro valor
+    const amountNum = Number(amount);
+    if (amountNum !== 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'V1 aceita apenas R$ 1,00 por chute. Outros valores ficam reservados para versões futuras.'
+      });
+    }
+    const betAmount = 1;
 
     // APENAS SUPABASE REAL - SEM FALLBACK
     if (!dbConnected || !supabase) {
@@ -1137,6 +1163,18 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
         success: false,
         message: 'Sistema temporariamente indisponível'
       });
+    }
+
+    // Blindagem retry/replay: se o cliente enviar X-Idempotency-Key e já foi processada, rejeitar duplicata
+    const idempotencyKey = (req.headers['x-idempotency-key'] || '').trim();
+    if (idempotencyKey) {
+      const entry = idempotencyProcessed.get(idempotencyKey);
+      if (entry && (Date.now() - entry.ts < IDEMPOTENCY_TTL_MS)) {
+        return res.status(409).json({
+          success: false,
+          message: 'Chute já processado com esta chave de idempotência. Use outra chave ou aguarde antes de reenviar.'
+        });
+      }
     }
 
     // Verificar saldo do usuário
@@ -1153,7 +1191,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
     }
 
-    if (user.saldo < amount) {
+    if (user.saldo < betAmount) {
       return res.status(400).json({
       success: false,
         message: 'Saldo insuficiente'
@@ -1161,12 +1199,12 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     }
 
     // Obter ou criar lote para este valor
-    const lote = getOrCreateLoteByValue(amount);
+    const lote = getOrCreateLoteByValue(betAmount);
     
     // Validar integridade do lote antes de processar chute
     const integrityValidation = loteIntegrityValidator.validateBeforeShot(lote, {
-      direction: direction,
-      amount: amount,
+      direction: directionNormalized,
+      amount: betAmount,
       userId: req.user.userId
     });
 
@@ -1205,20 +1243,40 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
         ultimoGolDeOuro = contadorChutesGlobal;
         console.log(`🏆 [GOL DE OURO] Chute #${contadorChutesGlobal} - Prêmio: R$ ${premioGolDeOuro}`);
       }
-      
-      // Encerrar o lote imediatamente após o gol (um vencedor por lote)
-      // Isso evita novos chutes no mesmo lote e alinha com o validador de integridade.
+      // lote.status/ativo serão definidos após reserva de saldo e push
+    }
+
+    // Blindagem concorrência: reservar saldo com optimistic lock ANTES de avançar o lote (evita lost update)
+    const novoSaldo = isGoal
+      ? Number(user.saldo) - betAmount + premio + premioGolDeOuro
+      : Number(user.saldo) - betAmount;
+    const { data: updatedUser, error: saldoUpdateError } = await supabase
+      .from('usuarios')
+      .update({ saldo: novoSaldo })
+      .eq('id', req.user.userId)
+      .eq('saldo', user.saldo)
+      .select('saldo')
+      .single();
+    if (saldoUpdateError || !updatedUser) {
+      return res.status(409).json({
+        success: false,
+        message: 'Saldo insuficiente ou alterado. Tente novamente.'
+      });
+    }
+    const saldoAposUpdate = Number(updatedUser.saldo);
+
+    // Encerrar lote em memória se for goal (antes de push para o validador ver estado correto)
+    if (isGoal) {
       lote.status = 'completed';
       lote.ativo = false;
     }
-    
+
     // Adicionar chute ao lote
     const chute = {
       id: `${lote.id}_${shotIndex}`,
-      // Campo esperado pelo validador
       userId: req.user.userId,
-      direction,
-      amount,
+      direction: directionNormalized,
+      amount: betAmount,
       result,
       premio,
       premioGolDeOuro,
@@ -1226,9 +1284,8 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       shotIndex: shotIndex + 1,
       timestamp: new Date().toISOString()
     };
-    
     lote.chutes.push(chute);
-    lote.totalArrecadado += amount;
+    lote.totalArrecadado += betAmount;
     lote.premioTotal += premio + premioGolDeOuro;
 
     // Validar integridade do lote após adicionar chute
@@ -1241,24 +1298,28 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
 
     if (!postShotValidation.valid) {
       console.error('❌ [SHOOT] Problema de integridade após chute:', postShotValidation.error);
-      // Reverter chute do lote
+      await supabase.from('usuarios').update({ saldo: user.saldo }).eq('id', req.user.userId);
       lote.chutes.pop();
-      lote.totalArrecadado -= amount;
+      lote.totalArrecadado -= betAmount;
       lote.premioTotal -= premio + premioGolDeOuro;
+      if (isGoal) {
+        lote.status = 'active';
+        lote.ativo = true;
+      }
       return res.status(400).json({
         success: false,
         message: postShotValidation.error
       });
     }
 
-    // Salvar chute no banco de dados (usar tabela 'chutes' para acionar gatilhos de métricas/saldo)
+    // Salvar chute no banco de dados
     const { error: chuteError } = await supabase
       .from('chutes')
       .insert({
         usuario_id: req.user.userId,
         lote_id: lote.id,
-        direcao: direction,
-        valor_aposta: amount,
+        direcao: directionNormalized,
+        valor_aposta: betAmount,
         resultado: result,
         premio: premio,
         premio_gol_de_ouro: premioGolDeOuro,
@@ -1268,22 +1329,32 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
 
     if (chuteError) {
+      await supabase.from('usuarios').update({ saldo: user.saldo }).eq('id', req.user.userId);
+      lote.chutes.pop();
+      lote.totalArrecadado -= betAmount;
+      lote.premioTotal -= premio + premioGolDeOuro;
+      if (isGoal) {
+        lote.status = 'active';
+        lote.ativo = true;
+      }
       console.error('❌ [SHOOT] Erro ao salvar chute:', chuteError);
+      return res.status(500).json({
+        success: false,
+        message: 'Falha ao registrar chute. Tente novamente.'
+      });
     }
 
     // Verificar se lote está completo
-    // Já encerrado em caso de gol, mas mantém fechamento por tamanho para consistência
     if (lote.chutes.length >= lote.config.size && lote.status !== 'completed') {
       lote.status = 'completed';
-      // Desativar para o validador entender que não aceita mais chutes
       lote.ativo = false;
       console.log(`🏆 [LOTE] Lote ${lote.id} completado: ${lote.chutes.length} chutes, R$${lote.totalArrecadado} arrecadado, R$${lote.premioTotal} em prêmios`);
     }
-    
+
     const shootResult = {
       loteId: lote.id,
-      direction,
-      amount,
+      direction: directionNormalized,
+      amount: betAmount,
       result,
       premio,
       premioGolDeOuro,
@@ -1291,6 +1362,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       contadorGlobal: contadorChutesGlobal,
       timestamp: new Date().toISOString(),
       playerId: req.user.userId,
+      novoSaldo: saldoAposUpdate,
       loteProgress: {
         current: lote.chutes.length,
         total: lote.config.size,
@@ -1299,26 +1371,11 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       isLoteComplete: lote.status === 'completed'
     };
 
-    // Ajuste de saldo:
-    // - Perdas: gatilho do banco subtrai 'valor_aposta' automaticamente
-    // - Vitórias: gatilho do banco credita apenas o prêmio (premio + premioGolDeOuro)
-    //   Para manter a economia esperada (todos pagam a aposta), subtrair manualmente
-    //   o valor da aposta apenas quando houver gol (evita dupla cobrança nas derrotas).
-    if (isGoal) {
-      const novoSaldoVencedor = user.saldo - amount + premio + premioGolDeOuro;
-      const { error: saldoWinnerError } = await supabase
-        .from('usuarios')
-        .update({ saldo: novoSaldoVencedor })
-        .eq('id', req.user.userId);
-      if (saldoWinnerError) {
-        console.error('❌ [SHOOT] Erro ao ajustar saldo do vencedor:', saldoWinnerError);
-      } else {
-        shootResult.novoSaldo = novoSaldoVencedor;
-      }
+    if (idempotencyKey) {
+      idempotencyProcessed.set(idempotencyKey, { ts: Date.now() });
     }
-    
+
     console.log(`⚽ [SHOOT] Chute #${contadorChutesGlobal}: ${result} por usuário ${req.user.userId}`);
-    
     res.status(200).json({
       success: true,
       data: shootResult
@@ -2092,6 +2149,14 @@ app.get('/health', async (req, res) => {
   });
 });
 
+// Readiness check: 200 quando startup concluiu; 503 antes disso (não chama serviços pesados)
+app.get('/ready', (req, res) => {
+  if (isAppReady) {
+    return res.status(200).json({ status: 'ready' });
+  }
+  res.status(503).json({ status: 'not ready' });
+});
+
 // Métricas globais
 app.get('/api/metrics', async (req, res) => {
   try {
@@ -2745,8 +2810,10 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
     
     // Iniciar servidor HTTP e WebSocket
     const server = http.createServer(app);
+    httpServer = server;
     const wss = new WebSocketManager(server);
     server.listen(PORT, '0.0.0.0', () => {
+      isAppReady = true;
       console.log(`🚀 [SERVER] Servidor iniciado na porta ${PORT}`);
       console.log(`🌐 [SERVER] Ambiente: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📊 [SERVER] Supabase: ${dbConnected ? 'Conectado' : 'Desconectado'}`);
@@ -2762,6 +2829,26 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
 
 // Iniciar servidor
 startServer();
+
+// Graceful shutdown: SIGTERM (Fly.io/k8s) e SIGINT (Ctrl+C)
+function gracefulShutdown(signal) {
+  console.log(`🛑 [SERVER] ${signal} recebido; encerrando conexões...`);
+  if (httpServer) {
+    httpServer.close(() => {
+      console.log('✅ [SERVER] Servidor encerrado.');
+      process.exit(0);
+    });
+    // Fallback: se close demorar, forçar saída após 10s
+    setTimeout(() => {
+      console.warn('⚠️ [SERVER] Timeout no shutdown; encerrando.');
+      process.exit(1);
+    }, 10000);
+  } else {
+    process.exit(0);
+  }
+}
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // =====================================================
 // SERVIDOR SIMPLIFICADO v1.2.0 - DEPLOY FUNCIONAL

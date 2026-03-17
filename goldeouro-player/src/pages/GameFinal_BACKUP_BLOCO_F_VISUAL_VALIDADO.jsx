@@ -2,8 +2,9 @@
 // ====================================================
 // Arquitetura profissional de Game Stage fixa (1920x1080)
 // Todas as posições em PX fixo via layoutConfig.js
-// Backend real | Estado único | Sem loops | Sem travamentos
-// Data: 2026-03-09 — Cirurgia BLOCO F: integração backend real
+// Backend simulado | Estado único | Sem loops | Sem travamentos
+// Data: 2025-01-27
+// Status: VERSÃO VALIDADA ANTES DAS MELHORIAS
 
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
@@ -20,9 +21,6 @@ import {
   DIRECTION_TO_GOALKEEPER_JUMP,
   getTargetPosition
 } from '../game/layoutConfig';
-import gameService from '../services/gameService';
-import apiClient from '../services/apiClient';
-import { API_ENDPOINTS } from '../config/api';
 import './game-scene.css';
 import './game-shoot.css';
 
@@ -35,6 +33,56 @@ const GAME_PHASE = {
   RESULT: 'RESULT',       // Mostrando resultado
   RESET: 'RESET'          // Resetando para IDLE
 };
+
+// =====================================================
+// BACKEND SIMULADO - Funções de simulação
+// =====================================================
+const simulateInitializeGame = async () => {
+  // Simular delay de rede
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  return {
+    success: true,
+    userData: {
+      saldo: 100.00
+    },
+    gameInfo: {
+      goldenGoal: {
+        shotsUntilNext: 10
+      }
+    }
+  };
+};
+
+const simulateProcessShot = async (direction, betAmount) => {
+  // Simular delay de processamento (mínimo para não atrasar animação)
+  await new Promise(resolve => setTimeout(resolve, 50));
+  
+  // Simular resultado (20% de chance de gol - conforme relatório)
+  const isGoal = Math.random() < 0.2;
+  // Gol de ouro: a cada 10 chutes (se for gol)
+  const globalCounter = Math.floor(Math.random() * 100);
+  const isGoldenGoal = isGoal && (globalCounter % 10 === 0);
+  
+  return {
+    success: true,
+    shot: {
+      isWinner: isGoal,
+      isGoldenGoal: isGoldenGoal,
+      prize: isGoal ? betAmount * 1.5 : 0, // Prêmio: Aposta × 1.5 (conforme relatório)
+      goldenGoalPrize: isGoldenGoal ? 100 : 0 // Prêmio Gol de Ouro: R$ 100 (conforme relatório)
+    },
+    user: {
+      newBalance: isGoal ? 100 + (betAmount * 1.5) + (isGoldenGoal ? 100 : 0) : 100 - betAmount,
+      globalCounter: globalCounter
+    },
+    isGoldenGoal: isGoldenGoal
+  };
+};
+
+// =====================================================
+// ASSETS
+// =====================================================
 import goalieIdle from '../assets/goalie_idle.png';
 import goalieDiveTL from '../assets/goalie_dive_tl.png';
 import goalieDiveTR from '../assets/goalie_dive_tr.png';
@@ -86,8 +134,8 @@ const GameFinal = () => {
   const [showGanhou, setShowGanhou] = useState(false);
   const [showGoldenGoal, setShowGoldenGoal] = useState(false);
   
-  // Estatísticas (totais da conta — backend real)
-  const [totalChutes, setTotalChutes] = useState(0);
+  // Estatísticas
+  const [shotsTaken, setShotsTaken] = useState(0);
   const [sessionWins, setSessionWins] = useState(0);
   const [shotsUntilGoldenGoal, setShotsUntilGoldenGoal] = useState(10);
   const [totalGoldenGoals, setTotalGoldenGoals] = useState(0);
@@ -267,28 +315,21 @@ const GameFinal = () => {
     
     window.addEventListener('resize', handleResize, { passive: true });
     
-    // Inicializar jogo (apenas uma vez) — Backend real
+    // Inicializar jogo (apenas uma vez) - Backend Simulado
     const init = async () => {
       try {
         setLoading(true);
-        // Perfil: saldo e totais da conta
-        const profileRes = await apiClient.get(API_ENDPOINTS.PROFILE);
-        if (profileRes.data?.success && profileRes.data?.data) {
-          const d = profileRes.data.data;
-          setBalance(Number(d.saldo) || 0);
-          setTotalChutes(Number(d.total_apostas) || 0);
-          setTotalWinnings(Number(d.total_ganhos) || 0);
-          setTotalGoldenGoals(Number(d.total_gols_de_ouro) || 0);
-        }
-        // Métricas globais e gameService (shotsUntilGoldenGoal)
-        const initResult = await gameService.initialize();
-        if (initResult?.success && initResult?.gameInfo?.goldenGoal) {
-          const next = initResult.gameInfo.goldenGoal.shotsUntilNext;
-          if (typeof next === 'number') setShotsUntilGoldenGoal(next);
+        const result = await simulateInitializeGame();
+        
+        if (result && result.success) {
+          const saldo = result.userData?.saldo || 100.00;
+          setBalance(saldo);
+          const shotsUntilNext = result.gameInfo?.goldenGoal?.shotsUntilNext || 10;
+          setShotsUntilGoldenGoal(shotsUntilNext);
         }
       } catch (error) {
         console.error('Erro ao inicializar:', error);
-        toast.error('Erro ao carregar dados do jogo.');
+        setBalance(100.00); // Fallback para saldo simulado
       } finally {
         setLoading(false);
       }
@@ -374,8 +415,9 @@ const GameFinal = () => {
     };
     
     try {
-      // 3. Processar chute no backend real
-      const result = await gameService.processShot(direction, betAmount);
+      // 3. Processar chute no backend simulado PRIMEIRO (com delay mínimo para não atrasar)
+      // Usar Promise.race para processar rapidamente mas manter a lógica
+      const result = await simulateProcessShot(direction, betAmount);
       
       if (!result || !result.success) {
         throw new Error(result?.error || 'Erro ao processar chute');
@@ -407,25 +449,20 @@ const GameFinal = () => {
       // 6. BOLA SE MOVE (simultâneo com goleiro)
       setBallPos(finalBallPos);
       
-      // Atualizar saldo e totais da conta a partir da resposta do backend
-      const newBalance = result.user?.newBalance ?? balance;
+      // Atualizar saldo
+      const newBalance = result.user?.newBalance || balance;
       setBalance(newBalance);
-      setTotalChutes(prev => prev + 1);
-      if (result.gameInfo?.goldenGoal?.shotsUntilNext != null) {
-        setShotsUntilGoldenGoal(result.gameInfo.goldenGoal.shotsUntilNext);
-      } else if (typeof gameService.getShotsUntilGoldenGoal === 'function') {
-        setShotsUntilGoldenGoal(gameService.getShotsUntilGoldenGoal());
-      } else {
-        setShotsUntilGoldenGoal(prev => isGoldenGoal ? 10 : Math.max(0, prev - 1));
-      }
+      setShotsTaken(prev => prev + 1);
+      setShotsUntilGoldenGoal(10 - (result.user?.globalCounter || 0) % 10);
       
       // 5. Mostrar resultado
       setGamePhase(GAME_PHASE.RESULT);
       
-      // Atualizar ganhos totais e gols de ouro (conta)
+      // Atualizar ganhos totais e gols de ouro
       if (isGoal) {
-        const totalPrize = (result.shot.prize || 0) + (result.shot.goldenGoalPrize || 0);
+        const totalPrize = result.shot.prize + (result.shot.goldenGoalPrize || 0);
         setTotalWinnings(prev => prev + totalPrize);
+        
         if (isGoldenGoal) {
           setTotalGoldenGoals(prev => prev + 1);
         }
@@ -537,7 +574,7 @@ const GameFinal = () => {
   const canShoot = gamePhase === GAME_PHASE.IDLE && balance >= betAmount;
   
   return (
-    <div className="game-viewport" style={{ width: '100vw', height: '100dvh', overflow: 'hidden' }}>
+    <div className="game-viewport">
       {/* FASE 1: GAME SCALE - Aplica transform: scale() */}
       <div 
         className="game-scale"
@@ -595,7 +632,7 @@ const GameFinal = () => {
                   <span className="stat-icon">⚽</span>
                   <div className="stat-content">
                     <div className="stat-label">CHUTES</div>
-                    <div className="stat-value">{totalChutes}</div>
+                    <div className="stat-value">{shotsTaken}</div>
                   </div>
                 </div>
                 <div className="stat-item">

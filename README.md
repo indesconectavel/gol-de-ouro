@@ -44,6 +44,14 @@ O **Gol de Ouro** é um sistema completo de jogo online que combina elementos de
 - **Índices:** Otimizados para performance
 - **Webhooks:** Para pagamentos PIX
 
+### **Arquitetura do projeto**
+
+O projeto Gol de Ouro utiliza uma arquitetura modular dividida em blocos auditáveis.
+
+A documentação completa da arquitetura está disponível em:
+
+[docs/ARQUITETURA-BLOCOS-GOLDEOURO.md](docs/ARQUITETURA-BLOCOS-GOLDEOURO.md)
+
 ---
 
 ## 🚀 **COMO EXECUTAR LOCALMENTE**

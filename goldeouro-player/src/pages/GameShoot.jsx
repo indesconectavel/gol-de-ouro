@@ -8,23 +8,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useSidebar } from '../contexts/SidebarContext';
+import InternalPageLayout from '../components/InternalPageLayout';
 import Logo from '../components/Logo';
-import Navigation from '../components/Navigation';
 import gameService from '../services/gameService';
-import apiClient from '../services/apiClient';
-import { API_ENDPOINTS } from '../config/api';
 
 const GameShoot = () => {
   const navigate = useNavigate();
-  const { isCollapsed } = useSidebar();
   
   // Estados do jogo
   const [balance, setBalance] = useState(0);
-  const [currentBet, setCurrentBet] = useState(1);
   const [shooting, setShooting] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // V1: valor fixo R$ 1 por chute — sem seleção de valor
+  const betAmount = 1;
   
   // Estados das animações
   const [ballPos, setBallPos] = useState({ x: 50, y: 90 });
@@ -66,9 +64,6 @@ const GameShoot = () => {
   };
   
   const DIRS = ["TL", "TR", "C", "BL", "BR"];
-  
-  // Valores de aposta disponíveis
-  const betValues = [1, 2, 5, 10];
   
   // =====================================================
   // INICIALIZAÇÃO
@@ -145,7 +140,7 @@ const GameShoot = () => {
   // =====================================================
   
   const handleShoot = async (dir) => {
-    if (shooting || balance < currentBet) return;
+    if (shooting || balance < betAmount) return;
     
     setShooting(true);
     setError("");
@@ -161,8 +156,8 @@ const GameShoot = () => {
       setTargetStage(t);
       requestAnimationFrame(() => setBallPos({ x: t.x, y: t.y }));
       
-      // Processar chute no backend
-      const result = await gameService.processShot(dir, currentBet);
+      // Processar chute no backend (V1: sempre R$ 1)
+      const result = await gameService.processShot(dir, betAmount);
       
       if (result.success) {
         const { shot, user, isGoldenGoal: isGoldenGoalShot } = result;
@@ -262,20 +257,6 @@ const GameShoot = () => {
     setShooting(false);
   };
   
-  // =====================================================
-  // FUNÇÕES DE APOSTA
-  // =====================================================
-  
-  const handleBetChange = (newBet) => {
-    if (newBet >= 1 && newBet <= 10 && newBet <= balance) {
-      setCurrentBet(newBet);
-    }
-  };
-  
-  // =====================================================
-  // FUNÇÕES DE ÁUDIO
-  // =====================================================
-  
   const toggleAudio = () => {
     setAudioEnabled(!audioEnabled);
     console.log('🔊 Toggle Audio:', !audioEnabled ? 'ON' : 'OFF');
@@ -294,10 +275,8 @@ const GameShoot = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-slate-900 text-white">
-      <Navigation />
-      
-      <div className={`transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
+    <InternalPageLayout title="Gol de Ouro">
+    <div className="flex-1 bg-gradient-to-br from-gray-900 to-slate-900 text-white">
         <div className="p-6">
           {/* Header */}
           <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/10 shadow-xl">
@@ -321,30 +300,11 @@ const GameShoot = () => {
             </div>
           </div>
           
-          {/* Sistema de Apostas */}
+          {/* V1: Economia fixa — R$ 1 por chute, lote 10 chutes, prêmio R$ 5 */}
           <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/10 shadow-xl">
-            <h2 className="text-xl font-bold text-white mb-4">💰 Valor da Aposta</h2>
-            <div className="grid grid-cols-4 gap-3">
-              {betValues.map((value) => (
-                <button
-                  key={value}
-                  onClick={() => handleBetChange(value)}
-                  disabled={balance < value}
-                  className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                    currentBet === value
-                      ? 'bg-yellow-500 text-black shadow-lg'
-                      : balance < value
-                      ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                      : 'bg-white/10 text-white hover:bg-white/20'
-                  }`}
-                >
-                  R$ {value}
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 text-sm text-white/70">
-              Chance: {gameService.getBetConfig(currentBet)?.description || '10%'}
-            </div>
+            <h2 className="text-xl font-bold text-white mb-2">💰 Valor da Aposta</h2>
+            <p className="text-white/90 text-lg font-medium">R$ 1,00 por chute</p>
+            <p className="text-white/70 text-sm mt-1">Cada lote tem 10 chutes. O gol sai no 10º chute. Prêmio: R$ 5,00.</p>
           </div>
           
           {/* Campo de Futebol */}
@@ -364,9 +324,9 @@ const GameShoot = () => {
                   <button
                     key={zone}
                     onClick={() => handleShoot(zone)}
-                    disabled={shooting || balance < currentBet}
+                    disabled={shooting || balance < betAmount}
                     className={`absolute w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                      shooting || balance < currentBet
+                      shooting || balance < betAmount
                         ? 'bg-gray-500 border-gray-400 cursor-not-allowed'
                         : 'bg-yellow-400 border-yellow-300 hover:bg-yellow-300 hover:scale-110 cursor-pointer'
                     }`}
@@ -485,7 +445,7 @@ const GameShoot = () => {
           </div>
         </div>
       </div>
-    </div>
+    </InternalPageLayout>
   );
 };
 

@@ -1,0 +1,655 @@
+/* ===== escopo /game ===== */
+body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
+.game-page { position:fixed; inset:0; display:flex; background:transparent; }
+
+/* bloquear retrato somente aqui */
+.game-rotate{ display:none; }
+@media (orientation: portrait){
+  .game-rotate{ position:fixed; inset:0; display:grid; place-items:center; z-index:9999; background:#0b1e2a; color:#fff; padding:24px; text-align:center; }
+  .rotate-card{ border-radius:16px; padding:20px 24px; background:rgba(255,255,255,.06); backdrop-filter:blur(6px); }
+  .game-stage-wrap{ display:none; }
+}
+
+/* ===== stage ocupa toda a viewport (sem fundo azul exposto) ===== */
+:root{ --vh:1vh; --hdr-bottom: 0px; }
+.game-stage-wrap{ position:relative; flex:1; width:100vw; height:calc(var(--vh)*100); }
+.game-stage{ position:absolute; inset:0; }
+#stage-root{ position:absolute; inset:0; width:100vw; height:100vh; overflow:hidden; }
+
+/* ===== geometria 16:9 do playfield ===== */
+#stage-root{
+  --pf-w: min(100vw, calc((var(--vh)*100) * 16 / 9));
+  --pf-h: min(calc(var(--vh)*100), calc(100vw * 9 / 16));
+  --pf-ox: calc((100vw - var(--pf-w)) / 2);
+  --pf-oy: calc((100vh - var(--pf-h)) / 2);
+}
+
+/* BG/canvas cobre o stage */
+#stage-root .scene-bg, #stage-root > canvas{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+
+/* ===== HEADER (card superior) ===== */
+.hud-header{
+  position:absolute; z-index:4;
+  left: 10px;
+  right: 10px;
+  top:   10px; /* 10px abaixo da borda superior */
+  pointer-events:auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ===== LOGO PEQUENA - LADO ESQUERDO ===== */
+.brand-small {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.brand-logo-small {
+  width: 60px;
+  height: auto;
+  max-height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* ===== CONTEÚDO DO HEADER ===== */
+.hud-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  gap: 20px;
+}
+
+/* ===== SISTEMA DE DESIGN RESPONSIVO HARMONIZADO ===== */
+
+/* Variáveis CSS para proporções harmonizadas */
+:root {
+  /* Tamanhos base (mobile-first) */
+  --stat-gap-mobile: 0.625rem;     /* 10px */
+  --stat-gap-tablet: 0.75rem;      /* 12px */
+  --stat-gap-desktop: 0.875rem;    /* 14px */
+  
+  /* Ícones proporcionais */
+  --stat-icon-mobile: 1.25rem;     /* 20px */
+  --stat-icon-tablet: 1.5rem;      /* 24px */
+  --stat-icon-desktop: 1.75rem;    /* 28px */
+  
+  /* Labels proporcionais */
+  --stat-label-mobile: 0.6875rem;  /* 11px */
+  --stat-label-tablet: 0.75rem;    /* 12px */
+  --stat-label-desktop: 0.875rem;  /* 14px */
+  
+  /* Valores proporcionais */
+  --stat-value-mobile: 0.875rem;   /* 14px */
+  --stat-value-tablet: 1rem;       /* 16px */
+  --stat-value-desktop: 1.125rem;  /* 18px */
+  
+  /* Gaps internos proporcionais */
+  --stat-inner-gap-mobile: 0.5rem; /* 8px */
+  --stat-inner-gap-tablet: 0.625rem; /* 10px */
+  --stat-inner-gap-desktop: 0.75rem; /* 12px */
+  
+  /* Padding do header proporcional */
+  --header-padding-mobile: 0.625rem 1rem; /* 10px 16px */
+  --header-padding-tablet: 0.75rem 1.25rem; /* 12px 20px */
+  --header-padding-desktop: 1rem 1.5rem; /* 16px 24px */
+  
+  /* Elementos de apostas proporcionais */
+  --bet-gap-mobile: 0.5rem; /* 8px */
+  --bet-gap-tablet: 0.625rem; /* 10px */
+  --bet-gap-desktop: 0.75rem; /* 12px */
+  
+  --bet-btn-padding-mobile: 0.375rem 0.75rem; /* 6px 12px */
+  --bet-btn-padding-tablet: 0.5rem 1rem; /* 8px 16px */
+  --bet-btn-padding-desktop: 0.625rem 1.25rem; /* 10px 20px */
+  
+  --bet-btn-font-mobile: 0.75rem; /* 12px */
+  --bet-btn-font-tablet: 0.875rem; /* 14px */
+  --bet-btn-font-desktop: 1rem; /* 16px */
+}
+
+.hud-stats {
+  display: flex;
+  gap: var(--stat-gap-mobile);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: var(--stat-inner-gap-mobile);
+  min-width: calc(25% - var(--stat-gap-mobile) * 0.75);
+  flex: 1;
+  color: white;
+}
+
+.stat-icon {
+  font-size: var(--stat-icon-mobile);
+  opacity: 0.8;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem; /* 2px fixo para todos os tamanhos */
+}
+
+.stat-label {
+  font-size: var(--stat-label-mobile);
+  opacity: 0.7;
+  font-weight: 500;
+  white-space: nowrap; /* Evita quebra de linha em todos os labels */
+}
+
+.stat-value {
+  font-size: var(--stat-value-mobile);
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+/* ===== BREAKPOINTS RESPONSIVOS ===== */
+
+/* Tablet: 768px - 1024px */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hud-stats {
+    gap: var(--stat-gap-tablet);
+  }
+  
+  .stat-item {
+    gap: var(--stat-inner-gap-tablet);
+    min-width: calc(25% - var(--stat-gap-tablet) * 0.75);
+  }
+  
+  .stat-icon {
+    font-size: var(--stat-icon-tablet);
+  }
+  
+  .stat-label {
+    font-size: var(--stat-label-tablet);
+  }
+  
+  .stat-value {
+    font-size: var(--stat-value-tablet);
+  }
+  
+  .hud-header {
+    padding: var(--header-padding-tablet);
+  }
+  
+  .hud-betting {
+    gap: var(--bet-gap-tablet);
+  }
+  
+  .bet-btn {
+    padding: var(--bet-btn-padding-tablet);
+    font-size: var(--bet-btn-font-tablet);
+  }
+}
+
+/* Desktop: 1024px+ */
+@media (min-width: 1024px) {
+  .hud-stats {
+    gap: var(--stat-gap-desktop);
+  }
+  
+  .stat-item {
+    gap: var(--stat-inner-gap-desktop);
+    min-width: calc(25% - var(--stat-gap-desktop) * 0.75);
+  }
+  
+  .stat-icon {
+    font-size: var(--stat-icon-desktop);
+  }
+  
+  .stat-label {
+    font-size: var(--stat-label-desktop);
+  }
+  
+  .stat-value {
+    font-size: var(--stat-value-desktop);
+  }
+  
+  .hud-header {
+    padding: var(--header-padding-desktop);
+  }
+  
+  .hud-betting {
+    gap: var(--bet-gap-desktop);
+  }
+  
+  .bet-btn {
+    padding: var(--bet-btn-padding-desktop);
+    font-size: var(--bet-btn-font-desktop);
+  }
+}
+
+.hud-betting {
+  display: flex;
+  align-items: center;
+  gap: var(--bet-gap-mobile);
+}
+
+/* Regras movidas para o sistema harmonizado acima */
+
+/* Estilo especial para Gols de Ouro */
+.stat-item.golden-goal .stat-value {
+  color: #ffd700; /* Dourado mais brilhante */
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+}
+
+.stat-item.golden-goal .stat-label {
+  color: #ffd700; /* Dourado mais brilhante */
+  white-space: nowrap; /* Evita quebra de linha */
+}
+
+/* ===== SEÇÃO DE APOSTAS ===== */
+.betting-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bet-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bet-label {
+  font-size: 14px;
+  color: white;
+  font-weight: 600;
+}
+
+.bet-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.bet-btn {
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bet-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.bet-btn.active {
+  background: #fbbf24;
+  color: #1e3a8a;
+  border-color: #fbbf24;
+}
+
+.bet-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Remover logo da página /game */
+.hud-header .brand-logo{ display:none !important; }
+.hud-header .brand-title, .hud-header .brand-sub{ display:none !important; }
+
+/* ===== AÇÕES — Posicionados no meio da tela verticalmente, nos cantos laterais ===== */
+.hud-actions{
+  position:absolute; z-index:6; display:flex; align-items:center;
+  left:  calc(var(--pf-ox) + var(--pf-w) * 0.02); /* Mais próximo da borda esquerda */
+  right: calc(var(--pf-ox) + var(--pf-w) * 0.02); /* Mais próximo da borda direita */
+  top: 50%; /* Meio da tela verticalmente */
+  transform: translateY(-50%); /* Centralizar verticalmente */
+}
+.hud-left{ display:flex; align-items:center; gap:12px; }
+
+/* ===== BARRA DE PROGRESSO REMOVIDA - SISTEMA OCULTO ===== */
+
+/* ===== ANIMAÇÕES GOL DE OURO ===== */
+.gs-golden-goal {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  max-width: 80%;
+  height: auto;
+  animation: goldenGoalPop 1.5s ease-out;
+}
+
+.gs-golden-victory {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  max-width: 80%;
+  height: auto;
+  animation: goldenVictoryPop 2s ease-out;
+}
+
+@keyframes goldenGoalPop {
+  0% {
+    transform: translateX(-50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes goldenVictoryPop {
+  0% {
+    transform: translateX(-50%) scale(0.3);
+    opacity: 0;
+  }
+  30% {
+    transform: translateX(-50%) scale(1.3);
+    opacity: 1;
+  }
+  60% {
+    transform: translateX(-50%) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+.hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
+.btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1; padding:10px 16px; font-weight:600; cursor:pointer; }
+.btn-partida{ background:#23c381; color:#fff; }
+.btn-dashboard{ 
+  background:#fbbf24; /* Amarelo do jogo */
+  color:#000000; /* Preto */
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+.btn-dashboard:hover {
+  background:#f59e0b; /* Amarelo mais escuro no hover */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+/* ===== RODAPÉ — Entrar na Fila (ESQ) e cluster (DIR) ===== */
+.hud-footer{ 
+  position:absolute; 
+  z-index:15; 
+  left:0; 
+  right:0; 
+  bottom:0;
+  pointer-events:none; 
+  height: 80px; /* Altura fixa para o rodapé */
+}
+.hud-bottom-left, .hud-bottom-right{ 
+  position:absolute; 
+  bottom:5px !important; /* 5px acima da borda inferior - ATUALIZADO */
+  pointer-events:auto; 
+  z-index:16;
+}
+.hud-bottom-left{
+  left:  calc(var(--pf-ox) + var(--pf-w) * 0.04);
+}
+.hud-bottom-right{
+  right: calc(var(--pf-ox) + var(--pf-w) * 0.04);
+}
+/* garantir que reapareçam mesmo se algo os tenha ocultado antes */
+.btn-queue, .hud-cluster{ 
+  display:inline-flex !important; 
+  opacity:1 !important; 
+  visibility:visible !important; 
+  z-index:20 !important;
+  pointer-events:auto !important;
+  position: relative !important;
+}
+
+/* Estilos específicos para garantir visibilidade dos botões inferiores */
+.hud-bottom-left .btn-queue,
+.hud-bottom-right .hud-cluster {
+  display: inline-flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  min-width: auto !important;
+  min-height: auto !important;
+}
+
+/* Estilos específicos para botões inferiores */
+.hud-btn {
+  background: #23c381 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 12px 20px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: all 0.2s ease !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.hud-btn:hover {
+  background: #1ea76a !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.hud-btn.secondary {
+  background: #6b7280 !important;
+}
+
+.hud-btn.secondary:hover {
+  background: #4b5563 !important;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+  padding: 8px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  transition: all 0.2s ease !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.rank-display {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  color: white !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ===== GOLEIRO — escala e posição calibradas =====
+   - escala dinâmica por altura do playfield (clamp para desktop/tablet)
+   - +30px para baixo
+   - troque .goalie/.gk/.keeper pelo seletor real do seu sprite
+*/
+.gs-goalie {
+  position:absolute; left:50%; transform-origin:50% 100%;
+  transform:
+    translate(-50%, 0)
+    translateY(30px)
+    scale(clamp(1.20, calc(var(--pf-h) * 0.00250), 2.00)); /* Tamanho original */
+  z-index:3;
+}
+
+/* ===== CORREÇÃO DE PROPORÇÃO PARA TABLET/DESKTOP =====
+   - Mantém a proporção do mobile
+   - Ajusta apenas para telas maiores
+   - Escala baseada na largura do playfield para melhor proporção
+*/
+@media (min-width: 768px) and (max-width: 1024px) {
+  .gs-goalie {
+    transform:
+      translate(-50%, 0)
+      translateY(45px) /* Ajuste intermediário */
+      scale(clamp(1.50, calc(var(--pf-w) * 0.00180), 2.50)); /* Tamanho original Tablet */
+  }
+}
+
+@media (min-width: 1024px) {
+  .gs-goalie {
+    transform:
+      translate(-50%, 0)
+      translateY(60px) /* Ajuste para desktop */
+      scale(clamp(1.80, calc(var(--pf-w) * 0.00150), 3.00)); /* Tamanho original Desktop */
+  }
+}
+
+/* ===== BOLA — alinhada ao círculo central =====
+   ajuste fino do coeficiente 0.875 → 0.865~0.885 conforme seu gramado
+*/
+.gs-ball {
+  position:absolute; left:50%;
+  top: calc(var(--pf-oy) + var(--pf-h) * 0.875);
+  transform: translate(-50%, -50%);
+  z-index:2;
+}
+
+/* Diminuir bola 20% no mobile */
+@media (max-width: 767px) {
+  .gs-ball {
+    transform: translate(-50%, -50%) scale(0.8); /* -20% de tamanho */
+  }
+}
+
+/* ===== CHAT RESPONSIVO ===== */
+body[data-page="game"] .chat-panel {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  width: min(350px, calc(100vw - 40px)) !important;
+  max-height: 400px !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  border: 2px solid #23c381 !important;
+  border-radius: 12px !important;
+  z-index: 1000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+body[data-page="game"] .chat-header {
+  background: #23c381 !important;
+  color: white !important;
+  padding: 12px 16px !important;
+  border-radius: 10px 10px 0 0 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-weight: 600 !important;
+}
+
+body[data-page="game"] .chat-close {
+  background: none !important;
+  border: none !important;
+  color: white !important;
+  font-size: 20px !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body[data-page="game"] .chat-messages {
+  flex: 1 !important;
+  padding: 12px !important;
+  overflow-y: auto !important;
+  max-height: 300px !important;
+}
+
+body[data-page="game"] .chat-message {
+  margin-bottom: 8px !important;
+  color: #e5e7eb !important;
+  font-size: 14px !important;
+}
+
+body[data-page="game"] .chat-user {
+  color: #23c381 !important;
+  font-weight: 600 !important;
+  margin-right: 8px !important;
+}
+
+/* Mobile: chat menor */
+@media (max-width: 767px) {
+  body[data-page="game"] .chat-panel {
+    width: calc(100vw - 20px) !important;
+    bottom: 10px !important;
+    right: 10px !important;
+    max-height: 300px !important;
+  }
+}
+
+/* ===== CORES DOS TEXTOS - BRANCO 100% ===== */
+body[data-page="game"] .hud-header .text-sm,
+body[data-page="game"] .hud-header .text-xs,
+body[data-page="game"] .hud-header span,
+body[data-page="game"] .hud-header div {
+  color: #ffffff !important; /* Branco 100% */
+}
+
+/* Específico para textos de estatísticas */
+body[data-page="game"] .hud-header .text-gray-300,
+body[data-page="game"] .hud-header .text-gray-400,
+body[data-page="game"] .hud-header .text-gray-500 {
+  color: #ffffff !important; /* Branco 100% */
+}
+
+/* remover resíduos de topbar/faixas externas */
+body[data-page="game"] .game-topbar,
+body[data-page="game"] header.game-topbar,
+body[data-page="game"] .hud-header-clip,
+body[data-page="game"] .glass-strip { display:none !important; }
+
+/* Estilos finais limpos - sem debug */

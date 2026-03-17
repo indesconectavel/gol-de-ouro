@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { AuthProvider } from './contexts/AuthContext'
 import { SidebarProvider } from './contexts/SidebarContext'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -31,6 +33,7 @@ function App() {
           <Router>
             <div className="min-h-screen bg-slate-900">
               <VersionWarning />
+              <ToastContainer position="top-right" autoClose={4000} hideProgressBar={false} theme="dark" />
               <PwaSwUpdater />
               <Routes>
                 <Route path="/" element={<Login />} />

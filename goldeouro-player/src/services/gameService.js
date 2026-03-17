@@ -68,26 +68,28 @@ class GameService {
   // SISTEMA DE CHUTES CORRIGIDO
   // =====================================================
 
-  // Processar chute no backend
-  async processShot(direction, amount) {
+  // Processar chute no backend (V1: enviar sempre amount = 1)
+  async processShot(direction, amount = 1) {
     try {
       // Validar entrada
       if (!this.goalZones.includes(direction)) {
         throw new Error('Direção inválida');
       }
 
-      if (!this.batchConfigs[amount]) {
+      // V1: backend aceita apenas R$ 1; enviar sempre 1
+      const betValue = 1;
+      if (!this.batchConfigs[betValue]) {
         throw new Error('Valor de aposta inválido');
       }
 
-      if (this.userBalance < amount) {
+      if (this.userBalance < betValue) {
         throw new Error('Saldo insuficiente');
       }
 
       // Enviar chute para o backend
       const response = await apiClient.post('/api/games/shoot', {
         direction: direction,
-        amount: amount
+        amount: betValue
       });
 
       if (response.data.success) {
@@ -106,7 +108,7 @@ class GameService {
           shot: {
             id: `${result.loteId}_${result.loteProgress.current}`,
             direction: direction,
-            amount: amount,
+            amount: betValue,
             result: result.result,
             isWinner: result.result === 'goal',
             prize: result.premio,
@@ -253,7 +255,8 @@ class GameService {
       lote: this.getCurrentLoteInfo(),
       goldenGoal: this.getGoldenGoalInfo(),
       config: {
-        availableBets: Object.keys(this.batchConfigs),
+        // V1: apenas R$ 1 ativo; outros valores reservados para V2
+        availableBets: [1],
         goalZones: this.goalZones
       }
     };
