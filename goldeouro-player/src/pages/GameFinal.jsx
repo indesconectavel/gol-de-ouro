@@ -43,10 +43,13 @@ import goalieDiveBR from '../assets/goalie_dive_br.png';
 import goalieDiveMid from '../assets/goalie_dive_mid.png';
 import ballImg from '../assets/ball.png';
 import bgGoalImg from '../assets/bg_goal.jpg';
-import gooolImg from '../assets/goool.png';
+// Assets de resultado — contrato igual ao Current (produção FyKKeg6zb): defendeu, ganhou_5, ganhou_100, gol_de_ouro, gol_normal, goool
+import gooolImg from '../assets/goool.png'; // no bundle da produção; mantido para paridade (referenciado abaixo)
+import golNormalImg from '../assets/gol_normal.png';
 import defendeuImg from '../assets/defendeu.png';
-import ganhouImg from '../assets/ganhou.png';
-import goldenGoalImg from '../assets/golden-goal.png';
+import ganhou5Img from '../assets/ganhou_5.png';
+import ganhou100Img from '../assets/ganhou_100.png';
+import golDeOuroImg from '../assets/gol_de_ouro.png';
 
 // =====================================================
 // COMPONENTE PRINCIPAL
@@ -85,6 +88,8 @@ const GameFinal = () => {
   const [showDefendeu, setShowDefendeu] = useState(false);
   const [showGanhou, setShowGanhou] = useState(false);
   const [showGoldenGoal, setShowGoldenGoal] = useState(false);
+  // Variante do overlay "ganhou" (produção: ganhou_5 vs ganhou_100 por valor do prêmio)
+  const [ganhouVariant100, setGanhouVariant100] = useState(false);
   
   // Estatísticas (totais da conta — backend real)
   const [totalChutes, setTotalChutes] = useState(0);
@@ -448,12 +453,13 @@ const GameFinal = () => {
           }, OVERLAYS.ANIMATION_DURATION.GOLDEN_GOAL);
           addTimer(timer);
         } else {
-          // GOL NORMAL
+          // GOL NORMAL — overlay "gol" = gol_normal; "ganhou" = ganhou_5 ou ganhou_100 (contrato produção)
+          setGanhouVariant100((result.shot.prize || 0) >= 100 || (result.shot.goldenGoalPrize || 0) > 0);
           setShowGoool(true);
           playGoalSound();
           toast.success(`⚽ GOL! Você ganhou R$ ${result.shot.prize}!`);
           
-          // Mostrar ganhou.png após goool.png (1200ms = duração da animação goool)
+          // Mostrar ganhou_5/ganhou_100 após gol_normal (1200ms = duração da animação)
           const showGanhouTimer = setTimeout(() => {
             setShowGoool(false);
             setShowGanhou(true);
@@ -760,12 +766,13 @@ const GameFinal = () => {
               : null;
             return overlayContainer ? (
               <>
-                {/* Overlay GOL */}
+                {/* Overlay GOL — contrato produção: gol_normal; goool no bundle para paridade com Current */}
                 {showGoool && createPortal(
                   <img
-                    src={gooolImg}
+                    src={golNormalImg}
                     alt="Gol!"
                     className="gs-goool"
+                    data-bundle-goool={gooolImg}
                     style={{
                       position: 'fixed',
                       top: '50%',
@@ -785,10 +792,10 @@ const GameFinal = () => {
                   overlayContainer
                 )}
                 
-                {/* Overlay GANHOU (aparece após goool.png) */}
+                {/* Overlay GANHOU — contrato produção: ganhou_5 ou ganhou_100 por prêmio */}
                 {showGanhou && createPortal(
                   <img
-                    src={ganhouImg}
+                    src={ganhouVariant100 ? ganhou100Img : ganhou5Img}
                     alt="Ganhou!"
                     className="gs-ganhou"
                     style={{
@@ -835,10 +842,10 @@ const GameFinal = () => {
                   overlayContainer
                 )}
                 
-                {/* Overlay GOL DE OURO */}
+                {/* Overlay GOL DE OURO — contrato produção: gol_de_ouro */}
                 {showGoldenGoal && createPortal(
                   <img
-                    src={goldenGoalImg}
+                    src={golDeOuroImg}
                     alt="Gol de Ouro!"
                     className="gs-golden-goal"
                     style={{
