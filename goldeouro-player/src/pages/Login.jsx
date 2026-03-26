@@ -17,11 +17,9 @@ const Login = () => {
 
   // Iniciar música de fundo apenas na página de login
   useEffect(() => {
-    // Verificar se já existe música tocando para evitar duplicação
-    if (!musicManager.isPlaying) {
-      musicManager.playPageMusic();
-    }
-    
+    // Tocar música da página ao montar o login
+    musicManager.playPageMusic();
+
     // Cleanup: parar música ao sair do componente
     return () => {
       musicManager.stopMusic();

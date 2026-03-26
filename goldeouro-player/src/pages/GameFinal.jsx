@@ -23,6 +23,7 @@ import {
 import gameService from '../services/gameService';
 import apiClient from '../services/apiClient';
 import { API_ENDPOINTS } from '../config/api';
+import musicManager from '../utils/musicManager';
 import './game-scene.css';
 import './game-shoot.css';
 
@@ -35,6 +36,10 @@ const GAME_PHASE = {
   RESULT: 'RESULT',       // Mostrando resultado
   RESET: 'RESET'          // Resetando para IDLE
 };
+
+/** Hierarquia de feedback em gol/gol de ouro: overlay primeiro, som depois, toast por último (não altera durações de overlay). */
+const GOAL_FEEDBACK_SOUND_DELAY_MS = 200;
+const GOAL_FEEDBACK_TOAST_DELAY_MS = 600;
 import goalieIdle from '../assets/goalie_idle.png';
 import goalieDiveTL from '../assets/goalie_dive_tl.png';
 import goalieDiveTR from '../assets/goalie_dive_tr.png';
@@ -44,7 +49,6 @@ import goalieDiveMid from '../assets/goalie_dive_mid.png';
 import ballImg from '../assets/ball.png';
 import bgGoalImg from '../assets/bg_goal.jpg';
 // Assets de resultado — contrato igual ao Current (produção FyKKeg6zb): defendeu, ganhou_5, ganhou_100, gol_de_ouro, gol_normal, goool
-import gooolImg from '../assets/goool.png'; // no bundle da produção; mantido para paridade (referenciado abaixo)
 import golNormalImg from '../assets/gol_normal.png';
 import defendeuImg from '../assets/defendeu.png';
 import ganhou5Img from '../assets/ganhou_5.png';
@@ -109,6 +113,11 @@ const GameFinal = () => {
   // =====================================================
   const [isMuted, setIsMuted] = useState(false);
   const crowdAudioRef = useRef(null);
+
+  // Garante que a trilha do login nunca persista na rota /game
+  useEffect(() => {
+    musicManager.stopMusic();
+  }, []);
   
   const playSound = useCallback((soundFile) => {
     if (isMuted) return;
@@ -443,8 +452,12 @@ const GameFinal = () => {
         if (isGoldenGoal) {
           // GOL DE OURO
           setShowGoldenGoal(true);
-          playGoalSound();
-          toast.success(`🏆 GOL DE OURO! Você ganhou R$ ${result.shot.prize + result.shot.goldenGoalPrize}!`);
+          addTimer(setTimeout(() => {
+            playGoalSound();
+          }, GOAL_FEEDBACK_SOUND_DELAY_MS));
+          addTimer(setTimeout(() => {
+            toast.success(`🏆 GOL DE OURO! Você ganhou R$ ${result.shot.prize + result.shot.goldenGoalPrize}!`);
+          }, GOAL_FEEDBACK_TOAST_DELAY_MS));
           
           // Reset após animação
           const timer = setTimeout(() => {
@@ -456,8 +469,12 @@ const GameFinal = () => {
           // GOL NORMAL — overlay "gol" = gol_normal; "ganhou" = ganhou_5 ou ganhou_100 (contrato produção)
           setGanhouVariant100((result.shot.prize || 0) >= 100 || (result.shot.goldenGoalPrize || 0) > 0);
           setShowGoool(true);
-          playGoalSound();
-          toast.success(`⚽ GOL! Você ganhou R$ ${result.shot.prize}!`);
+          addTimer(setTimeout(() => {
+            playGoalSound();
+          }, GOAL_FEEDBACK_SOUND_DELAY_MS));
+          addTimer(setTimeout(() => {
+            toast.success(`⚽ GOL! Você ganhou R$ ${result.shot.prize}!`);
+          }, GOAL_FEEDBACK_TOAST_DELAY_MS));
           
           // Mostrar ganhou_5/ganhou_100 após gol_normal (1200ms = duração da animação)
           const showGanhouTimer = setTimeout(() => {
@@ -492,7 +509,7 @@ const GameFinal = () => {
         const timer = setTimeout(() => {
           resetVisuals();
           setGamePhase(GAME_PHASE.IDLE);
-        }, OVERLAYS.ANIMATION_DURATION.DEFENDEU + 1200);
+        }, OVERLAYS.ANIMATION_DURATION.DEFENDEU);
         addTimer(timer);
       }
       
@@ -772,7 +789,6 @@ const GameFinal = () => {
                     src={golNormalImg}
                     alt="Gol!"
                     className="gs-goool"
-                    data-bundle-goool={gooolImg}
                     style={{
                       position: 'fixed',
                       top: '50%',
@@ -780,7 +796,7 @@ const GameFinal = () => {
                       transform: 'translate(-50%, -50%)',
                       zIndex: 10000,
                       pointerEvents: 'none',
-                      width: `${OVERLAYS.SIZE.GOOOL.width}px`,
+                      width: `min(${OVERLAYS.SIZE.GOOOL.width}px, 90vw)`,
                       height: `${OVERLAYS.SIZE.GOOOL.height}px`,
                       objectFit: 'contain',
                       animation: 'gooolPop 1.2s ease-out forwards',
@@ -805,7 +821,7 @@ const GameFinal = () => {
                       transform: 'translate(-50%, -50%)',
                       zIndex: 10001,
                       pointerEvents: 'none',
-                      width: `${OVERLAYS.SIZE.GANHOU.width}px`,
+                      width: `min(${OVERLAYS.SIZE.GANHOU.width}px, 90vw)`,
                       height: `${OVERLAYS.SIZE.GANHOU.height}px`,
                       objectFit: 'contain',
                       animation: 'ganhouPop 5s ease-out forwards',
@@ -830,7 +846,7 @@ const GameFinal = () => {
                       transform: 'translate(-50%, -50%)',
                       zIndex: 10000,
                       pointerEvents: 'none',
-                      width: `${OVERLAYS.SIZE.DEFENDEU.width}px`,
+                      width: `min(${OVERLAYS.SIZE.DEFENDEU.width}px, 90vw)`,
                       height: `${OVERLAYS.SIZE.DEFENDEU.height}px`,
                       objectFit: 'contain',
                       animation: 'pop 0.8s ease-out forwards',
@@ -855,10 +871,10 @@ const GameFinal = () => {
                       transform: 'translate(-50%, -50%)',
                       zIndex: 10002,
                       pointerEvents: 'none',
-                      width: `${OVERLAYS.SIZE.GOLDEN_GOAL.width}px`,
+                      width: `min(${OVERLAYS.SIZE.GOLDEN_GOAL.width}px, 90vw)`,
                       height: `${OVERLAYS.SIZE.GOLDEN_GOAL.height}px`,
                       objectFit: 'contain',
-                      animation: 'ganhouPop 5s ease-out forwards',
+                      animation: 'ganhouPop 5.5s ease-out forwards',
                       display: 'block',
                       visibility: 'visible',
                       opacity: 1

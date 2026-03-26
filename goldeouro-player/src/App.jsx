@@ -33,7 +33,13 @@ function App() {
           <Router>
             <div className="min-h-screen bg-slate-900">
               <VersionWarning />
-              <ToastContainer position="top-right" autoClose={4000} hideProgressBar={false} theme="dark" />
+              <ToastContainer
+                position="top-right"
+                autoClose={4000}
+                hideProgressBar={false}
+                theme="dark"
+                style={{ zIndex: 11000 }}
+              />
               <PwaSwUpdater />
               <Routes>
                 <Route path="/" element={<Login />} />

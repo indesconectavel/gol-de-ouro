@@ -8,6 +8,8 @@ class MusicManager {
     this.isPlaying = false;
     this.volume = 0.173; // Volume reduzido em mais 20% (de 0.216 para 0.173)
     this.enabled = true;
+    this.playRequestId = 0;
+    this.pendingStartTimer = null;
     
     this.init();
   }
@@ -29,10 +31,12 @@ class MusicManager {
     
     // Parar música atual se estiver tocando
     this.stopMusic();
+    const requestId = ++this.playRequestId;
     
     // Aguardar um pouco para garantir que a música anterior parou
-    setTimeout(() => {
-      this.playAudioFile('/sounds/torcida_2.mp3', 'gameplay');
+    this.pendingStartTimer = setTimeout(() => {
+      if (!this.isRequestValid(requestId)) return;
+      this.playAudioFile('/sounds/torcida_2.mp3', 'gameplay', requestId);
     }, 100);
   }
 
@@ -48,10 +52,12 @@ class MusicManager {
     
     // Parar música atual se estiver tocando
     this.stopMusic();
+    const requestId = ++this.playRequestId;
     
     // Aguardar um pouco para garantir que a música anterior parou
-    setTimeout(() => {
-      this.playAudioFile('/sounds/music.mp3', 'page');
+    this.pendingStartTimer = setTimeout(() => {
+      if (!this.isRequestValid(requestId)) return;
+      this.playAudioFile('/sounds/music.mp3', 'page', requestId);
     }, 100);
   }
 
@@ -62,11 +68,16 @@ class MusicManager {
     this.playAudioFile('/sounds/defesa.mp3', 'defense');
   }
 
+  isRequestValid(requestId) {
+    return requestId == null || requestId === this.playRequestId;
+  }
+
   // Método genérico para tocar arquivos de áudio
-  async playAudioFile(src, type) {
+  async playAudioFile(src, type, requestId = null) {
     try {
       // Verificar se o arquivo existe antes de tentar carregar
       const fileExists = await this.checkAudioFileExists(src);
+      if (!this.isRequestValid(requestId)) return;
       if (!fileExists) {
         console.warn(`⚠️ Arquivo de áudio não encontrado: ${src}`);
         if (type === 'defense') {
@@ -83,6 +94,7 @@ class MusicManager {
       
       // Timeout para carregamento
       const loadTimeout = setTimeout(() => {
+        if (!this.isRequestValid(requestId)) return;
         console.warn(`⏰ Timeout ao carregar áudio: ${src}`);
         if (type === 'defense') {
           this.playDefenseFallback();
@@ -93,9 +105,17 @@ class MusicManager {
       
       audio.addEventListener('canplaythrough', () => {
         clearTimeout(loadTimeout);
+        if (!this.isRequestValid(requestId)) {
+          audio.pause();
+          return;
+        }
         if (type !== 'defense') {
           this.currentMusic = audio;
           this.isPlaying = true;
+          if (this.pendingStartTimer) {
+            clearTimeout(this.pendingStartTimer);
+            this.pendingStartTimer = null;
+          }
         }
         audio.play().catch(e => {
           console.warn('Erro ao reproduzir áudio:', e);
@@ -116,6 +136,7 @@ class MusicManager {
 
       audio.addEventListener('error', (e) => {
         clearTimeout(loadTimeout);
+        if (!this.isRequestValid(requestId)) return;
         console.warn(`❌ Erro ao carregar áudio ${src}:`, e);
         // Fallback para som programático se o arquivo não existir
         if (type === 'defense') {
@@ -227,12 +248,17 @@ class MusicManager {
 
   // Parar música atual
   stopMusic() {
+    this.playRequestId += 1;
+    if (this.pendingStartTimer) {
+      clearTimeout(this.pendingStartTimer);
+      this.pendingStartTimer = null;
+    }
     if (this.currentMusic) {
       this.currentMusic.pause();
       this.currentMusic.currentTime = 0;
       this.currentMusic = null;
-      this.isPlaying = false;
     }
+    this.isPlaying = false;
   }
 
   // Pausar música
