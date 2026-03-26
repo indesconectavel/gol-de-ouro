@@ -19,7 +19,6 @@ const useSoundEffects = () => {
     // Sons de ambiente
     torcida: '/sounds/torcida.mp3',     // Torcida animada
     torcida2: '/sounds/torcida_2.mp3',  // Torcida alternativa
-    music: '/sounds/music.mp3',         // Música de fundo
     
     // Sons de interface
     click: '/sounds/click.mp3',         // Clique de botão
@@ -219,11 +218,6 @@ const useSoundEffects = () => {
     playAudioFile(useTorcida2 ? 'torcida2' : 'torcida')
   }
 
-  const playBackgroundMusic = () => {
-    // Música de fundo (pode ser usado em momentos específicos)
-    playAudioFile('music')
-  }
-
   const playWhistleSound = () => {
     createSound(2000, 0.5, 'sine', 0.4)
     setTimeout(() => createSound(1500, 0.3, 'sine', 0.3), 200)
@@ -254,7 +248,6 @@ const useSoundEffects = () => {
     playHoverSound,
     playCelebrationSound,
     playCrowdSound,
-    playBackgroundMusic,
     playWhistleSound,
     toggleMute,
     setSoundVolume
