@@ -72,6 +72,21 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
+/* HUD /game: logo maior (vence w-12 do Logo.jsx no wrapper) */
+body[data-page="game"] .hud-header .brand-small .brand-logo-small {
+  width: 240px !important;
+  min-width: 240px !important;
+  height: auto !important;
+  max-height: 240px !important;
+}
+body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 240px !important;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
 /* ===== CONTEÚDO DO HEADER ===== */
 .hud-content {
   display: flex;
@@ -704,9 +719,13 @@ body[data-page="game"] .hud-header .text-sm,
 body[data-page="game"] .hud-header .text-xs,
 body[data-page="game"] .hud-header .stat-label,
 body[data-page="game"] .hud-header .bet-label,
-body[data-page="game"] .hud-header .btn-dashboard,
 body[data-page="game"] .hud-header .btn-partida {
   color: #ffffff !important; /* Branco 100% */
+}
+
+body[data-page="game"] .hud-header .btn-dashboard,
+body[data-page="game"] .hud-header .btn-dashboard:hover {
+  color: #000000 !important;
 }
 
 body[data-page="game"] .hud-header .stat-value {
