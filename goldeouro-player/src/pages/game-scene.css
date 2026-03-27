@@ -527,27 +527,33 @@ body[data-page="game"] .hud-header .bet-value-fixed {
   background: #4b5563 !important;
 }
 
-/* Recarregar — mesmo padrão do MENU PRINCIPAL (pill amarelo, texto preto) */
+/* Recarregar — pill amarelo; área ~2× o MENU PRINCIPAL (padding + tipo maior) */
 body[data-page="game"] .hud-bottom-left .hud-btn.primary {
   background: #fbbf24 !important;
   color: #000000 !important;
   border-radius: 999px !important;
-  padding: 14px 24px !important;
-  font-size: 1.0625rem !important;
+  padding: 28px 48px !important;
+  font-size: 2.125rem !important;
   font-weight: 700 !important;
   border: none !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28) !important;
+  gap: 16px !important;
+  line-height: 1.15 !important;
+}
+body[data-page="game"] .hud-bottom-left .hud-btn.primary .btn-icon {
+  font-size: 1em !important;
+  line-height: 1 !important;
 }
 body[data-page="game"] .hud-bottom-left .hud-btn.primary:hover {
   background: #f59e0b !important;
   color: #000000 !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4) !important;
+  box-shadow: 0 6px 18px rgba(251, 191, 36, 0.45) !important;
 }
 @media (min-width: 1024px) {
   body[data-page="game"] .hud-bottom-left .hud-btn.primary {
-    font-size: 1.125rem !important;
-    padding: 15px 26px !important;
+    font-size: 2.25rem !important;
+    padding: 30px 52px !important;
   }
 }
 
