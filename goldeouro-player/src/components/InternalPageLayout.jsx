@@ -23,7 +23,7 @@ export default function InternalPageLayout({ title, children, showLogout = false
         <button
           type="button"
           onClick={() => navigate('/dashboard')}
-          className="text-white/90 hover:text-white text-sm font-medium flex items-center gap-1"
+          className="text-white/90 hover:text-white text-sm font-medium flex items-center gap-1 transition-colors"
         >
           ← MENU PRINCIPAL
         </button>
@@ -35,7 +35,7 @@ export default function InternalPageLayout({ title, children, showLogout = false
           <button
             type="button"
             onClick={handleLogout}
-            className="text-red-400 hover:text-red-300 text-sm font-medium"
+            className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors"
           >
             SAIR DA CONTA
           </button>
@@ -50,12 +50,12 @@ export default function InternalPageLayout({ title, children, showLogout = false
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 bg-slate-900/95 backdrop-blur py-4 px-4">
-        <div className="flex justify-center">
+      <footer className="border-t border-white/10 bg-slate-900/95 backdrop-blur pt-4 px-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] overflow-visible">
+        <div className="flex justify-center overflow-visible py-0.5">
           <button
             type="button"
             onClick={() => navigate('/game')}
-            className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 px-6 rounded-xl transition-colors shadow-lg"
+            className="relative bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-400 text-slate-900 font-bold py-3 px-6 rounded-xl transition-all duration-300 ring-2 ring-amber-200/90 shadow-[0_0_22px_rgba(251,191,36,0.42),0_0_0_1px_rgba(254,243,199,0.35)] hover:from-amber-300 hover:via-yellow-400 hover:to-amber-300 hover:shadow-[0_0_28px_rgba(251,191,36,0.5)] focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
           >
             ⚽ JOGAR AGORA
           </button>

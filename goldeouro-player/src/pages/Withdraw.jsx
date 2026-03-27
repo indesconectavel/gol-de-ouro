@@ -378,7 +378,7 @@ const Withdraw = () => {
             <button
               type="submit"
               disabled={isSubmitting || !formData.amount || !formData.pixKey}
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed backdrop-blur-lg border border-green-400/50"
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? (
                 <div className="flex items-center justify-center space-x-2">
@@ -402,7 +402,7 @@ const Withdraw = () => {
                 </p>
                 <button
                   onClick={() => setShowSuccess(false)}
-                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-6 rounded-lg transition-all duration-200 backdrop-blur-lg border border-green-400/50"
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200"
                 >
                   Entendi
                 </button>

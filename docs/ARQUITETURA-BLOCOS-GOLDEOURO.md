@@ -71,8 +71,8 @@ Cada bloco pode estar em um dos status oficiais abaixo:
 
 ### 📦 BLOCO F — Interface
 
-- **Escopo:** telas do jogo, fluxo de navegação, UX do chute, feedback visual.
-- **Status atual:** 🔵 **EM ANÁLISE**
+- **Escopo:** telas do jogo, fluxo de navegação, UX do chute, feedback visual (inclui app shell do player e, em documentação à parte, `/game`).
+- **Status atual:** 🟢 **FECHADO / VALIDADO** *(refinamento app shell documentado em 2026-03-26; ver `docs/relatorios/BLOCO-F-ENCERRAMENTO-OFICIAL-2026-03-26.md`)*
 
 ---
 

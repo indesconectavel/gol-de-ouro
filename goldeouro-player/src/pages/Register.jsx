@@ -222,11 +222,11 @@ const Register = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full font-bold py-3 px-6 rounded-lg transition-all duration-200 transform ${
-                isSubmitting 
-                  ? 'bg-gray-500 cursor-not-allowed' 
-                  : 'bg-green-600 hover:bg-green-700 hover:scale-105'
-              } text-white`}
+              className={`w-full font-bold py-3 px-6 rounded-lg transition-all duration-200 transform text-white disabled:cursor-not-allowed disabled:opacity-50 ${
+                isSubmitting
+                  ? 'bg-gray-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25'
+              }`}
             >
               {isSubmitting ? '⏳ Criando conta...' : '⚽ Criar Conta'}
             </button>
@@ -238,7 +238,7 @@ const Register = () => {
               Já tem uma conta?{' '}
               <button
                 onClick={() => navigate('/')}
-                className="text-green-400 hover:text-green-300 font-medium"
+                className="text-yellow-400 hover:text-yellow-300 font-medium transition-colors"
               >
                 Faça login aqui
               </button>
@@ -251,14 +251,14 @@ const Register = () => {
               Ao criar uma conta, você concorda com nossos{' '}
               <button
                 onClick={() => navigate('/terms')}
-                className="text-green-400 hover:text-green-300 underline"
+                className="text-yellow-400 hover:text-yellow-300 underline transition-colors"
               >
                 Termos de Uso
               </button>
               {' '}e{' '}
               <button
                 onClick={() => navigate('/privacy')}
-                className="text-green-400 hover:text-green-300 underline"
+                className="text-yellow-400 hover:text-yellow-300 underline transition-colors"
               >
                 Política de Privacidade
               </button>

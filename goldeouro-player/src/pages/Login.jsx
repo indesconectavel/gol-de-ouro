@@ -153,7 +153,7 @@ const Login = () => {
               Não tem uma conta?{' '}
               <button
                 onClick={() => navigate('/register')}
-                className="text-yellow-400 hover:text-yellow-300 font-medium"
+                className="text-yellow-400 hover:text-yellow-300 font-medium transition-colors"
               >
                 Cadastre-se aqui
               </button>

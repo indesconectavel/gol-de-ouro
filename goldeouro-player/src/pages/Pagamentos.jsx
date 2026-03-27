@@ -182,7 +182,7 @@ const Pagamentos = () => {
               <button
                 onClick={criarPagamentoPix}
                 disabled={loading || valorRecarga < 1}
-                className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 py-3 px-4 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
               >
                 {loading ? 'Criando Pagamento...' : `Garantir ${valorRecarga} chutes`}
               </button>
@@ -251,10 +251,10 @@ const Pagamentos = () => {
                           setCopiado(true);
                           setTimeout(() => setCopiado(false), 3000);
                         }}
-                        className={`px-6 py-3 rounded-xl transition-colors font-semibold ${
-                          copiado 
-                            ? 'bg-emerald-500/80 text-white' 
-                            : 'bg-emerald-500 hover:bg-emerald-400 text-slate-900'
+                        className={`px-6 py-3 rounded-xl transition-all duration-200 font-semibold ${
+                          copiado
+                            ? 'bg-green-600/90 text-white'
+                            : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
                         }`}
                       >
                         {copiado ? '✅ Código copiado!' : '📋 Copiar código PIX'}
@@ -292,7 +292,7 @@ const Pagamentos = () => {
                     href={pagamentoAtual.init_point}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block bg-emerald-500 text-slate-900 px-6 py-3 rounded-xl hover:bg-emerald-400 font-semibold transition-colors"
+                    className="inline-block bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold px-6 py-3 rounded-xl transition-all duration-200"
                   >
                     🏦 Pagar com PIX - Mercado Pago
                   </a>
