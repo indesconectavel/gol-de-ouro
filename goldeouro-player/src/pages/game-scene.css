@@ -277,6 +277,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   gap: 8px;
 }
 
+/* Base local da linha de aposta */
 .bet-label {
   font-size: 15px;
   color: white;
@@ -287,6 +288,19 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   font-size: 15px;
   font-weight: 600;
   color: #fbbf24;
+}
+
+/* Blindagem do HUD real do GameFinal contra cascata de outros CSS */
+body[data-page="game"] .hud-header .bet-label {
+  font-size: 15px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+body[data-page="game"] .hud-header .bet-value-fixed {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fbbf24 !important;
 }
 
 .bet-buttons {
@@ -659,8 +673,11 @@ body[data-page="game"] .chat-user {
 /* ===== CORES DOS TEXTOS - BRANCO 100% ===== */
 body[data-page="game"] .hud-header .text-sm,
 body[data-page="game"] .hud-header .text-xs,
-body[data-page="game"] .hud-header span,
-body[data-page="game"] .hud-header div {
+body[data-page="game"] .hud-header .stat-label,
+body[data-page="game"] .hud-header .stat-value,
+body[data-page="game"] .hud-header .bet-label,
+body[data-page="game"] .hud-header .btn-dashboard,
+body[data-page="game"] .hud-header .btn-partida {
   color: #ffffff !important; /* Branco 100% */
 }
 
