@@ -60,14 +60,14 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .brand-small {
   display: flex;
   align-items: center;
-  margin-right: 16px;
+  margin-right: 24px;
   flex-shrink: 0;
 }
 
 .brand-logo-small {
-  width: 88px;
+  width: 176px;
   height: auto;
-  max-height: 88px;
+  max-height: 176px;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
@@ -86,9 +86,9 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 /* Variáveis CSS para proporções harmonizadas */
 :root {
   /* Tamanhos base (mobile-first) — recalibrados BLOCO F: legibilidade HUD /game */
-  --stat-gap-mobile: 0.75rem;     /* 12px */
-  --stat-gap-tablet: 0.875rem;      /* 14px */
-  --stat-gap-desktop: 1rem;         /* 16px */
+  --stat-gap-mobile: 1.5rem;        /* 24px — mais respiro entre blocos */
+  --stat-gap-tablet: 1.75rem;       /* 28px */
+  --stat-gap-desktop: 2rem;         /* 32px */
   
   /* Ícones proporcionais */
   --stat-icon-mobile: 1.625rem;     /* 26px */
@@ -134,14 +134,18 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   gap: var(--stat-gap-mobile);
   align-items: center;
   flex-wrap: wrap;
+  flex: 1 1 auto;
+  justify-content: center;
+  min-width: 0;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
   gap: var(--stat-inner-gap-mobile);
-  min-width: calc(25% - var(--stat-gap-mobile) * 0.75);
-  flex: 1;
+  /* Evita comprimir demais e quebrar "R$" / valor em linhas separadas */
+  flex: 0 0 auto;
+  min-width: min(9.5rem, 100%);
   color: white;
 }
 
@@ -167,6 +171,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   font-size: var(--stat-value-mobile);
   font-weight: 700;
   color: #fbbf24;
+  white-space: nowrap; /* saldo e valores monetários numa linha */
 }
 
 /* ===== BREAKPOINTS RESPONSIVOS ===== */
@@ -179,7 +184,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   
   .stat-item {
     gap: var(--stat-inner-gap-tablet);
-    min-width: calc(25% - var(--stat-gap-tablet) * 0.75);
+    min-width: min(10rem, 100%);
   }
   
   .stat-icon {
@@ -216,7 +221,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   
   .stat-item {
     gap: var(--stat-inner-gap-desktop);
-    min-width: calc(25% - var(--stat-gap-desktop) * 0.75);
+    min-width: min(10.5rem, 100%);
   }
   
   .stat-icon {
@@ -507,6 +512,30 @@ body[data-page="game"] .hud-header .bet-value-fixed {
   background: #4b5563 !important;
 }
 
+/* Recarregar — mesmo padrão do MENU PRINCIPAL (pill amarelo, texto preto) */
+body[data-page="game"] .hud-bottom-left .hud-btn.primary {
+  background: #fbbf24 !important;
+  color: #000000 !important;
+  border-radius: 999px !important;
+  padding: 14px 24px !important;
+  font-size: 1.0625rem !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+}
+body[data-page="game"] .hud-bottom-left .hud-btn.primary:hover {
+  background: #f59e0b !important;
+  color: #000000 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4) !important;
+}
+@media (min-width: 1024px) {
+  body[data-page="game"] .hud-bottom-left .hud-btn.primary {
+    font-size: 1.125rem !important;
+    padding: 15px 26px !important;
+  }
+}
+
 .control-btn {
   background: rgba(255, 255, 255, 0.1) !important;
   color: white !important;
@@ -670,15 +699,19 @@ body[data-page="game"] .chat-user {
   }
 }
 
-/* ===== CORES DOS TEXTOS - BRANCO 100% ===== */
+/* ===== CORES DOS TEXTOS - BRANCO 100% (valores das stats em dourado à parte) ===== */
 body[data-page="game"] .hud-header .text-sm,
 body[data-page="game"] .hud-header .text-xs,
 body[data-page="game"] .hud-header .stat-label,
-body[data-page="game"] .hud-header .stat-value,
 body[data-page="game"] .hud-header .bet-label,
 body[data-page="game"] .hud-header .btn-dashboard,
 body[data-page="game"] .hud-header .btn-partida {
   color: #ffffff !important; /* Branco 100% */
+}
+
+body[data-page="game"] .hud-header .stat-value {
+  color: #fbbf24 !important;
+  white-space: nowrap !important;
 }
 
 /* Específico para textos de estatísticas */
