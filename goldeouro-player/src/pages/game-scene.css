@@ -49,7 +49,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   align-items: center;
   justify-content: space-between;
   padding: var(--header-padding-mobile);
-  min-height: 5rem; /* presença visual do painel sem fixar altura rígida */
+  min-height: 5.75rem; /* aproxima da presença visual vista em produção */
   background: rgba(0,0,0,0.3);
   backdrop-filter: blur(8px);
   border-radius: 12px;
@@ -65,9 +65,9 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 }
 
 .brand-logo-small {
-  width: 74px;
+  width: 88px;
   height: auto;
-  max-height: 74px;
+  max-height: 88px;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
@@ -78,7 +78,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   align-items: center;
   justify-content: space-between;
   flex: 1;
-  gap: 1.75rem; /* 28px — leve ganho de presença no topo */
+  gap: 2rem; /* 32px — aproxima espaçamento de produção */
 }
 
 /* ===== SISTEMA DE DESIGN RESPONSIVO HARMONIZADO ===== */
@@ -91,19 +91,19 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   --stat-gap-desktop: 1rem;         /* 16px */
   
   /* Ícones proporcionais */
-  --stat-icon-mobile: 1.5rem;       /* 24px */
-  --stat-icon-tablet: 1.8125rem;    /* 29px */
-  --stat-icon-desktop: 2.25rem;     /* 36px */
+  --stat-icon-mobile: 1.625rem;     /* 26px */
+  --stat-icon-tablet: 2rem;         /* 32px */
+  --stat-icon-desktop: 2.375rem;    /* 38px */
   
   /* Labels proporcionais */
-  --stat-label-mobile: 0.8125rem;   /* 13px */
-  --stat-label-tablet: 0.875rem;    /* 14px */
-  --stat-label-desktop: 1rem;       /* 16px */
+  --stat-label-mobile: 0.9375rem;   /* 15px */
+  --stat-label-tablet: 1rem;        /* 16px */
+  --stat-label-desktop: 1.0625rem;  /* 17px */
   
   /* Valores proporcionais */
-  --stat-value-mobile: 1.125rem;    /* 18px */
-  --stat-value-tablet: 1.25rem;     /* 20px */
-  --stat-value-desktop: 1.5rem;     /* 24px */
+  --stat-value-mobile: 1.25rem;     /* 20px */
+  --stat-value-tablet: 1.375rem;    /* 22px */
+  --stat-value-desktop: 1.625rem;   /* 26px */
   
   /* Gaps internos proporcionais */
   --stat-inner-gap-mobile: 0.625rem; /* 10px */
@@ -111,9 +111,9 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   --stat-inner-gap-desktop: 0.875rem; /* 14px */
   
   /* Padding do header proporcional */
-  --header-padding-mobile: 0.875rem 1.25rem; /* 14px 20px */
-  --header-padding-tablet: 1rem 1.5rem; /* 16px 24px */
-  --header-padding-desktop: 1.25rem 1.75rem; /* 20px 28px */
+  --header-padding-mobile: 1rem 1.5rem; /* 16px 24px */
+  --header-padding-tablet: 1.125rem 1.75rem; /* 18px 28px */
+  --header-padding-desktop: 1.375rem 2rem; /* 22px 32px */
   
   /* Elementos de apostas proporcionais */
   --bet-gap-mobile: 0.625rem; /* 10px */
@@ -292,13 +292,13 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 
 /* Blindagem do HUD real do GameFinal contra cascata de outros CSS */
 body[data-page="game"] .hud-header .bet-label {
-  font-size: 16px;
+  font-size: 17px;
   color: #ffffff;
   font-weight: 600;
 }
 
 body[data-page="game"] .hud-header .bet-value-fixed {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   color: #fbbf24 !important;
 }
@@ -408,8 +408,8 @@ body[data-page="game"] .hud-header .bet-value-fixed {
     opacity: 1;
   }
 }
-.hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
-.btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1.2; padding:12px 20px; font-weight:600; cursor:pointer; font-size: 1rem; /* 16px — presença visual mais forte */ }
+.hud-right{ margin-left:auto; display:flex; align-items:center; gap:14px; }
+.btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1.2; padding:14px 24px; font-weight:600; cursor:pointer; font-size: 1.0625rem; /* 17px — aproxima botão de produção */ }
 .btn-partida{ background:#23c381; color:#fff; }
 .btn-dashboard{ 
   background:#fbbf24; /* Amarelo do jogo */
@@ -420,8 +420,8 @@ body[data-page="game"] .hud-header .bet-value-fixed {
 
 @media (min-width: 1024px) {
   .btn-partida, .btn-dashboard {
-    font-size: 1.0625rem; /* 17px */
-    padding: 13px 22px;
+    font-size: 1.125rem; /* 18px */
+    padding: 15px 26px;
   }
 }
 .btn-dashboard:hover {
