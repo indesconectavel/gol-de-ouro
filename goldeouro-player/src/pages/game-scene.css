@@ -74,15 +74,15 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 
 /* HUD /game: logo maior (vence w-12 do Logo.jsx no wrapper) */
 body[data-page="game"] .hud-header .brand-small .brand-logo-small {
-  width: 240px !important;
-  min-width: 240px !important;
+  width: 200px !important;
+  min-width: 200px !important;
   height: auto !important;
-  max-height: 240px !important;
+  max-height: 200px !important;
 }
 body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
   width: 100% !important;
   height: auto !important;
-  max-height: 240px !important;
+  max-height: 200px !important;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
