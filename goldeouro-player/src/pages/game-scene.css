@@ -48,7 +48,8 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: var(--header-padding-mobile);
+  min-height: 4.5rem; /* presença visual do painel sem fixar altura rígida */
   background: rgba(0,0,0,0.3);
   backdrop-filter: blur(8px);
   border-radius: 12px;
@@ -64,9 +65,9 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 }
 
 .brand-logo-small {
-  width: 60px;
+  width: 68px;
   height: auto;
-  max-height: 60px;
+  max-height: 68px;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
@@ -77,47 +78,47 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   align-items: center;
   justify-content: space-between;
   flex: 1;
-  gap: 20px;
+  gap: 1.5rem; /* 24px — respiro entre logo, stats e bloco aposta/menu */
 }
 
 /* ===== SISTEMA DE DESIGN RESPONSIVO HARMONIZADO ===== */
 
 /* Variáveis CSS para proporções harmonizadas */
 :root {
-  /* Tamanhos base (mobile-first) */
-  --stat-gap-mobile: 0.625rem;     /* 10px */
-  --stat-gap-tablet: 0.75rem;      /* 12px */
-  --stat-gap-desktop: 0.875rem;    /* 14px */
+  /* Tamanhos base (mobile-first) — recalibrados BLOCO F: legibilidade HUD /game */
+  --stat-gap-mobile: 0.75rem;     /* 12px */
+  --stat-gap-tablet: 0.875rem;      /* 14px */
+  --stat-gap-desktop: 1rem;         /* 16px */
   
   /* Ícones proporcionais */
-  --stat-icon-mobile: 1.25rem;     /* 20px */
-  --stat-icon-tablet: 1.5rem;      /* 24px */
-  --stat-icon-desktop: 1.75rem;    /* 28px */
+  --stat-icon-mobile: 1.375rem;     /* 22px */
+  --stat-icon-tablet: 1.625rem;     /* 26px */
+  --stat-icon-desktop: 2rem;        /* 32px */
   
   /* Labels proporcionais */
-  --stat-label-mobile: 0.6875rem;  /* 11px */
-  --stat-label-tablet: 0.75rem;    /* 12px */
-  --stat-label-desktop: 0.875rem;  /* 14px */
+  --stat-label-mobile: 0.75rem;     /* 12px */
+  --stat-label-tablet: 0.8125rem; /* 13px */
+  --stat-label-desktop: 0.9375rem;  /* 15px */
   
   /* Valores proporcionais */
-  --stat-value-mobile: 0.875rem;   /* 14px */
-  --stat-value-tablet: 1rem;       /* 16px */
-  --stat-value-desktop: 1.125rem;  /* 18px */
+  --stat-value-mobile: 1rem;        /* 16px */
+  --stat-value-tablet: 1.125rem;    /* 18px */
+  --stat-value-desktop: 1.375rem;   /* 22px */
   
   /* Gaps internos proporcionais */
-  --stat-inner-gap-mobile: 0.5rem; /* 8px */
-  --stat-inner-gap-tablet: 0.625rem; /* 10px */
-  --stat-inner-gap-desktop: 0.75rem; /* 12px */
+  --stat-inner-gap-mobile: 0.625rem; /* 10px */
+  --stat-inner-gap-tablet: 0.75rem;   /* 12px */
+  --stat-inner-gap-desktop: 0.875rem; /* 14px */
   
   /* Padding do header proporcional */
-  --header-padding-mobile: 0.625rem 1rem; /* 10px 16px */
-  --header-padding-tablet: 0.75rem 1.25rem; /* 12px 20px */
-  --header-padding-desktop: 1rem 1.5rem; /* 16px 24px */
+  --header-padding-mobile: 0.75rem 1.125rem; /* 12px 18px */
+  --header-padding-tablet: 0.875rem 1.375rem; /* 14px 22px */
+  --header-padding-desktop: 1.125rem 1.625rem; /* 18px 26px */
   
   /* Elementos de apostas proporcionais */
-  --bet-gap-mobile: 0.5rem; /* 8px */
-  --bet-gap-tablet: 0.625rem; /* 10px */
-  --bet-gap-desktop: 0.75rem; /* 12px */
+  --bet-gap-mobile: 0.625rem; /* 10px */
+  --bet-gap-tablet: 0.75rem; /* 12px */
+  --bet-gap-desktop: 0.875rem; /* 14px */
   
   --bet-btn-padding-mobile: 0.375rem 0.75rem; /* 6px 12px */
   --bet-btn-padding-tablet: 0.5rem 1rem; /* 8px 16px */
@@ -152,7 +153,7 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .stat-content {
   display: flex;
   flex-direction: column;
-  gap: 0.125rem; /* 2px fixo para todos os tamanhos */
+  gap: 0.25rem; /* hierarquia label/valor mais legível */
 }
 
 .stat-label {
@@ -277,9 +278,15 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 }
 
 .bet-label {
-  font-size: 14px;
+  font-size: 15px;
   color: white;
   font-weight: 600;
+}
+
+.bet-value-fixed {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fbbf24;
 }
 
 .bet-buttons {
@@ -388,13 +395,20 @@ body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
   }
 }
 .hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
-.btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1; padding:10px 16px; font-weight:600; cursor:pointer; }
+.btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1.2; padding:11px 18px; font-weight:600; cursor:pointer; font-size: 0.9375rem; /* ~15px — legível no HUD */ }
 .btn-partida{ background:#23c381; color:#fff; }
 .btn-dashboard{ 
   background:#fbbf24; /* Amarelo do jogo */
   color:#000000; /* Preto */
   font-weight: 700;
   transition: all 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+  .btn-partida, .btn-dashboard {
+    font-size: 1rem;
+    padding: 12px 20px;
+  }
 }
 .btn-dashboard:hover {
   background:#f59e0b; /* Amarelo mais escuro no hover */

@@ -47,11 +47,12 @@
 .brand-subtitle{ font-size:12px; opacity:1; text-transform:uppercase; letter-spacing:1px; color:#ffffff; }
 .hud-center{ display:flex; flex-direction:column; align-items:center; gap:12px; }
 .stats-grid{ display:flex; align-items:center; gap:24px; }
-.stat-item{ display:flex; align-items:center; gap:12px; }
-.stat-icon{ font-size:24px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
-.stat-content{ display:flex; flex-direction:column; gap:4px; }
-.stat-label{ font-size:11px; opacity:.8; text-transform:uppercase; letter-spacing:.5px; color:#a0a0a0; }
-.stat-value{ font-size:16px; font-weight:700; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.5); }
+/* Escopo .gs-hud: não sobrescrever HUD do GameFinal (.hud-header) — BLOCO F escala */
+.gs-hud .stat-item{ display:flex; align-items:center; gap:12px; }
+.gs-hud .stat-icon{ font-size:24px; filter:drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
+.gs-hud .stat-content{ display:flex; flex-direction:column; gap:4px; }
+.gs-hud .stat-label{ font-size:11px; opacity:.8; text-transform:uppercase; letter-spacing:.5px; color:#a0a0a0; }
+.gs-hud .stat-value{ font-size:16px; font-weight:700; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.5); }
 
 /* Status da Fila */
 .queue-status{ 
@@ -262,7 +263,7 @@
     font-size: 18px;
   }
   
-  .stat-value {
+  .gs-hud .stat-value {
     font-size: 14px;
   }
 }
@@ -292,11 +293,11 @@
     font-size: 10px;
   }
   
-  .stat-value {
+  .gs-hud .stat-value {
     font-size: 13px;
   }
   
-  .stat-label {
+  .gs-hud .stat-label {
     font-size: 9px;
   }
   
@@ -361,11 +362,11 @@
     gap: 16px;
   }
   
-  .stat-item {
+  .gs-hud .stat-item {
     gap: 8px;
   }
   
-  .stat-icon {
+  .gs-hud .stat-icon {
     font-size: 20px;
   }
 }
@@ -414,11 +415,11 @@
     justify-content: center;
   }
   
-  .stat-value {
+  .gs-hud .stat-value {
     font-size: 12px;
   }
   
-  .stat-label {
+  .gs-hud .stat-label {
     font-size: 8px;
   }
   
