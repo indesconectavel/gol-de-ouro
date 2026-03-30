@@ -1,0 +1,75 @@
+{
+  "modo": "apply",
+  "timestamp_utc": "2026-03-28T06:31:21.239Z",
+  "pagamentos_pix": {
+    "total_linhas": 326,
+    "amount_null_valor_preenchido": 0,
+    "valor_null_amount_preenchido": 0,
+    "ambos_preenchidos_iguais": 326,
+    "ambos_preenchidos_diferentes_conflito": 0,
+    "ambos_null": 0,
+    "external_id_valores_distintos_duplicados": 1,
+    "external_id_duplicados_detalhe": [
+      {
+        "external_id": "deposito_3445582f-1eb6-4e4f-843d-b8f8905a71de_1764601609212",
+        "ids": [
+          "8c83db6e-dd56-4535-9d81-1fd364f2a96a",
+          "dd7c3006-d8b8-41d3-a6e9-a404d19fc9e8"
+        ],
+        "count": 2
+      }
+    ],
+    "payment_id_duplicados_grupos": 0,
+    "payment_id_duplicados_detalhe": []
+  },
+  "saques": {
+    "total_linhas": 9,
+    "amount_valor": {
+      "ambos_null": 0,
+      "amount_null_valor_ok": 0,
+      "valor_null_amount_ok": 0,
+      "ambos_iguais": 9,
+      "conflito": 0
+    },
+    "pix_key_chave_pix": {
+      "ambos_null": 0,
+      "pix_key_null": 0,
+      "chave_pix_null": 0,
+      "iguais": 9,
+      "conflito": 0
+    },
+    "pix_type_tipo_chave": {
+      "ambos_null": 0,
+      "pix_type_null": 0,
+      "tipo_chave_null": 0,
+      "iguais": 9,
+      "conflito": 0
+    },
+    "fee_null": 0,
+    "net_amount_null": 0,
+    "correlation_id_null": 2
+  },
+  "updates_executados": [],
+  "pos_apply": {
+    "pagamentos_pix": {
+      "amount_null_valor_ok": 0,
+      "valor_null_amount_ok": 0,
+      "conflitos": 0
+    },
+    "saques": {
+      "amount_null": 0,
+      "valor_null": 0,
+      "money_conf": 0,
+      "pk_pix_null": 0,
+      "pk_ch_null": 0,
+      "pk_conf": 0,
+      "pt_pix_null": 0,
+      "pt_tc_null": 0,
+      "pt_conf": 0
+    }
+  },
+  "pagamentos_pix_conflitos_amostra": [],
+  "saques_conflitos_money_amostra": [],
+  "saques_conflitos_pix_key_amostra": [],
+  "saques_conflitos_pix_type_amostra": []
+}

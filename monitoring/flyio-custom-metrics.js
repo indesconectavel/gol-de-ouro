@@ -439,14 +439,14 @@ class CustomMetricsCollector {
     try {
       const { data, error } = await supabase
         .from('pagamentos_pix')
-        .select('amount, status, created_at');
+        .select('amount, valor, status, created_at');
       
       if (error) throw error;
       
       const total = data?.length || 0;
       const approved = data?.filter(p => p.status === 'approved').length || 0;
       const totalAmount = data?.filter(p => p.status === 'approved')
-        .reduce((sum, p) => sum + parseFloat(p.amount), 0) || 0;
+        .reduce((sum, p) => sum + parseFloat(p.amount ?? p.valor ?? 0), 0) || 0;
       
       return {
         total: total,
@@ -468,14 +468,14 @@ class CustomMetricsCollector {
     try {
       const { data, error } = await supabase
         .from('saques')
-        .select('valor, status, created_at');
+        .select('amount, valor, status, created_at');
       
       if (error) throw error;
       
       const total = data?.length || 0;
       const approved = data?.filter(s => s.status === 'aprovado').length || 0;
       const totalAmount = data?.filter(s => s.status === 'aprovado')
-        .reduce((sum, s) => sum + parseFloat(s.valor), 0) || 0;
+        .reduce((sum, s) => sum + parseFloat(s.amount ?? s.valor ?? 0), 0) || 0;
       
       return {
         total: total,

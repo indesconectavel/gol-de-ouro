@@ -12,6 +12,8 @@
  * ou qualquer caso ambíguo.
  */
 
+const { normalizePagamentoPixRead } = require('../../../utils/financialNormalization');
+
 /**
  * Verifica se existe linha no ledger com (referencia, tipo).
  * @param {object} supabase
@@ -63,18 +65,19 @@ async function runReconcileMissingLedger({ supabase, createLedgerEntry }) {
 
     const payments = approvedPayments || [];
     for (const p of payments) {
-      const ref = String(p.id);
+      const pn = normalizePagamentoPixRead(p);
+      const ref = String(pn.id);
       const exists = await ledgerExists(supabase, ref, 'deposito_aprovado');
       if (exists) continue;
 
       report.deposits.found++;
-      const valor = Number(p.amount ?? p.valor ?? 0);
+      const valor = Number(pn.amount ?? pn.valor ?? 0);
       if (valor <= 0) continue;
 
       const result = await createLedgerEntry({
         supabase,
         tipo: 'deposito_aprovado',
-        usuarioId: p.usuario_id,
+        usuarioId: pn.usuario_id,
         valor,
         referencia: ref,
         correlationId: ref

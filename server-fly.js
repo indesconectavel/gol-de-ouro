@@ -36,6 +36,17 @@ const { calculateInitialBalance, validateRealData, isProductionMode } = require(
 const PixValidator = require('./utils/pix-validator');
 const LoteIntegrityValidator = require('./utils/lote-integrity-validator');
 const WebhookSignatureValidator = require('./utils/webhook-signature-validator');
+const {
+  normalizePagamentoPixRead,
+  normalizeSaqueRead,
+  dualWritePagamentoPixRow,
+  dualWriteSaqueRow
+} = require('./utils/financialNormalization');
+const {
+  TERMS_VERSION,
+  buildConsentSnapshot,
+  isConsentIncomplete
+} = require('./utils/consent-utils');
 
 require('dotenv').config();
 
@@ -260,11 +271,12 @@ const limiter = rateLimit({
   legacyHeaders: false,
   validate: { trustProxy: false }, // ✅ CORRIGIDO: Desabilitar validação de trust proxy para evitar erro
   skip: (req) => {
-    // Pular rate limiting para health check, meta e auth
+    // Pular rate limiting para health check, meta, auth e beacon de analytics (V1)
     return req.path === '/health' || 
            req.path === '/meta' || 
            req.path.startsWith('/auth/') ||
-           req.path.startsWith('/api/auth/');
+           req.path.startsWith('/api/auth/') ||
+           req.path === '/api/analytics';
   },
   handler: (req, res) => {
     console.log(`🚫 [RATE-LIMIT] IP ${req.ip} bloqueado por excesso de requests (${req.path})`);
@@ -313,6 +325,8 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Ingestão mínima de analytics do cliente (sendBeacon) — ver routes/analyticsIngest.js
+app.use('/api/analytics', require('./routes/analyticsIngest'));
 
 // =====================================================
 // MIDDLEWARE DE VALIDAÇÃO
@@ -715,7 +729,21 @@ app.post('/api/auth/verify-email', [
 // Registro de usuário
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { email, password, username } = req.body;
+    const { email, password, username, acceptedTerms, isAdultConfirmed } = req.body;
+    if (acceptedTerms !== true) {
+      return res.status(400).json({
+        success: false,
+        message: 'É obrigatório aceitar os Termos de Uso e a Política de Privacidade.'
+      });
+    }
+
+    if (isAdultConfirmed !== true) {
+      return res.status(400).json({
+        success: false,
+        message: 'É obrigatório confirmar que você possui 18 anos ou mais.'
+      });
+    }
+
 
     // APENAS SUPABASE REAL - SEM FALLBACK
     if (!dbConnected || !supabase) {
@@ -785,7 +813,8 @@ app.post('/api/auth/register', async (req, res) => {
                 saldo: user.saldo,
                 tipo: user.tipo,
                 total_apostas: user.total_apostas,
-                total_ganhos: user.total_ganhos
+                total_ganhos: user.total_ganhos,
+                consentimento_incompleto: isConsentIncomplete(user)
               }
             });
           }
@@ -810,6 +839,7 @@ app.post('/api/auth/register', async (req, res) => {
     }
 
     // Criar usuário com saldo inicial para testes
+    const consentSnapshot = buildConsentSnapshot(req, TERMS_VERSION);
     const { data: newUser, error: insertError } = await supabase
         .from('usuarios')
       .insert({
@@ -821,7 +851,8 @@ app.post('/api/auth/register', async (req, res) => {
         ativo: true,
         email_verificado: false,
         total_apostas: 0,
-        total_ganhos: 0.00
+        total_ganhos: 0.00,
+        ...consentSnapshot
       })
       .select()
         .single();
@@ -859,7 +890,8 @@ app.post('/api/auth/register', async (req, res) => {
         email: newUser.email,
         username: newUser.username,
         saldo: newUser.saldo,
-        tipo: newUser.tipo
+        tipo: newUser.tipo,
+        consentimento_incompleto: isConsentIncomplete(newUser)
       }
     });
 
@@ -960,7 +992,8 @@ app.post('/api/auth/login', async (req, res) => {
         saldo: user.saldo,
         tipo: user.tipo,
         total_apostas: user.total_apostas,
-        total_ganhos: user.total_ganhos
+        total_ganhos: user.total_ganhos,
+        consentimento_incompleto: isConsentIncomplete(user)
       }
     });
 
@@ -1124,6 +1157,40 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
 
 // Direções válidas para chute (alinhado ao LoteIntegrityValidator e frontend)
 const VALID_DIRECTIONS = ['TL', 'TR', 'C', 'BL', 'BR'];
+
+/**
+ * BLOCO D: reverte saldo após falha pós-update do chute. Só altera a linha se `saldo` ainda for
+ * o valor retornado pelo update do chute (evita sobrescrever saldo modificado por outra operação).
+ */
+async function revertShootSaldoOptimistic(userId, saldoAntesChute, saldoAposChuteNoDb) {
+  if (!supabase) {
+    console.error('❌ [SHOOT-ROLLBACK] supabase indisponível', { userId });
+    return { ok: false, reason: 'no_db' };
+  }
+  const { data, error } = await supabase
+    .from('usuarios')
+    .update({ saldo: saldoAntesChute })
+    .eq('id', userId)
+    .eq('saldo', saldoAposChuteNoDb)
+    .select('id')
+    .maybeSingle();
+  if (error) {
+    console.error('❌ [SHOOT-ROLLBACK] PostgREST:', error.message, {
+      userId,
+      saldoEsperadoNoWhere: saldoAposChuteNoDb,
+      alvoRevert: saldoAntesChute
+    });
+    return { ok: false, reason: 'db_error' };
+  }
+  if (!data) {
+    console.error(
+      '⚠️ [SHOOT-ROLLBACK] Não revertido: saldo atual ≠ pós-chute (corrida ou drift). Playbook: verificar usuarios.saldo e tabela chutes para este user/lote.',
+      { userId, saldoMatchEsperado: saldoAposChuteNoDb, saldoAlvoRevert: saldoAntesChute }
+    );
+    return { ok: false, reason: 'saldo_race' };
+  }
+  return { ok: true };
+}
 
 // Endpoint para chutar
 app.post('/api/games/shoot', authenticateToken, async (req, res) => {
@@ -1298,7 +1365,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
 
     if (!postShotValidation.valid) {
       console.error('❌ [SHOOT] Problema de integridade após chute:', postShotValidation.error);
-      await supabase.from('usuarios').update({ saldo: user.saldo }).eq('id', req.user.userId);
+      await revertShootSaldoOptimistic(req.user.userId, user.saldo, updatedUser.saldo);
       lote.chutes.pop();
       lote.totalArrecadado -= betAmount;
       lote.premioTotal -= premio + premioGolDeOuro;
@@ -1329,7 +1396,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
 
     if (chuteError) {
-      await supabase.from('usuarios').update({ saldo: user.saldo }).eq('id', req.user.userId);
+      await revertShootSaldoOptimistic(req.user.userId, user.saldo, updatedUser.saldo);
       lote.chutes.pop();
       lote.totalArrecadado -= betAmount;
       lote.premioTotal -= premio + premioGolDeOuro;
@@ -1424,7 +1491,69 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
       });
     }
 
-    // Verificar saldo do usuário
+    const valorSaque = parseFloat(valor);
+    const taxa = parseFloat(process.env.PAGAMENTO_TAXA_SAQUE || '2.00');
+    const valorLiquido = valorSaque - taxa;
+
+    const preferAtomic = process.env.FINANCE_ATOMIC_RPC !== 'false';
+    if (preferAtomic) {
+      const { data: rpcData, error: rpcErr } = await supabase.rpc('solicitar_saque_pix_atomico', {
+        p_usuario_id: userId,
+        p_amount: valorSaque,
+        p_pix_key: validation.data.pixKey,
+        p_pix_type: validation.data.pixType
+      });
+      if (!rpcErr && rpcData && typeof rpcData === 'object' && typeof rpcData.ok === 'boolean') {
+        if (rpcData.ok) {
+          console.log(
+            `💰 [SAQUE] Atómico OK R$ ${valor} user=${userId} (líquido informativo R$ ${valorLiquido}, taxa R$ ${taxa})`
+          );
+          return res.status(201).json({
+            success: true,
+            message: 'Saque solicitado com sucesso',
+            data: {
+              id: rpcData.saque_id,
+              amount: valor,
+              pix_key: validation.data.pixKey,
+              pix_type: validation.data.pixType,
+              status: 'pending',
+              created_at: rpcData.created_at || new Date().toISOString()
+            }
+          });
+        }
+        if (rpcData.reason === 'insufficient_funds') {
+          return res.status(400).json({ success: false, message: 'Saldo insuficiente' });
+        }
+        if (rpcData.reason === 'user_not_found') {
+          return res.status(404).json({ success: false, message: 'Usuário não encontrado' });
+        }
+        if (rpcData.reason === 'saldo_race') {
+          return res.status(409).json({
+            success: false,
+            message: 'Saldo insuficiente ou alterado. Tente novamente.'
+          });
+        }
+        if (rpcData.reason === 'invalid_amount' || rpcData.reason === 'invalid_pix_fields') {
+          return res.status(400).json({ success: false, message: 'Dados inválidos' });
+        }
+        console.error('❌ [SAQUE] RPC negado:', rpcData);
+        return res.status(500).json({ success: false, message: 'Erro ao criar saque' });
+      }
+      const m = String(rpcErr?.message || '').toLowerCase();
+      if (
+        rpcErr &&
+        (m.includes('does not exist') ||
+          m.includes('schema cache') ||
+          m.includes('42883') ||
+          m.includes('pgrst202'))
+      ) {
+        console.warn('⚠️ [SAQUE] RPC solicitar_saque_pix_atomico indisponível — fallback JS');
+      } else if (rpcErr) {
+        console.error('❌ [SAQUE] Erro RPC:', rpcErr);
+        return res.status(500).json({ success: false, message: 'Erro ao criar saque' });
+      }
+    }
+
     const { data: usuario, error: userError } = await supabase
       .from('usuarios')
       .select('saldo')
@@ -1438,49 +1567,78 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
       });
     }
 
-    if (parseFloat(usuario.saldo) < parseFloat(valor)) {
+    if (parseFloat(usuario.saldo) < valorSaque) {
       return res.status(400).json({
         success: false,
         message: 'Saldo insuficiente'
       });
     }
 
-    // Calcular taxa de saque
-    const taxa = parseFloat(process.env.PAGAMENTO_TAXA_SAQUE || '2.00');
-    const valorLiquido = parseFloat(valor) - taxa;
+    const saldoAtual = Number(usuario.saldo);
+    const novoSaldo = saldoAtual - valorSaque;
 
-    // Criar saque no banco (schema padronizado)
+    const { data: usuarioDebitado, error: debitoError } = await supabase
+      .from('usuarios')
+      .update({ saldo: novoSaldo })
+      .eq('id', userId)
+      .eq('saldo', usuario.saldo)
+      .select('saldo')
+      .single();
+
+    if (debitoError || !usuarioDebitado) {
+      return res.status(409).json({
+        success: false,
+        message: 'Saldo insuficiente ou alterado. Tente novamente.'
+      });
+    }
+
     const { data: saque, error: saqueError } = await supabase
       .from('saques')
-      .insert({
-        usuario_id: userId,
-        // Compatibilidade com esquemas antigos e novos
-        valor: parseFloat(valor), // alguns schemas usam 'valor'
-        amount: parseFloat(valor),
-        // colunas novas
-        pix_key: validation.data.pixKey,
-        pix_type: validation.data.pixType,
-        // colunas legadas
-        chave_pix: validation.data.pixKey,
-        tipo_chave: validation.data.pixType,
-        // status compatível com ambos esquemas (aceita 'pendente' sem CHECK no novo; requerido no antigo)
-        status: 'pendente',
-        created_at: new Date().toISOString()
-      })
+      .insert(
+        dualWriteSaqueRow({
+          usuario_id: userId,
+          amount: valorSaque,
+          pix_key: validation.data.pixKey,
+          pix_type: validation.data.pixType,
+          status: 'pendente',
+          created_at: new Date().toISOString()
+        })
+      )
       .select()
       .single();
 
     if (saqueError) {
       console.error('❌ [SAQUE] Erro ao criar saque:', saqueError);
+      const { data: rollbackRow, error: rollbackError } = await supabase
+        .from('usuarios')
+        .update({ saldo: saldoAtual })
+        .eq('id', userId)
+        .eq('saldo', usuarioDebitado.saldo)
+        .select('saldo')
+        .single();
+      if (rollbackError || !rollbackRow) {
+        console.error(
+          '❌ [SAQUE-ROLLBACK-CRITICO] Débito aplicado mas insert em saques falhou E rollback do saldo falhou. Playbook: verificar usuarios.saldo vs saques para usuario_id; corrigir saldo ou criar saque em conformidade.',
+          JSON.stringify({
+            tag: 'SAQUE_ROLLBACK_CRITICO',
+            usuario_id: userId,
+            valor_saque_brl: valorSaque,
+            saldo_antes_debito: saldoAtual,
+            saldo_apos_debito_esperado: usuarioDebitado.saldo,
+            insert_saque_code: saqueError.code || null,
+            insert_saque_message: saqueError.message || String(saqueError),
+            rollback_error: rollbackError ? rollbackError.message : null,
+            rollback_row_ok: Boolean(rollbackRow)
+          })
+        );
+      }
       return res.status(500).json({
         success: false,
         message: 'Erro ao criar saque'
       });
     }
 
-    // Transação contábil: delegada para processador externo/contábil (removida do backend direto)
-
-    console.log(`💰 [SAQUE] Saque solicitado: R$ ${valor} para usuário ${userId}`);
+    console.log(`💰 [SAQUE] Saque solicitado (fallback JS): R$ ${valor} para usuário ${userId}`);
 
     res.status(201).json({
       success: true,
@@ -1535,7 +1693,7 @@ app.get('/api/withdraw/history', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       data: {
-        saques: saques || [],
+        saques: (saques || []).map((r) => normalizeSaqueRead(r)),
         total: saques?.length || 0
       }
     });
@@ -1643,31 +1801,54 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
       if (!payment || !payment.id || !payment.point_of_interaction?.transaction_data?.qr_code) {
         throw new Error(`Resposta inválida do Mercado Pago: ${JSON.stringify(response.data || {})}`);
       }
-      
-      // Salvar no banco de dados
-      if (dbConnected && supabase) {
-        const { data: pixRecord, error: insertError } = await supabase
-          .from('pagamentos_pix')
-          .insert({
+
+      if (!dbConnected || !supabase) {
+        console.error('❌ [PIX] MP criou cobrança mas Supabase indisponível mp_id=', payment.id);
+        return res.status(503).json({
+          success: false,
+          message: 'Sistema temporariamente indisponível para registar o pagamento.'
+        });
+      }
+
+      const { data: pixRecord, error: insertError } = await supabase
+        .from('pagamentos_pix')
+        .insert(
+          dualWritePagamentoPixRow({
             usuario_id: req.user.userId,
-            external_id: String(payment.id),
             payment_id: String(payment.id),
+            external_id: String(payment.id),
             amount: parseFloat(amount),
-            valor: parseFloat(amount),
             status: 'pending',
             qr_code: payment.point_of_interaction?.transaction_data?.qr_code || null,
             qr_code_base64: payment.point_of_interaction?.transaction_data?.qr_code_base64 || null,
             pix_copy_paste: payment.point_of_interaction?.transaction_data?.qr_code || null
           })
-          .select()
-          .single();
+        )
+        .select()
+        .single();
 
-        if (insertError) {
-          console.error('❌ [PIX] Erro ao salvar no banco:', insertError);
-        }
+      if (insertError) {
+        const mpIdStr = String(payment.id);
+        console.error(
+          '❌ [PIX-ORFAO-MP] Cobrança criada no Mercado Pago sem linha local em pagamentos_pix. Reconciliar manualmente pelo payment_id.',
+          JSON.stringify({
+            tag: 'PIX_ORFAO_MP',
+            mercado_pago_payment_id: mpIdStr,
+            usuario_id: req.user.userId,
+            amount_brl: parseFloat(amount),
+            supabase_code: insertError.code || null,
+            supabase_message: insertError.message || String(insertError)
+          })
+        );
+        return res.status(500).json({
+          success: false,
+          message:
+            'O pagamento foi criado no provedor mas não foi possível registá-lo localmente. Contacte o suporte.',
+          data: { mercado_pago_payment_id: payment.id }
+        });
       }
 
-      console.log(`💰 [PIX] PIX real criado: R$ ${amount} para usuário ${req.user.userId}`);
+      console.log(`💰 [PIX] PIX real criado: R$ ${amount} user=${req.user.userId} local_id=${pixRecord?.id || 'n/a'}`);
 
       res.json({
         success: true,
@@ -1783,7 +1964,7 @@ app.get('/api/payments/pix/usuario', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       data: {
-        payments: payments || [],
+        payments: (payments || []).map((r) => normalizePagamentoPixRead(r)),
         total: payments?.length || 0
       }
     });
@@ -1803,6 +1984,132 @@ app.get('/api/payments/pix/usuario', authenticateToken, async (req, res) => {
     });
   }
 });
+
+/**
+ * Fallback JS (várias idas ao PostgREST): claim approved antes do saldo — manter só se RPC ausente.
+ * @param {string} paymentIdStr
+ * @returns {Promise<{ ok: boolean, reason?: string }>}
+ */
+async function creditarPixAprovadoUnicoMpPaymentIdJsLegacy(paymentIdStr) {
+  let { data: pix } = await supabase
+    .from('pagamentos_pix')
+    .select('id, usuario_id, amount, valor, status, external_id, payment_id')
+    .eq('payment_id', paymentIdStr)
+    .maybeSingle();
+  if (!pix) {
+    const alt = await supabase
+      .from('pagamentos_pix')
+      .select('id, usuario_id, amount, valor, status, external_id, payment_id')
+      .eq('external_id', paymentIdStr)
+      .maybeSingle();
+    pix = alt.data;
+  }
+  if (!pix) {
+    return { ok: false, reason: 'pix_not_found' };
+  }
+  pix = normalizePagamentoPixRead(pix);
+  if (pix.status === 'approved') {
+    return { ok: true, reason: 'already_processed' };
+  }
+  if (pix.status !== 'pending') {
+    console.warn(`⚠️ [PIX-CREDIT] status inesperado em pagamentos_pix: ${pix.status} id=${pix.id}`);
+    return { ok: false, reason: 'unexpected_status' };
+  }
+  const ts = new Date().toISOString();
+  const { data: claimedRows, error: claimErr } = await supabase
+    .from('pagamentos_pix')
+    .update({ status: 'approved', updated_at: ts })
+    .eq('id', pix.id)
+    .eq('status', 'pending')
+    .select('id, usuario_id, amount, valor');
+  if (claimErr) {
+    console.error('❌ [PIX-CREDIT] claim:', claimErr.message);
+    return { ok: false, reason: 'claim_error' };
+  }
+  if (!claimedRows || claimedRows.length === 0) {
+    return { ok: false, reason: 'claim_lost' };
+  }
+  const row = normalizePagamentoPixRead(claimedRows[0]);
+  const credit = Number(row.amount ?? row.valor ?? 0);
+  if (credit <= 0) {
+    console.warn(`⚠️ [PIX-CREDIT] crédito zero, pix id=${row.id} mantido approved`);
+    return { ok: true, reason: 'zero_credit' };
+  }
+  const { data: user, error: userErr } = await supabase
+    .from('usuarios')
+    .select('saldo')
+    .eq('id', row.usuario_id)
+    .single();
+  if (userErr || !user) {
+    console.error('❌ [PIX-CREDIT] usuário não encontrado:', userErr);
+    await supabase
+      .from('pagamentos_pix')
+      .update({ status: 'pending', updated_at: ts })
+      .eq('id', row.id)
+      .eq('status', 'approved');
+    return { ok: false, reason: 'user_not_found' };
+  }
+  const saldoAnt = user.saldo;
+  const novoSaldo = Number(saldoAnt) + credit;
+  const { data: updUser, error: saldoErr } = await supabase
+    .from('usuarios')
+    .update({ saldo: novoSaldo })
+    .eq('id', row.usuario_id)
+    .eq('saldo', saldoAnt)
+    .select('saldo')
+    .maybeSingle();
+  if (saldoErr || !updUser) {
+    console.error('❌ [PIX-CREDIT] lock otimista saldo:', saldoErr);
+    await supabase
+      .from('pagamentos_pix')
+      .update({ status: 'pending', updated_at: ts })
+      .eq('id', row.id)
+      .eq('status', 'approved');
+    return { ok: false, reason: 'saldo_race' };
+  }
+  console.log(`💰 [PIX-CREDIT] +R$ ${credit} usuario ${row.usuario_id} mp ${paymentIdStr} (fallback JS)`);
+  return { ok: true, reason: 'credited' };
+}
+
+/**
+ * Credita saldo no máximo uma vez por pagamento PIX. Preferência: RPC `creditar_pix_aprovado_mp`
+ * (transação única: saldo + approved). Fallback: fluxo JS legado se RPC indisponível.
+ * @param {string} paymentIdStr — ID MP (dígitos); lookup payment_id primeiro, external_id fallback
+ */
+async function creditarPixAprovadoUnicoMpPaymentId(paymentIdStr) {
+  if (!dbConnected || !supabase) {
+    return { ok: false, reason: 'no_db' };
+  }
+  const preferRpc = process.env.FINANCE_ATOMIC_RPC !== 'false';
+  if (preferRpc) {
+    const { data, error } = await supabase.rpc('creditar_pix_aprovado_mp', {
+      p_payment_id: paymentIdStr
+    });
+    if (!error && data != null && typeof data === 'object' && typeof data.ok === 'boolean') {
+      if (data.ok && data.reason === 'credited') {
+        console.log(`💰 [PIX-CREDIT] RPC crédito OK mp ${paymentIdStr}`);
+      }
+      return { ok: data.ok, reason: data.reason };
+    }
+    if (error) {
+      const m = String(error.message || '').toLowerCase();
+      if (
+        m.includes('does not exist') ||
+        m.includes('schema cache') ||
+        m.includes('42883') ||
+        m.includes('pgrst202')
+      ) {
+        console.warn('⚠️ [PIX-CREDIT] RPC creditar_pix_aprovado_mp indisponível — fallback JS');
+      } else {
+        console.error('❌ [PIX-CREDIT] RPC:', error.message);
+        return { ok: false, reason: 'rpc_error' };
+      }
+    } else {
+      console.warn('⚠️ [PIX-CREDIT] resposta RPC inesperada — fallback JS');
+    }
+  }
+  return creditarPixAprovadoUnicoMpPaymentIdJsLegacy(paymentIdStr);
+}
 
 // =====================================================
 // WEBHOOK PIX CORRIGIDO
@@ -1837,130 +2144,35 @@ app.post('/api/payments/webhook', async (req, res, next) => {
     
     res.status(200).json({ received: true }); // Responder imediatamente
     
-    if (type === 'payment' && data?.id) {
-      // Verificar se já foi processado (idempotência)
-      let { data: existingPayment, error: checkError } = await supabase
-        .from('pagamentos_pix')
-        .select('id, status')
-        .eq('external_id', data.id)
-        .maybeSingle();
-      if ((!existingPayment || checkError) && (!existingPayment?.id)) {
-        // fallback por payment_id (schemas legados)
-        const alt = await supabase
-          .from('pagamentos_pix')
-          .select('id, status')
-          .eq('payment_id', String(data.id))
-          .maybeSingle();
-        existingPayment = alt.data;
-      }
-        
-      if (existingPayment && existingPayment.status === 'approved') {
-        console.log('📨 [WEBHOOK] Pagamento já processado:', data.id);
-        return;
-      }
-      
-      // ✅ CORREÇÃO SSRF: Validar data.id antes de usar na URL
-      if (!data.id || typeof data.id !== 'string' || !/^\d+$/.test(data.id)) {
+    if (type === 'payment' && data?.id != null) {
+      const paymentIdStr = String(data.id).trim();
+      if (!/^\d+$/.test(paymentIdStr)) {
         console.error('❌ [WEBHOOK] ID de pagamento inválido:', data.id);
         return;
       }
-      
-      const paymentId = parseInt(data.id, 10);
+      const paymentId = parseInt(paymentIdStr, 10);
       if (isNaN(paymentId) || paymentId <= 0) {
         console.error('❌ [WEBHOOK] ID de pagamento inválido (não é número positivo):', data.id);
         return;
       }
-      
-      // Verificar pagamento no Mercado Pago
       const payment = await axios.get(
         `https://api.mercadopago.com/v1/payments/${paymentId}`,
-        { 
-          headers: { 
+        {
+          headers: {
             'Authorization': `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
             'Content-Type': 'application/json'
           },
           timeout: 5000
         }
       );
-      
-      if (payment.data.status === 'approved') {
-        // Atualizar status do pagamento
-        // Atualizar por external_id; se não afetar linhas, tentar por payment_id
-        let { error: updateError } = await supabase
-          .from('pagamentos_pix')
-          .update({ status: 'approved', updated_at: new Date().toISOString() })
-          .eq('external_id', data.id);
-        if (updateError) {
-          console.error('❌ [WEBHOOK] Update por external_id falhou:', updateError);
-        }
-        // Checar se atualizou alguma linha; se não, tentar por payment_id
-        const checkAfterUpdate = await supabase
-          .from('pagamentos_pix')
-          .select('id')
-          .eq('external_id', data.id)
-          .maybeSingle();
-        if (!checkAfterUpdate.data) {
-          const upd2 = await supabase
-            .from('pagamentos_pix')
-            .update({ status: 'approved', updated_at: new Date().toISOString() })
-            .eq('payment_id', String(data.id));
-          if (upd2.error) {
-            console.error('❌ [WEBHOOK] Update por payment_id falhou:', upd2.error);
-            return;
-          }
-        }
-          
-        if (updateError) {
-          console.error('❌ [WEBHOOK] Erro ao atualizar pagamento:', updateError);
-          return;
-        }
-
-        // Buscar usuário e atualizar saldo
-        // Buscar registro por external_id ou payment_id
-        let { data: pixRecord, error: pixError } = await supabase
-          .from('pagamentos_pix')
-          .select('usuario_id, amount, valor')
-          .eq('external_id', data.id)
-          .maybeSingle();
-        if ((!pixRecord || pixError) && (!pixRecord?.usuario_id)) {
-          const alt2 = await supabase
-            .from('pagamentos_pix')
-            .select('usuario_id, amount, valor')
-            .eq('payment_id', String(data.id))
-            .maybeSingle();
-          pixRecord = alt2.data;
-        }
-
-        if (pixError || !pixRecord) {
-          console.error('❌ [WEBHOOK] Erro ao buscar pagamento:', pixError);
-          return;
-        }
-
-        // Atualizar saldo do usuário
-        const { data: user, error: userError } = await supabase
-          .from('usuarios')
-          .select('saldo')
-          .eq('id', pixRecord.usuario_id)
-          .single();
-
-        if (userError || !user) {
-          console.error('❌ [WEBHOOK] Erro ao buscar usuário:', userError);
-          return;
-        }
-
-        const credit = pixRecord.amount ?? pixRecord.valor ?? 0;
-        const novoSaldo = user.saldo + credit;
-        const { error: saldoError } = await supabase
-          .from('usuarios')
-          .update({ saldo: novoSaldo })
-          .eq('id', pixRecord.usuario_id);
-
-        if (saldoError) {
-          console.error('❌ [WEBHOOK] Erro ao atualizar saldo:', saldoError);
-          return;
-        }
-
-        console.log(`💰 [WEBHOOK] Pagamento aprovado: R$ ${pixRecord.amount} para usuário ${pixRecord.usuario_id}`);
+      if (payment.data.status !== 'approved') {
+        return;
+      }
+      const creditResult = await creditarPixAprovadoUnicoMpPaymentId(paymentIdStr);
+      if (creditResult.ok && creditResult.reason === 'already_processed') {
+        console.log('📨 [WEBHOOK] Pagamento já processado:', paymentIdStr);
+      } else if (!creditResult.ok && creditResult.reason && creditResult.reason !== 'claim_lost') {
+        console.error('❌ [WEBHOOK] creditar PIX:', creditResult.reason, paymentIdStr);
       }
     }
   } catch (error) {
@@ -1996,6 +2208,30 @@ async function saveGlobalCounter() {
 
 // Reconciliação automática de PIX pendentes (fallback ao webhook)
 let reconciling = false;
+
+/** ID numérico do pagamento MP: payment_id canónico primeiro, external_id só se dígitos. */
+function resolveMercadoPagoPaymentIdString(np) {
+  const pid = np.payment_id != null ? String(np.payment_id).trim() : '';
+  const ext = np.external_id != null ? String(np.external_id).trim() : '';
+  if (/^\d+$/.test(pid)) return pid;
+  if (/^\d+$/.test(ext)) return ext;
+  return '';
+}
+
+/** Marca linha como fora do reconcile (legado / ID inválido). Requer coluna reconcile_skip (ver migração SQL). */
+async function markPagamentoPixReconcileSkip(rowId, motivo, columnAvailable) {
+  if (!supabase || rowId == null || columnAvailable === false) return;
+  const { error } = await supabase
+    .from('pagamentos_pix')
+    .update({ reconcile_skip: true, updated_at: new Date().toISOString() })
+    .eq('id', rowId);
+  if (error) {
+    console.warn('[RECON] não foi possível marcar reconcile_skip id=', rowId, motivo, error.message);
+  } else {
+    console.warn('[RECON] linha', rowId, 'excluída do reconcile automático:', motivo);
+  }
+}
+
 async function reconcilePendingPayments() {
   if (reconciling) return;
   if (!dbConnected || !supabase || !mercadoPagoConnected) return;
@@ -2005,13 +2241,39 @@ async function reconcilePendingPayments() {
     const limit = parseInt(process.env.MP_RECONCILE_LIMIT || '10', 10);
     const sinceIso = new Date(Date.now() - maxAgeMin * 60 * 1000).toISOString();
 
-    const { data: pendings, error: listError } = await supabase
+    const selectCols =
+      'id, usuario_id, external_id, payment_id, status, amount, valor, created_at, reconcile_skip';
+
+    let reconcileSkipColumnAvailable = true;
+    let { data: pendings, error: listError } = await supabase
       .from('pagamentos_pix')
-      .select('id, usuario_id, external_id, payment_id, status, amount, valor, created_at')
+      .select(selectCols)
       .eq('status', 'pending')
+      .eq('reconcile_skip', false)
       .lt('created_at', sinceIso)
       .order('created_at', { ascending: true })
       .limit(limit);
+
+    if (
+      listError &&
+      /reconcile_skip|42703|column|schema cache|does not exist/i.test(
+        `${listError.message || ''} ${listError.details || ''} ${listError.hint || ''}`
+      )
+    ) {
+      reconcileSkipColumnAvailable = false;
+      ({ data: pendings, error: listError } = await supabase
+        .from('pagamentos_pix')
+        .select('id, usuario_id, external_id, payment_id, status, amount, valor, created_at')
+        .eq('status', 'pending')
+        .lt('created_at', sinceIso)
+        .order('created_at', { ascending: true })
+        .limit(limit));
+      if (!listError) {
+        console.warn(
+          '[RECON] Coluna reconcile_skip indisponível — listando todos os pending; aplique database/migrate-pagamentos-pix-reconcile-skip-2026-03-28.sql'
+        );
+      }
+    }
 
     if (listError) {
       console.error('❌ [RECON] Erro ao listar pendentes:', listError.message);
@@ -2020,18 +2282,18 @@ async function reconcilePendingPayments() {
     if (!pendings || pendings.length === 0) return;
 
     for (const p of pendings) {
-      const mpId = String(p.external_id || p.payment_id || '').trim();
-      if (!mpId) continue;
-
-      // ✅ CORREÇÃO SSRF: Validar mpId antes de usar na URL
-      if (!/^\d+$/.test(mpId)) {
-        console.error('❌ [RECON] ID de pagamento inválido (não é número):', mpId);
+      const np = normalizePagamentoPixRead(p);
+      const mpId = resolveMercadoPagoPaymentIdString(np);
+      if (!mpId) {
+        const hint = String(np.payment_id || np.external_id || '').slice(0, 80);
+        console.warn(`[RECON] pending id=${p.id} sem ID MP numérico (legado):`, hint || '(vazio)');
+        await markPagamentoPixReconcileSkip(p.id, 'non_numeric_mp_id', reconcileSkipColumnAvailable);
         continue;
       }
-      
+
       const paymentId = parseInt(mpId, 10);
       if (isNaN(paymentId) || paymentId <= 0) {
-        console.error('❌ [RECON] ID de pagamento inválido (não é número positivo):', mpId);
+        await markPagamentoPixReconcileSkip(p.id, 'invalid_positive_int', reconcileSkipColumnAvailable);
         continue;
       }
 
@@ -2042,40 +2304,11 @@ async function reconcilePendingPayments() {
         });
         const status = resp?.data?.status;
         if (status === 'approved') {
-          let { error: updError } = await supabase
-            .from('pagamentos_pix')
-            .update({ status: 'approved', updated_at: new Date().toISOString() })
-            .eq('external_id', mpId);
-          if (updError) {
-            const alt = await supabase
-              .from('pagamentos_pix')
-              .update({ status: 'approved', updated_at: new Date().toISOString() })
-              .eq('payment_id', mpId);
-            if (alt.error) {
-              console.error('❌ [RECON] Falha ao aprovar registro:', alt.error.message);
-              continue;
-            }
-          }
-
-          const credit = (p.amount ?? p.valor ?? 0);
-          if (credit > 0) {
-            const { data: userRow, error: userErr } = await supabase
-              .from('usuarios')
-              .select('saldo')
-              .eq('id', p.usuario_id)
-              .single();
-            if (!userErr && userRow) {
-              const novoSaldo = Number(userRow.saldo || 0) + Number(credit);
-              const { error: saldoErr } = await supabase
-                .from('usuarios')
-                .update({ saldo: novoSaldo })
-                .eq('id', p.usuario_id);
-              if (saldoErr) {
-                console.error('❌ [RECON] Erro ao creditar saldo:', saldoErr.message);
-              } else {
-                console.log(`✅ [RECON] Pagamento ${mpId} aprovado e saldo +${credit} aplicado ao usuário ${p.usuario_id}`);
-              }
-            }
+          const creditResult = await creditarPixAprovadoUnicoMpPaymentId(mpId);
+          if (!creditResult.ok && creditResult.reason && creditResult.reason !== 'claim_lost') {
+            console.error('❌ [RECON] creditar PIX:', creditResult.reason, mpId);
+          } else if (creditResult.ok && creditResult.reason === 'credited') {
+            console.log(`✅ [RECON] Pagamento ${mpId} aprovado e saldo aplicado ao usuário ${p.usuario_id}`);
           }
         }
       } catch (mpErr) {
@@ -2596,6 +2829,23 @@ app.post('/api/admin/bootstrap', authenticateToken, async (req, res) => {
   }
 });
 
+// =====================================================
+// API ADMIN (painel Gol de Ouro) — header x-admin-token = ADMIN_TOKEN
+// Montado após /api/admin/bootstrap para não interceptar o POST de bootstrap.
+// =====================================================
+const createAdminApiRouter = require('./routes/adminApiFly');
+app.use(
+  '/api/admin',
+  createAdminApiRouter({
+    getSupabase: () => supabase,
+    isDbConnected: () => dbConnected,
+    getQueueSnapshot: () => ({
+      lotesAtivosCount: lotesAtivos.size,
+      contadorChutesGlobal
+    })
+  })
+);
+
 // Endpoint para verificar se sistema está em produção real
 app.get('/api/production-status', (req, res) => {
   try {
@@ -2623,8 +2873,12 @@ app.get('/api/production-status', (req, res) => {
   }
 });
 
-// Endpoint de debug para verificar token
+// Endpoint de debug para verificar token (desativado em produção: 404 sem corpo sensível)
 app.get('/api/debug/token', (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.sendStatus(404);
+  }
+
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   

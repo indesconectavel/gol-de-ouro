@@ -1,6 +1,7 @@
 // Sistema de Histórico Completo - Gol de Ouro v1.2.0
 // ================================================
 const { createClient } = require('@supabase/supabase-js');
+const { normalizePagamentoPixRead, normalizeSaqueRead } = require('../utils/financialNormalization');
 
 class HistoryService {
   constructor() {
@@ -313,7 +314,7 @@ class HistoryService {
 
       return {
         success: true,
-        data: data || [],
+        data: (data || []).map((r) => normalizePagamentoPixRead(r)),
         pagination: {
           limit,
           offset,
@@ -359,7 +360,7 @@ class HistoryService {
 
       return {
         success: true,
-        data: data || [],
+        data: (data || []).map((r) => normalizeSaqueRead(r)),
         pagination: {
           limit,
           offset,

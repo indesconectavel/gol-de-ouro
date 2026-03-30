@@ -6,7 +6,9 @@ class WebhookSignatureValidator {
   constructor() {
     this.secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
     this.allowedAlgorithms = ['sha256', 'sha1'];
-    this.maxTimestampDiff = 5 * 60 * 1000; // 5 minutos
+    this.maxTimestampDiff = 5 * 60 * 1000; // 5 minutos (fluxo legado x-timestamp)
+    /** Janela para ts do header x-signature (Mercado Pago) — segundos */
+    this.mpTsMaxSkewSec = parseInt(process.env.MP_WEBHOOK_TS_SKEW_SEC || '600', 10);
   }
 
   // Validar assinatura do webhook
@@ -58,7 +60,7 @@ class WebhookSignatureValidator {
 
       // Calcular hash esperado
       const expectedHash = this.calculateHash(payload, signatureParts.algorithm);
-      
+
       // Comparar hashes
       const isValid = crypto.timingSafeEqual(
         Buffer.from(signatureParts.hash, 'hex'),
@@ -77,7 +79,6 @@ class WebhookSignatureValidator {
         algorithm: signatureParts.algorithm,
         hash: signatureParts.hash
       };
-
     } catch (error) {
       return {
         valid: false,
@@ -89,7 +90,7 @@ class WebhookSignatureValidator {
   // Validar timestamp
   validateTimestamp(timestamp) {
     try {
-      const webhookTime = parseInt(timestamp);
+      const webhookTime = parseInt(timestamp, 10);
       const currentTime = Math.floor(Date.now() / 1000);
       const timeDiff = Math.abs(currentTime - webhookTime);
 
@@ -105,7 +106,6 @@ class WebhookSignatureValidator {
         timestamp: webhookTime,
         timeDiff: timeDiff
       };
-
     } catch (error) {
       return {
         valid: false,
@@ -114,12 +114,11 @@ class WebhookSignatureValidator {
     }
   }
 
-  // Parsear signature
+  // Parsear signature (GitHub / padrão sha256= — não é o formato do Mercado Pago)
   parseSignature(signature) {
     try {
-      // Formato esperado: "sha256=hash" ou "sha1=hash"
       const match = signature.match(/^(sha256|sha1)=([a-f0-9]+)$/i);
-      
+
       if (!match) {
         return null;
       }
@@ -128,7 +127,6 @@ class WebhookSignatureValidator {
         algorithm: match[1].toLowerCase(),
         hash: match[2].toLowerCase()
       };
-
     } catch (error) {
       return null;
     }
@@ -141,43 +139,113 @@ class WebhookSignatureValidator {
     return hmac.digest('hex');
   }
 
-  // Validar webhook do Mercado Pago
+  /**
+   * Mercado Pago: x-signature = ts=...,v1=... (HMAC-SHA256 do manifest, não do body).
+   * @see https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
+   */
   validateMercadoPagoWebhook(req) {
     try {
-      const signature = req.headers['x-signature'];
-      const timestamp = req.headers['x-timestamp'];
-      const payload = typeof req.rawBody === 'string' && req.rawBody.length > 0 
-        ? req.rawBody 
-        : JSON.stringify(req.body);
+      if (!this.secret) {
+        return {
+          valid: false,
+          error: 'MERCADOPAGO_WEBHOOK_SECRET não configurado'
+        };
+      }
 
-      if (!signature) {
+      const xSignature = req.headers['x-signature'];
+      if (!xSignature || typeof xSignature !== 'string') {
         return {
           valid: false,
           error: 'Header X-Signature não encontrado'
         };
       }
 
-      const validation = this.validateSignature(payload, signature, timestamp);
-      
-      if (!validation.valid) {
+      let tsVal = null;
+      let v1Val = null;
+      for (const part of xSignature.split(',')) {
+        const eq = part.indexOf('=');
+        if (eq === -1) continue;
+        const key = part.slice(0, eq).trim();
+        const val = part.slice(eq + 1).trim();
+        if (key === 'ts') tsVal = val;
+        if (key === 'v1') v1Val = val;
+      }
+
+      if (!tsVal || !v1Val) {
         return {
           valid: false,
-          error: validation.error,
-          headers: {
-            signature: signature,
-            timestamp: timestamp
-          }
+          error: 'Formato de x-signature inválido (esperado ts e v1)'
         };
+      }
+
+      const qId =
+        req.query && req.query['data.id'] != null ? String(req.query['data.id']).trim() : '';
+      const bodyId =
+        req.body && req.body.data && req.body.data.id != null
+          ? String(req.body.data.id).trim()
+          : '';
+      let dataID = qId || bodyId;
+      if (!dataID) {
+        return {
+          valid: false,
+          error: 'data.id ausente (query ou body)'
+        };
+      }
+      if (/^[a-zA-Z0-9]+$/.test(dataID)) {
+        dataID = dataID.toLowerCase();
+      }
+
+      const ridRaw = req.headers['x-request-id'];
+      const requestIdStr =
+        ridRaw != null && String(ridRaw).trim() !== '' ? String(ridRaw).trim() : '';
+
+      const manifestParts = [`id:${dataID};`];
+      if (requestIdStr) {
+        manifestParts.push(`request-id:${requestIdStr};`);
+      }
+      manifestParts.push(`ts:${tsVal};`);
+      const manifest = manifestParts.join('');
+
+      const expectedHex = crypto.createHmac('sha256', this.secret).update(manifest).digest('hex');
+
+      let v1Buf;
+      let expBuf;
+      try {
+        v1Buf = Buffer.from(v1Val, 'hex');
+        expBuf = Buffer.from(expectedHex, 'hex');
+      } catch {
+        return {
+          valid: false,
+          error: 'Assinatura v1 inválida (hex)'
+        };
+      }
+      if (v1Buf.length !== expBuf.length || !crypto.timingSafeEqual(v1Buf, expBuf)) {
+        return {
+          valid: false,
+          error: 'Signature não confere'
+        };
+      }
+
+      const tsNum = parseInt(tsVal, 10);
+      if (!Number.isNaN(tsNum)) {
+        const nowSec = Math.floor(Date.now() / 1000);
+        const tsSec = tsNum > 1e12 ? Math.floor(tsNum / 1000) : tsNum;
+        const skew = Math.max(60, this.mpTsMaxSkewSec);
+        if (Math.abs(nowSec - tsSec) > skew) {
+          return {
+            valid: false,
+            error: 'Timestamp fora da janela permitida'
+          };
+        }
       }
 
       return {
         valid: true,
         payload: req.body,
-        signature: signature,
-        timestamp: timestamp,
-        algorithm: validation.algorithm
+        signature: xSignature,
+        timestamp: tsVal,
+        algorithm: 'mp-manifest-hmac-sha256'
       };
-
     } catch (error) {
       return {
         valid: false,
@@ -191,9 +259,10 @@ class WebhookSignatureValidator {
     try {
       const signature = req.headers['x-signature'] || req.headers['x-hub-signature-256'];
       const timestamp = req.headers['x-timestamp'];
-      const payload = typeof req.rawBody === 'string' && req.rawBody.length > 0 
-        ? req.rawBody 
-        : JSON.stringify(req.body);
+      const payload =
+        typeof req.rawBody === 'string' && req.rawBody.length > 0
+          ? req.rawBody
+          : JSON.stringify(req.body);
 
       if (!signature) {
         return {
@@ -202,13 +271,12 @@ class WebhookSignatureValidator {
         };
       }
 
-      // Usar secret específico se fornecido
       const secret = expectedSecret || this.secret;
       const validator = new WebhookSignatureValidator();
       validator.secret = secret;
 
       const validation = validator.validateSignature(payload, signature, timestamp);
-      
+
       if (!validation.valid) {
         return {
           valid: false,
@@ -222,7 +290,6 @@ class WebhookSignatureValidator {
         signature: signature,
         timestamp: timestamp
       };
-
     } catch (error) {
       return {
         valid: false,
@@ -236,7 +303,7 @@ class WebhookSignatureValidator {
     return (req, res, next) => {
       try {
         const validation = this.validateMercadoPagoWebhook(req);
-        
+
         if (!validation.valid) {
           console.error('❌ [WEBHOOK] Signature inválida:', validation.error);
           return res.status(401).json({
@@ -246,7 +313,6 @@ class WebhookSignatureValidator {
           });
         }
 
-        // Adicionar dados de validação ao request
         req.webhookValidation = {
           valid: true,
           algorithm: validation.algorithm,
@@ -259,7 +325,6 @@ class WebhookSignatureValidator {
         });
 
         next();
-
       } catch (error) {
         console.error('❌ [WEBHOOK] Erro na validação:', error);
         return res.status(500).json({
@@ -270,7 +335,7 @@ class WebhookSignatureValidator {
     };
   }
 
-  // Gerar signature para testes
+  // Gerar signature para testes (formato sha256= — legado)
   generateTestSignature(payload, algorithm = 'sha256') {
     const hash = this.calculateHash(payload, algorithm);
     return `${algorithm}=${hash}`;
@@ -289,8 +354,8 @@ class WebhookSignatureValidator {
       });
     }
 
-    const validSignatures = results.filter(r => r.valid);
-    
+    const validSignatures = results.filter((r) => r.valid);
+
     return {
       valid: validSignatures.length > 0,
       results: results,
@@ -305,15 +370,14 @@ class WebhookSignatureValidator {
       ip: req.ip || req.connection.remoteAddress,
       userAgent: req.headers['user-agent'],
       signature: req.headers['x-signature'],
-      timestamp: req.headers['x-timestamp'],
+      timestampHeader: req.headers['x-timestamp'],
       valid: validation.valid,
       error: validation.error,
       algorithm: validation.algorithm
     };
 
     console.log('🔍 [WEBHOOK] Log de validação:', logData);
-    
-    // Em produção, salvar no banco de dados para auditoria
+
     return logData;
   }
 }

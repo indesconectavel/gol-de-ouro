@@ -506,6 +506,60 @@
 .gs-zone:hover{ background:rgba(255,255,255,.36); }
 .gs-zone.disabled{ pointer-events:none; opacity:.5; }
 
+/* === GameFinal /game — zonas (G-1): hover/active reais; sem background inline no JSX === */
+body[data-page="game"] .game-stage button.gs-zone {
+  --zone-bg: rgba(0, 0, 0, 0.5);
+  --zone-bg-disabled: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: var(--zone-bg);
+  cursor: pointer;
+  z-index: 5;
+  transition:
+    transform 150ms ease-out,
+    filter 150ms ease-out,
+    background 150ms ease-out,
+    border-color 150ms ease-out,
+    opacity 150ms ease-out;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+body[data-page="game"] .game-stage button.gs-zone:disabled,
+body[data-page="game"] .game-stage button.gs-zone.disabled {
+  --zone-bg: var(--zone-bg-disabled);
+  background: var(--zone-bg-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    filter: brightness(1.12);
+    background: rgba(0, 0, 0, 0.38);
+    border-color: rgba(255, 255, 255, 0.88);
+  }
+}
+
+body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):active {
+  transform: translate(-50%, -50%) scale(0.97);
+  filter: brightness(1.08);
+  transition-duration: 120ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-page="game"] .game-stage button.gs-zone {
+    transition-duration: 0.01ms;
+  }
+  body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):hover,
+  body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):active {
+    transform: translate(-50%, -50%);
+    filter: none;
+  }
+}
+
 /* bola */
 .gs-ball{ position:absolute; width:52px; aspect-ratio:1/1;
   transform:translate(-50%,-50%); z-index:7;

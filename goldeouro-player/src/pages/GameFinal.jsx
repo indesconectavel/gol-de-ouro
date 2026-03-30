@@ -24,6 +24,7 @@ import gameService from '../services/gameService';
 import apiClient from '../services/apiClient';
 import { API_ENDPOINTS } from '../config/api';
 import musicManager from '../utils/musicManager';
+import { track } from '../utils/analytics';
 import './game-scene.css';
 import './game-shoot.css';
 
@@ -283,6 +284,7 @@ const GameFinal = () => {
     
     // Inicializar jogo (apenas uma vez) — Backend real
     const init = async () => {
+      let initSucceeded = true;
       try {
         setLoading(true);
         // Perfil: saldo e totais da conta
@@ -301,10 +303,18 @@ const GameFinal = () => {
           if (typeof next === 'number') setShotsUntilGoldenGoal(next);
         }
       } catch (error) {
+        initSucceeded = false;
         console.error('Erro ao inicializar:', error);
         toast.error('Erro ao carregar dados do jogo.');
+        track('game_error', {
+          phase: 'init',
+          code: String(error?.message || 'init_error').slice(0, 200)
+        });
       } finally {
         setLoading(false);
+        if (initSucceeded) {
+          track('game_ready', {});
+        }
       }
     };
     
@@ -320,6 +330,7 @@ const GameFinal = () => {
       if (typeof document !== 'undefined' && document.body) {
         document.body.removeAttribute('data-page');
       }
+      track('game_leave', { reason: 'unmount' });
       // NÃO resetar isInitializedRef para evitar loops
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -354,6 +365,7 @@ const GameFinal = () => {
     // Validar saldo
     if (balance < betAmount) {
       console.log('⚠️ [GAMEFINAL] Saldo insuficiente:', balance, '<', betAmount);
+      track('game_error', { phase: 'shot', code: 'insufficient_balance' });
       toast.error(`Saldo insuficiente. Seu saldo: R$ ${balance.toFixed(2)}. Aposta: R$ ${betAmount}`);
       return;
     }
@@ -363,6 +375,11 @@ const GameFinal = () => {
     if (!validDirections.includes(direction)) {
       return;
     }
+
+    track('shot_committed', {
+      direction,
+      shotNumber: totalChutes + 1
+    });
     
     // =====================================================
     // FASE 3: LÓGICA DE JOGO CLARA
@@ -397,6 +414,21 @@ const GameFinal = () => {
       
       const isGoal = result.shot.isWinner;
       const isGoldenGoal = result.isGoldenGoal || result.shot.isGoldenGoal;
+
+      const outcome = isGoldenGoal ? 'goal_golden' : (isGoal ? 'goal' : 'miss');
+      const reward =
+        (result.shot?.prize || 0) + (result.shot?.goldenGoalPrize || 0);
+      track('shot_outcome', {
+        outcome,
+        direction,
+        reward
+      });
+      if (isGoldenGoal && typeof gameService.getShotsUntilGoldenGoal === 'function') {
+        const shotsUntilNext = gameService.getShotsUntilGoldenGoal();
+        if (typeof shotsUntilNext === 'number') {
+          track('golden_cycle_reset', { shotsUntilNext });
+        }
+      }
       
       // 4. Função para obter direção oposta/diferente
       const getOppositeDirection = (dir) => {
@@ -515,13 +547,17 @@ const GameFinal = () => {
       
     } catch (error) {
       console.error('Erro ao processar chute:', error);
+      track('game_error', {
+        phase: 'shot',
+        code: String(error?.message || 'shot_error').slice(0, 200)
+      });
       toast.error(error.message || 'Erro ao processar chute');
       
       // Reset em caso de erro
       resetVisuals();
       setGamePhase(GAME_PHASE.IDLE);
     }
-  }, [gamePhase, balance, playKickSound, playGoalSound, playDefenseSound, getGoalieJumpPosition, resetVisuals, addTimer]);
+  }, [gamePhase, balance, totalChutes, playKickSound, playGoalSound, playDefenseSound, getGoalieJumpPosition, resetVisuals, addTimer]);
   
   // =====================================================
   // VALORES E MEMOIZAÇÕES (ANTES DE QUALQUER RETURN)
@@ -550,8 +586,8 @@ const GameFinal = () => {
   // =====================================================
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Carregando jogo...</div>
+      <div className="game-loading-screen min-h-screen bg-gradient-to-br from-gray-900 to-slate-900 flex items-center justify-center">
+        <div className="game-loading-label text-white text-xl">Carregando jogo...</div>
       </div>
     );
   }
@@ -687,13 +723,7 @@ const GameFinal = () => {
                   left: adjustedX - targetSize / 2,
                   top: adjustedY - targetSize / 2,
                   width: targetSize,
-                  height: targetSize,
-                  borderRadius: '50%',
-                  border: '2px solid rgba(255, 255, 255, 0.6)',
-                  background: !canShoot ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.5)',
-                  cursor: !canShoot ? 'not-allowed' : 'pointer',
-                  zIndex: 5,
-                  transition: 'all 0.2s ease'
+                  height: targetSize
                 }}
                 title={`Chutar para ${zone}`}
               />

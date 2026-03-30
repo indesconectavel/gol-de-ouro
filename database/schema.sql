@@ -25,7 +25,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
     total_ganhos DECIMAL(12,2) DEFAULT 0.00,
     total_partidas INTEGER DEFAULT 0,
     total_gols INTEGER DEFAULT 0,
-    ranking INTEGER DEFAULT 0
+    ranking INTEGER DEFAULT 0,
+    accepted_terms BOOLEAN,
+    accepted_terms_at TIMESTAMP WITH TIME ZONE,
+    accepted_terms_ip TEXT,
+    accepted_terms_version TEXT,
+    is_adult_confirmed BOOLEAN
 );
 
 -- Tabela de partidas

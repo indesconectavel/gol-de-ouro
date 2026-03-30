@@ -15,6 +15,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
+  const [isAdultConfirmed, setIsAdultConfirmed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
@@ -28,8 +29,12 @@ const Register = () => {
       setError('As senhas não coincidem!')
       return
     }
+    if (!isAdultConfirmed) {
+      setError('Você deve confirmar que possui 18 anos ou mais!')
+      return
+    }
     if (!acceptTerms) {
-      setError('Você deve aceitar os termos de uso!')
+      setError('Você deve aceitar os Termos de Uso e a Política de Privacidade!')
       return
     }
     if (formData.password.length < 6) {
@@ -40,7 +45,13 @@ const Register = () => {
     setIsSubmitting(true)
     
     try {
-      const result = await register(formData.name, formData.email, formData.password)
+      const result = await register(
+        formData.name,
+        formData.email,
+        formData.password,
+        acceptTerms,
+        isAdultConfirmed
+      )
       
       if (result.success) {
         // Registro bem-sucedido - fazer login automático
@@ -189,7 +200,21 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Termos */}
+            {/* Maioridade */}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={isAdultConfirmed}
+                onChange={(e) => setIsAdultConfirmed(e.target.checked)}
+                className="w-4 h-4 text-yellow-400 bg-white/10 border-white/20 rounded focus:ring-yellow-400 focus:ring-2"
+                required
+              />
+              <label className="ml-2 text-white/70 text-sm">
+                Declaro que tenho 18 anos ou mais.
+              </label>
+            </div>
+
+            {/* Termos e Politica */}
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -199,7 +224,7 @@ const Register = () => {
                 required
               />
               <label className="ml-2 text-white/70 text-sm">
-                Aceito os{' '}
+                Li e aceito os{' '}
                 <button
                   type="button"
                   onClick={() => navigate('/terms')}

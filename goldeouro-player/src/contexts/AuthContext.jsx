@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, acceptedTerms, isAdultConfirmed) => {
     try {
       setLoading(true)
       setError(null)
@@ -83,7 +83,9 @@ export const AuthProvider = ({ children }) => {
       const response = await apiClient.post(API_ENDPOINTS.REGISTER, {
         username: name,
         email,
-        password
+        password,
+        acceptedTerms,
+        isAdultConfirmed
       })
       
       const { token, user: userData } = response.data

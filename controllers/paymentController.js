@@ -2,6 +2,7 @@
 const { MercadoPagoConfig, Payment, Preference } = require('mercadopago');
 const { supabase } = require('../database/supabase-config');
 const crypto = require('crypto');
+const { dualWritePagamentoPixRow, normalizePagamentoPixRead } = require('../utils/financialNormalization');
 
 // Configuração do Mercado Pago
 const client = new MercadoPagoConfig({
@@ -58,24 +59,28 @@ class PaymentController {
         },
         auto_return: 'approved',
         notification_url: `${process.env.BACKEND_URL}/api/payments/webhook`,
-        external_reference: `deposito_${userId}_${Date.now()}`
+        external_reference: `goldeouro_${userId}_${Date.now()}`
       };
 
       const result = await preference.create({ body: preferenceData });
 
       // Salvar pagamento no banco
+      const pid = String(result.id);
       const { data: pagamento, error } = await supabase
         .from('pagamentos_pix')
-        .insert({
-          usuario_id: userId,
-          payment_id: result.id,
-          valor: parseFloat(valor),
-          status: 'pending',
-          qr_code: result.point_of_interaction?.transaction_data?.qr_code,
-          qr_code_base64: result.point_of_interaction?.transaction_data?.qr_code_base64,
-          pix_copy_paste: result.point_of_interaction?.transaction_data?.qr_code,
-          expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutos
-        })
+        .insert(
+          dualWritePagamentoPixRow({
+            usuario_id: userId,
+            payment_id: pid,
+            external_id: pid,
+            amount: parseFloat(valor),
+            status: 'pending',
+            qr_code: result.point_of_interaction?.transaction_data?.qr_code,
+            qr_code_base64: result.point_of_interaction?.transaction_data?.qr_code_base64,
+            pix_copy_paste: result.point_of_interaction?.transaction_data?.qr_code,
+            expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString()
+          })
+        )
         .select()
         .single();
 
@@ -124,11 +129,13 @@ class PaymentController {
         });
       }
 
+      const pagamentoNorm = normalizePagamentoPixRead(pagamento);
+
       // Consultar status no Mercado Pago
       const paymentData = await payment.get({ id: payment_id });
 
       // Atualizar status no banco se necessário
-      if (pagamento.status !== paymentData.status) {
+      if (pagamentoNorm.status !== paymentData.status) {
         await supabase
           .from('pagamentos_pix')
           .update({
@@ -138,15 +145,15 @@ class PaymentController {
           .eq('payment_id', payment_id);
 
         // Se aprovado, creditar saldo
-        if (paymentData.status === 'approved' && pagamento.status !== 'approved') {
-          await this.processarPagamentoAprovado(pagamento);
+        if (paymentData.status === 'approved' && pagamentoNorm.status !== 'approved') {
+          await this.processarPagamentoAprovado(pagamentoNorm);
         }
       }
 
       res.json({
         payment_id: payment_id,
         status: paymentData.status,
-        valor: pagamento.valor,
+        valor: pagamentoNorm.valor,
         created_at: pagamento.created_at,
         approved_at: paymentData.status === 'approved' ? paymentData.date_approved : null
       });
@@ -181,7 +188,7 @@ class PaymentController {
       }
 
       res.json({
-        pagamentos,
+        pagamentos: (pagamentos || []).map((r) => normalizePagamentoPixRead(r)),
         total: pagamentos.length,
         limit: parseInt(limit),
         offset: parseInt(offset)
