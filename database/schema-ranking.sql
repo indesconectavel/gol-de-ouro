@@ -1,4 +1,5 @@
 -- SCHEMA PARA SISTEMA DE RANKING E ESTATÍSTICAS
+-- Pré-requisito: public.usuarios possui coluna username (não nome) como no schema principal.
 -- ==============================================
 
 -- Adicionar coluna de posição no ranking na tabela usuarios

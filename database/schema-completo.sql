@@ -1,5 +1,6 @@
 -- 🗄️ ESTRUTURA COMPLETA DO BANCO DE DADOS - GOL DE OURO v1.1.1
 -- Execute este SQL no Supabase para criar todas as tabelas necessárias
+-- Legado: não usar coluna `nome` em `usuarios`; identificador público canónico é `username` (alinhado a server-fly / API).
 
 -- Tabela de usuários
 CREATE TABLE IF NOT EXISTS usuarios (

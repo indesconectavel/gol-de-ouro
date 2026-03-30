@@ -185,7 +185,7 @@ Chamadas ao backend para perfil e chute estão implementadas e alinhadas com o c
 **3. Evidências reais**
 - **JWT:** `jwt.sign` com payload `{ userId, email, username }` em login/registro; `authenticateToken` em `server-fly.js` faz `jwt.verify` e define `req.user`.
 - **Rotas protegidas:** `authenticateToken` em shoot, PIX, withdraw, profile, etc.
-- **Alternativa:** `middlewares/auth.js` — `decoded.id` e consulta `usuarios` com campos `nome` (pode não existir no select do monólito — divergência de modelo).
+- **Alternativa:** `middlewares/auth.js` — `decoded.id` e consulta `usuarios` com campos `username` (pode não existir no select do monólito — divergência de modelo).
 
 **4. O que está funcionando**  
 Fluxo principal email/senha + bcrypt + token para o player que usa o mesmo esquema `userId` no monólito.

@@ -24,7 +24,7 @@
 - **saldo** — lida e atualizada em: request de saque, webhook depósito, reconciliação, shoot, rollback.
 
 ### Conclusão
-**Compatível.** O código em produção (server-fly.js, processPendingWithdrawals) usa `usuarios.id` e `usuarios.saldo` exatamente como esperado. O schema em `database/schema.sql` define `id` (UUID PK) e `saldo` (DECIMAL(10,2) DEFAULT 0.00). Outras colunas usadas pelo mesmo código (email, username/nome, senha_hash, tipo, ativo, updated_at, total_apostas, total_ganhos, etc.) precisam existir para auth/perfil/jogo, mas para o **bloco financeiro** id + saldo são suficientes e compatíveis.
+**Compatível.** O código em produção (server-fly.js, processPendingWithdrawals) usa `usuarios.id` e `usuarios.saldo` exatamente como esperado. O schema em `database/schema.sql` define `id` (UUID PK) e `saldo` (DECIMAL(10,2) DEFAULT 0.00). Outras colunas usadas pelo mesmo código (email, username, senha_hash, tipo, ativo, updated_at, total_apostas, total_ganhos, etc.) precisam existir para auth/perfil/jogo, mas para o **bloco financeiro** id + saldo são suficientes e compatíveis.
 
 ---
 

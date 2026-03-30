@@ -1,4 +1,5 @@
--- Gol de Ouro - Schema do Banco de Dados v1.1.1
+-- Gol de Ouro - Schema do Banco de Dados v1.1.2
+-- usuarios.username: coluna canónica (alinhada ao runtime); campo JSON "nome" na API é alias opcional.
 -- ================================================
 
 -- Extensões necessárias
@@ -9,7 +10,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE IF NOT EXISTS usuarios (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
-    nome VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
     senha_hash VARCHAR(255) NOT NULL,
     saldo DECIMAL(10,2) DEFAULT 0.00,
     tipo VARCHAR(50) DEFAULT 'jogador' CHECK (tipo IN ('jogador', 'admin', 'moderador')),
@@ -27,6 +28,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     total_gols INTEGER DEFAULT 0,
     ranking INTEGER DEFAULT 0
 );
+
+COMMENT ON COLUMN usuarios.username IS 'Nome público do jogador (fonte de verdade DDL); a API pode expor o mesmo valor como campo nome para compatibilidade.';
 
 -- Tabela de partidas
 CREATE TABLE IF NOT EXISTS partidas (
@@ -291,7 +294,7 @@ INSERT INTO configuracoes (chave, valor, tipo, descricao, categoria) VALUES
 ('pagamento_taxa_saque', '2.00', 'number', 'Taxa de saque', 'pagamento'),
 ('pagamento_limite_saque_diario', '1000.00', 'number', 'Limite de saque diário', 'pagamento'),
 ('sistema_manutencao', 'false', 'boolean', 'Sistema em manutenção', 'sistema'),
-('sistema_versao', '1.1.1', 'string', 'Versão atual do sistema', 'sistema')
+('sistema_versao', '1.1.2', 'string', 'Versão atual do sistema', 'sistema')
 ON CONFLICT (chave) DO NOTHING;
 
 -- Inserir conquistas padrão
