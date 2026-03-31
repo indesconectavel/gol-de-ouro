@@ -2115,26 +2115,39 @@ async function creditarPixAprovadoUnicoMpPaymentId(paymentIdStr) {
 // WEBHOOK PIX CORRIGIDO
 // =====================================================
 
-// Webhook principal com validação de signature (modo permissivo para desenvolvimento/testes)
+// Webhook PIX — BLOCO M: em produção, secret obrigatório; com secret, assinatura sempre validada
 app.post('/api/payments/webhook', async (req, res, next) => {
-  // Validar signature apenas se MERCADOPAGO_WEBHOOK_SECRET estiver configurado
-  if (process.env.MERCADOPAGO_WEBHOOK_SECRET) {
+  const isProd = process.env.NODE_ENV === 'production';
+  const mpSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+
+  if (isProd && !mpSecret) {
+    console.error('❌ [WEBHOOK] Produção sem MERCADOPAGO_WEBHOOK_SECRET — rejeitando notificação');
+    return res.status(503).json({
+      success: false,
+      error: 'webhook_not_configured',
+      message: 'Configure MERCADOPAGO_WEBHOOK_SECRET no servidor para receber webhooks em produção.'
+    });
+  }
+
+  if (mpSecret) {
     const validation = webhookSignatureValidator.validateMercadoPagoWebhook(req);
     if (!validation.valid) {
-      console.error('❌ [WEBHOOK] Signature inválida:', validation.error);
-      // Em produção, rejeitar; em desenvolvimento, apenas logar
-      if (process.env.NODE_ENV === 'production') {
-        return res.status(401).json({
-          success: false,
-          error: 'Webhook signature inválida',
-          message: validation.error
-        });
-      } else {
-        console.warn('⚠️ [WEBHOOK] Signature inválida ignorada em modo não-produção');
-      }
-    } else {
-      req.webhookValidation = validation;
+      console.error(
+        '❌ [WEBHOOK] Signature inválida:',
+        validation.error,
+        validation.code ? `code=${validation.code}` : ''
+      );
+      return res.status(401).json({
+        success: false,
+        error: 'webhook_signature_invalid',
+        message: validation.error
+      });
     }
+    req.webhookValidation = validation;
+  } else if (!isProd) {
+    console.warn(
+      '⚠️ [WEBHOOK] MERCADOPAGO_WEBHOOK_SECRET ausente — aceite apenas para desenvolvimento local. Configure antes do go-live em produção.'
+    );
   }
   next();
 }, async (req, res) => {
@@ -2208,6 +2221,8 @@ async function saveGlobalCounter() {
 
 // Reconciliação automática de PIX pendentes (fallback ao webhook)
 let reconciling = false;
+// Quando a coluna reconcile_skip não existe no schema ativo, evita ruído infinito no mesmo runtime
+const reconcileSkipMemory = new Set();
 
 /** ID numérico do pagamento MP: payment_id canónico primeiro, external_id só se dígitos. */
 function resolveMercadoPagoPaymentIdString(np) {
@@ -2280,6 +2295,10 @@ async function reconcilePendingPayments() {
       return;
     }
     if (!pendings || pendings.length === 0) return;
+    if (!reconcileSkipColumnAvailable) {
+      pendings = pendings.filter((p) => !reconcileSkipMemory.has(p.id));
+      if (pendings.length === 0) return;
+    }
 
     for (const p of pendings) {
       const np = normalizePagamentoPixRead(p);
@@ -2287,12 +2306,18 @@ async function reconcilePendingPayments() {
       if (!mpId) {
         const hint = String(np.payment_id || np.external_id || '').slice(0, 80);
         console.warn(`[RECON] pending id=${p.id} sem ID MP numérico (legado):`, hint || '(vazio)');
+        if (!reconcileSkipColumnAvailable) {
+          reconcileSkipMemory.add(p.id);
+        }
         await markPagamentoPixReconcileSkip(p.id, 'non_numeric_mp_id', reconcileSkipColumnAvailable);
         continue;
       }
 
       const paymentId = parseInt(mpId, 10);
       if (isNaN(paymentId) || paymentId <= 0) {
+        if (!reconcileSkipColumnAvailable) {
+          reconcileSkipMemory.add(p.id);
+        }
         await markPagamentoPixReconcileSkip(p.id, 'invalid_positive_int', reconcileSkipColumnAvailable);
         continue;
       }
@@ -2786,11 +2811,41 @@ app.post('/auth/login', async (req, res) => {
 });
 
 // =====================================================
-// BOOTSTRAP ADMIN (one-shot) - promove o usuário autenticado a admin
-// Somente se ainda não houver nenhum admin no sistema
+// BOOTSTRAP ADMIN (one-shot) — BLOCO M: não permitir takeover só com JWT
+// Requer: ENABLE_ADMIN_BOOTSTRAP=true + ADMIN_BOOTSTRAP_SECRET (≥16) no servidor
+//         + header x-admin-bootstrap-secret igual ao secret (além de JWT válido e zero admins)
 // =====================================================
+function compareBootstrapSecret(headerVal, envVal) {
+  const a = String(headerVal || '');
+  const b = String(envVal || '');
+  if (a.length !== b.length || a.length < 16) return false;
+  return crypto.timingSafeEqual(Buffer.from(a, 'utf8'), Buffer.from(b, 'utf8'));
+}
+
 app.post('/api/admin/bootstrap', authenticateToken, async (req, res) => {
   try {
+    if (process.env.ENABLE_ADMIN_BOOTSTRAP !== 'true') {
+      return res.status(403).json({
+        success: false,
+        message:
+          'Bootstrap de administrador está desativado. Defina ENABLE_ADMIN_BOOTSTRAP=true no servidor, configure ADMIN_BOOTSTRAP_SECRET (mín. 16 caracteres) e envie o header x-admin-bootstrap-secret.'
+      });
+    }
+    const bootstrapSecret = process.env.ADMIN_BOOTSTRAP_SECRET;
+    if (!bootstrapSecret || String(bootstrapSecret).length < 16) {
+      return res.status(503).json({
+        success: false,
+        message: 'ADMIN_BOOTSTRAP_SECRET não configurado no servidor (mínimo 16 caracteres).'
+      });
+    }
+    const headerSecret = req.headers['x-admin-bootstrap-secret'];
+    if (!compareBootstrapSecret(headerSecret, bootstrapSecret)) {
+      return res.status(401).json({
+        success: false,
+        message: 'Header x-admin-bootstrap-secret inválido ou ausente.'
+      });
+    }
+
     if (!dbConnected || !supabase) {
       return res.status(503).json({
         success: false,

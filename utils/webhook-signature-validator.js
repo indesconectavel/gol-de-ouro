@@ -156,7 +156,17 @@ class WebhookSignatureValidator {
       if (!xSignature || typeof xSignature !== 'string') {
         return {
           valid: false,
+          code: 'missing_signature_header',
           error: 'Header X-Signature não encontrado'
+        };
+      }
+
+      // Fail-closed: formato legado sha256=... não é assinatura MP de webhook
+      if (/^\s*sha(256|1)=/i.test(xSignature)) {
+        return {
+          valid: false,
+          code: 'legacy_signature_format',
+          error: 'Formato legado de assinatura não suportado para webhook Mercado Pago'
         };
       }
 
@@ -165,7 +175,7 @@ class WebhookSignatureValidator {
       for (const part of xSignature.split(',')) {
         const eq = part.indexOf('=');
         if (eq === -1) continue;
-        const key = part.slice(0, eq).trim();
+        const key = part.slice(0, eq).trim().toLowerCase();
         const val = part.slice(eq + 1).trim();
         if (key === 'ts') tsVal = val;
         if (key === 'v1') v1Val = val;
@@ -174,6 +184,7 @@ class WebhookSignatureValidator {
       if (!tsVal || !v1Val) {
         return {
           valid: false,
+          code: 'invalid_signature_format',
           error: 'Formato de x-signature inválido (esperado ts e v1)'
         };
       }
@@ -188,6 +199,7 @@ class WebhookSignatureValidator {
       if (!dataID) {
         return {
           valid: false,
+          code: 'missing_data_id',
           error: 'data.id ausente (query ou body)'
         };
       }
@@ -216,12 +228,14 @@ class WebhookSignatureValidator {
       } catch {
         return {
           valid: false,
+          code: 'invalid_v1_hex',
           error: 'Assinatura v1 inválida (hex)'
         };
       }
       if (v1Buf.length !== expBuf.length || !crypto.timingSafeEqual(v1Buf, expBuf)) {
         return {
           valid: false,
+          code: 'signature_mismatch',
           error: 'Signature não confere'
         };
       }
@@ -234,6 +248,7 @@ class WebhookSignatureValidator {
         if (Math.abs(nowSec - tsSec) > skew) {
           return {
             valid: false,
+            code: 'timestamp_out_of_window',
             error: 'Timestamp fora da janela permitida'
           };
         }
