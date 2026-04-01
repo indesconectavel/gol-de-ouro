@@ -1495,13 +1495,21 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
     const taxa = parseFloat(process.env.PAGAMENTO_TAXA_SAQUE || '2.00');
     const valorLiquido = valorSaque - taxa;
 
+    if (valorSaque <= taxa) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valor do saque deve ser superior à taxa de saque'
+      });
+    }
+
     const preferAtomic = process.env.FINANCE_ATOMIC_RPC !== 'false';
     if (preferAtomic) {
       const { data: rpcData, error: rpcErr } = await supabase.rpc('solicitar_saque_pix_atomico', {
         p_usuario_id: userId,
         p_amount: valorSaque,
         p_pix_key: validation.data.pixKey,
-        p_pix_type: validation.data.pixType
+        p_pix_type: validation.data.pixType,
+        p_fee: taxa
       });
       if (!rpcErr && rpcData && typeof rpcData === 'object' && typeof rpcData.ok === 'boolean') {
         if (rpcData.ok) {
@@ -1601,7 +1609,9 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
           pix_key: validation.data.pixKey,
           pix_type: validation.data.pixType,
           status: 'pendente',
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
+          fee: taxa,
+          net_amount: valorLiquido
         })
       )
       .select()

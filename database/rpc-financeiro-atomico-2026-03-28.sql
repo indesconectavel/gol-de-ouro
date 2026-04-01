@@ -98,11 +98,15 @@ COMMENT ON FUNCTION public.creditar_pix_aprovado_mp(text) IS
 -- -----------------------------------------------------------------------------
 -- 2) Saque: INSERT em saques + débito de saldo na mesma transação
 -- -----------------------------------------------------------------------------
+-- Remove assinatura antiga (4 args) para evitar sobrecarga ambígua após evolução.
+DROP FUNCTION IF EXISTS public.solicitar_saque_pix_atomico(uuid, numeric, text, text);
+
 CREATE OR REPLACE FUNCTION public.solicitar_saque_pix_atomico(
   p_usuario_id uuid,
   p_amount numeric,
   p_pix_key text,
-  p_pix_type text
+  p_pix_type text,
+  p_fee numeric DEFAULT NULL
 ) RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -116,10 +120,20 @@ DECLARE
   k text;
   t text;
   ts timestamptz := now();
+  v_taxa numeric;
+  v_net numeric;
 BEGIN
+  v_taxa := COALESCE(p_fee, 2.00::numeric);
+
   IF p_amount IS NULL OR p_amount <= 0 THEN
     RETURN jsonb_build_object('ok', false, 'reason', 'invalid_amount');
   END IF;
+
+  IF p_amount <= v_taxa THEN
+    RETURN jsonb_build_object('ok', false, 'reason', 'invalid_amount');
+  END IF;
+
+  v_net := p_amount - v_taxa;
 
   k := btrim(COALESCE(p_pix_key, ''));
   t := lower(btrim(COALESCE(p_pix_type, '')));
@@ -139,9 +153,31 @@ BEGIN
   novo_saldo := saldo_ant - p_amount;
 
   INSERT INTO public.saques (
-    usuario_id, amount, valor, pix_key, chave_pix, pix_type, tipo_chave, status, created_at
+    usuario_id,
+    amount,
+    valor,
+    pix_key,
+    chave_pix,
+    pix_type,
+    tipo_chave,
+    fee,
+    net_amount,
+    status,
+    created_at,
+    updated_at
   ) VALUES (
-    p_usuario_id, p_amount, p_amount, k, k, t, t, 'pendente', ts
+    p_usuario_id,
+    p_amount,
+    p_amount,
+    k,
+    k,
+    t,
+    t,
+    v_taxa,
+    v_net,
+    'pendente',
+    ts,
+    ts
   )
   RETURNING id INTO sid;
 
@@ -163,8 +199,8 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.solicitar_saque_pix_atomico(uuid, numeric, text, text) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.solicitar_saque_pix_atomico(uuid, numeric, text, text) TO service_role;
+REVOKE ALL ON FUNCTION public.solicitar_saque_pix_atomico(uuid, numeric, text, text, numeric) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.solicitar_saque_pix_atomico(uuid, numeric, text, text, numeric) TO service_role;
 
-COMMENT ON FUNCTION public.solicitar_saque_pix_atomico(uuid, numeric, text, text) IS
-  'INSERT saques + débito saldo atómico; remove linha de saque se lock otimista do saldo falhar.';
+COMMENT ON FUNCTION public.solicitar_saque_pix_atomico(uuid, numeric, text, text, numeric) IS
+  'INSERT saques (fee, net_amount) + débito saldo atómico; remove linha se lock otimista falhar. p_fee opcional (default 2.00) alinha a PAGAMENTO_TAXA_SAQUE.';
