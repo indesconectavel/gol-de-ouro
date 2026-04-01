@@ -65,9 +65,13 @@
 - **SHA (completo):** `4fb75b5edfa2080bac745de7e223520beb12a7a4`
 - **SHA (curto):** `4fb75b5`
 
-A tag `pre-consolidacao-verdade-sistema-2026-04-01` foi posicionada no **HEAD** da sequência de consolidação (último commit antes do push final deste relatório). Confirmar o commit exato no remoto com:
+### Commit final (referências de tag e push no relatório)
 
-`git fetch --tags` e `git rev-list -n 1 pre-consolidacao-verdade-sistema-2026-04-01`.
+- **Mensagem:** `docs: PREPARACAO — tag e push (referencias finais)`
+- **SHA (completo):** `0e8bded9da5f3434cd9aa110bfb13b4fcae7dda0`
+- **SHA (curto):** `0e8bded`
+
+A tag `pre-consolidacao-verdade-sistema-2026-04-01` aponta para o commit **`0e8bded`** (snapshot com o texto final deste relatório). Confirmar no remoto após `git fetch --tags` com `git rev-list -n 1 pre-consolidacao-verdade-sistema-2026-04-01`.
 
 ---
 
@@ -81,7 +85,7 @@ A tag `pre-consolidacao-verdade-sistema-2026-04-01` foi posicionada no **HEAD** 
 ## 4. Confirmação de push
 
 - **Remoto:** `origin` → `https://github.com/indesconectavel/gol-de-ouro.git`
-- **Branch:** `feature/bloco-e-gameplay-certified` — push(es) concluído(s) até o commit de alinhamento `4fb75b5` (confirmar no remoto com `git log origin/feature/bloco-e-gameplay-certified -1`).
+- **Branch:** `feature/bloco-e-gameplay-certified` — push concluído até o commit **`0e8bded`** (relatório PREPARACAO final); confirmar com `git log -1 origin/feature/bloco-e-gameplay-certified`.
 - **Tags:** `git push --tags` concluído; a tag `pre-consolidacao-verdade-sistema-2026-04-01` foi enviada (entre outras tags locais pendentes no mesmo push).
 
 ---
