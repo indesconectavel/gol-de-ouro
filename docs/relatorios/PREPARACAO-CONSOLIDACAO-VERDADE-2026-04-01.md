@@ -95,7 +95,7 @@ O **núcleo de artefactos** (migrations + relatórios de handoff/cirurgia) está
 ## 4. Confirmação de push
 
 - **Remoto:** `origin` → `https://github.com/indesconectavel/gol-de-ouro.git`
-- **Branch:** `feature/bloco-e-gameplay-certified` — push concluído; HEAD remoto após último ajuste do relatório: **`2f3b044`** (confirmar com `git log -1 origin/feature/bloco-e-gameplay-certified`). A **tag** `pre-consolidacao-verdade-sistema-2026-04-01` permanece em **`fe2437a`** (snapshot estável da sequência de consolidação).
+- **Branch:** `feature/bloco-e-gameplay-certified` — push concluído. O **HEAD** remoto pode avançar com pequenos commits de documentação; confirmar com `git log -1 origin/feature/bloco-e-gameplay-certified`. A **tag** `pre-consolidacao-verdade-sistema-2026-04-01` permanece em **`fe2437a`** (snapshot estável da sequência de consolidação).
 - **Tags:** `git push --tags` concluído; a tag `pre-consolidacao-verdade-sistema-2026-04-01` foi enviada (entre outras tags locais pendentes no mesmo push).
 
 ---
