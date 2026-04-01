@@ -47,20 +47,26 @@
 - **SHA (completo):** `fbce187f7174a975f0f024954d054ffb778cc6e0`
 - **SHA (curto):** `fbce187`
 
-### Commit de documentação (este relatório)
+### Commit de documentação (primeira versão deste relatório)
 
 - **Mensagem:** `docs: relatorio PREPARACAO-CONSOLIDACAO-VERDADE-2026-04-01`
 - **SHA (completo):** `23f048891145a684b29dee23d8765ba063c8e3b1`
 - **SHA (curto):** `23f0488`
 
-A tag `pre-consolidacao-verdade-sistema-2026-04-01` aponta para **`23f0488`** (inclui o presente ficheiro).
+### Commit de fecho (texto completo pós-push + tag)
+
+- **Mensagem:** `docs: completa PREPARACAO-CONSOLIDACAO-VERDADE-2026-04-01 (pos-push)`
+- **SHA (completo):** `382b02b7282896faa34035a61fea57ee0e978d13`
+- **SHA (curto):** `382b02b`
+
+A tag `pre-consolidacao-verdade-sistema-2026-04-01` aponta para **`382b02b`** (versão final deste relatório e ponto de rollback recomendado).
 
 ---
 
 ## 3. Tag criada
 
 - **Nome:** `pre-consolidacao-verdade-sistema-2026-04-01` (tag anotada)
-- **Commit referenciado:** `23f048891145a684b29dee23d8765ba063c8e3b1`
+- **Commit referenciado:** `382b02b7282896faa34035a61fea57ee0e978d13` (`docs: completa PREPARACAO-CONSOLIDACAO-VERDADE-2026-04-01 (pos-push)`)
 
 ---
 
@@ -94,11 +100,15 @@ Para criar um ramo a partir da tag:
 git checkout -b restore/pre-consolidacao-2026-04-01 pre-consolidacao-verdade-sistema-2026-04-01
 ```
 
-### Voltar apenas ao commit de consolidação `chore` (sem depender da tag)
+### Voltar apenas ao commit de consolidação `chore` (artefactos sem fecho do relatório)
 
 ```bash
 git checkout fbce187f7174a975f0f024954d054ffb778cc6e0
 ```
+
+### Snapshot com relatório PREPARACAO alinhado à tag
+
+O rollback “com documentação de fecho” deve usar o commit referenciado pela tag (`382b02b` no momento da consolidação) ou `git checkout pre-consolidacao-verdade-sistema-2026-04-01` após `git fetch --tags`.
 
 ### Aviso
 
