@@ -35,36 +35,47 @@
 | `VALIDACAO-FINAL-GAMEPLAY-POS-CORRECAO-SQL-2026-04-01.md` |
 | `VALIDACAO-FINAL-PONTA-A-PONTA-GAMEPLAY-SAQUE-HISTORICO-2026-04-01.md` |
 
-**Nota:** este ficheiro (`PREPARACAO-CONSOLIDACAO-VERDADE-2026-04-01.md`) foi adicionado no commit seguinte para registar o SHA do commit de consolidação sem alterar o histórico do commit `chore`.
+**Nota:** este ficheiro foi versionado no commit `docs: relatorio PREPARACAO-CONSOLIDACAO-VERDADE-2026-04-01` (abaixo), depois do commit `chore` de consolidação.
 
 ---
 
 ## 2. Commit realizado
 
+### Commit de consolidação (artefactos)
+
 - **Mensagem:** `chore: consolidacao verdade sistema (migrations + handoff + auditoria 2026-04-01)`
 - **SHA (completo):** `fbce187f7174a975f0f024954d054ffb778cc6e0`
 - **SHA (curto):** `fbce187`
 
-**Commit de documentação deste relatório (se aplicável):** ver `git log -1 --oneline` após o commit que adiciona este ficheiro.
+### Commit de documentação (este relatório)
+
+- **Mensagem:** `docs: relatorio PREPARACAO-CONSOLIDACAO-VERDADE-2026-04-01`
+- **SHA (completo):** `23f048891145a684b29dee23d8765ba063c8e3b1`
+- **SHA (curto):** `23f0488`
+
+A tag `pre-consolidacao-verdade-sistema-2026-04-01` aponta para **`23f0488`** (inclui o presente ficheiro).
 
 ---
 
 ## 3. Tag criada
 
-- **Nome:** `pre-consolidacao-verdade-sistema-2026-04-01`
-- **Alvo:** HEAD após inclusão deste relatório (ponto de restauração com documentação de fecho).
+- **Nome:** `pre-consolidacao-verdade-sistema-2026-04-01` (tag anotada)
+- **Commit referenciado:** `23f048891145a684b29dee23d8765ba063c8e3b1`
 
 ---
 
 ## 4. Confirmação de push
 
-Ver secção **Estado final** abaixo (executado na mesma sessão de consolidação).
+- **Remoto:** `origin` → `https://github.com/indesconectavel/gol-de-ouro.git`
+- **Branch:** `feature/bloco-e-gameplay-certified` — push concluído (`7d94d3a..23f0488`).
+- **Tags:** `git push --tags` concluído; a tag `pre-consolidacao-verdade-sistema-2026-04-01` foi enviada (entre outras tags locais pendentes no mesmo push).
 
 ---
 
 ## 5. Estado final do repositório
 
-Preenchido após `git push` e `git push --tags` (ver comando e resultado na sessão).
+- **Working tree:** deve estar limpo após os commits; confirmar com `git status`.
+- **Ramo local:** alinhado a `origin/feature/bloco-e-gameplay-certified` após push (ajustar `git pull` se outra máquina alterar o remoto).
 
 ---
 
@@ -97,5 +108,4 @@ git checkout fbce187f7174a975f0f024954d054ffb778cc6e0
 
 ## Estado da consolidação
 
-- Se push e tag estiverem concluídos sem erros: **CONSOLIDAÇÃO COMPLETA**
-- Caso contrário: **CONSOLIDAÇÃO INCOMPLETA** — ver notas finais no repositório ou repetir push
+**CONSOLIDAÇÃO COMPLETA** — commit `chore` versionado, relatório `PREPARACAO` versionado, tag criada, `git push` e `git push --tags` executados com sucesso na sessão 2026-04-01.
