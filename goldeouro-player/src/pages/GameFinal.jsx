@@ -696,6 +696,16 @@ const GameFinal = () => {
                   MENU PRINCIPAL
                 </button>
               </div>
+
+              {gamePhase === GAME_PHASE.IDLE && balance < betAmount && (
+                <div
+                  className="hud-insufficient-balance-banner"
+                  role="status"
+                  aria-live="polite"
+                >
+                  Você precisa adicionar créditos para jogar.
+                </div>
+              )}
             </div>
           </div>
           
