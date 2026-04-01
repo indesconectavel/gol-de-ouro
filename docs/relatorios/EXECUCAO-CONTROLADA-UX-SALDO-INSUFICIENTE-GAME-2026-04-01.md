@@ -14,7 +14,7 @@
 
 **Revisão:** `git diff --stat` antes do commit: **2 ficheiros, +36**. Sem alterações em backend, `handleShoot`, `canShoot`, `/gameshoot` ou outras rotas.
 
-**Ficheiros não incluídos no commit `feat`:** relatórios em `docs/relatorios/` permanecem por versionar à parte (opcional).
+**Ficheiros não incluídos no commit `feat`:** relatórios em `docs/relatorios/` foram versionados **em commit separado** após o push do `feat`: `docs: relatorio EXECUCAO UX saldo insuficiente game 2026-04-01` (**SHA `485a53f`**). A tag **`post-ux-saldo-insuficiente-game-2026-04-01`** continua a apontar apenas para o commit do **`feat`** (`5762868`).
 
 ---
 
