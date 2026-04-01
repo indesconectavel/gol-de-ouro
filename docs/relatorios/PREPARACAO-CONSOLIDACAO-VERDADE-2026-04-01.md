@@ -53,27 +53,35 @@
 - **SHA (completo):** `23f048891145a684b29dee23d8765ba063c8e3b1`
 - **SHA (curto):** `23f0488`
 
-### Commit de fecho (texto completo pós-push + tag)
+### Commit de fecho (texto completo pós-push)
 
 - **Mensagem:** `docs: completa PREPARACAO-CONSOLIDACAO-VERDADE-2026-04-01 (pos-push)`
 - **SHA (completo):** `382b02b7282896faa34035a61fea57ee0e978d13`
 - **SHA (curto):** `382b02b`
 
-A tag `pre-consolidacao-verdade-sistema-2026-04-01` aponta para **`382b02b`** (versão final deste relatório e ponto de rollback recomendado).
+### Commit de alinhamento (rollback no doc + referência à tag)
+
+- **Mensagem:** `docs: alinha PREPARACAO com tag e rollback`
+- **SHA (completo):** `4fb75b5edfa2080bac745de7e223520beb12a7a4`
+- **SHA (curto):** `4fb75b5`
+
+A tag `pre-consolidacao-verdade-sistema-2026-04-01` foi posicionada no **HEAD** da sequência de consolidação (último commit antes do push final deste relatório). Confirmar o commit exato no remoto com:
+
+`git fetch --tags` e `git rev-list -n 1 pre-consolidacao-verdade-sistema-2026-04-01`.
 
 ---
 
 ## 3. Tag criada
 
 - **Nome:** `pre-consolidacao-verdade-sistema-2026-04-01` (tag anotada)
-- **Commit referenciado:** `382b02b7282896faa34035a61fea57ee0e978d13` (`docs: completa PREPARACAO-CONSOLIDACAO-VERDADE-2026-04-01 (pos-push)`)
+- **Alvo:** commit apontado pela tag após `git fetch --tags` (snapshot com migrations + relatórios + PREPARACAO consolidado)
 
 ---
 
 ## 4. Confirmação de push
 
 - **Remoto:** `origin` → `https://github.com/indesconectavel/gol-de-ouro.git`
-- **Branch:** `feature/bloco-e-gameplay-certified` — push concluído (`7d94d3a..23f0488`).
+- **Branch:** `feature/bloco-e-gameplay-certified` — push(es) concluído(s) até o commit de alinhamento `4fb75b5` (confirmar no remoto com `git log origin/feature/bloco-e-gameplay-certified -1`).
 - **Tags:** `git push --tags` concluído; a tag `pre-consolidacao-verdade-sistema-2026-04-01` foi enviada (entre outras tags locais pendentes no mesmo push).
 
 ---
@@ -108,7 +116,7 @@ git checkout fbce187f7174a975f0f024954d054ffb778cc6e0
 
 ### Snapshot com relatório PREPARACAO alinhado à tag
 
-O rollback “com documentação de fecho” deve usar o commit referenciado pela tag (`382b02b` no momento da consolidação) ou `git checkout pre-consolidacao-verdade-sistema-2026-04-01` após `git fetch --tags`.
+O rollback “com documentação de fecho” deve usar `git checkout pre-consolidacao-verdade-sistema-2026-04-01` após `git fetch --tags` (a tag deve coincidir com o último commit da sequência de consolidação publicada).
 
 ### Aviso
 
