@@ -24,7 +24,7 @@ Registou-se no Git a **neutralização** dos deploys paralelos do player (`main-
 | Campo | Valor |
 |--------|--------|
 | **Mensagem** | `ci: unifica pipeline do player e neutraliza deploys paralelos` |
-| **SHA** | Objeto único do commit acima; confirmar com `git rev-parse HEAD` após pull ou `git show pos-unificacao-pipeline-player-2026-04-02` após criar a tag. |
+| **SHA** | `f4a5c55d29d53256e70fc4b168211bc1eafe9e42` |
 | **Ficheiros** | Os cinco workflows acima + `CIRURGIA-UNIFICACAO-PIPELINE-FRONTEND-2026-04-02.md` + `EXECUCAO-CONTROLADA-UNIFICACAO-PIPELINE-PLAYER-2026-04-02.md` |
 
 ---
@@ -34,7 +34,7 @@ Registou-se no Git a **neutralização** dos deploys paralelos do player (`main-
 | Campo | Valor |
 |--------|--------|
 | **Nome** | `pos-unificacao-pipeline-player-2026-04-02` |
-| **Alvo** | mesmo commit que `HEAD` da branch no push (tag anotada ou leve conforme criado) |
+| **Alvo** | `f4a5c55d29d53256e70fc4b168211bc1eafe9e42` (leve; `git show pos-unificacao-pipeline-player-2026-04-02`) |
 
 ---
 
@@ -45,7 +45,7 @@ Registou-se no Git a **neutralização** dos deploys paralelos do player (`main-
 | **Branch** | `ci/pipeline-frontend-correcao-2026-04-02` → `origin` |
 | **Tag** | `pos-unificacao-pipeline-player-2026-04-02` → `origin` |
 
-*Nota: após o push, confirmar no remoto com `git ls-remote --heads origin` e `git ls-remote --tags origin`.*
+Push concluído em 2026-04-02: branch e tag enviadas a `origin`. Confirmar com `git ls-remote --tags origin` se necessário.
 
 ---
 
