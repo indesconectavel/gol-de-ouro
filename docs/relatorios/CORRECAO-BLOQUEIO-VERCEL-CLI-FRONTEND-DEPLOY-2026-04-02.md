@@ -16,7 +16,7 @@ Correção: fixar **`vercel-version: '50.38.3'`** nos dois usos da action e **re
 | `vercel.json` | Presente em `goldeouro-player/vercel.json`, coerente com app Vite (`dist`, rewrites, headers). |
 | `.vercel/project.json` | Não versionado no repo (esperado em CI com `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID`). |
 | `working-directory` (antes) | `goldeouro-player` nos steps `amondnet/vercel-action` — correto para “app local”, mas **conflita** com Root Directory igual no painel Vercel quando o CLI resolve caminhos de projeto. |
-| Action | `amondnet/vercel-action@v25` com `options.cwd = working-directory` e `npx vercel@${vercel-version \|\| '25.1.0'}`. |
+| Action | `amondnet/vercel-action@v25` com `options.cwd = working-directory` e `npx vercel@…` (versão explícita ou fallback `25.1.0` na dependência da action). |
 | Evidência (CLI 25) | Logs: aviso *“The vercel.json file should be inside of the provided root directory.”* e *“Error! Unexpected error. Please try again later. ()”*. |
 | Evidência (CLI 50 + cwd antigo) | *“The provided path …/goldeouro-player/goldeouro-player does not exist.”* |
 
