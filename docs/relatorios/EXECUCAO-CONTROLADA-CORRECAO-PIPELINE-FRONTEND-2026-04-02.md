@@ -52,7 +52,7 @@ Este ficheiro (`EXECUCAO-CONTROLADA-…`) foi registado num **commit posterior**
 | Campo | Valor |
 |--------|--------|
 | **Branch** | `migracao-canonica-gamefinal-main-2026-04-01` |
-| **SHA enviado (cabeça da branch após push)** | `f791f0064fc9b239b4e802e4ff9119fbad88165e` (inclui o commit deste relatório) |
+| **SHA enviado (cabeça da branch após push)** | Confirmar no remoto: `git rev-parse origin/migracao-canonica-gamefinal-main-2026-04-01` (evita divergência com micro-commits de doc). |
 | **Tag enviada** | `pos-correcao-pipeline-frontend-2026-04-02` |
 
 ---
