@@ -189,14 +189,13 @@ jobs:
             echo "Nenhuma verificação anterior encontrada" >> docs/RELATORIO-HEALTH-MONITOR.md
           fi
 
+      # REMOVIDO: git push origin main — evitava disparo indirecto de workflows (push à main).
+      # Relatórios permanecem como artifact (step "Upload relatório de saúde").
       - name: Commitar relatórios
         if: github.ref == 'refs/heads/main'  # ✅ Apenas em main
         run: |
-          git config --global user.email "ci@goldeouro.dev"
-          git config --global user.name "CI Pipeline"
-          git add docs/logs/ docs/RELATORIO-HEALTH-MONITOR.md || exit 0
-          git diff --staged --quiet || git commit -m "📊 Health Monitor $(date +%Y-%m-%d\ %H:%M:%S)" || exit 0
-          git push origin main || echo "Push falhou ou não há mudanças"
+          echo "ℹ️ Commit/push automático desativado (unificação pipeline 2026-04-02)."
+          echo "ℹ️ Ver artifact health-report-* e docs/logs gerados neste run."
 
       - name: Enviar alerta (Slack/Discord)
         if: failure()

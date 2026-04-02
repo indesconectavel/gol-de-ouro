@@ -46,21 +46,8 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         continue-on-error: true
 
-      - name: 🌐 Deploy Frontend (Vercel)
-        working-directory: ./goldeouro-player  # ✅ CORRIGIDO: Especifica diretório
-        continue-on-error: true
-        run: |
-          echo "🌐 Iniciando deploy do frontend..."
-          if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "${{ secrets.VERCEL_ORG_ID }}" ] || [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
-            echo "⚠️ Tokens Vercel não configurados. Pulando deploy do frontend."
-            exit 0
-          fi
-          npx vercel --prod --yes
-          echo "✅ Deploy do frontend concluído"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      # REMOVIDO: deploy do frontend agora é exclusivo do frontend-deploy.yml
+      # (passo anterior: npx vercel --prod --yes em goldeouro-player)
 
       - name: ✅ Validar endpoints principais
         continue-on-error: true

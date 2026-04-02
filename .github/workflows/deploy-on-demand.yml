@@ -67,6 +67,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Produção pública do player: apenas frontend-deploy.yml. Aqui só preview (não --prod).
       - name: Deploy com Vercel Action
         uses: amondnet/vercel-action@v25
         with:
@@ -74,13 +75,13 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID_PLAYER }}
           working-directory: ./goldeouro-player
-          vercel-args: "--prod"
+          vercel-args: '--target preview'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
       - name: Informações pós-deploy
         run: |
-          echo "✅ Player implantado. Domínio: https://goldeouro.lol"
-          echo "ℹ️ Se necessário, invalide a edge cache no Vercel (Dashboard -> Project -> Settings -> Cache)."
+          echo "✅ Player implantado como preview (não produção). Ver URL no log do vercel-action."
+          echo "ℹ️ Produção: workflow frontend-deploy.yml. Cache: Vercel Dashboard -> Project -> Settings -> Cache."
 
 

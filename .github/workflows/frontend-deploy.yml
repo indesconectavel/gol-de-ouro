@@ -179,6 +179,12 @@ jobs:
           echo "🌐 Domínios: https://www.goldeouro.lol / https://goldeouro.lol"
           echo "📌 Commit SHA: ${GITHUB_SHA}"
 
+      - name: notify vercel
+        if: always()
+        uses: vercel/repository-dispatch/actions/status@v1
+        with:
+          name: vercel-deploy
+
   # 🔄 Deploy para desenvolvimento
   deploy-development:
     name: 🔄 Deploy Desenvolvimento
