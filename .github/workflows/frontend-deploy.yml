@@ -13,7 +13,7 @@ on:
 
 env:
   NODE_VERSION: '20'
-  VERCEL_PROJECT_ID: goldeouro-player
+  # ID real do projeto Vercel vem de secrets.VERCEL_PROJECT_ID (prj_xxx), não do nome "goldeouro-player".
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 jobs:
@@ -84,6 +84,9 @@ jobs:
     needs: test-frontend
     if: github.ref == 'refs/heads/main'
     timeout-minutes: 30
+    concurrency:
+      group: frontend-vercel-production
+      cancel-in-progress: false
     
     steps:
       - name: 📥 Checkout código
@@ -116,6 +119,13 @@ jobs:
           test -f dist/favicon.png && echo "✅ favicon.png encontrado" || echo "⚠️ favicon.png não encontrado"
           echo "✅ Verificação concluída"
           
+      - name: 📌 Rastreabilidade — commit e ref
+        run: |
+          echo "DEPLOY_SHA=${GITHUB_SHA}"
+          echo "DEPLOY_REF=${GITHUB_REF}"
+          echo "Commit: $(git log -1 --oneline)"
+          echo "::notice title=Deploy produção::SHA=${GITHUB_SHA} ref=${GITHUB_REF}"
+
       - name: 🔐 Verificar tokens Vercel
         run: |
           if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "${{ secrets.VERCEL_ORG_ID }}" ] || [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
@@ -124,44 +134,50 @@ jobs:
           fi
           echo "✅ Tokens Vercel configurados"
 
-      - name: 🔐 Configurar Vercel
+      # Deploy produção: apenas push em main (paths filtrados). Branch canônica de baseline deve integrar via PR → main.
+      # Não usar --yes (CLI Vercel rejeita); token + CI já são não-interativos.
+      - name: 📤 Deploy Vercel (produção)
+        id: vercel_production
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: goldeouro-player
-          vercel-args: '--prod --yes'
-        continue-on-error: true
-          
-      - name: 🧪 Teste de produção
-        continue-on-error: true
+          vercel-args: '--prod'
+
+      - name: 📎 URL de deploy (Vercel)
+        if: success()
         run: |
-          echo "🧪 Testando deploy de produção..."
-          # Retry logic: 6 tentativas com intervalo de 10s (total ~60s)
+          echo "preview-url output=${{ steps.vercel_production.outputs.preview-url }}"
+          echo "Validar no dashboard Vercel: Deployment deste run deve corresponder ao SHA ${GITHUB_SHA}"
+
+      - name: 🧪 Smoke test HTTP (prod)
+        run: |
+          echo "🧪 Smoke test após deploy (www + apex)..."
           SUCCESS=0
           for i in {1..6}; do
             echo "Tentativa $i de 6..."
-            if curl -f --max-time 30 https://goldeouro.lol; then
-              echo "✅ Teste de produção bem-sucedido na tentativa $i"
+            if curl -fsS --max-time 30 https://www.goldeouro.lol/ -o /dev/null && curl -fsS --max-time 30 https://goldeouro.lol/ -o /dev/null; then
+              echo "✅ Smoke test OK (www + apex)"
               SUCCESS=1
               break
             fi
             if [ $i -lt 6 ]; then
-              echo "⏳ Aguardando 10s antes da próxima tentativa..."
+              echo "⏳ Aguardando 10s..."
               sleep 10
             fi
           done
           if [ "$SUCCESS" = "0" ]; then
-            echo "⚠️ Teste de produção falhou após 6 tentativas"
+            echo "❌ Smoke test falhou após 6 tentativas"
+            exit 1
           fi
-          echo "✅ Teste de produção concluído"
-          
-      - name: 📢 Notificar sucesso produção
+
+      - name: 📢 Resumo deploy produção
         run: |
-          echo "🎉 Deploy de produção concluído!"
-          echo "🌐 URL: https://goldeouro.lol"
-          echo "📊 Status: Online"
+          echo "🎉 Deploy de produção concluído (vercel-action sem continue-on-error)."
+          echo "🌐 Domínios: https://www.goldeouro.lol / https://goldeouro.lol"
+          echo "📌 Commit SHA: ${GITHUB_SHA}"
 
   # 🔄 Deploy para desenvolvimento
   deploy-development:
@@ -196,7 +212,14 @@ jobs:
           fi
           echo "✅ Tokens Vercel configurados"
 
+      - name: 📌 Rastreabilidade — commit e ref (dev)
+        run: |
+          echo "DEPLOY_SHA=${GITHUB_SHA}"
+          echo "DEPLOY_REF=${GITHUB_REF}"
+          echo "::notice title=Deploy preview dev::SHA=${GITHUB_SHA}"
+
       - name: 🔐 Configurar Vercel (Dev)
+        id: vercel_preview
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -204,7 +227,11 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: goldeouro-player
           vercel-args: '--target preview'
-        continue-on-error: true
+
+      - name: 📎 URL preview (dev)
+        if: success()
+        run: |
+          echo "preview-url=${{ steps.vercel_preview.outputs.preview-url }}"
           
       - name: 📢 Notificar deploy dev
         run: |
