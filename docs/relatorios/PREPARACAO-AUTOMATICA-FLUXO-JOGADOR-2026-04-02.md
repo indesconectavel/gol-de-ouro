@@ -139,8 +139,8 @@ Foi criado **commit de segurança** contendo apenas os três documentos do trilh
 | Campo | Valor |
 |-------|--------|
 | **Branch** | `migracao-canonica-gamefinal-main-2026-04-01` (ou `main` após merge — conforme fluxo do time) |
-| **Push commit** | *(registrar sucesso/falha e mensagem do `git push`)* |
-| **Push tag** | `git push origin pre-cirurgia-fluxo-jogador-2026-04-02` |
+| **Push commit** | **Sucesso** (2026-04-02): `git push origin migracao-canonica-gamefinal-main-2026-04-01` — branch criada/atualizada em `origin`. |
+| **Push tag** | **Sucesso** (2026-04-02): `git push origin pre-cirurgia-fluxo-jogador-2026-04-02` — tag anotada publicada. |
 
 ---
 
