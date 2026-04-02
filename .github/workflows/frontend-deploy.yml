@@ -10,6 +10,7 @@ on:
     branches: [ main ]
     paths:
       - 'goldeouro-player/**'
+  workflow_dispatch:
 
 env:
   NODE_VERSION: '20'
