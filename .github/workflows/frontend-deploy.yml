@@ -145,7 +145,6 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-version: '50.38.3'
-          working-directory: goldeouro-player
           vercel-args: '--prod'
 
       - name: 📎 URL de deploy (Vercel)
@@ -234,7 +233,6 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-version: '50.38.3'
-          working-directory: goldeouro-player
           vercel-args: '--target preview'
 
       - name: 📎 URL preview (dev)
