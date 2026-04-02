@@ -9,6 +9,28 @@ import { API_ENDPOINTS } from '../config/api'
 import { retryDataRequest } from '../utils/retryLogic'
 import { quickDashboardTest } from '../utils/dashboardTest'
 
+/** Mapeia linha da API de chutes para exibição em “Apostas Recentes” */
+function mapChuteToRecentBet(row) {
+  if (!row || !row.id) return null
+  const created = row.created_at ? new Date(row.created_at) : null
+  const dataStr =
+    created && !Number.isNaN(created.getTime())
+      ? created.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+      : '—'
+  const isGoal = row.resultado === 'goal'
+  const valor = Number(row.valor_aposta) || 0
+  const premioTotal = (Number(row.premio) || 0) + (Number(row.premio_gol_de_ouro) || 0)
+  return {
+    id: row.id,
+    valor,
+    data: dataStr,
+    status: isGoal ? 'Gol' : 'Defesa',
+    statusKey: isGoal ? 'goal' : 'miss',
+    tipo: `Chute · ${row.direcao || '?'}`,
+    premioGanho: premioTotal
+  }
+}
+
 const Dashboard = () => {
   const { isCollapsed } = useSidebar()
   const [balance, setBalance] = useState(0.00)
@@ -46,17 +68,21 @@ const Dashboard = () => {
         setBalance(profileResponse.data.data.saldo || 0)
       }
 
-      // Buscar dados PIX do usuário (inclui histórico) - COM RETRY LOGIC E TRATAMENTO DE ERRO ROBUSTO
+      // Apostas Recentes = chutes do jogador (não PIX)
       try {
-        const pixResponse = await retryDataRequest(() => 
-          apiClient.get(API_ENDPOINTS.PIX_USER)
+        const chutesRes = await retryDataRequest(() =>
+          apiClient.get(API_ENDPOINTS.GAMES_CHUTES_RECENTES, { params: { limit: 20 } })
         )
-        if (pixResponse.data.success) {
-          setRecentBets(pixResponse.data.data.historico_pagamentos || [])
+        if (chutesRes.data.success && chutesRes.data.data?.items) {
+          const mapped = chutesRes.data.data.items
+            .map(mapChuteToRecentBet)
+            .filter(Boolean)
+          setRecentBets(mapped)
+        } else {
+          setRecentBets([])
         }
-      } catch (pixError) {
-        console.warn('⚠️ [DASHBOARD] Erro ao carregar dados PIX após retry:', pixError.message)
-        // Fallback para lista vazia em caso de erro PIX
+      } catch (chutesErr) {
+        console.warn('⚠️ [DASHBOARD] Erro ao carregar chutes recentes:', chutesErr.message)
         setRecentBets([])
       }
 
@@ -238,23 +264,26 @@ const Dashboard = () => {
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${bet.status === 'processado' ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
+                        <div className={`w-3 h-3 rounded-full ${bet.statusKey === 'goal' ? 'bg-green-400' : 'bg-amber-400'}`}></div>
                         <div>
                           <p className="text-white font-medium">R$ {bet.valor.toFixed(2)}</p>
                           <p className="text-white/70 text-sm">{bet.data}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className={`font-bold flex items-center space-x-1 ${bet.status === 'processado' ? 'text-green-400' : 'text-yellow-400'}`}>
-                          <span>{bet.status === 'processado' ? '✅' : '⏳'}</span>
+                        <p className={`font-bold flex items-center space-x-1 ${bet.statusKey === 'goal' ? 'text-green-400' : 'text-amber-300'}`}>
+                          <span>{bet.statusKey === 'goal' ? '⚽' : '🥅'}</span>
                           <span>{bet.status}</span>
                         </p>
                         <p className="text-white/70 text-sm">{bet.tipo}</p>
+                        {bet.premioGanho > 0 && (
+                          <p className="text-green-400 text-xs mt-0.5">+R$ {bet.premioGanho.toFixed(2)}</p>
+                        )}
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center text-white/70">Nenhuma transação encontrada</div>
+                  <div className="text-center text-white/70">Nenhuma jogada ainda</div>
                 )}
               </div>
               

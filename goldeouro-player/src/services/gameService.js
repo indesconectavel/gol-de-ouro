@@ -68,33 +68,57 @@ class GameService {
   // SISTEMA DE CHUTES CORRIGIDO
   // =====================================================
 
-  // Processar chute no backend
-  async processShot(direction, amount) {
+  // Processar chute no backend (V1: enviar sempre amount = 1)
+  async processShot(direction, amount = 1) {
     try {
       // Validar entrada
       if (!this.goalZones.includes(direction)) {
         throw new Error('Direção inválida');
       }
 
-      if (!this.batchConfigs[amount]) {
+      // V1: backend aceita apenas R$ 1; enviar sempre 1
+      const betValue = 1;
+      if (!this.batchConfigs[betValue]) {
         throw new Error('Valor de aposta inválido');
       }
 
-      if (this.userBalance < amount) {
+      if (this.userBalance < betValue) {
         throw new Error('Saldo insuficiente');
       }
 
-      // Enviar chute para o backend
-      const response = await apiClient.post('/api/games/shoot', {
-        direction: direction,
-        amount: amount
-      });
+      // Gerar chave de idempotência por tentativa de chute
+      // - 1 tentativa de chute = 1 chave
+      // - retry automático do mesmo request reutiliza a mesma chave (axios reenvia o mesmo config)
+      const idempotencyKey = `shot-${Date.now()}-${Math.random().toString(36).slice(2)}-${direction}-${betValue}`;
+
+      // Enviar chute para o backend com X-Idempotency-Key
+      const response = await apiClient.post(
+        '/api/games/shoot',
+        {
+          direction: direction,
+          amount: betValue
+        },
+        {
+          headers: {
+            'X-Idempotency-Key': idempotencyKey
+          }
+        }
+      );
 
       if (response.data.success) {
         const result = response.data.data;
+        const saldoFinal = result.novoSaldo;
+        if (saldoFinal === undefined || saldoFinal === null || Number.isNaN(Number(saldoFinal))) {
+          console.error('❌ [GAME] Resposta sem novoSaldo válido');
+          return {
+            success: false,
+            error: 'Servidor não retornou saldo atualizado após o chute.'
+          };
+        }
+        const saldoNum = Number(saldoFinal);
         
-        // Atualizar estado local
-        this.userBalance = result.novoSaldo;
+        // Atualizar estado local (sempre saldo persistido retornado pela API)
+        this.userBalance = saldoNum;
         this.globalCounter = result.contadorGlobal;
         
         // Verificar se é Gol de Ouro
@@ -106,7 +130,7 @@ class GameService {
           shot: {
             id: `${result.loteId}_${result.loteProgress.current}`,
             direction: direction,
-            amount: amount,
+            amount: betValue,
             result: result.result,
             isWinner: result.result === 'goal',
             prize: result.premio,
@@ -120,7 +144,7 @@ class GameService {
             isComplete: result.isLoteComplete
           },
           user: {
-            newBalance: result.novoSaldo,
+            newBalance: saldoNum,
             globalCounter: result.contadorGlobal
           },
           isGoldenGoal: isGoldenGoal
@@ -131,18 +155,9 @@ class GameService {
 
     } catch (error) {
       console.error('❌ [GAME] Erro ao processar chute:', error);
-      // Priorizar mensagem do backend quando existir (ex.: 400 Saldo insuficiente)
-      let message = error.response?.data?.message || error.message;
-      const isInsufficientBalance = (message === 'Saldo insuficiente');
-      if (isInsufficientBalance) {
-        message = 'Você está sem saldo. Adicione saldo para jogar.';
-      }
-      // CHANGE #4: retorno semântico { code, message } para gatilho robusto no UI
       return {
         success: false,
-        error: isInsufficientBalance
-          ? { code: 'INSUFFICIENT_BALANCE', message }
-          : { code: 'GENERIC_ERROR', message }
+        error: error.message
       };
     }
   }
@@ -262,7 +277,8 @@ class GameService {
       lote: this.getCurrentLoteInfo(),
       goldenGoal: this.getGoldenGoalInfo(),
       config: {
-        availableBets: Object.keys(this.batchConfigs),
+        // V1: apenas R$ 1 ativo; outros valores reservados para V2
+        availableBets: [1],
         goalZones: this.goalZones
       }
     };
