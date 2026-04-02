@@ -1313,6 +1313,10 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
 
     if (chuteError) {
       console.error('❌ [SHOOT] Erro ao salvar chute:', chuteError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao registrar chute. Tente novamente.'
+      });
     }
 
     // Verificar se lote está completo
@@ -1349,17 +1353,35 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     //   Para manter a economia esperada (todos pagam a aposta), subtrair manualmente
     //   o valor da aposta apenas quando houver gol (evita dupla cobrança nas derrotas).
     if (isGoal) {
-      const novoSaldoVencedor = user.saldo - amount + premio + premioGolDeOuro;
+      const novoSaldoVencedor = Number(user.saldo) - amount + premio + premioGolDeOuro;
       const { error: saldoWinnerError } = await supabase
         .from('usuarios')
         .update({ saldo: novoSaldoVencedor })
         .eq('id', req.user.userId);
       if (saldoWinnerError) {
         console.error('❌ [SHOOT] Erro ao ajustar saldo do vencedor:', saldoWinnerError);
-      } else {
-        shootResult.novoSaldo = novoSaldoVencedor;
+        return res.status(500).json({
+          success: false,
+          message: 'Erro ao atualizar saldo após gol.'
+        });
       }
     }
+
+    // Saldo final sempre lido do banco após insert + trigger + eventual update de gol
+    const { data: saldoRow, error: saldoReadError } = await supabase
+      .from('usuarios')
+      .select('saldo')
+      .eq('id', req.user.userId)
+      .single();
+
+    if (saldoReadError || saldoRow == null || saldoRow.saldo === undefined || saldoRow.saldo === null) {
+      console.error('❌ [SHOOT] Falha ao ler saldo final:', saldoReadError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao confirmar saldo após chute.'
+      });
+    }
+    shootResult.novoSaldo = Number(saldoRow.saldo);
     
     console.log(`⚽ [SHOOT] Chute #${contadorChutesGlobal}: ${result} por usuário ${req.user.userId}`);
     
@@ -1371,6 +1393,47 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('❌ [SHOOT] Erro:', error);
     res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Chutes recentes do jogador (dashboard — Apostas Recentes)
+app.get('/api/games/chutes/recentes', authenticateToken, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const limitRaw = parseInt(String(req.query.limit || '20'), 10);
+    const limit = Math.min(Number.isFinite(limitRaw) && limitRaw > 0 ? limitRaw : 20, 50);
+
+    const { data: rows, error } = await supabase
+      .from('chutes')
+      .select('id, created_at, direcao, valor_aposta, resultado, premio, premio_gol_de_ouro, lote_id')
+      .eq('usuario_id', req.user.userId)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('❌ [CHUTES] Erro ao listar chutes recentes:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao carregar jogadas recentes'
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: { items: rows || [] }
+    });
+  } catch (err) {
+    console.error('❌ [CHUTES] Erro:', err);
+    return res.status(500).json({
       success: false,
       message: 'Erro interno do servidor'
     });

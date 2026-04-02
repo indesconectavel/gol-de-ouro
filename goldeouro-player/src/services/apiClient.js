@@ -121,6 +121,18 @@ apiClient.interceptors.response.use(
         data: response.data
       });
     }
+
+    const reqUrl = response.config.url || '';
+    const reqMethod = (response.config.method || 'get').toLowerCase();
+    if (
+      reqMethod === 'post' &&
+      reqUrl.includes('/api/games/shoot') &&
+      response.status === 200 &&
+      response.data?.success
+    ) {
+      requestCache.invalidatePath('/api/user/profile');
+    }
+
     return response;
   },
   async (error) => {

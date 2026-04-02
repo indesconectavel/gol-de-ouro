@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
   
   // Sistema de Jogo
   GAMES_SHOOT: `/api/games/shoot`,
+  GAMES_CHUTES_RECENTES: `/api/games/chutes/recentes`,
   GAMES_METRICS: `/api/metrics`,
   
   // Sistema de Lotes (compatibilidade)
