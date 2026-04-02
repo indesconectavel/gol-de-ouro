@@ -17,8 +17,8 @@ A integração foi feita por **branch limpa** a partir de **`origin/main`** com 
 
 | Aspeto | Detalhe |
 |--------|---------|
-| **Commits na branch PR** (4) | `52545e7` (ci pipeline) + `b0054bb` + `f0058c0` + `f258fcd` (docs de execução) — *SHAs locais após cherry-pick; o primeiro corresponde ao conteúdo de `46355bc…` na linha antiga.* |
-| **Ficheiros alterados vs `main`** | Apenas **3:** `.github/workflows/frontend-deploy.yml`, `docs/relatorios/CORRECAO-PIPELINE-DEPLOY-FRONTEND-2026-04-02.md`, `docs/relatorios/EXECUCAO-CONTROLADA-CORRECAO-PIPELINE-FRONTEND-2026-04-02.md` |
+| **Commits na branch PR** (5) | `52545e7` (ci pipeline) + `b0054bb` + `f0058c0` + `f258fcd` (docs execução) + `be90dfb` (este relatório PR) — *o primeiro corresponde ao conteúdo de `46355bc…` na linha antiga.* |
+| **Ficheiros alterados vs `main`** | **4:** workflow + 2 relatórios de pipeline/execução + `PR-CONTROLADO-CORRECAO-PIPELINE-MAIN-2026-04-02.md` |
 | **Commit histórico `46355bc`** | Conteúdo reproduzido em **`52545e7`** (mesma mensagem e diff de pipeline + relatório CORRECAO). |
 | **Fora de escopo** | Nenhum ficheiro em `goldeouro-player/**`; **não** reaplicação do PR #32. |
 
@@ -55,7 +55,7 @@ A integração foi feita por **branch limpa** a partir de **`origin/main`** com 
 
 **URL do PR:** https://github.com/indesconectavel/gol-de-ouro/pull/33  
 
-**Nota:** este ficheiro (`PR-CONTROLADO-…`) deve ser **commitado na mesma branch** e **empurrado** para aparecer no PR (commit seguido de push se ainda não integrado).
+**Nota:** o ficheiro `PR-CONTROLADO-…` foi **commitado** na branch (`be90dfb`) e **empurrado**; o PR #33 inclui **5** commits.
 
 ---
 
