@@ -24,8 +24,11 @@ Integra na **`main`** a **unificação do pipeline do player** já registada na 
 | `.github/workflows/rollback.yml` | Sem `vercel promote` automático no frontend |
 | `docs/relatorios/CIRURGIA-UNIFICACAO-PIPELINE-FRONTEND-2026-04-02.md` | Relatório da cirurgia |
 | `docs/relatorios/EXECUCAO-CONTROLADA-UNIFICACAO-PIPELINE-PLAYER-2026-04-02.md` | Relatório de execução |
+| `docs/relatorios/PR-CONTROLADO-UNIFICACAO-PIPELINE-PLAYER-MAIN-2026-04-02.md` | Este relatório (commit posterior ao abrir o PR #34) |
 
-**Commits na branch relativamente à `main` (ordem):** `f4a5c55` (unificação) → `238c8ac` / `c58001a` (docs do relatório de execução, se aplicável no remoto).
+**Nota:** o diff exacto `main…branch` no GitHub incluirá **8** ficheiros após o push do relatório PR; antes eram **7** (só workflows + dois relatórios de cirurgia/execução).
+
+**Commits na branch relativamente à `main` (ordem):** `f4a5c55` (unificação) → commits de docs → `8d360db` (este relatório PR), entre outros.
 
 **O PR está limpo?** **SIM** — apenas workflows e os dois relatórios acima; **não** há `goldeouro-player/src` nem outros ficheiros de produto neste diff.
 
