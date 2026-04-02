@@ -34,7 +34,7 @@ Registou-se no Git a **neutralização** dos deploys paralelos do player (`main-
 | Campo | Valor |
 |--------|--------|
 | **Nome** | `pos-unificacao-pipeline-player-2026-04-02` |
-| **Alvo** | `f4a5c55d29d53256e70fc4b168211bc1eafe9e42` (leve; `git show pos-unificacao-pipeline-player-2026-04-02`) |
+| **Alvo** | `f4a5c55d29d53256e70fc4b168211bc1eafe9e42` (leve; `git show pos-unificacao-pipeline-player-2026-04-02`). *A tag marca o commit de unificação; pode existir commit posterior só em docs na mesma branch.* |
 
 ---
 
