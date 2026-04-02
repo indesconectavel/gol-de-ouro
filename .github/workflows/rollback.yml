@@ -22,11 +22,6 @@ jobs:
       - name: ⚙️ Configurar Fly.io CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: ⚙️ Configurar Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       - name: 🔁 Rollback Backend (Fly.io)
         continue-on-error: true
         run: |
@@ -59,47 +54,12 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-      - name: 🔁 Rollback Frontend (Vercel)
-        continue-on-error: true
+      # REMOVIDO: rollback automático do frontend desativado — controlado via pipeline canônico
+      # (anteriormente: npx vercel promote; produção do player só via frontend-deploy.yml ou dashboard Vercel)
+      - name: 🔁 Rollback Frontend (Vercel) — desativado
         run: |
-          echo "⚠️ Deploy do frontend falhou. Revertendo para versão anterior..."
-          
-          if [ -z "${{ secrets.VERCEL_TOKEN }}" ] || [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
-            echo "⚠️ VERCEL_TOKEN ou VERCEL_PROJECT_ID não configurado. Pulando rollback do frontend."
-            exit 0
-          fi
-          
-          # Listar deployments recentes (apenas produção)
-          DEPLOYMENTS=$(npx vercel ls ${{ secrets.VERCEL_PROJECT_ID }} --token=${{ secrets.VERCEL_TOKEN }} --prod --json 2>/dev/null || echo "[]")
-          
-          if [ "$DEPLOYMENTS" = "[]" ] || [ -z "$DEPLOYMENTS" ]; then
-            echo "⚠️ Nenhum deployment anterior encontrado. Rollback não possível."
-            exit 0
-          fi
-          
-          # Obter penúltimo deployment de produção (último é o que falhou)
-          PREVIOUS_DEPLOYMENT=$(echo "$DEPLOYMENTS" | jq -r 'if length > 1 then .[1].uid else .[0].uid end' 2>/dev/null || echo "")
-          
-          if [ -z "$PREVIOUS_DEPLOYMENT" ] || [ "$PREVIOUS_DEPLOYMENT" = "null" ]; then
-            echo "⚠️ Não foi possível determinar deployment anterior. Rollback não possível."
-            echo "💡 Sugestão: Fazer rollback manualmente no Vercel Dashboard"
-            exit 0
-          fi
-          
-          echo "🔄 Fazendo rollback para deployment: $PREVIOUS_DEPLOYMENT"
-          
-          # Promover deployment anterior para produção usando vercel promote
-          # Nota: vercel promote promove um deployment específico para produção
-          npx vercel promote $PREVIOUS_DEPLOYMENT --token=${{ secrets.VERCEL_TOKEN }} --yes 2>/dev/null || {
-            echo "⚠️ Rollback automático do frontend falhou."
-            echo "💡 Fazer rollback manualmente:"
-            echo "   1. Acessar: https://vercel.com/goldeouro-admins-projects/goldeouro-player/deployments"
-            echo "   2. Encontrar deployment anterior funcional"
-            echo "   3. Clicar em 'Promote to Production'"
-            exit 0
-          }
-          
-          echo "✅ Rollback do frontend concluído com sucesso."
+          echo "ℹ️ Rollback automático do frontend desativado (unificação pipeline 2026-04-02)."
+          echo "ℹ️ Use .github/workflows/frontend-deploy.yml ou promote manual no Vercel."
 
       - name: 🧾 Registrar logs
         continue-on-error: true
