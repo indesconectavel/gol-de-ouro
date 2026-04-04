@@ -1,6 +1,7 @@
 # Rollback manual do frontend (Vercel) — não dispara automaticamente.
 # Uso: Actions → este workflow → Run workflow → confirm = ROLLBACK (obrigatório).
 # Documentação: docs/relatorios/EVOLUCAO-PIPELINE-FRONTEND-NIVEL-ENTERPRISE-2026-04-04.md
+# Fechamento governança: docs/relatorios/FECHAMENTO-OFICIAL-PIPELINE-FRONTEND-ENTERPRISE-2026-04-04.md
 name: 🔙 Frontend — rollback manual (Vercel)
 
 on:

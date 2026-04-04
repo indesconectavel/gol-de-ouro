@@ -87,4 +87,8 @@ Ver relatório completo de correção:
 
 docs/relatorios/CORRECAO-BLOQUEIO-VERCEL-CLI-FRONTEND-DEPLOY-2026-04-02.md
 
+Fechamento oficial do estado enterprise (deploy + rollback + restauração documentados):
+
+docs/relatorios/FECHAMENTO-OFICIAL-PIPELINE-FRONTEND-ENTERPRISE-2026-04-04.md
+
 ---
