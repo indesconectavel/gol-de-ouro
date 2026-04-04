@@ -59,7 +59,8 @@ jobs:
       - name: 🔁 Rollback Frontend (Vercel) — desativado
         run: |
           echo "ℹ️ Rollback automático do frontend desativado (unificação pipeline 2026-04-02)."
-          echo "ℹ️ Use .github/workflows/frontend-deploy.yml ou promote manual no Vercel."
+          echo "ℹ️ Rollback manual controlado: workflow_dispatch em .github/workflows/frontend-rollback-manual.yml (confirm=ROLLBACK)."
+          echo "ℹ️ Deploy canônico: .github/workflows/frontend-deploy.yml ou dashboard Vercel."
 
       - name: 🧾 Registrar logs
         continue-on-error: true

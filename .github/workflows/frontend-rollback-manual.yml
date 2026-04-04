@@ -1,0 +1,78 @@
+# Rollback manual do frontend (Vercel) — não dispara automaticamente.
+# Uso: Actions → este workflow → Run workflow → confirm = ROLLBACK (obrigatório).
+# Documentação: docs/relatorios/EVOLUCAO-PIPELINE-FRONTEND-NIVEL-ENTERPRISE-2026-04-04.md
+name: 🔙 Frontend — rollback manual (Vercel)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Digite exatamente ROLLBACK para confirmar (ação em produção)'
+        required: true
+        type: string
+      deployment_target:
+        description: 'Opcional — URL ou ID do deployment Vercel; vazio = rollback para o deployment de produção imediatamente anterior (comportamento da CLI)'
+        required: false
+        default: ''
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  validate-confirm:
+    name: ✅ Validar confirmação
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gate de confirmação
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "ROLLBACK" ]; then
+            echo "::error::Confirmação inválida. O campo confirm deve ser exatamente ROLLBACK."
+            exit 1
+          fi
+          echo "✅ Confirmação aceite."
+
+  rollback-vercel:
+    name: 🔁 Rollback Vercel (produção)
+    runs-on: ubuntu-latest
+    needs: validate-confirm
+    timeout-minutes: 15
+    steps:
+      - name: 🔐 Verificar secrets
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "${{ secrets.VERCEL_ORG_ID }}" ] || [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "::error::Secrets VERCEL_TOKEN, VERCEL_ORG_ID ou VERCEL_PROJECT_ID em falta."
+            exit 1
+          fi
+          echo "✅ Secrets Vercel presentes."
+
+      - name: 🔁 Executar rollback (CLI)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          set -euo pipefail
+          TARGET="${{ github.event.inputs.deployment_target }}"
+          if [ -n "$TARGET" ]; then
+            echo "Rollback com alvo explícito: $TARGET"
+            npx --yes vercel@50.38.3 rollback "$TARGET" --token "$VERCEL_TOKEN"
+          else
+            echo "Rollback para o deployment de produção anterior (sem alvo explícito)"
+            npx --yes vercel@50.38.3 rollback --token "$VERCEL_TOKEN"
+          fi
+          echo "✅ Comando de rollback concluído. Validar domínios e dashboard Vercel."
+
+      - name: 🧪 Smoke pós-rollback (www + apex)
+        run: |
+          set -euo pipefail
+          for i in 1 2 3 4 5 6; do
+            if curl -fsS --max-time 30 https://www.goldeouro.lol/ -o /dev/null && curl -fsS --max-time 30 https://goldeouro.lol/ -o /dev/null; then
+              echo "✅ Smoke pós-rollback OK"
+              exit 0
+            fi
+            echo "Tentativa $i/6..."
+            sleep 10
+          done
+          echo "::warning::Smoke pós-rollback falhou — verificar manualmente."
+          exit 1
