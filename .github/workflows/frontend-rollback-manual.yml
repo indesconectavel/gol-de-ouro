@@ -54,12 +54,13 @@ jobs:
         run: |
           set -euo pipefail
           TARGET="${{ github.event.inputs.deployment_target }}"
+          SCOPE="goldeouro-admins-projects"
           if [ -n "$TARGET" ]; then
-            echo "Rollback com alvo explícito: $TARGET"
-            npx --yes vercel@50.38.3 rollback "$TARGET" --token "$VERCEL_TOKEN"
+            echo "Rollback com alvo explícito: $TARGET (scope=$SCOPE)"
+            npx --yes vercel@50.38.3 rollback "$TARGET" --token "$VERCEL_TOKEN" --scope "$SCOPE"
           else
-            echo "Rollback para o deployment de produção anterior (sem alvo explícito)"
-            npx --yes vercel@50.38.3 rollback --token "$VERCEL_TOKEN"
+            echo "Rollback para o deployment de produção anterior (sem alvo explícito, scope=$SCOPE)"
+            npx --yes vercel@50.38.3 rollback --token "$VERCEL_TOKEN" --scope "$SCOPE"
           fi
           echo "✅ Comando de rollback concluído. Validar domínios e dashboard Vercel."
 
