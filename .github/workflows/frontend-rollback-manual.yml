@@ -67,7 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           for i in 1 2 3 4 5 6; do
-            if curl -fsS --max-time 30 https://www.goldeouro.lol/ -o /dev/null && curl -fsS --max-time 30 https://goldeouro.lol/ -o /dev/null; then
+            if curl -fsSL --max-time 30 https://www.goldeouro.lol/ -o /dev/null && curl -fsSL --max-time 30 https://goldeouro.lol/ -o /dev/null; then
               echo "✅ Smoke pós-rollback OK"
               exit 0
             fi
