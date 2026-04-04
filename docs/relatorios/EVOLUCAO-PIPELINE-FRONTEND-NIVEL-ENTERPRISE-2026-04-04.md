@@ -38,7 +38,7 @@ Correção pontual após o primeiro deploy enterprise: o apex `https://goldeouro
   3. Opcionalmente **`deployment_target`** (URL ou ID Vercel); vazio = rollback para o deployment de produção **imediatamente anterior** (semântica da CLI Vercel; limites de plano aplicam-se no painel Vercel).
   4. Validar smoke pós-rollback (www + apex) no próprio job.
 
-**Nota:** a primeira execução real em incidente deve ser feita em janela controlada; este repositório **não** executou rollback contra produção na validação de 2026-04-04 (apenas deploy + health + smoke).
+**Nota:** a primeira execução real em incidente deve ser feita em janela controlada. *Redacção original:* este repositório **não** tinha executado rollback contra produção na validação imediata de 2026-04-04 (apenas deploy + health + smoke). *Atualização:* ver **secção 10** e `TESTE-REAL-ROLLBACK-FRONTEND-VERCEL-2026-04-04.md`.
 
 ## 5. Teste controlado
 
@@ -59,7 +59,7 @@ Evidências: `::notice` com SHA, URL Vercel e `run_id`; sumário do job com tabe
 
 ## 7. Riscos remanescentes
 
-- **Rollback manual** não foi **exercido** contra produção nesta validação (apenas definido e revisto por sintaxe).
+- **Rollback manual:** *estado em 2026-04-04 após teste real* — exercido em produção com evidência em `TESTE-REAL-ROLLBACK-FRONTEND-VERCEL-2026-04-04.md`; permanece dependente de **`--scope`** e de janela operacional em incidentes reais.
 - **Plano/limites Vercel** podem restringir rollback a “deployment anterior” apenas (documentação Vercel).
 - **Health por HTML mínimo** não substitui testes E2E nem validação de conteúdo dinâmico da SPA após hidratação.
 - Avisos do runner (Node 20 nas actions; anotações `git` 128) persistem sem bloquear o job de deploy.
@@ -70,6 +70,14 @@ Evidências: `::notice` com SHA, URL Vercel e `run_id`; sumário do job com tabe
 
 *(Ressalva principal: rollback manual preparado mas não executado em produção nesta bateria de testes.)*
 
+**Atualização 2026-04-04:** a ressalva acima foi **encerrada** com teste real em produção e relatório dedicado — ver secção 10 e `FECHAMENTO-OFICIAL-PIPELINE-FRONTEND-ENTERPRISE-2026-04-04.md`.
+
 ## 9. Conclusão objetiva
 
 O pipeline canónico do frontend passou a ter **camadas explícitas** de gate (evidências), smoke e health **coerentes com redirects e gzip**, mais **outputs** para integrações futuras e um **workflow de rollback manual** alinhado à CLI Vercel 50. O nível de maturidade é **enterprise-grade operacional** para deploy e verificação pós-deploy; a disciplina de **rollback em incidente** fica **procedimentalmente pronta**, devendo ser **ensaiada** quando houver janela segura.
+
+## 10. Atualização — rollback em produção (2026-04-04)
+
+Foi executado **teste controlado** de rollback contra produção e **restauração** por redeploy, com rastreabilidade em GitHub Actions. Detalhe técnico e IDs de runs: `docs/relatorios/TESTE-REAL-ROLLBACK-FRONTEND-VERCEL-2026-04-04.md`. Correção operacional: **`--scope goldeouro-admins-projects`** no workflow de rollback (PR #46).
+
+**Consolidação governança:** `docs/relatorios/FECHAMENTO-OFICIAL-PIPELINE-FRONTEND-ENTERPRISE-2026-04-04.md` — classificação final consolidada: **PIPELINE ENTERPRISE VALIDADO**.

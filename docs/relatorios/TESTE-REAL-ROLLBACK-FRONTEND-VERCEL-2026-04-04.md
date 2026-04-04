@@ -84,3 +84,10 @@ Indício objetivo: após o rollback, `https://www.goldeouro.lol/` passou a respo
 **ROLLBACK VALIDADO**
 
 *(Condição: uso de `vercel rollback` com `--scope goldeouro-admins-projects` alinhado à equipa do projeto; alvos sem scope ou de equipa/URL incoerente falham ou não produzem efeito verificável.)*
+
+---
+
+## Fechamento oficial (governação)
+
+Consolidação do estado enterprise do pipeline (histórico, causas, dependências críticas, veredito):  
+`docs/relatorios/FECHAMENTO-OFICIAL-PIPELINE-FRONTEND-ENTERPRISE-2026-04-04.md`.
