@@ -53,3 +53,38 @@ Data de referência: 2026-04-02 (UTC).
 - O pipeline **não** concluiu com sucesso o deploy de **produção** neste run: falha no step Vercel CLI.
 
 **Classificação:** **PIPELINE BLOQUEADO** (deploy de produção via GitHub Actions falhou; `workflow_dispatch` e integração em `main` estão OK).
+
+---
+
+## 🔁 Atualização de estado (pós-correção)
+
+Após a execução das correções estruturais no pipeline de deploy frontend (Vercel), incluindo:
+
+- Atualização da versão do Vercel CLI no workflow (`vercel-version`)
+- Remoção do `working-directory` em conflito com o Root Directory configurado no painel Vercel
+- Execução de testes controlados via `push` e `workflow_dispatch`
+
+Foram obtidos os seguintes resultados:
+
+- Runs bem-sucedidos:
+  - 23923449517 (push pós-merge)
+  - 23923532565 (workflow_dispatch manual)
+- Deploy de produção concluído com sucesso
+- Smoke tests HTTP (`www` e apex) com resposta 200
+- Ausência dos erros previamente observados (`Project not found`, `vercel.json/root warning`)
+
+### 📌 Novo estado do pipeline
+
+Classificação atualizada:
+
+**DEPLOY CANÔNICO VALIDADO**
+
+---
+
+## 🔗 Referência cruzada
+
+Ver relatório completo de correção:
+
+docs/relatorios/CORRECAO-BLOQUEIO-VERCEL-CLI-FRONTEND-DEPLOY-2026-04-02.md
+
+---
