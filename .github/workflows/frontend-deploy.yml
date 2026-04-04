@@ -186,7 +186,7 @@ jobs:
           SUCCESS=0
           for i in {1..6}; do
             echo "Tentativa $i de 6..."
-            if curl -fsS --max-time 30 https://www.goldeouro.lol/ -o /dev/null && curl -fsS --max-time 30 https://goldeouro.lol/ -o /dev/null; then
+            if curl -fsSL --max-time 30 https://www.goldeouro.lol/ -o /dev/null && curl -fsSL --max-time 30 https://goldeouro.lol/ -o /dev/null; then
               echo "✅ Smoke test OK (www + apex)"
               SUCCESS=1
               break
@@ -206,15 +206,15 @@ jobs:
         if: success()
         run: |
           set -euo pipefail
-          echo "::group::Health — corpo HTML mínimo (www + apex)"
+          echo "::group::Health — corpo HTML mínimo (www + apex, segue redirects)"
           for url in "https://www.goldeouro.lol/" "https://goldeouro.lol/"; do
-            code=$(curl -sS -o /tmp/gdo-health.html -w "%{http_code}" --max-time 30 "$url" || echo "000")
+            code=$(curl -sSL --compressed -o /tmp/gdo-health.html -w "%{http_code}" --max-time 30 "$url" || echo "000")
             if [ "$code" != "200" ]; then
-              echo "❌ $url → HTTP $code (esperado 200)"
+              echo "❌ $url → HTTP $code após redirects (esperado 200)"
               exit 1
             fi
             if ! grep -qiE '<html|<!DOCTYPE' /tmp/gdo-health.html; then
-              echo "❌ $url → resposta não contém marcadores mínimos de HTML"
+              echo "❌ $url → corpo final não contém marcadores mínimos de HTML (ver gzip/redirect)"
               exit 1
             fi
             echo "✅ $url → 200 + HTML mínimo OK"
