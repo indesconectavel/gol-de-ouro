@@ -1,5 +1,6 @@
 name: 🎨 Frontend Deploy (Vercel)
 # Governação / fechamento enterprise: docs/relatorios/FECHAMENTO-OFICIAL-PIPELINE-FRONTEND-ENTERPRISE-2026-04-04.md
+# Gates SPA / blindagem: docs/relatorios/BLINDAGEM-DEFINITIVA-ENTERPRISE-PIPELINE-PLAYER-2026-04-05.md
 
 on:
   push:
@@ -175,6 +176,7 @@ jobs:
             echo "| Ref | \`${{ github.ref }}\` |"
             echo "| URL deployment (Vercel) | $URL |"
             echo "| Domínios canónicos | www + apex \`goldeouro.lol\` |"
+            echo "| Gates pós-deploy | smoke + health + **deep links** \`/dashboard\` e \`/register\` (sem \`NOT_FOUND\`) |"
             echo ""
             echo "Rollback manual documentado: workflow \`frontend-rollback-manual.yml\` (confirmar com \`ROLLBACK\`)."
           } >> "$GITHUB_STEP_SUMMARY"
@@ -183,12 +185,16 @@ jobs:
         if: success()
         run: |
           set -euo pipefail
-          echo "::group::Smoke — www + apex (até 6 tentativas)"
+          echo "::group::Smoke — www + apex (até 6 tentativas, -L, log de status)"
           SUCCESS=0
           for i in {1..6}; do
             echo "Tentativa $i de 6..."
-            if curl -fsSL --max-time 30 https://www.goldeouro.lol/ -o /dev/null && curl -fsSL --max-time 30 https://goldeouro.lol/ -o /dev/null; then
-              echo "✅ Smoke test OK (www + apex)"
+            code_www=$(curl -sSL -o /dev/null -w "%{http_code}" --max-time 30 "https://www.goldeouro.lol/" || echo "000")
+            code_apex=$(curl -sSL -o /dev/null -w "%{http_code}" --max-time 30 "https://goldeouro.lol/" || echo "000")
+            echo "  URL: https://www.goldeouro.lol/ → HTTP $code_www"
+            echo "  URL: https://goldeouro.lol/ → HTTP $code_apex (cadeia final após redirects)"
+            if [ "$code_www" = "200" ] && [ "$code_apex" = "200" ]; then
+              echo "✅ Smoke test OK (www + apex → 200)"
               SUCCESS=1
               break
             fi
@@ -207,25 +213,65 @@ jobs:
         if: success()
         run: |
           set -euo pipefail
-          echo "::group::Health — corpo HTML mínimo (www + apex, segue redirects)"
+          echo "::group::Health — HTML mínimo explícito (www + apex, -L + --compressed)"
           for url in "https://www.goldeouro.lol/" "https://goldeouro.lol/"; do
+            echo "URL testada: $url"
             code=$(curl -sSL --compressed -o /tmp/gdo-health.html -w "%{http_code}" --max-time 30 "$url" || echo "000")
+            echo "  HTTP status (final): $code"
             if [ "$code" != "200" ]; then
               echo "❌ $url → HTTP $code após redirects (esperado 200)"
               exit 1
             fi
             if ! grep -qiE '<html|<!DOCTYPE' /tmp/gdo-health.html; then
-              echo "❌ $url → corpo final não contém marcadores mínimos de HTML (ver gzip/redirect)"
+              echo "❌ $url → corpo final não contém marcadores mínimos de HTML (gzip/redirect)"
               exit 1
             fi
+            echo "  ✅ HTML mínimo: presente (<html ou <!DOCTYPE)"
             echo "✅ $url → 200 + HTML mínimo OK"
           done
+          echo "::endgroup::"
+
+      - name: 🛡️ Gate blindagem — deep links SPA (domínio canónico)
+        if: success()
+        run: |
+          set -euo pipefail
+          echo "::group::Blindagem — deep links (fonte de verdade: https://www.goldeouro.lol)"
+          verify_deep() {
+            local url="$1"
+            local label="$2"
+            local hdrf bodyf code
+            hdrf=$(mktemp)
+            bodyf=$(mktemp)
+            trap 'rm -f "$hdrf" "$bodyf"' RETURN
+            code=$(curl -sS --compressed -D "$hdrf" -o "$bodyf" -w "%{http_code}" --max-time 30 "$url" || echo "000")
+            echo ""
+            echo "─── $label ───"
+            echo "URL testada: $url"
+            echo "HTTP status: $code"
+            echo "Cabeçalhos relevantes (filtro):"
+            grep -iE '^(HTTP/|x-vercel-|server:)' "$hdrf" || true
+            if [ "$code" != "200" ]; then
+              echo "❌ GATE BLINDAGEM FALHOU: HTTP $code (esperado 200). Deep link não servido como SPA no edge."
+              exit 1
+            fi
+            if grep -qi 'x-vercel-error:[[:space:]]*NOT_FOUND' "$hdrf"; then
+              echo "❌ GATE BLINDAGEM FALHOU: cabeçalho X-Vercel-Error NOT_FOUND — fallback SPA ausente ou deployment incorreto."
+              exit 1
+            fi
+            if ! grep -qiE '<html|<!DOCTYPE' "$bodyf"; then
+              echo "❌ GATE BLINDAGEM FALHOU: corpo sem marcadores mínimos de HTML."
+              exit 1
+            fi
+            echo "✅ Resultado: OK (200, sem NOT_FOUND, HTML mínimo)"
+          }
+          verify_deep "https://www.goldeouro.lol/dashboard" "Deep link /dashboard"
+          verify_deep "https://www.goldeouro.lol/register" "Deep link /register"
           echo "::endgroup::"
 
       - name: 📢 Resumo deploy produção
         if: success()
         run: |
-          echo "🎉 Gate de produção: deploy + evidências + smoke + health — OK."
+          echo "🎉 Gate de produção: deploy + evidências + smoke + health + blindagem deep links — OK."
           echo "🌐 Domínios: https://www.goldeouro.lol / https://goldeouro.lol"
           echo "📌 Commit SHA: ${GITHUB_SHA}"
           echo "🔗 URL deployment: ${{ steps.deploy_evidence.outputs.deploy_url }}"

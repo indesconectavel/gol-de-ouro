@@ -2,6 +2,7 @@
 # Uso: Actions → este workflow → Run workflow → confirm = ROLLBACK (obrigatório).
 # Documentação: docs/relatorios/EVOLUCAO-PIPELINE-FRONTEND-NIVEL-ENTERPRISE-2026-04-04.md
 # Fechamento governança: docs/relatorios/FECHAMENTO-OFICIAL-PIPELINE-FRONTEND-ENTERPRISE-2026-04-04.md
+# Mesmos gates de domínio que frontend-deploy.yml: docs/relatorios/BLINDAGEM-DEFINITIVA-ENTERPRISE-PIPELINE-PLAYER-2026-04-05.md
 name: 🔙 Frontend — rollback manual (Vercel)
 
 on:
@@ -68,13 +69,83 @@ jobs:
       - name: 🧪 Smoke pós-rollback (www + apex)
         run: |
           set -euo pipefail
+          echo "::group::Smoke pós-rollback — www + apex (até 6 tentativas, -L, log de status)"
+          SUCCESS=0
           for i in 1 2 3 4 5 6; do
-            if curl -fsSL --max-time 30 https://www.goldeouro.lol/ -o /dev/null && curl -fsSL --max-time 30 https://goldeouro.lol/ -o /dev/null; then
-              echo "✅ Smoke pós-rollback OK"
-              exit 0
-            fi
             echo "Tentativa $i/6..."
-            sleep 10
+            code_www=$(curl -sSL -o /dev/null -w "%{http_code}" --max-time 30 "https://www.goldeouro.lol/" || echo "000")
+            code_apex=$(curl -sSL -o /dev/null -w "%{http_code}" --max-time 30 "https://goldeouro.lol/" || echo "000")
+            echo "  URL: https://www.goldeouro.lol/ → HTTP $code_www"
+            echo "  URL: https://goldeouro.lol/ → HTTP $code_apex (cadeia final após redirects)"
+            if [ "$code_www" = "200" ] && [ "$code_apex" = "200" ]; then
+              echo "✅ Smoke pós-rollback OK"
+              SUCCESS=1
+              break
+            fi
+            if [ "$i" -lt 6 ]; then
+              sleep 10
+            fi
           done
-          echo "::warning::Smoke pós-rollback falhou — verificar manualmente."
-          exit 1
+          echo "::endgroup::"
+          if [ "$SUCCESS" = "0" ]; then
+            echo "❌ Smoke pós-rollback falhou após 6 tentativas — rollback não considerado seguro."
+            exit 1
+          fi
+
+      - name: ❤️ Health pós-rollback (HTML mínimo www + apex)
+        run: |
+          set -euo pipefail
+          echo "::group::Health pós-rollback — HTML mínimo (www + apex, -L + --compressed)"
+          for url in "https://www.goldeouro.lol/" "https://goldeouro.lol/"; do
+            echo "URL testada: $url"
+            code=$(curl -sSL --compressed -o /tmp/gdo-rb-health.html -w "%{http_code}" --max-time 30 "$url" || echo "000")
+            echo "  HTTP status (final): $code"
+            if [ "$code" != "200" ]; then
+              echo "❌ $url → HTTP $code (esperado 200)"
+              exit 1
+            fi
+            if ! grep -qiE '<html|<!DOCTYPE' /tmp/gdo-rb-health.html; then
+              echo "❌ $url → corpo sem marcadores mínimos de HTML"
+              exit 1
+            fi
+            echo "  ✅ HTML mínimo: presente"
+            echo "✅ $url → OK"
+          done
+          echo "::endgroup::"
+
+      - name: 🛡️ Gate blindagem pós-rollback — deep links SPA (www)
+        run: |
+          set -euo pipefail
+          echo "::group::Blindagem pós-rollback — deep links (mesmos critérios que deploy produção)"
+          verify_deep() {
+            local url="$1"
+            local label="$2"
+            local hdrf bodyf code
+            hdrf=$(mktemp)
+            bodyf=$(mktemp)
+            trap 'rm -f "$hdrf" "$bodyf"' RETURN
+            code=$(curl -sS --compressed -D "$hdrf" -o "$bodyf" -w "%{http_code}" --max-time 30 "$url" || echo "000")
+            echo ""
+            echo "─── $label ───"
+            echo "URL testada: $url"
+            echo "HTTP status: $code"
+            echo "Cabeçalhos relevantes (filtro):"
+            grep -iE '^(HTTP/|x-vercel-|server:)' "$hdrf" || true
+            if [ "$code" != "200" ]; then
+              echo "❌ GATE BLINDAGEM PÓS-ROLLBACK FALHOU: HTTP $code (esperado 200)."
+              exit 1
+            fi
+            if grep -qi 'x-vercel-error:[[:space:]]*NOT_FOUND' "$hdrf"; then
+              echo "❌ GATE BLINDAGEM PÓS-ROLLBACK FALHOU: X-Vercel-Error NOT_FOUND."
+              exit 1
+            fi
+            if ! grep -qiE '<html|<!DOCTYPE' "$bodyf"; then
+              echo "❌ GATE BLINDAGEM PÓS-ROLLBACK FALHOU: corpo sem HTML mínimo."
+              exit 1
+            fi
+            echo "✅ Resultado: OK (200, sem NOT_FOUND, HTML mínimo)"
+          }
+          verify_deep "https://www.goldeouro.lol/dashboard" "Deep link /dashboard"
+          verify_deep "https://www.goldeouro.lol/register" "Deep link /register"
+          echo "::endgroup::"
+          echo "✅ Rollback: smoke + health + blindagem deep links — OK."
