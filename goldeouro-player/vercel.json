@@ -98,14 +98,15 @@
       ]
     }
   ],
-  "rewrites": [
+  "routes": [
+    { "handle": "filesystem" },
     {
-      "source": "/download",
-      "destination": "/download.html"
+      "src": "/download",
+      "dest": "/download.html"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
