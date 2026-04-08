@@ -1,0 +1,13 @@
+# Exclusões para deploy CLI (monorepo): pastas massivas fora de goldeouro-player
+BACKUP-V15/
+BACKUP-V15-LIGHT/
+BACKUP-V19-SNAPSHOT/
+BACKUP-V19-STAGING/
+BACKUP-COMPLETO-GO-LIVE-v1.1.1-2025-10-15-19-15-02/
+backup-pre-limpeza-20251023-172730/
+backups/
+backups_v19/
+backup/
+audit-reports/
+android/
+.goldeouro-player/
