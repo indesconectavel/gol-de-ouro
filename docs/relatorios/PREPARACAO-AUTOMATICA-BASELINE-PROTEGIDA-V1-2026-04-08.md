@@ -84,6 +84,8 @@ Foi isolado o trabalho local anterior com **`git stash push -u`**, criado o bran
 
 Um segundo `git push` idempotente falhou com *reference already exists* — indica que os refs **já estavam** no GitHub (push anterior concluído).
 
+**Commit adicional (apenas documentação deste relatório):** `0bf2a63` — `docs: preparação automática baseline protegida V1 2026-04-08`. O **HEAD** do branch no remoto é **`0bf2a63`**; a **tag** `pre-vercel-edge-baseline-protegida-2026-04-08` continua em **`4370fd0`** (snapshot sem ficheiros extra).
+
 ---
 
 ## 8. Rollback disponível
