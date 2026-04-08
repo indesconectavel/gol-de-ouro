@@ -84,7 +84,7 @@ Foi isolado o trabalho local anterior com **`git stash push -u`**, criado o bran
 
 Um segundo `git push` idempotente falhou com *reference already exists* — indica que os refs **já estavam** no GitHub (push anterior concluído).
 
-**Commits adicionais (só documentação / relatório):** `0bf2a63` (criação deste ficheiro), `7a632cc` (nota HEAD vs tag). O **HEAD** atual do branch no remoto é **`7a632cc`**; a **tag** `pre-vercel-edge-baseline-protegida-2026-04-08` permanece em **`4370fd0`** (snapshot vazio, sem docs extra).
+**Commits adicionais (só documentação / relatório):** após o snapshot `4370fd0`, podem existir commits apenas de docs no mesmo branch; o **HEAD** atual está em `origin/fix/vercel-edge-baseline-protegida-2026-04-08` (ver `git rev-parse origin/fix/vercel-edge-baseline-protegida-2026-04-08`). A **tag** `pre-vercel-edge-baseline-protegida-2026-04-08` permanece em **`4370fd0`** (snapshot vazio da baseline, sem docs extra).
 
 ---
 
