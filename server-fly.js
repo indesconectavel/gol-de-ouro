@@ -1295,7 +1295,8 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
     }
 
-    // Salvar chute no banco de dados (usar tabela 'chutes' para acionar gatilhos de métricas/saldo)
+    // Persistir registro do chute. Em produção não há trigger em `chutes` que altere saldo;
+    // o ajuste em `usuarios.saldo` é feito explicitamente abaixo.
     const { error: chuteError } = await supabase
       .from('chutes')
       .insert({
@@ -1347,41 +1348,75 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       isLoteComplete: lote.status === 'completed'
     };
 
-    // Ajuste de saldo:
-    // - Perdas: gatilho do banco subtrai 'valor_aposta' automaticamente
-    // - Vitórias: gatilho do banco credita apenas o prêmio (premio + premioGolDeOuro)
-    //   Para manter a economia esperada (todos pagam a aposta), subtrair manualmente
-    //   o valor da aposta apenas quando houver gol (evita dupla cobrança nas derrotas).
-    if (isGoal) {
-      const novoSaldoVencedor = Number(user.saldo) - amount + premio + premioGolDeOuro;
-      const { error: saldoWinnerError } = await supabase
+    // Ajuste explícito de saldo (sem trigger em `chutes`):
+    // MISS: saldo_novo = saldo_atual - amount
+    // GOAL: saldo_novo = saldo_atual - amount + premio + premioGolDeOuro
+    // Concorrência: update condicional em saldo (mesma ideia do fluxo de saque).
+    const userId = req.user.userId;
+    const creditoPremios = isGoal ? premio + premioGolDeOuro : 0;
+    const maxTentativasSaldo = 4;
+    let saldoFinal = null;
+
+    for (let tentativa = 0; tentativa < maxTentativasSaldo; tentativa++) {
+      const { data: rowSaldo, error: saldoReadErr } = await supabase
         .from('usuarios')
-        .update({ saldo: novoSaldoVencedor })
-        .eq('id', req.user.userId);
-      if (saldoWinnerError) {
-        console.error('❌ [SHOOT] Erro ao ajustar saldo do vencedor:', saldoWinnerError);
+        .select('saldo')
+        .eq('id', userId)
+        .single();
+
+      if (saldoReadErr || rowSaldo == null || rowSaldo.saldo === undefined || rowSaldo.saldo === null) {
+        console.error('❌ [SHOOT] Falha ao ler saldo para ajuste:', saldoReadErr);
         return res.status(500).json({
           success: false,
-          message: 'Erro ao atualizar saldo após gol.'
+          message: 'Erro ao atualizar saldo após chute.'
         });
+      }
+
+      const saldoAtual = Number(rowSaldo.saldo);
+      if (saldoAtual < amount) {
+        console.error('❌ [SHOOT] Saldo insuficiente ao aplicar movimento (possível corrida com outro escritor):', {
+          userId,
+          saldoAtual,
+          amount
+        });
+        return res.status(500).json({
+          success: false,
+          message: 'Erro ao confirmar saldo após chute.'
+        });
+      }
+
+      const novoSaldoCalculado = saldoAtual - amount + creditoPremios;
+
+      const { data: atualizado, error: saldoUpdErr } = await supabase
+        .from('usuarios')
+        .update({ saldo: novoSaldoCalculado })
+        .eq('id', userId)
+        .eq('saldo', rowSaldo.saldo)
+        .select('saldo');
+
+      if (saldoUpdErr) {
+        console.error('❌ [SHOOT] Erro ao atualizar saldo:', saldoUpdErr);
+        return res.status(500).json({
+          success: false,
+          message: 'Erro ao atualizar saldo após chute.'
+        });
+      }
+
+      if (atualizado && atualizado.length > 0) {
+        saldoFinal = Number(atualizado[0].saldo);
+        break;
       }
     }
 
-    // Saldo final sempre lido do banco após insert + trigger + eventual update de gol
-    const { data: saldoRow, error: saldoReadError } = await supabase
-      .from('usuarios')
-      .select('saldo')
-      .eq('id', req.user.userId)
-      .single();
-
-    if (saldoReadError || saldoRow == null || saldoRow.saldo === undefined || saldoRow.saldo === null) {
-      console.error('❌ [SHOOT] Falha ao ler saldo final:', saldoReadError);
+    if (saldoFinal === null) {
+      console.error('❌ [SHOOT] Saldo não atualizado após tentativas (concorrência).', { userId });
       return res.status(500).json({
         success: false,
-        message: 'Erro ao confirmar saldo após chute.'
+        message: 'Erro ao atualizar saldo após chute.'
       });
     }
-    shootResult.novoSaldo = Number(saldoRow.saldo);
+
+    shootResult.novoSaldo = saldoFinal;
     
     console.log(`⚽ [SHOOT] Chute #${contadorChutesGlobal}: ${result} por usuário ${req.user.userId}`);
     
