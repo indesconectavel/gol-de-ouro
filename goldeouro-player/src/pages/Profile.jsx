@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
-import Navigation from '../components/Navigation'
+import InternalPageLayout from '../components/InternalPageLayout'
 import VersionBanner from '../components/VersionBanner'
-import { useSidebar } from '../contexts/SidebarContext'
 import apiClient from '../services/apiClient'
 import { API_ENDPOINTS } from '../config/api'
 import { useAdvancedGamification } from '../hooks/useAdvancedGamification'
@@ -12,7 +11,6 @@ import AvatarSystem from '../components/AvatarSystem'
 import NotificationCenter from '../components/NotificationCenter'
 
 const Profile = () => {
-  const { isCollapsed } = useSidebar()
   const { userStats, badges, achievements, loading: gamificationLoading } = useAdvancedGamification()
   const [user, setUser] = useState({
     name: 'Carregando...',
@@ -153,16 +151,11 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Banner de Versão */}
+    <InternalPageLayout title="Perfil" showLogout>
+    <div className="min-h-screen flex flex-col">
       <VersionBanner showTime={true} />
-      
-      {/* Menu de Navegação */}
-      <Navigation />
-      
-      {/* Conteúdo Principal */}
-      <div 
-        className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}
+      <div
+        className="flex-1 relative overflow-hidden p-4"
         style={{
           backgroundImage: 'url(/images/Gol_de_Ouro_Bg02.jpg)',
           backgroundSize: 'cover',
@@ -236,7 +229,7 @@ const Profile = () => {
             onClick={() => setActiveTab('info')}
             className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
               activeTab === 'info'
-                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                ? 'bg-sky-600/35 text-white border-sky-400/60 shadow-md'
                 : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
             }`}
           >
@@ -246,7 +239,7 @@ const Profile = () => {
             onClick={() => setActiveTab('bets')}
             className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
               activeTab === 'bets'
-                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                ? 'bg-sky-600/35 text-white border-sky-400/60 shadow-md'
                 : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
             }`}
           >
@@ -256,7 +249,7 @@ const Profile = () => {
             onClick={() => setActiveTab('withdrawals')}
             className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
               activeTab === 'withdrawals'
-                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                ? 'bg-sky-600/35 text-white border-sky-400/60 shadow-md'
                 : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
             }`}
           >
@@ -266,7 +259,7 @@ const Profile = () => {
             onClick={() => setActiveTab('achievements')}
             className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
               activeTab === 'achievements'
-                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                ? 'bg-sky-600/35 text-white border-sky-400/60 shadow-md'
                 : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
             }`}
           >
@@ -276,7 +269,7 @@ const Profile = () => {
             onClick={() => setActiveTab('stats')}
             className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
               activeTab === 'stats'
-                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                ? 'bg-sky-600/35 text-white border-sky-400/60 shadow-md'
                 : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
             }`}
           >
@@ -286,7 +279,7 @@ const Profile = () => {
             onClick={() => setActiveTab('gamification')}
             className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
               activeTab === 'gamification'
-                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                ? 'bg-sky-600/35 text-white border-sky-400/60 shadow-md'
                 : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
             }`}
           >
@@ -296,7 +289,7 @@ const Profile = () => {
             onClick={() => setActiveTab('notifications')}
             className={`flex-1 py-3 px-4 rounded-lg font-bold transition-all duration-200 backdrop-blur-lg border ${
               activeTab === 'notifications'
-                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 shadow-lg border-yellow-400/50'
+                ? 'bg-sky-600/35 text-white border-sky-400/60 shadow-md'
                 : 'bg-white/10 text-white hover:bg-white/20 border-white/20'
             }`}
           >
@@ -312,7 +305,7 @@ const Profile = () => {
               {!isEditing && (
                 <button
                   onClick={handleEdit}
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 backdrop-blur-lg border border-blue-400/50"
+                  className="bg-white/10 backdrop-blur-lg border border-sky-400/45 text-sky-100 hover:bg-white/15 hover:border-sky-400/70 font-bold py-2 px-4 rounded-lg transition-all duration-200"
                 >
                   ✏️ Editar
                 </button>
@@ -366,13 +359,13 @@ const Profile = () => {
                 <div className="flex space-x-3 pt-4">
                   <button
                     onClick={handleSave}
-                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 backdrop-blur-lg border border-green-400/50"
+                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200"
                   >
                     💾 Salvar
                   </button>
                   <button
                     onClick={handleCancel}
-                    className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 backdrop-blur-lg border border-gray-400/50"
+                    className="flex-1 bg-white/10 backdrop-blur-lg border border-white/25 text-white hover:bg-white/20 font-bold py-3 px-6 rounded-lg transition-all duration-200"
                   >
                     ❌ Cancelar
                   </button>
@@ -554,6 +547,7 @@ const Profile = () => {
       </div>
       </div>
     </div>
+    </InternalPageLayout>
   )
 }
 

@@ -1,8 +1,12 @@
 // Componente para exibir aviso de versão
+// Baseline certificada: oculto por padrão; exibir apenas se VITE_SHOW_VERSION_BANNER=true
 import { useState, useEffect } from 'react';
 import versionService from '../services/versionService';
 
 const VersionWarning = () => {
+  if (import.meta.env.VITE_SHOW_VERSION_BANNER !== 'true') {
+    return null;
+  }
   const [showWarning, setShowWarning] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
   const [versionInfo, setVersionInfo] = useState(null);

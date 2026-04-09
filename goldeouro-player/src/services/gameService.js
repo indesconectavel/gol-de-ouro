@@ -107,18 +107,9 @@ class GameService {
 
       if (response.data.success) {
         const result = response.data.data;
-        const saldoFinal = result.novoSaldo;
-        if (saldoFinal === undefined || saldoFinal === null || Number.isNaN(Number(saldoFinal))) {
-          console.error('❌ [GAME] Resposta sem novoSaldo válido');
-          return {
-            success: false,
-            error: 'Servidor não retornou saldo atualizado após o chute.'
-          };
-        }
-        const saldoNum = Number(saldoFinal);
         
-        // Atualizar estado local (sempre saldo persistido retornado pela API)
-        this.userBalance = saldoNum;
+        // Atualizar estado local
+        this.userBalance = result.novoSaldo;
         this.globalCounter = result.contadorGlobal;
         
         // Verificar se é Gol de Ouro
@@ -144,7 +135,7 @@ class GameService {
             isComplete: result.isLoteComplete
           },
           user: {
-            newBalance: saldoNum,
+            newBalance: result.novoSaldo,
             globalCounter: result.contadorGlobal
           },
           isGoldenGoal: isGoldenGoal

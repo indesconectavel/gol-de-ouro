@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Baseline certificada: banner oculto por padrão; exibir apenas se VITE_SHOW_VERSION_BANNER=true
 const VersionBanner = ({ 
   version = "v1.2.0", 
   deployDate = "25/10/2025", 
@@ -7,6 +8,9 @@ const VersionBanner = ({
   showTime = true,
   className = ""
 }) => {
+  if (import.meta.env.VITE_SHOW_VERSION_BANNER !== 'true') {
+    return null;
+  }
   // Preferir variáveis de ambiente (injetadas no build) quando disponíveis
   const envVersion = typeof import.meta !== 'undefined' ? (import.meta.env?.VITE_BUILD_VERSION || null) : null;
   const envDate = typeof import.meta !== 'undefined' ? (import.meta.env?.VITE_BUILD_DATE || null) : null;

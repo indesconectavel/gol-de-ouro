@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
-import Navigation from '../components/Navigation'
-import { useSidebar } from '../contexts/SidebarContext'
+import InternalPageLayout from '../components/InternalPageLayout'
 import paymentService from '../services/paymentService'
-import { requestWithdraw, getWithdrawHistory } from '../services/withdrawService'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import EmptyState from '../components/EmptyState'
@@ -12,7 +10,6 @@ import apiClient from '../services/apiClient'
 import { API_ENDPOINTS } from '../config/api'
 
 const Withdraw = () => {
-  const { isCollapsed } = useSidebar()
   const [balance, setBalance] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -60,17 +57,20 @@ const Withdraw = () => {
     try {
       setHistoryLoading(true)
       setHistoryError(null)
-      const result = await getWithdrawHistory()
+      
+      const result = await paymentService.getUserPix()
+      
       if (result.success) {
         setWithdrawalHistory(Array.isArray(result.data) ? result.data : [])
       } else {
         setHistoryError(result.error)
+        // Sem fallback - manter lista vazia em caso de erro
         setWithdrawalHistory([])
       }
+      
     } catch (err) {
       console.error('Erro ao carregar histórico de saques:', err)
       setHistoryError('Erro ao carregar histórico de saques')
-      setWithdrawalHistory([])
     } finally {
       setHistoryLoading(false)
     }
@@ -103,15 +103,20 @@ const Withdraw = () => {
         throw new Error('Saldo insuficiente')
       }
 
-      const result = await requestWithdraw(
+      // Criar PIX usando o serviço
+      const result = await paymentService.createPix(
         amount,
         formData.pixKey,
-        formData.pixType
+        `Saque Gol de Ouro - ${formData.pixType}`
       )
 
       if (result.success) {
         setShowSuccess(true)
-        await loadUserData()
+        
+        // Atualizar saldo local
+        setBalance(prev => prev - amount)
+        
+        // Recarregar histórico
         await loadWithdrawalHistory()
         
         // Resetar formulário após sucesso
@@ -161,39 +166,33 @@ const Withdraw = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex">
-        <Navigation />
-        <div className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}>
+      <InternalPageLayout title="Saque">
+        <div className="flex-1 relative overflow-hidden p-4">
           <div className="flex items-center justify-center h-96">
             <LoadingSpinner />
           </div>
         </div>
-      </div>
+      </InternalPageLayout>
     )
   }
 
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen flex">
-        <Navigation />
-        <div className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}>
+      <InternalPageLayout title="Saque">
+        <div className="flex-1 relative overflow-hidden p-4">
           <div className="max-w-4xl mx-auto">
             <ErrorMessage message={error} onRetry={loadUserData} />
           </div>
         </div>
-      </div>
+      </InternalPageLayout>
     )
   }
 
   return (
-    <div className="min-h-screen flex">
-      {/* Menu de Navegação */}
-      <Navigation />
-      
-      {/* Conteúdo Principal */}
-      <div 
-        className={`flex-1 relative overflow-hidden p-4 transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-72'}`}
+    <InternalPageLayout title="Saque">
+    <div
+        className="flex-1 relative overflow-hidden p-4"
         style={{
           backgroundImage: 'url(/images/Gol_de_Ouro_Bg02.jpg)',
           backgroundSize: 'cover',
@@ -379,7 +378,7 @@ const Withdraw = () => {
             <button
               type="submit"
               disabled={isSubmitting || !formData.amount || !formData.pixKey}
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed backdrop-blur-lg border border-green-400/50"
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? (
                 <div className="flex items-center justify-center space-x-2">
@@ -403,7 +402,7 @@ const Withdraw = () => {
                 </p>
                 <button
                   onClick={() => setShowSuccess(false)}
-                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2 px-6 rounded-lg transition-all duration-200 backdrop-blur-lg border border-green-400/50"
+                  className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200"
                 >
                   Entendi
                 </button>
@@ -443,9 +442,9 @@ const Withdraw = () => {
             ))}
           </div>
         </div>
+        </div>
       </div>
-      </div>
-    </div>
+    </InternalPageLayout>
   )
 }
 

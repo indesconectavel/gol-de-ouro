@@ -19,12 +19,12 @@ const Terms = () => {
       <div className="relative z-10 flex items-center justify-between mb-6">
         <button
           onClick={() => navigate(-1)}
-          className="text-white/70 hover:text-white text-2xl"
+          className="text-white/70 hover:text-white text-2xl transition-colors bg-white/10 backdrop-blur-lg rounded-full w-10 h-10 flex items-center justify-center hover:bg-white/20"
         >
           ←
         </button>
         <h1 className="text-2xl font-bold text-white">Termos de Uso</h1>
-        <div className="w-8"></div>
+        <div className="w-10" aria-hidden />
       </div>
 
       {/* Conteúdo */}

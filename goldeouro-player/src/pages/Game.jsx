@@ -38,8 +38,7 @@ const Game = () => {
   const { 
     playButtonClick, 
     playCelebrationSound, 
-    playCrowdSound,
-    playBackgroundMusic 
+    playCrowdSound
   } = useSimpleSound()
 
   const {
@@ -77,14 +76,6 @@ const Game = () => {
 
     return () => clearInterval(interval)
   }, [totalShots, playCrowdSound])
-
-  // Toca música de fundo no início do jogo
-  useEffect(() => {
-    if (totalShots > 0 && gameStatus === 'waiting') {
-      // Toca música de fundo suave quando o jogo começa
-      setTimeout(() => playBackgroundMusic(), 1000)
-    }
-  }, [totalShots, gameStatus, playBackgroundMusic])
 
   const handleShoot = useCallback((zoneId) => {
     if (isShooting) return

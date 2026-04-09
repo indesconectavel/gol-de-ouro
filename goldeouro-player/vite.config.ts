@@ -57,6 +57,8 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_BUILD_VERSION': JSON.stringify(buildVersion),
       'import.meta.env.VITE_BUILD_DATE': JSON.stringify(buildDateEnv),
       'import.meta.env.VITE_BUILD_TIME': JSON.stringify(buildTimeEnv),
+      // Baseline certificada: ocultar banner por padrão; exibir só se VITE_SHOW_VERSION_BANNER=true
+      'import.meta.env.VITE_SHOW_VERSION_BANNER': JSON.stringify(env.VITE_SHOW_VERSION_BANNER || 'false'),
     },
     plugins: [
     react(),

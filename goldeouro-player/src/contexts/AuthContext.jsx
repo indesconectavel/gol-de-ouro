@@ -33,7 +33,9 @@ export const AuthProvider = ({ children }) => {
       // Verificar se token é válido
       apiClient.get(API_ENDPOINTS.PROFILE)
         .then(response => {
-          setUser(response.data)
+          // Backend retorna { success, data: { id, email, username, ... } }; manter user no mesmo shape de login/cadastro
+          const userData = response.data?.data ? response.data.data : response.data
+          setUser(userData)
         })
         .catch((error) => {
           console.log('🔒 Token inválido ou expirado:', error.response?.status)
@@ -73,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const register = async (name, email, password) => {
+  const register = async (name, email, password, acceptedTerms, isAdultConfirmed) => {
     try {
       setLoading(true)
       setError(null)
@@ -81,7 +83,9 @@ export const AuthProvider = ({ children }) => {
       const response = await apiClient.post(API_ENDPOINTS.REGISTER, {
         username: name,
         email,
-        password
+        password,
+        acceptedTerms,
+        isAdultConfirmed
       })
       
       const { token, user: userData } = response.data
@@ -102,6 +106,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('authToken')
+    localStorage.removeItem('userData')
     setUser(null)
     setError(null)
   }
