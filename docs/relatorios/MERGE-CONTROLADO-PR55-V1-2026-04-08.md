@@ -40,6 +40,8 @@ Sincronização executada: `git fetch origin main`, `git checkout main`, `git pu
 - **Conteúdo do merge:** alinhado ao pacote auditado (4 ficheiros: `vercel.json`, dois relatórios em `docs/relatorios/`, `.github/workflows/configurar-seguranca.yml`).
 - **Produção:** o contexto operacional pré-merge indicava que o comportamento desejado já estava refletido no edge; com `main` atualizado, o **drift crítico de configuração** (`cleanUrls` em `main` vs produção corrigida) fica **eliminado** ao nível do repositório. Deploy automático adicional não faz parte deste relatório.
 
+**Nota de publicação:** push direto para `main` com apenas este ficheiro foi **recusado** pela branch protection (`GH006`). Este relatório foi publicado no ramo `docs/mergereport-pr55-2026-04-09` (commit `1726683` e seguintes) para incorporação em `main` via PR, se desejado.
+
 ## 6. Riscos remanescentes
 
 - **Baixo** para regressão de routing SPA: alteração é remoção de `cleanUrls` e documentação; CI já tinha passado no PR.
