@@ -91,10 +91,11 @@ import goalieDiveBR from '../assets/goalie_dive_br.png';
 import goalieDiveMid from '../assets/goalie_dive_mid.png';
 import ballImg from '../assets/ball.png';
 import bgGoalImg from '../assets/bg_goal.jpg';
-import gooolImg from '../assets/goool.png';
+// Assets alinhados aos ficheiros reais da baseline (removidos placeholders goool/ganhou/golden-* soltos)
+import gooolImg from '../assets/gol_normal.png';
 import defendeuImg from '../assets/defendeu.png';
-import ganhouImg from '../assets/ganhou.png';
-import goldenGoalImg from '../assets/golden-goal.png';
+import ganhouImg from '../assets/ganhou_5.png';
+import goldenGoalImg from '../assets/gol_de_ouro.png';
 
 // =====================================================
 // COMPONENTE PRINCIPAL

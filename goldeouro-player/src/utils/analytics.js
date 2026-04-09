@@ -10,7 +10,15 @@ function getOrCreateSessionId() {
     if (typeof sessionStorage === 'undefined') return null;
     let id = sessionStorage.getItem(SESSION_KEY);
     if (!id) {
-      id = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+      let suffix = '';
+      if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+        const buf = new Uint8Array(8);
+        crypto.getRandomValues(buf);
+        suffix = Array.from(buf, (b) => b.toString(16).padStart(2, '0')).join('');
+      } else {
+        suffix = `${Date.now()}-${typeof performance !== 'undefined' ? performance.now() : 0}`;
+      }
+      id = `${Date.now()}-${suffix}`;
       sessionStorage.setItem(SESSION_KEY, id);
     }
     return id;
