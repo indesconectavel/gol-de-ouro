@@ -122,7 +122,7 @@ O **núcleo transacional está oficialmente versionado, etiquetado e enviado ao 
 | # | Item | Valor |
 |---|------|--------|
 | 1 | **SHA do commit final (núcleo)** | `8be0376d6fc6ae11d6b011a89fe27eb170b5a696` |
-| 1b | **SHA HEAD branch (inclui relatório)** | `6a47e63a1c4f44d1b97f4fe5f6bf9bee48d00220` (pode avançar se houver commits posteriores; confirmar com `git rev-parse HEAD`) |
+| 1b | **SHA HEAD branch (inclui relatório)** | Não fixo: `git rev-parse origin/snapshot/v1-estavel-2026-04-09` após pull (sempre ≥ commit núcleo `8be0376…`) |
 | 2 | **Tag final** | `core-transacional-aprovado-2026-04-09` |
 | 3 | **Status do push** | **Sucesso** — `snapshot/v1-estavel-2026-04-09` e tag enviadas para `https://github.com/indesconectavel/gol-de-ouro.git` |
 | 4 | **Estado da árvore** | **Limpo** (`git status` sem alterações pendentes na branch) |
