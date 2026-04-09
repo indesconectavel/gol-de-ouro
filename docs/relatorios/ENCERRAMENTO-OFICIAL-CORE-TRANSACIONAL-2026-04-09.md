@@ -35,6 +35,8 @@ Artefactos em repositório: `database/shoot_apply_atomic_transaction.sql`, `serv
 | **Branch** | `snapshot/v1-estavel-2026-04-09` |
 | **Ficheiros (8)** | `server-fly.js` (modificado); `database/shoot_apply_atomic_transaction.sql` (novo); 6× `docs/relatorios/*.md` (CIRURGIA/VALIDACAO Fase 2.1, 2.2A, 2.2B). |
 
+**Documentação de encerramento:** commit subsequente `37aada67dde928887d885baa33b4d9ed21c872a3` — apenas `docs/relatorios/ENCERRAMENTO-OFICIAL-CORE-TRANSACIONAL-2026-04-09.md` (HEAD da branch após push completo).
+
 ---
 
 ## 4. Tag final
@@ -119,7 +121,8 @@ O **núcleo transacional está oficialmente versionado, etiquetado e enviado ao 
 
 | # | Item | Valor |
 |---|------|--------|
-| 1 | **SHA do commit final** | `8be0376d6fc6ae11d6b011a89fe27eb170b5a696` |
+| 1 | **SHA do commit final (núcleo)** | `8be0376d6fc6ae11d6b011a89fe27eb170b5a696` |
+| 1b | **SHA HEAD branch (com relatório)** | `37aada67dde928887d885baa33b4d9ed21c872a3` |
 | 2 | **Tag final** | `core-transacional-aprovado-2026-04-09` |
 | 3 | **Status do push** | **Sucesso** — `snapshot/v1-estavel-2026-04-09` e tag enviadas para `https://github.com/indesconectavel/gol-de-ouro.git` |
 | 4 | **Estado da árvore** | **Limpo** (`git status` sem alterações pendentes na branch) |
