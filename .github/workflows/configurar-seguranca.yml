@@ -8,11 +8,7 @@ on:
       - '.github/workflows/configurar-seguranca.yml'
 
 permissions:
-  contents: write
-  administration: write  # Necessário para configurar Branch Protection
-  security-events: write  # Necessário para Secret Scanning
-  # Nota: Essas permissões podem não ser suficientes em repositórios públicos
-  # Se falhar, configure manualmente via GitHub Settings
+  contents: read
 
 jobs:
   configurar-branch-protection:
