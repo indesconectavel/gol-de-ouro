@@ -1,0 +1,134 @@
+// =====================================================
+// CONFIGURAÇÃO DE LAYOUT DO JOGO - ÚNICO PONTO DE AJUSTE VISUAL
+// =====================================================
+// Todas as posições e tamanhos em PIXELS fixos (baseado em 1920x1080)
+// Este é o ÚNICO arquivo onde posições visuais devem ser ajustadas
+
+export const STAGE = {
+  WIDTH: 1920,
+  HEIGHT: 1080
+};
+
+// =====================================================
+// BOLA
+// =====================================================
+export const BALL = {
+  // Posição inicial da bola (centro inferior do campo)
+  START: { x: 1000, y: 1010 },
+  // Tamanho da bola
+  SIZE: 90,
+  // Velocidade da animação (ms)
+  ANIMATION_DURATION: 600
+};
+
+// =====================================================
+// GOLEIRO
+// =====================================================
+export const GOALKEEPER = {
+  // Posição idle (centro do gol)
+  IDLE: { x: 960, y: 690 },
+  // Tamanho do goleiro
+  SIZE: { width: 423, height: 500 },
+  // Rotação idle
+  ROTATION_IDLE: 0,
+  // Velocidade da animação (ms)
+  ANIMATION_DURATION: 500,
+  
+  // Posições de pulo do goleiro (em pixels)
+  JUMPS: {
+    TL: { x: 700, y: 570, rot: -10 },   // Top Left (subido para alcançar canto superior)
+    TR: { x: 1220, y: 570, rot: 10 },  // Top Right (subido para alcançar canto superior)
+    C: { x: 960, y: 550, rot: 0 },     // Center (subido para alcançar meio superior)
+    BL: { x: 700, y: 690, rot: -10 },  // Bottom Left
+    BR: { x: 1220, y: 690, rot: 10 }   // Bottom Right
+  }
+};
+
+// =====================================================
+// TARGETS (ZONAS CLICÁVEIS DO GOL)
+// =====================================================
+export const TARGETS = {
+  // Posições dos círculos clicáveis (centro exato de cada zona)
+  TL: { x: 510, y: 520 },   // Top Left
+  TR: { x: 1530, y: 520 }, // Top Right
+  C: { x: 1020, y: 520 },    // Center (ajustado para mesma altura que TL e TR)
+  BL: { x: 510, y: 740 },   // Bottom Left
+  BR: { x: 1530, y: 740 },  // Bottom Right
+  // Tamanho dos círculos
+  SIZE: 100,
+  // Offset horizontal para aproximar laterais (ajuste fino)
+  HORIZONTAL_OFFSET: {
+    LEFT: 30,   // TL e BL se aproximam 30px do centro
+    RIGHT: -30, // TR e BR se aproximam 30px do centro
+    CENTER: 0
+  },
+  // Offset vertical (ajuste fino)
+  VERTICAL_OFFSET: 0
+};
+
+// =====================================================
+// OVERLAYS (IMAGENS DE RESULTADO)
+// =====================================================
+export const OVERLAYS = {
+  // Posição central (centro exato da tela)
+  CENTER: { x: 960, y: 540 },
+  // Tamanhos dos overlays
+  SIZE: {
+    GOOOL: { width: 520, height: 200 },
+    DEFENDEU: { width: 520, height: 200 },
+    GANHOU: { width: 480, height: 180 },
+    GOLDEN_GOAL: { width: 600, height: 220 }
+  },
+  // Durações das animações (ms)
+  ANIMATION_DURATION: {
+    GOOOL: 1200,
+    DEFENDEU: 800,
+    GANHOU: 5000,
+    GOLDEN_GOAL: 5500
+  }
+};
+
+// =====================================================
+// HUD (INTERFACE DO JOGADOR)
+// =====================================================
+export const HUD = {
+  HEADER: {
+    top: 20,
+    left: 20,
+    right: 20,
+    height: 120
+  },
+  BOTTOM_LEFT: {
+    left: 20,
+    bottom: 20
+  },
+  BOTTOM_RIGHT: {
+    right: 20,
+    bottom: 20
+  }
+};
+
+// =====================================================
+// MAPEAMENTO DE DIREÇÕES
+// =====================================================
+// Mapeia direção do chute para posição do goleiro
+export const DIRECTION_TO_GOALKEEPER_JUMP = {
+  'TL': 'TL',
+  'TR': 'TR',
+  'C': 'C',
+  'BL': 'BL',
+  'BR': 'BR'
+};
+
+// Função helper para obter posição do target (resolve referência circular)
+export const getTargetPosition = (direction) => {
+  switch(direction) {
+    case 'TL': return TARGETS.TL;
+    case 'TR': return TARGETS.TR;
+    case 'C': return TARGETS.C;
+    case 'BL': return TARGETS.BL;
+    case 'BR': return TARGETS.BR;
+    default: return TARGETS.C;
+  }
+};
+

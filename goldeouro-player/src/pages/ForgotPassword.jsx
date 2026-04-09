@@ -55,7 +55,7 @@ const ForgotPassword = () => {
             Enviamos um link de recuperação para <strong>{email}</strong>
           </p>
           <Link
-            to="/login"
+            to="/"
             className="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -112,7 +112,7 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={isLoading || !email}
-            className="w-full bg-yellow-400 text-green-900 font-semibold py-3 px-4 rounded-lg hover:bg-yellow-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Enviando...' : 'Enviar Link de Recuperação'}
           </button>
@@ -120,7 +120,7 @@ const ForgotPassword = () => {
           {/* Back to Login */}
           <div className="text-center">
             <Link
-              to="/login"
+              to="/"
               className="inline-flex items-center text-yellow-400 hover:text-yellow-300 transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />

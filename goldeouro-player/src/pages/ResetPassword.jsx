@@ -87,7 +87,7 @@ const ResetPassword = () => {
           </p>
           <button
             onClick={() => navigate('/')}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200"
           >
             Ir para Login
           </button>
@@ -185,11 +185,11 @@ const ResetPassword = () => {
           <button
             type="submit"
             disabled={isLoading || !token}
-            className="w-full bg-yellow-400 text-green-900 font-semibold py-3 px-4 rounded-lg hover:bg-yellow-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             {isLoading ? (
               <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-green-900 mr-2"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
                 Alterando senha...
               </>
             ) : (

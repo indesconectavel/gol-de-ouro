@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { AuthProvider } from './contexts/AuthContext'
 import { SidebarProvider } from './contexts/SidebarContext'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -11,6 +13,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
 import Game from './pages/Game'
+import GameFinal from './pages/GameFinal'
 import GameShoot from './pages/GameShoot'
 import GameShootFallback from './pages/GameShootFallback'
 import GameShootTest from './pages/GameShootTest'
@@ -30,6 +33,13 @@ function App() {
           <Router>
             <div className="min-h-screen bg-slate-900">
               <VersionWarning />
+              <ToastContainer
+                position="top-right"
+                autoClose={4000}
+                hideProgressBar={false}
+                theme="dark"
+                style={{ zIndex: 11000 }}
+              />
               <PwaSwUpdater />
               <Routes>
                 <Route path="/" element={<Login />} />
@@ -48,7 +58,7 @@ function App() {
                 } />
                 <Route path="/game" element={
                   <ProtectedRoute>
-                    <GameShoot />
+                    <GameFinal />
                   </ProtectedRoute>
                 } />
                 <Route path="/gameshoot" element={

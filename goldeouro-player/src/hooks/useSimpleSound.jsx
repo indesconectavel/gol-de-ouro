@@ -14,8 +14,7 @@ const useSimpleSound = () => {
     vaia: '/sounds/vaia.mp3',
     torcida: '/sounds/torcida.mp3',
     torcida2: '/sounds/torcida_2.mp3',
-    click: '/sounds/click.mp3',
-    music: '/sounds/music.mp3'
+    click: '/sounds/click.mp3'
   }
 
   // Função para tocar som
@@ -80,10 +79,6 @@ const useSimpleSound = () => {
     playSound(useTorcida2 ? 'torcida2' : 'torcida')
   }, [playSound])
 
-  const playBackgroundMusic = useCallback(() => {
-    playSound('music')
-  }, [playSound])
-
   const toggleMute = useCallback(() => {
     setIsMuted(!isMuted)
   }, [isMuted])
@@ -104,7 +99,6 @@ const useSimpleSound = () => {
     playHoverSound,
     playCelebrationSound,
     playCrowdSound,
-    playBackgroundMusic,
     toggleMute,
     setSoundVolume
   }

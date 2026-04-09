@@ -1,77 +1,5 @@
 /* ===== escopo /game ===== */
-/* BLOCO G — G-2: timing partilhado do HUD (só quando /game está ativo) */
-body[data-page="game"] {
-  margin: 0;
-  overflow: hidden;
-  background: transparent;
-  --go-hud-tx: 150ms;
-  --go-hud-ease: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* ===== BLOCO G — G-4: loading + entrada do viewport (sem alterar tempos reais de fetch) ===== */
-.game-loading-screen {
-  animation: gameG4LoadingIn 200ms ease-out forwards;
-}
-
-.game-loading-screen .game-loading-label {
-  animation: gameG4LoadingPulse 2.2s ease-in-out infinite;
-}
-
-@keyframes gameG4LoadingIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes gameG4LoadingPulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.62;
-  }
-}
-
-body[data-page="game"] .game-viewport {
-  animation: gameG4StageEnter 200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-@keyframes gameG4StageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .game-loading-screen,
-  .game-loading-screen .game-loading-label {
-    animation: none !important;
-  }
-
-  body[data-page="game"] .game-viewport {
-    animation: none !important;
-  }
-}
-
-/* Container dedicado para overlays: filho direto de body, fora de #root. Sem transform/filter/perspective para que position:fixed dos filhos seja relativo à viewport */
-#game-overlay-root {
-  pointer-events: none;
-  position: static;
-  transform: none;
-  filter: none;
-  will-change: auto;
-  contain: none;
-}
-
+body[data-page="game"] { margin:0; overflow:hidden; background:transparent; }
 .game-page { position:fixed; inset:0; display:flex; background:transparent; }
 
 /* bloquear retrato somente aqui */
@@ -109,8 +37,7 @@ body[data-page="game"] .game-viewport {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--header-padding-mobile);
-  min-height: 5.75rem; /* aproxima da presença visual vista em produção */
+  padding: 10px 16px;
   background: rgba(0,0,0,0.3);
   backdrop-filter: blur(8px);
   border-radius: 12px;
@@ -121,31 +48,16 @@ body[data-page="game"] .game-viewport {
 .brand-small {
   display: flex;
   align-items: center;
-  margin-right: 24px;
+  margin-right: 16px;
   flex-shrink: 0;
 }
 
 .brand-logo-small {
-  width: 176px;
+  width: 60px;
   height: auto;
-  max-height: 176px;
+  max-height: 60px;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-}
-
-/* HUD /game: logo maior (vence w-12 do Logo.jsx no wrapper) */
-body[data-page="game"] .hud-header .brand-small .brand-logo-small {
-  width: 200px !important;
-  min-width: 200px !important;
-  height: auto !important;
-  max-height: 200px !important;
-}
-body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
-  width: 100% !important;
-  height: auto !important;
-  max-height: 200px !important;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* ===== CONTEÚDO DO HEADER ===== */
@@ -154,47 +66,47 @@ body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
   align-items: center;
   justify-content: space-between;
   flex: 1;
-  gap: 2rem; /* 32px — aproxima espaçamento de produção */
+  gap: 20px;
 }
 
 /* ===== SISTEMA DE DESIGN RESPONSIVO HARMONIZADO ===== */
 
 /* Variáveis CSS para proporções harmonizadas */
 :root {
-  /* Tamanhos base (mobile-first) — recalibrados BLOCO F: legibilidade HUD /game */
-  --stat-gap-mobile: 1.5rem;        /* 24px — mais respiro entre blocos */
-  --stat-gap-tablet: 1.75rem;       /* 28px */
-  --stat-gap-desktop: 2rem;         /* 32px */
+  /* Tamanhos base (mobile-first) */
+  --stat-gap-mobile: 0.625rem;     /* 10px */
+  --stat-gap-tablet: 0.75rem;      /* 12px */
+  --stat-gap-desktop: 0.875rem;    /* 14px */
   
   /* Ícones proporcionais */
-  --stat-icon-mobile: 1.625rem;     /* 26px */
-  --stat-icon-tablet: 2rem;         /* 32px */
-  --stat-icon-desktop: 2.375rem;    /* 38px */
+  --stat-icon-mobile: 1.25rem;     /* 20px */
+  --stat-icon-tablet: 1.5rem;      /* 24px */
+  --stat-icon-desktop: 1.75rem;    /* 28px */
   
   /* Labels proporcionais */
-  --stat-label-mobile: 0.9375rem;   /* 15px */
-  --stat-label-tablet: 1rem;        /* 16px */
-  --stat-label-desktop: 1.0625rem;  /* 17px */
+  --stat-label-mobile: 0.6875rem;  /* 11px */
+  --stat-label-tablet: 0.75rem;    /* 12px */
+  --stat-label-desktop: 0.875rem;  /* 14px */
   
   /* Valores proporcionais */
-  --stat-value-mobile: 1.25rem;     /* 20px */
-  --stat-value-tablet: 1.375rem;    /* 22px */
-  --stat-value-desktop: 1.625rem;   /* 26px */
+  --stat-value-mobile: 0.875rem;   /* 14px */
+  --stat-value-tablet: 1rem;       /* 16px */
+  --stat-value-desktop: 1.125rem;  /* 18px */
   
   /* Gaps internos proporcionais */
-  --stat-inner-gap-mobile: 0.625rem; /* 10px */
-  --stat-inner-gap-tablet: 0.75rem;   /* 12px */
-  --stat-inner-gap-desktop: 0.875rem; /* 14px */
+  --stat-inner-gap-mobile: 0.5rem; /* 8px */
+  --stat-inner-gap-tablet: 0.625rem; /* 10px */
+  --stat-inner-gap-desktop: 0.75rem; /* 12px */
   
   /* Padding do header proporcional */
-  --header-padding-mobile: 1rem 1.5rem; /* 16px 24px */
-  --header-padding-tablet: 1.125rem 1.75rem; /* 18px 28px */
-  --header-padding-desktop: 1.375rem 2rem; /* 22px 32px */
+  --header-padding-mobile: 0.625rem 1rem; /* 10px 16px */
+  --header-padding-tablet: 0.75rem 1.25rem; /* 12px 20px */
+  --header-padding-desktop: 1rem 1.5rem; /* 16px 24px */
   
   /* Elementos de apostas proporcionais */
-  --bet-gap-mobile: 0.625rem; /* 10px */
-  --bet-gap-tablet: 0.75rem; /* 12px */
-  --bet-gap-desktop: 0.875rem; /* 14px */
+  --bet-gap-mobile: 0.5rem; /* 8px */
+  --bet-gap-tablet: 0.625rem; /* 10px */
+  --bet-gap-desktop: 0.75rem; /* 12px */
   
   --bet-btn-padding-mobile: 0.375rem 0.75rem; /* 6px 12px */
   --bet-btn-padding-tablet: 0.5rem 1rem; /* 8px 16px */
@@ -210,18 +122,14 @@ body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
   gap: var(--stat-gap-mobile);
   align-items: center;
   flex-wrap: wrap;
-  flex: 1 1 auto;
-  justify-content: center;
-  min-width: 0;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
   gap: var(--stat-inner-gap-mobile);
-  /* Evita comprimir demais e quebrar "R$" / valor em linhas separadas */
-  flex: 0 0 auto;
-  min-width: min(9.5rem, 100%);
+  min-width: calc(25% - var(--stat-gap-mobile) * 0.75);
+  flex: 1;
   color: white;
 }
 
@@ -233,7 +141,7 @@ body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
 .stat-content {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem; /* hierarquia label/valor mais legível */
+  gap: 0.125rem; /* 2px fixo para todos os tamanhos */
 }
 
 .stat-label {
@@ -247,7 +155,6 @@ body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
   font-size: var(--stat-value-mobile);
   font-weight: 700;
   color: #fbbf24;
-  white-space: nowrap; /* saldo e valores monetários numa linha */
 }
 
 /* ===== BREAKPOINTS RESPONSIVOS ===== */
@@ -260,7 +167,7 @@ body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
   
   .stat-item {
     gap: var(--stat-inner-gap-tablet);
-    min-width: min(10rem, 100%);
+    min-width: calc(25% - var(--stat-gap-tablet) * 0.75);
   }
   
   .stat-icon {
@@ -297,7 +204,7 @@ body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
   
   .stat-item {
     gap: var(--stat-inner-gap-desktop);
-    min-width: min(10.5rem, 100%);
+    min-width: calc(25% - var(--stat-gap-desktop) * 0.75);
   }
   
   .stat-icon {
@@ -358,30 +265,10 @@ body[data-page="game"] .hud-header .brand-small .brand-logo-small img {
   gap: 8px;
 }
 
-/* Base local da linha de aposta */
 .bet-label {
-  font-size: 15px;
+  font-size: 14px;
   color: white;
   font-weight: 600;
-}
-
-.bet-value-fixed {
-  font-size: 15px;
-  font-weight: 600;
-  color: #fbbf24;
-}
-
-/* Blindagem do HUD real do GameFinal contra cascata de outros CSS */
-body[data-page="game"] .hud-header .bet-label {
-  font-size: 17px;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-body[data-page="game"] .hud-header .bet-value-fixed {
-  font-size: 17px;
-  font-weight: 600;
-  color: #fbbf24 !important;
 }
 
 .bet-buttons {
@@ -433,8 +320,8 @@ body[data-page="game"] .hud-header .bet-value-fixed {
 
 /* ===== BARRA DE PROGRESSO REMOVIDA - SISTEMA OCULTO ===== */
 
-/* ===== ANIMAÇÕES GOL DE OURO (escopo stage: NUNCA aplicado ao overlay em #game-overlay-root) ===== */
-.game-stage .gs-golden-goal {
+/* ===== ANIMAÇÕES GOL DE OURO ===== */
+.gs-golden-goal {
   position: absolute;
   top: 20%;
   left: 50%;
@@ -445,7 +332,7 @@ body[data-page="game"] .hud-header .bet-value-fixed {
   animation: goldenGoalPop 1.5s ease-out;
 }
 
-.game-stage .gs-golden-victory {
+.gs-golden-victory {
   position: absolute;
   top: 30%;
   left: 50%;
@@ -489,44 +376,19 @@ body[data-page="game"] .hud-header .bet-value-fixed {
     opacity: 1;
   }
 }
-.hud-right{ margin-left:auto; display:flex; align-items:center; gap:14px; }
-.btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1.2; padding:14px 24px; font-weight:600; cursor:pointer; font-size: 1.0625rem; /* 17px — aproxima botão de produção */ }
+.hud-right{ margin-left:auto; display:flex; align-items:center; gap:12px; }
+.btn-partida, .btn-dashboard{ border:0; border-radius:999px; line-height:1; padding:10px 16px; font-weight:600; cursor:pointer; }
 .btn-partida{ background:#23c381; color:#fff; }
 .btn-dashboard{ 
   background:#fbbf24; /* Amarelo do jogo */
   color:#000000; /* Preto */
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition:
-    background var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    transform var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    box-shadow var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    filter var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out);
-}
-
-@media (min-width: 1024px) {
-  .btn-partida, .btn-dashboard {
-    font-size: 1.125rem; /* 18px */
-    padding: 15px 26px;
-  }
+  transition: all 0.3s ease;
 }
 .btn-dashboard:hover {
   background:#f59e0b; /* Amarelo mais escuro no hover */
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
-}
-.btn-dashboard:active {
-  background: #d97706;
-  transform: translateY(1px);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
-  filter: brightness(0.97);
-}
-.btn-dashboard:focus-visible {
-  outline: 2px solid rgba(251, 191, 36, 0.95);
-  outline-offset: 3px;
-}
-.btn-dashboard:focus:not(:focus-visible) {
-  outline: none;
 }
 
 /* ===== RODAPÉ — Entrar na Fila (ESQ) e cluster (DIR) ===== */
@@ -586,88 +448,24 @@ body[data-page="game"] .hud-header .bet-value-fixed {
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
-  transition:
-    background var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    transform var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    box-shadow var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    filter var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out) !important;
+  transition: all 0.2s ease !important;
   z-index: 20 !important;
   pointer-events: auto !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
-.hud-btn:hover:not(:disabled) {
+.hud-btn:hover {
   background: #1ea76a !important;
   transform: translateY(-2px) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
-}
-
-.hud-btn:active:not(:disabled) {
-  background: #17805a !important;
-  transform: translateY(0) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35) !important;
-  filter: brightness(0.96) !important;
-}
-
-.hud-btn:focus-visible:not(:disabled) {
-  outline: 2px solid rgba(52, 211, 153, 0.95) !important;
-  outline-offset: 2px !important;
 }
 
 .hud-btn.secondary {
   background: #6b7280 !important;
 }
 
-.hud-btn.secondary:hover:not(:disabled) {
+.hud-btn.secondary:hover {
   background: #4b5563 !important;
-}
-
-.hud-btn.secondary:active:not(:disabled) {
-  background: #3d4450 !important;
-  filter: brightness(0.95) !important;
-}
-
-/* Recarregar — pill amarelo; área ~2× o MENU PRINCIPAL (padding + tipo maior) */
-body[data-page="game"] .hud-bottom-left .hud-btn.primary {
-  background: #fbbf24 !important;
-  color: #000000 !important;
-  border-radius: 999px !important;
-  padding: 28px 48px !important;
-  font-size: 2.125rem !important;
-  font-weight: 700 !important;
-  border: none !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28) !important;
-  gap: 16px !important;
-  line-height: 1.15 !important;
-}
-body[data-page="game"] .hud-bottom-left .hud-btn.primary .btn-icon {
-  font-size: 1em !important;
-  line-height: 1 !important;
-}
-body[data-page="game"] .hud-bottom-left .hud-btn.primary:hover:not(:disabled) {
-  background: #f59e0b !important;
-  color: #000000 !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 6px 18px rgba(251, 191, 36, 0.45) !important;
-}
-
-body[data-page="game"] .hud-bottom-left .hud-btn.primary:active:not(:disabled) {
-  background: #d97706 !important;
-  color: #000000 !important;
-  transform: translateY(1px) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28) !important;
-  filter: brightness(0.97) !important;
-}
-
-body[data-page="game"] .hud-bottom-left .hud-btn.primary:focus-visible:not(:disabled) {
-  outline: 3px solid rgba(251, 191, 36, 0.95) !important;
-  outline-offset: 4px !important;
-}
-@media (min-width: 1024px) {
-  body[data-page="game"] .hud-bottom-left .hud-btn.primary {
-    font-size: 2.25rem !important;
-    padding: 30px 52px !important;
-  }
 }
 
 .control-btn {
@@ -682,12 +480,7 @@ body[data-page="game"] .hud-bottom-left .hud-btn.primary:focus-visible:not(:disa
   justify-content: center !important;
   width: 40px !important;
   height: 40px !important;
-  transition:
-    background var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    transform var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    border-color var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    box-shadow var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out),
-    filter var(--go-hud-tx, 150ms) var(--go-hud-ease, ease-out) !important;
+  transition: all 0.2s ease !important;
   z-index: 20 !important;
   pointer-events: auto !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
@@ -697,19 +490,6 @@ body[data-page="game"] .hud-bottom-left .hud-btn.primary:focus-visible:not(:disa
   background: rgba(255, 255, 255, 0.2) !important;
   border-color: rgba(255, 255, 255, 0.4) !important;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
-  transform: translateY(-1px) !important;
-}
-
-.control-btn:active {
-  background: rgba(255, 255, 255, 0.14) !important;
-  transform: translateY(1px) scale(0.97) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28) !important;
-  filter: brightness(0.94) !important;
-}
-
-.control-btn:focus-visible {
-  outline: 2px solid rgba(253, 224, 71, 0.9) !important;
-  outline-offset: 2px !important;
 }
 
 .rank-display {
@@ -851,25 +631,12 @@ body[data-page="game"] .chat-user {
   }
 }
 
-/* ===== CORES DOS TEXTOS - BRANCO 100% (valores das stats em dourado à parte) ===== */
+/* ===== CORES DOS TEXTOS - BRANCO 100% ===== */
 body[data-page="game"] .hud-header .text-sm,
 body[data-page="game"] .hud-header .text-xs,
-body[data-page="game"] .hud-header .stat-label,
-body[data-page="game"] .hud-header .bet-label,
-body[data-page="game"] .hud-header .btn-partida {
+body[data-page="game"] .hud-header span,
+body[data-page="game"] .hud-header div {
   color: #ffffff !important; /* Branco 100% */
-}
-
-body[data-page="game"] .hud-header .btn-dashboard,
-body[data-page="game"] .hud-header .btn-dashboard:hover,
-body[data-page="game"] .hud-header .btn-dashboard:active,
-body[data-page="game"] .hud-header .btn-dashboard:focus-visible {
-  color: #000000 !important;
-}
-
-body[data-page="game"] .hud-header .stat-value {
-  color: #fbbf24 !important;
-  white-space: nowrap !important;
 }
 
 /* Específico para textos de estatísticas */

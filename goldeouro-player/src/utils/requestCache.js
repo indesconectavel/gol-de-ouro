@@ -65,16 +65,6 @@ class RequestCache {
     console.log('🧹 Cache limpo');
   }
 
-  /** Remove entradas cujo path (parte da chave) contém o fragmento — ex.: invalidar GET /api/user/profile após chute */
-  invalidatePath(pathFragment) {
-    if (!pathFragment) return;
-    for (const key of [...this.cache.keys()]) {
-      if (key.includes(pathFragment)) {
-        this.cache.delete(key);
-      }
-    }
-  }
-
   // Obter estatísticas do cache
   getStats() {
     const now = Date.now();

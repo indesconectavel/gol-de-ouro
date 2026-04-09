@@ -24,7 +24,6 @@ export const API_ENDPOINTS = {
   
   // Sistema de Jogo
   GAMES_SHOOT: `/api/games/shoot`,
-  GAMES_CHUTES_RECENTES: `/api/games/chutes/recentes`,
   GAMES_METRICS: `/api/metrics`,
   
   // Sistema de Lotes (compatibilidade)
@@ -32,10 +31,8 @@ export const API_ENDPOINTS = {
   GAMES_STATUS: `/api/games/status`,
   GAMES_CHUTAR: `/api/games/shoot`,
   
-  // Saques (fluxo correto: request + history)
+  // Saques
   WITHDRAW: `/api/withdraw`,
-  WITHDRAW_REQUEST: `/api/withdraw/request`,
-  WITHDRAW_HISTORY: `/api/withdraw/history`,
   
   // Health Check
   HEALTH: `/health`,
@@ -83,7 +80,7 @@ export const isAuthenticated = () => {
 export const logout = () => {
   localStorage.removeItem('authToken');
   localStorage.removeItem('userData');
-  window.location.href = '/login';
+  window.location.href = '/';
 };
 
 // Função para obter dados do usuário

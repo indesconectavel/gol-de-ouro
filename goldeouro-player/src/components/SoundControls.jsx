@@ -7,8 +7,7 @@ const SoundControls = () => {
     volume, 
     toggleMute, 
     setSoundVolume,
-    playCrowdSound,
-    playBackgroundMusic
+    playCrowdSound
   } = useSimpleSound()
   
   const [showAdvanced, setShowAdvanced] = useState(false)
@@ -75,12 +74,6 @@ const SoundControls = () => {
               className="w-full text-left px-3 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded transition-colors"
             >
               🎉 Testar Torcida
-            </button>
-            <button
-              onClick={playBackgroundMusic}
-              className="w-full text-left px-3 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded transition-colors"
-            >
-              🎵 Testar Música
             </button>
           </div>
         </div>
