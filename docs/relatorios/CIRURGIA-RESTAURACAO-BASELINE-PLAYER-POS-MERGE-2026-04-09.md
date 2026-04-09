@@ -2,6 +2,8 @@
 
 ## 1. Resumo executivo
 
+**Branch:** `fix/restaurar-baseline-player-2026-04-09` — commit `cff8cdc` — push em `origin`. PR sugerido: https://github.com/indesconectavel/gol-de-ouro/pull/new/fix/restaurar-baseline-player-2026-04-09
+
 Foi aplicada a **restauração completa da árvore `goldeouro-player/`** a partir do commit **`2785aae`** (baseline certificada na linha `diag/vercel-edge-spa-deep-2026-04-08`), sobre o **`main` atual** (`d72e21d`). A operação usa `git checkout 2785aae -- goldeouro-player/`, garantindo paridade de código com a baseline **sem** reintroduzir `cleanUrls`: o `vercel.json` restaurado é **funcionalmente igual** ao de `main` (rotas com `filesystem` + fallback `/index.html`, sem `cleanUrls`). O objetivo é devolver **`GameFinal` em `/game`**, layout e CSS certificados, e **banner oculto por padrão** (`VITE_SHOW_VERSION_BANNER`).
 
 **Build local (Windows):** `npm ci` falhou com **`EPERM`** ao remover ficheiros em `node_modules` (bloqueio do SO / antivírus / ficheiros em uso). **`npm run build`** não chegou a concluir neste ambiente. **Docker** não estava disponível. A validação de compilação fica **pendente** para CI ou máquina com `node_modules` limpo.
