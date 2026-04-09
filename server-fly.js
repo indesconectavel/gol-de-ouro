@@ -2160,8 +2160,8 @@ app.post('/api/payments/webhook', async (req, res, next) => {
             console.error('❌ [WEBHOOK] Erro ao buscar usuário:', userError);
             return;
           }
-          const credit = pixRecord.amount ?? pixRecord.valor ?? 0;
-          const novoSaldo = user.saldo + credit;
+          const credit = Number(pixRecord.amount ?? pixRecord.valor ?? 0);
+          const novoSaldo = Number(user.saldo || 0) + credit;
           const { error: saldoError } = await supabase
             .from('usuarios')
             .update({ saldo: novoSaldo })
