@@ -42,7 +42,6 @@ const { calculateInitialBalance, validateRealData, isProductionMode } = require(
 
 // Importar validadores
 const PixValidator = require('./utils/pix-validator');
-const LoteIntegrityValidator = require('./utils/lote-integrity-validator');
 const WebhookSignatureValidator = require('./utils/webhook-signature-validator');
 
 require('dotenv').config();
@@ -62,7 +61,6 @@ const PORT = process.env.PORT || 8080;
 // =====================================================
 
 const pixValidator = new PixValidator();
-const loteIntegrityValidator = new LoteIntegrityValidator();
 const webhookSignatureValidator = new WebhookSignatureValidator();
 
 // =====================================================
@@ -364,68 +362,19 @@ const authenticateToken = (req, res, next) => {
 };
 
 // =====================================================
-// SISTEMA DE LOTES CORRIGIDO
+// VALORES DE APOSTA (validação HTTP; lote e vencedor vivem no BD — shoot_apply)
 // =====================================================
 
-let lotesAtivos = new Map();
 // Variáveis globais para métricas - ZERADAS para produção real
 let contadorChutesGlobal = 0; // Zerado - sem dados simulados
 let ultimoGolDeOuro = 0; // Zerado - sem dados simulados
 
-// Configurações dos lotes por valor de aposta
 const batchConfigs = {
   1: { size: 10, totalValue: 10, winChance: 0.1, description: "10% chance" },
   2: { size: 5, totalValue: 10, winChance: 0.2, description: "20% chance" },
   5: { size: 2, totalValue: 10, winChance: 0.5, description: "50% chance" },
   10: { size: 1, totalValue: 10, winChance: 1.0, description: "100% chance" }
 };
-
-function getOrCreateLoteByValue(amount) {
-  const config = batchConfigs[amount];
-  if (!config) {
-    throw new Error(`Valor de aposta inválido: ${amount}`);
-  }
-
-  // Verificar se existe lote ativo para este valor
-  let loteAtivo = null;
-  for (const [loteId, lote] of lotesAtivos.entries()) {
-    // Compatível com validador: usa lote.valor e booleano lote.ativo
-    const valorLote = typeof lote.valor !== 'undefined' ? lote.valor : lote.valorAposta;
-    const ativo = typeof lote.ativo === 'boolean' ? lote.ativo : lote.status === 'active';
-    if (valorLote === amount && ativo && lote.chutes.length < config.size) {
-      loteAtivo = lote;
-      break;
-    }
-  }
-
-  // Se não existe lote ativo, criar novo
-  if (!loteAtivo) {
-    // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomBytes ao invés de Math.random()
-    const randomBytes = crypto.randomBytes(6).toString('hex');
-    const loteId = `lote_${amount}_${Date.now()}_${randomBytes}`;
-    loteAtivo = {
-      id: loteId,
-      // Campos esperados pelo validador de integridade
-      valor: amount,
-      ativo: true,
-
-      // Mantém compatibilidade com código existente
-      valorAposta: amount,
-      config: config,
-      chutes: [],
-      status: 'active',
-      // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomInt ao invés de Math.random()
-      winnerIndex: crypto.randomInt(0, config.size), // CORRIGIDO: Aleatório seguro por lote
-      createdAt: new Date().toISOString(),
-      totalArrecadado: 0,
-      premioTotal: 0
-    };
-    lotesAtivos.set(loteId, loteAtivo);
-    console.log(`🎮 [LOTE] Novo lote criado: ${loteId} (R$${amount})`);
-  }
-
-  return loteAtivo;
-}
 
 // =====================================================
 // ROTAS DE AUTENTICAÇÃO
@@ -1204,133 +1153,130 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
     }
 
-    // Obter ou criar lote para este valor
-    const lote = getOrCreateLoteByValue(amount);
-    
-    // Validar integridade do lote antes de processar chute
-    const integrityValidation = loteIntegrityValidator.validateBeforeShot(lote, {
-      direction: direction,
-      amount: amount,
-      userId: req.user.userId
+    const { data: shootApplyRow, error: shootApplyError } = await supabase.rpc('shoot_apply', {
+      p_usuario_id: req.user.userId,
+      p_direcao: direction,
+      p_valor_aposta: amount
     });
 
-    if (!integrityValidation.valid) {
-      console.error('❌ [SHOOT] Problema de integridade do lote:', integrityValidation.error);
-      return res.status(400).json({
-        success: false,
-        message: integrityValidation.error
-      });
-    }
-    
-    // Incrementar contador global
-    contadorChutesGlobal++;
-    
-    // Verificar se é Gol de Ouro (a cada 1000 chutes)
-    const isGolDeOuro = contadorChutesGlobal % 1000 === 0;
-    
-    // Salvar contador no Supabase
-    await saveGlobalCounter();
-    
-    // Determinar se é gol baseado no sistema de lotes
-    const shotIndex = lote.chutes.length;
-    const isGoal = shotIndex === lote.winnerIndex;
-    const result = isGoal ? 'goal' : 'miss';
-    
-    let premio = 0;
-    let premioGolDeOuro = 0;
-    
-    if (isGoal) {
-      // Prêmio normal: R$5 fixo (independente do valor apostado)
-      premio = 5.00;
-      
-      // Gol de Ouro: R$100 adicional
-      if (isGolDeOuro) {
-        premioGolDeOuro = 100.00;
-        ultimoGolDeOuro = contadorChutesGlobal;
-        console.log(`🏆 [GOL DE OURO] Chute #${contadorChutesGlobal} - Prêmio: R$ ${premioGolDeOuro}`);
+    if (shootApplyError) {
+      const errMsg = String(shootApplyError.message || shootApplyError.details || '');
+      if (errMsg.includes('SHOOT_APPLY_SALDO_INSUFICIENTE')) {
+        return res.status(400).json({
+          success: false,
+          message: 'Saldo insuficiente'
+        });
       }
-      
-      // Encerrar o lote imediatamente após o gol (um vencedor por lote)
-      // Isso evita novos chutes no mesmo lote e alinha com o validador de integridade.
-      lote.status = 'completed';
-      lote.ativo = false;
-    }
-    
-    // Adicionar chute ao lote
-    const chute = {
-      id: `${lote.id}_${shotIndex}`,
-      // Campo esperado pelo validador
-      userId: req.user.userId,
-      direction,
-      amount,
-      result,
-      premio,
-      premioGolDeOuro,
-      isGolDeOuro,
-      shotIndex: shotIndex + 1,
-      timestamp: new Date().toISOString()
-    };
-    
-    lote.chutes.push(chute);
-    lote.totalArrecadado += amount;
-    lote.premioTotal += premio + premioGolDeOuro;
-
-    // Validar integridade do lote após adicionar chute
-    const postShotValidation = loteIntegrityValidator.validateAfterShot(lote, {
-      result: result,
-      premio: premio,
-      premioGolDeOuro: premioGolDeOuro,
-      timestamp: new Date().toISOString()
-    });
-
-    if (!postShotValidation.valid) {
-      console.error('❌ [SHOOT] Problema de integridade após chute:', postShotValidation.error);
-      // Reverter chute do lote
-      lote.chutes.pop();
-      lote.totalArrecadado -= amount;
-      lote.premioTotal -= premio + premioGolDeOuro;
-      return res.status(400).json({
-        success: false,
-        message: postShotValidation.error
-      });
-    }
-
-    // Persistir registro do chute. Em produção não há trigger em `chutes` que altere saldo;
-    // o ajuste em `usuarios.saldo` é feito explicitamente abaixo.
-    const { error: chuteError } = await supabase
-      .from('chutes')
-      .insert({
-        usuario_id: req.user.userId,
-        lote_id: lote.id,
-        direcao: direction,
-        valor_aposta: amount,
-        resultado: result,
-        premio: premio,
-        premio_gol_de_ouro: premioGolDeOuro,
-        is_gol_de_ouro: isGolDeOuro,
-        contador_global: contadorChutesGlobal,
-        shot_index: shotIndex + 1
-      });
-
-    if (chuteError) {
-      console.error('❌ [SHOOT] Erro ao salvar chute:', chuteError);
+      if (errMsg.includes('SHOOT_APPLY_USUARIO_NAO_ENCONTRADO')) {
+        return res.status(404).json({
+          success: false,
+          message: 'Usuário não encontrado'
+        });
+      }
+      if (errMsg.includes('SHOOT_APPLY_METRICAS_AUSENTE')) {
+        console.error('❌ [SHOOT] metricas_globais id=1 ausente');
+        return res.status(503).json({
+          success: false,
+          message: 'Sistema temporariamente indisponível'
+        });
+      }
+      if (errMsg.includes('SHOOT_APPLY_DIRECAO_INVALIDA')) {
+        return res.status(400).json({
+          success: false,
+          message: 'Direção inválida'
+        });
+      }
+      if (errMsg.includes('SHOOT_APPLY_VALOR_INVALIDO')) {
+        return res.status(400).json({
+          success: false,
+          message: 'Valor de aposta inválido. Use: 1, 2, 5 ou 10'
+        });
+      }
+      if (
+        errMsg.includes('SHOOT_APPLY_LOTE_CHEIO') ||
+        errMsg.includes('SHOOT_APPLY_LOTE_ALOCAR_FALHOU')
+      ) {
+        console.error('❌ [SHOOT] Concorrência / lote:', errMsg);
+        return res.status(503).json({
+          success: false,
+          message: 'Conflito ao alocar lote. Tente novamente.'
+        });
+      }
+      console.error('❌ [SHOOT] shoot_apply:', shootApplyError);
       return res.status(500).json({
         success: false,
         message: 'Erro ao registrar chute. Tente novamente.'
       });
     }
 
-    // Verificar se lote está completo
-    // Já encerrado em caso de gol, mas mantém fechamento por tamanho para consistência
-    if (lote.chutes.length >= lote.config.size && lote.status !== 'completed') {
-      lote.status = 'completed';
-      // Desativar para o validador entender que não aceita mais chutes
-      lote.ativo = false;
-      console.log(`🏆 [LOTE] Lote ${lote.id} completado: ${lote.chutes.length} chutes, R$${lote.totalArrecadado} arrecadado, R$${lote.premioTotal} em prêmios`);
+    let rpcPayload = null;
+    if (shootApplyRow != null && typeof shootApplyRow === 'object') {
+      rpcPayload = shootApplyRow;
+    } else if (typeof shootApplyRow === 'string') {
+      try {
+        rpcPayload = JSON.parse(shootApplyRow);
+      } catch (_) {
+        rpcPayload = null;
+      }
     }
-    
+    const saldoRpc = rpcPayload != null ? rpcPayload.novo_saldo : null;
+    const contadorRpc = rpcPayload != null ? rpcPayload.contador_global : null;
+    if (saldoRpc === undefined || saldoRpc === null || Number.isNaN(Number(saldoRpc))) {
+      console.error('❌ [SHOOT] Resposta inválida de shoot_apply:', shootApplyRow);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao confirmar saldo após chute.'
+      });
+    }
+    if (contadorRpc === undefined || contadorRpc === null || Number.isNaN(Number(contadorRpc))) {
+      console.error('❌ [SHOOT] Resposta inválida (contador) de shoot_apply:', shootApplyRow);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao confirmar métricas após chute.'
+      });
+    }
+
+    const loteIdRpc = rpcPayload.lote_id != null ? String(rpcPayload.lote_id).replace(/^"|"$/g, '') : null;
+    const posLote = Number(rpcPayload.posicao_lote);
+    const tamLote = Number(rpcPayload.tamanho_lote);
+    const isLoteCompleteRpc = !!rpcPayload.is_lote_complete;
+    if (!loteIdRpc || Number.isNaN(posLote) || Number.isNaN(tamLote)) {
+      console.error('❌ [SHOOT] Resposta inválida (lote) de shoot_apply:', shootApplyRow);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao confirmar lote após chute.'
+      });
+    }
+
+    let result = rpcPayload.resultado;
+    if (typeof result === 'string') {
+      result = result.replace(/^"|"$/g, '');
+    }
+    if (result !== 'goal' && result !== 'miss') {
+      console.error('❌ [SHOOT] resultado inválido da RPC:', result);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao confirmar resultado do chute.'
+      });
+    }
+
+    contadorChutesGlobal = Number(contadorRpc);
+    ultimoGolDeOuro = Number(rpcPayload.ultimo_gol_de_ouro != null ? rpcPayload.ultimo_gol_de_ouro : ultimoGolDeOuro);
+
+    const premio = Number.isFinite(Number(rpcPayload.premio)) ? Number(rpcPayload.premio) : 0;
+    const premioGolDeOuro = Number.isFinite(Number(rpcPayload.premio_gol_de_ouro))
+      ? Number(rpcPayload.premio_gol_de_ouro)
+      : 0;
+    const isGolDeOuro = !!rpcPayload.is_gol_de_ouro;
+
+    if (premioGolDeOuro > 0) {
+      console.log(`🏆 [GOL DE OURO] Chute #${contadorChutesGlobal} - Prêmio: R$ ${premioGolDeOuro}`);
+    }
+
+    const remainingLote = Math.max(0, tamLote - posLote);
+
     const shootResult = {
-      loteId: lote.id,
+      loteId: loteIdRpc,
       direction,
       amount,
       result,
@@ -1341,82 +1287,17 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       timestamp: new Date().toISOString(),
       playerId: req.user.userId,
       loteProgress: {
-        current: lote.chutes.length,
-        total: lote.config.size,
-        remaining: lote.config.size - lote.chutes.length
+        current: posLote,
+        total: tamLote,
+        remaining: remainingLote
       },
-      isLoteComplete: lote.status === 'completed'
+      isLoteComplete: isLoteCompleteRpc
     };
 
-    // Ajuste explícito de saldo (sem trigger em `chutes`):
-    // MISS: saldo_novo = saldo_atual - amount
-    // GOAL: saldo_novo = saldo_atual - amount + premio + premioGolDeOuro
-    // Concorrência: update condicional em saldo (mesma ideia do fluxo de saque).
-    const userId = req.user.userId;
-    const creditoPremios = isGoal ? premio + premioGolDeOuro : 0;
-    const maxTentativasSaldo = 4;
-    let saldoFinal = null;
-
-    for (let tentativa = 0; tentativa < maxTentativasSaldo; tentativa++) {
-      const { data: rowSaldo, error: saldoReadErr } = await supabase
-        .from('usuarios')
-        .select('saldo')
-        .eq('id', userId)
-        .single();
-
-      if (saldoReadErr || rowSaldo == null || rowSaldo.saldo === undefined || rowSaldo.saldo === null) {
-        console.error('❌ [SHOOT] Falha ao ler saldo para ajuste:', saldoReadErr);
-        return res.status(500).json({
-          success: false,
-          message: 'Erro ao atualizar saldo após chute.'
-        });
-      }
-
-      const saldoAtual = Number(rowSaldo.saldo);
-      if (saldoAtual < amount) {
-        console.error('❌ [SHOOT] Saldo insuficiente ao aplicar movimento (possível corrida com outro escritor):', {
-          userId,
-          saldoAtual,
-          amount
-        });
-        return res.status(500).json({
-          success: false,
-          message: 'Erro ao confirmar saldo após chute.'
-        });
-      }
-
-      const novoSaldoCalculado = saldoAtual - amount + creditoPremios;
-
-      const { data: atualizado, error: saldoUpdErr } = await supabase
-        .from('usuarios')
-        .update({ saldo: novoSaldoCalculado })
-        .eq('id', userId)
-        .eq('saldo', rowSaldo.saldo)
-        .select('saldo');
-
-      if (saldoUpdErr) {
-        console.error('❌ [SHOOT] Erro ao atualizar saldo:', saldoUpdErr);
-        return res.status(500).json({
-          success: false,
-          message: 'Erro ao atualizar saldo após chute.'
-        });
-      }
-
-      if (atualizado && atualizado.length > 0) {
-        saldoFinal = Number(atualizado[0].saldo);
-        break;
-      }
+    shootResult.novoSaldo = Number(saldoRpc);
+    if (rpcPayload.chute_id !== undefined && rpcPayload.chute_id !== null) {
+      shootResult.chuteId = rpcPayload.chute_id;
     }
-
-    if (saldoFinal === null) {
-      console.error('❌ [SHOOT] Saldo não atualizado após tentativas (concorrência).', { userId });
-      return res.status(500).json({
-        success: false,
-        message: 'Erro ao atualizar saldo após chute.'
-      });
-    }
-
-    shootResult.novoSaldo = saldoFinal;
     
     console.log(`⚽ [SHOOT] Chute #${contadorChutesGlobal}: ${result} por usuário ${req.user.userId}`);
     
