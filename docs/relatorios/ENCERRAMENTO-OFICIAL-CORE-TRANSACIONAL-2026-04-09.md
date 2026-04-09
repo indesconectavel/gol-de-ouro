@@ -7,7 +7,7 @@
 
 ## 1. Resumo executivo
 
-O repositório foi consolidado num **commit único** com a função SQL `shoot_apply` (assinatura final de três parâmetros, lote transacional), o backend **`server-fly.js`** alinhado à RPC, relatórios de cirurgia/validação das fases 2.1, 2.2A e 2.2B, e foi criada a **tag anotada** `core-transacional-aprovado-2026-04-09`. **Push** da branch `snapshot/v1-estavel-2026-04-09` e da tag para `origin` concluídos com sucesso.
+O repositório foi consolidado num **commit de núcleo** (`8be0376…`) com a função SQL `shoot_apply` (assinatura final de três parâmetros, lote transacional), o backend **`server-fly.js`** alinhado à RPC, relatórios de cirurgia/validação das fases 2.1, 2.2A e 2.2B, e foi criada a **tag anotada** `core-transacional-aprovado-2026-04-09`. **Push** da branch `snapshot/v1-estavel-2026-04-09` e da tag para `origin` concluídos com sucesso.
 
 Nesta sessão **não foi possível** consultar o catálogo do PostgreSQL em produção nem invocar a API pública com JWT para smoke tests automatizados. A confirmação do banco baseia-se em **evidência operacional prévia** (execução bem-sucedida do script no SQL Editor do Supabase `goldeouro-production`, referida na validação 2.2B). O **deploy Fly.io** em execução neste momento **não foi verificado** contra o SHA `8be0376…` (ausência de chamada à API de deploy ou healthcheck autenticado neste ambiente).
 
@@ -35,7 +35,7 @@ Artefactos em repositório: `database/shoot_apply_atomic_transaction.sql`, `serv
 | **Branch** | `snapshot/v1-estavel-2026-04-09` |
 | **Ficheiros (8)** | `server-fly.js` (modificado); `database/shoot_apply_atomic_transaction.sql` (novo); 6× `docs/relatorios/*.md` (CIRURGIA/VALIDACAO Fase 2.1, 2.2A, 2.2B). |
 
-**Documentação de encerramento:** commit subsequente `37aada67dde928887d885baa33b4d9ed21c872a3` — apenas `docs/relatorios/ENCERRAMENTO-OFICIAL-CORE-TRANSACIONAL-2026-04-09.md` (HEAD da branch após push completo).
+**Documentação de encerramento:** commits subsequentes apenas em `docs/relatorios/ENCERRAMENTO-OFICIAL-CORE-TRANSACIONAL-2026-04-09.md` e ajustes de texto; **HEAD atual da branch** — ver `git rev-parse origin/snapshot/v1-estavel-2026-04-09` após `git pull`.
 
 ---
 
@@ -122,7 +122,7 @@ O **núcleo transacional está oficialmente versionado, etiquetado e enviado ao 
 | # | Item | Valor |
 |---|------|--------|
 | 1 | **SHA do commit final (núcleo)** | `8be0376d6fc6ae11d6b011a89fe27eb170b5a696` |
-| 1b | **SHA HEAD branch (com relatório)** | `37aada67dde928887d885baa33b4d9ed21c872a3` |
+| 1b | **SHA HEAD branch (inclui relatório)** | `6a47e63a1c4f44d1b97f4fe5f6bf9bee48d00220` (pode avançar se houver commits posteriores; confirmar com `git rev-parse HEAD`) |
 | 2 | **Tag final** | `core-transacional-aprovado-2026-04-09` |
 | 3 | **Status do push** | **Sucesso** — `snapshot/v1-estavel-2026-04-09` e tag enviadas para `https://github.com/indesconectavel/gol-de-ouro.git` |
 | 4 | **Estado da árvore** | **Limpo** (`git status` sem alterações pendentes na branch) |
