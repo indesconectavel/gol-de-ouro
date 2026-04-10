@@ -51,13 +51,18 @@ class EmailService {
   // Enviar email de recuperação de senha
   async sendPasswordResetEmail(email, username, resetToken) {
     if (!this.isConfigured) {
-      console.warn('⚠️ [EMAIL] Serviço de email não configurado, apenas logando token');
+      console.warn('⚠️ [EMAIL] Serviço de email não configurado');
       console.log(`📧 [EMAIL] Token para ${email}: ${resetToken}`);
-      return { success: true, message: 'Email simulado (serviço não configurado)' };
+      return {
+        success: false,
+        error: 'Serviço de email não configurado',
+        message: 'Serviço de email não configurado'
+      };
     }
 
     try {
-      const resetLink = `https://goldeouro.lol/reset-password?token=${resetToken}`;
+      const frontendBase = (process.env.FRONTEND_URL || 'https://goldeouro.lol').replace(/\/+$/, '');
+      const resetLink = `${frontendBase}/reset-password?token=${resetToken}`;
       
       const mailOptions = {
         from: `"Gol de Ouro" <${process.env.SMTP_USER || 'goldeouro.game@gmail.com'}>`,

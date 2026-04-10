@@ -459,9 +459,13 @@ app.post('/api/auth/forgot-password', [
     } else {
       const logMessage = `⚠️ [FORGOT-PASSWORD] Falha ao enviar email para ${sanitizedEmail}: ${emailResult.error}`;
       console.log(logMessage);
-      // Logar token como fallback (truncado por segurança)
-      const tokenMessage = `🔗 [FORGOT-PASSWORD] Link de recuperação: https://goldeouro.lol/reset-password?token=${sanitizedToken}`;
+      const frontendBaseLog = (process.env.FRONTEND_URL || 'https://goldeouro.lol').replace(/\/+$/, '');
+      const tokenMessage = `🔗 [FORGOT-PASSWORD] Link de recuperação: ${frontendBaseLog}/reset-password?token=${sanitizedToken}`;
       console.log(tokenMessage);
+      return res.status(503).json({
+        success: false,
+        message: emailResult.message || 'Serviço de email temporariamente indisponível. Tente novamente mais tarde.'
+      });
     }
 
     const successMessage = `✅ [FORGOT-PASSWORD] Token de recuperação gerado para: ${sanitizedEmail}`;
@@ -712,7 +716,7 @@ app.post('/api/auth/register', async (req, res) => {
 
             return res.status(200).json({
         success: true,
-              message: 'Login realizado automaticamente (email já cadastrado)',
+              message: 'Login realizado com sucesso',
               token: token,
         user: {
                 id: user.id,
@@ -730,9 +734,9 @@ app.post('/api/auth/register', async (req, res) => {
         console.log('⚠️ [REGISTER] Erro no login automático:', loginError.message);
       }
       
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
-        message: 'Email já cadastrado. Use a opção "Esqueci minha senha" se necessário.' 
+        message: 'Credenciais inválidas'
       });
     }
 
@@ -808,6 +812,130 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
+/**
+ * Núcleo compartilhado: login por email/senha (`/api/auth/login` e `/auth/login` — BLOCO C Fase 1).
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<
+ *   | { ok: true, token: string, user: Record<string, unknown>, message: string }
+ *   | { ok: false, status: number, payload: { success: boolean, message: string } }
+ * >}
+ */
+async function loginPlayerWithEmailPassword(email, password) {
+  if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
+    return {
+      ok: false,
+      status: 400,
+      payload: { success: false, message: 'Email e senha são obrigatórios' }
+    };
+  }
+
+  /** @type {string} */
+  const sanitizedEmailLogin = email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '');
+
+  if (!dbConnected || !supabase) {
+    return {
+      ok: false,
+      status: 503,
+      payload: { success: false, message: 'Sistema temporariamente indisponível' }
+    };
+  }
+
+  let user;
+  let userError;
+  try {
+    const result = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('email', email)
+      .eq('ativo', true)
+      .single();
+    user = result.data;
+    userError = result.error;
+  } catch (supabaseError) {
+    console.error('❌ [LOGIN] Erro Supabase:', supabaseError?.message || supabaseError);
+    return {
+      ok: false,
+      status: 503,
+      payload: { success: false, message: 'Sistema temporariamente indisponível' }
+    };
+  }
+
+  if (userError || !user) {
+    const logMessageLoginNotFound = `❌ [LOGIN] Usuário não encontrado: ${sanitizedEmailLogin}`;
+    console.log(logMessageLoginNotFound);
+    return {
+      ok: false,
+      status: 401,
+      payload: { success: false, message: 'Credenciais inválidas' }
+    };
+  }
+
+  if (!user.senha_hash || typeof user.senha_hash !== 'string') {
+    const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
+    console.log(logMessageInvalidPassword);
+    return {
+      ok: false,
+      status: 401,
+      payload: { success: false, message: 'Credenciais inválidas' }
+    };
+  }
+
+  const senhaValida = await bcrypt.compare(password, user.senha_hash);
+  if (!senhaValida) {
+    const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
+    console.log(logMessageInvalidPassword);
+    return {
+      ok: false,
+      status: 401,
+      payload: { success: false, message: 'Credenciais inválidas' }
+    };
+  }
+
+  if (user.saldo === 0 || user.saldo === null) {
+    try {
+      const { error: updateError } = await supabase
+        .from('usuarios')
+        .update({ saldo: calculateInitialBalance('regular') })
+        .eq('id', user.id);
+
+      if (!updateError) {
+        user.saldo = calculateInitialBalance('regular');
+        const logMessageBalance = `💰 [LOGIN] Saldo inicial de R$ ${calculateInitialBalance('regular')} adicionado para usuário ${sanitizedEmailLogin}`;
+        console.log(logMessageBalance);
+      }
+    } catch (saldoError) {
+      console.log('⚠️ [LOGIN] Erro ao adicionar saldo inicial:', saldoError.message);
+    }
+  }
+
+  /** @type {{ userId: string, email: string, username: string }} */
+  const tokenPayload = {
+    userId: user.id,
+    email: user.email,
+    username: user.username
+  };
+  const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+  const logMessageLoginSuccess = `✅ [LOGIN] Login realizado: ${sanitizedEmailLogin}`;
+  console.log(logMessageLoginSuccess);
+
+  return {
+    ok: true,
+    token,
+    message: 'Login realizado com sucesso',
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      saldo: user.saldo,
+      tipo: user.tipo,
+      total_apostas: user.total_apostas,
+      total_ganhos: user.total_ganhos
+    }
+  };
+}
+
 // ⚠️ REGRA V1:
 // Qualquer alteração neste endpoint exige passar no teste de login feliz.
 // Não remover @ts-check desta seção.
@@ -825,126 +953,17 @@ app.post('/api/auth/login', async (req, res) => {
      * @param {{ email: string, password: string }} body
      */
     const { email, password } = /** @type {{ email: string, password: string }} */ (req.body);
-    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email e senha são obrigatórios'
-      });
+    const result = await loginPlayerWithEmailPassword(email, password);
+    if (!result.ok) {
+      return res.status(result.status).json(result.payload);
     }
-
-    /** @type {string} */
-    const sanitizedEmailLogin = email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '');
-
-    // APENAS SUPABASE REAL - SEM FALLBACK
-    if (!dbConnected || !supabase) {
-      return res.status(503).json({
-        success: false,
-        message: 'Sistema temporariamente indisponível'
-      });
-    }
-
-    // Buscar usuário
-    let user;
-    let userError;
-    try {
-      const result = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('email', email)
-        .eq('ativo', true)
-        .single();
-      user = result.data;
-      userError = result.error;
-    } catch (supabaseError) {
-      console.error('❌ [LOGIN] Erro Supabase:', supabaseError?.message || supabaseError);
-      return res.status(503).json({
-        success: false,
-        message: 'Sistema temporariamente indisponível'
-      });
-    }
-
-    if (userError || !user) {
-      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-      const logMessageLoginNotFound = `❌ [LOGIN] Usuário não encontrado: ${sanitizedEmailLogin}`;
-      console.log(logMessageLoginNotFound);
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-
-    // Verificar senha
-    if (!user.senha_hash || typeof user.senha_hash !== 'string') {
-      const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
-      console.log(logMessageInvalidPassword);
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-
-    const senhaValida = await bcrypt.compare(password, user.senha_hash);
-    if (!senhaValida) {
-      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-      const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
-      console.log(logMessageInvalidPassword);
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-
-    // Verificar se usuário precisa de saldo inicial (para usuários antigos)
-    if (user.saldo === 0 || user.saldo === null) {
-      try {
-        const { error: updateError } = await supabase
-          .from('usuarios')
-          .update({ saldo: calculateInitialBalance('regular') })
-          .eq('id', user.id);
-        
-        if (!updateError) {
-          user.saldo = calculateInitialBalance('regular');
-          // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-          const logMessageBalance = `💰 [LOGIN] Saldo inicial de R$ ${calculateInitialBalance('regular')} adicionado para usuário ${sanitizedEmailLogin}`;
-          console.log(logMessageBalance);
-        }
-      } catch (saldoError) {
-        console.log('⚠️ [LOGIN] Erro ao adicionar saldo inicial:', saldoError.message);
-      }
-    }
-
-    // Gerar token JWT
-    /** @type {{ userId: string, email: string, username: string }} */
-    const tokenPayload = {
-      userId: user.id,
-      email: user.email,
-      username: user.username
-    };
-    const token = jwt.sign(
-      tokenPayload,
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-    const logMessageLoginSuccess = `✅ [LOGIN] Login realizado: ${sanitizedEmailLogin}`;
-    console.log(logMessageLoginSuccess);
 
     res.json({
       success: true,
-      message: 'Login realizado com sucesso',
-      token: token,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        saldo: user.saldo,
-        tipo: user.tipo,
-        total_apostas: user.total_apostas,
-        total_ganhos: user.total_ganhos
-      }
+      message: result.message,
+      token: result.token,
+      user: result.user
     });
-
   } catch (error) {
     console.error('❌ [LOGIN] Erro:', error);
     res.status(500).json({
@@ -2772,79 +2791,27 @@ app.put('/api/auth/change-password', authenticateToken, async (req, res) => {
   }
 });
 
-// Endpoint /auth/login para compatibilidade (implementação direta)
+// Endpoint /auth/login para compatibilidade — mesmo núcleo que /api/auth/login
 app.post('/auth/login', async (req, res) => {
   console.log('🔄 [COMPATIBILITY] Endpoint /auth/login chamado diretamente');
-  
+
   try {
-    const { email, password } = req.body;
-    
-    // Validar entrada
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email e senha são obrigatórios'
-      });
-    }
-    
-    // APENAS SUPABASE REAL - SEM FALLBACK
-    if (!dbConnected || !supabase) {
-      return res.status(503).json({ 
-        success: false,
-        message: 'Sistema temporariamente indisponível' 
-      });
-    }
-    
-    // Buscar usuário no Supabase
-    const { data: user, error: userError } = await supabase
-      .from('usuarios')
-      .select('*')
-      .eq('email', email)
-      .eq('ativo', true)
-      .single();
-    
-    if (userError || !user) {
-      console.log('❌ [LOGIN] Usuário não encontrado:', email);
-      return res.status(401).json({
-      success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-    
-    // Verificar senha
-    const senhaValida = await bcrypt.compare(password, user.senha_hash);
-    if (!senhaValida) {
-      console.log('❌ [LOGIN] Senha inválida para:', email);
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-    
-    // Usuário deve depositar para ter saldo - sem crédito automático
-    
-    // Gerar token JWT
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, username: user.username },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const { email, password } = /** @type {{ email?: string, password?: string }} */ (body);
+    const result = await loginPlayerWithEmailPassword(
+      typeof email === 'string' ? email : '',
+      typeof password === 'string' ? password : ''
     );
-    
-    console.log('✅ [LOGIN] Login realizado com sucesso:', email);
-    
+    if (!result.ok) {
+      return res.status(result.status).json(result.payload);
+    }
+
     res.json({
       success: true,
-      message: 'Login realizado com sucesso',
-      token: token,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        saldo: user.saldo,
-        tipo: user.tipo
-      }
+      message: result.message,
+      token: result.token,
+      user: result.user
     });
-    
   } catch (error) {
     console.error('❌ [COMPATIBILITY] Erro no endpoint login:', error.message);
     res.status(500).json({
