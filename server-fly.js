@@ -42,7 +42,6 @@ const { calculateInitialBalance, validateRealData, isProductionMode } = require(
 
 // Importar validadores
 const PixValidator = require('./utils/pix-validator');
-const LoteIntegrityValidator = require('./utils/lote-integrity-validator');
 const WebhookSignatureValidator = require('./utils/webhook-signature-validator');
 
 require('dotenv').config();
@@ -62,7 +61,6 @@ const PORT = process.env.PORT || 8080;
 // =====================================================
 
 const pixValidator = new PixValidator();
-const loteIntegrityValidator = new LoteIntegrityValidator();
 const webhookSignatureValidator = new WebhookSignatureValidator();
 
 // =====================================================
@@ -364,68 +362,19 @@ const authenticateToken = (req, res, next) => {
 };
 
 // =====================================================
-// SISTEMA DE LOTES CORRIGIDO
+// VALORES DE APOSTA (validação HTTP; lote e vencedor vivem no BD — shoot_apply)
 // =====================================================
 
-let lotesAtivos = new Map();
 // Variáveis globais para métricas - ZERADAS para produção real
 let contadorChutesGlobal = 0; // Zerado - sem dados simulados
 let ultimoGolDeOuro = 0; // Zerado - sem dados simulados
 
-// Configurações dos lotes por valor de aposta
 const batchConfigs = {
   1: { size: 10, totalValue: 10, winChance: 0.1, description: "10% chance" },
   2: { size: 5, totalValue: 10, winChance: 0.2, description: "20% chance" },
   5: { size: 2, totalValue: 10, winChance: 0.5, description: "50% chance" },
   10: { size: 1, totalValue: 10, winChance: 1.0, description: "100% chance" }
 };
-
-function getOrCreateLoteByValue(amount) {
-  const config = batchConfigs[amount];
-  if (!config) {
-    throw new Error(`Valor de aposta inválido: ${amount}`);
-  }
-
-  // Verificar se existe lote ativo para este valor
-  let loteAtivo = null;
-  for (const [loteId, lote] of lotesAtivos.entries()) {
-    // Compatível com validador: usa lote.valor e booleano lote.ativo
-    const valorLote = typeof lote.valor !== 'undefined' ? lote.valor : lote.valorAposta;
-    const ativo = typeof lote.ativo === 'boolean' ? lote.ativo : lote.status === 'active';
-    if (valorLote === amount && ativo && lote.chutes.length < config.size) {
-      loteAtivo = lote;
-      break;
-    }
-  }
-
-  // Se não existe lote ativo, criar novo
-  if (!loteAtivo) {
-    // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomBytes ao invés de Math.random()
-    const randomBytes = crypto.randomBytes(6).toString('hex');
-    const loteId = `lote_${amount}_${Date.now()}_${randomBytes}`;
-    loteAtivo = {
-      id: loteId,
-      // Campos esperados pelo validador de integridade
-      valor: amount,
-      ativo: true,
-
-      // Mantém compatibilidade com código existente
-      valorAposta: amount,
-      config: config,
-      chutes: [],
-      status: 'active',
-      // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomInt ao invés de Math.random()
-      winnerIndex: crypto.randomInt(0, config.size), // CORRIGIDO: Aleatório seguro por lote
-      createdAt: new Date().toISOString(),
-      totalArrecadado: 0,
-      premioTotal: 0
-    };
-    lotesAtivos.set(loteId, loteAtivo);
-    console.log(`🎮 [LOTE] Novo lote criado: ${loteId} (R$${amount})`);
-  }
-
-  return loteAtivo;
-}
 
 // =====================================================
 // ROTAS DE AUTENTICAÇÃO
@@ -510,9 +459,13 @@ app.post('/api/auth/forgot-password', [
     } else {
       const logMessage = `⚠️ [FORGOT-PASSWORD] Falha ao enviar email para ${sanitizedEmail}: ${emailResult.error}`;
       console.log(logMessage);
-      // Logar token como fallback (truncado por segurança)
-      const tokenMessage = `🔗 [FORGOT-PASSWORD] Link de recuperação: https://goldeouro.lol/reset-password?token=${sanitizedToken}`;
+      const frontendBaseLog = (process.env.FRONTEND_URL || 'https://goldeouro.lol').replace(/\/+$/, '');
+      const tokenMessage = `🔗 [FORGOT-PASSWORD] Link de recuperação: ${frontendBaseLog}/reset-password?token=${sanitizedToken}`;
       console.log(tokenMessage);
+      return res.status(503).json({
+        success: false,
+        message: emailResult.message || 'Serviço de email temporariamente indisponível. Tente novamente mais tarde.'
+      });
     }
 
     const successMessage = `✅ [FORGOT-PASSWORD] Token de recuperação gerado para: ${sanitizedEmail}`;
@@ -763,7 +716,7 @@ app.post('/api/auth/register', async (req, res) => {
 
             return res.status(200).json({
         success: true,
-              message: 'Login realizado automaticamente (email já cadastrado)',
+              message: 'Login realizado com sucesso',
               token: token,
         user: {
                 id: user.id,
@@ -781,9 +734,9 @@ app.post('/api/auth/register', async (req, res) => {
         console.log('⚠️ [REGISTER] Erro no login automático:', loginError.message);
       }
       
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
-        message: 'Email já cadastrado. Use a opção "Esqueci minha senha" se necessário.' 
+        message: 'Credenciais inválidas'
       });
     }
 
@@ -859,6 +812,130 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
+/**
+ * Núcleo compartilhado: login por email/senha (`/api/auth/login` e `/auth/login` — BLOCO C Fase 1).
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<
+ *   | { ok: true, token: string, user: Record<string, unknown>, message: string }
+ *   | { ok: false, status: number, payload: { success: boolean, message: string } }
+ * >}
+ */
+async function loginPlayerWithEmailPassword(email, password) {
+  if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
+    return {
+      ok: false,
+      status: 400,
+      payload: { success: false, message: 'Email e senha são obrigatórios' }
+    };
+  }
+
+  /** @type {string} */
+  const sanitizedEmailLogin = email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '');
+
+  if (!dbConnected || !supabase) {
+    return {
+      ok: false,
+      status: 503,
+      payload: { success: false, message: 'Sistema temporariamente indisponível' }
+    };
+  }
+
+  let user;
+  let userError;
+  try {
+    const result = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('email', email)
+      .eq('ativo', true)
+      .single();
+    user = result.data;
+    userError = result.error;
+  } catch (supabaseError) {
+    console.error('❌ [LOGIN] Erro Supabase:', supabaseError?.message || supabaseError);
+    return {
+      ok: false,
+      status: 503,
+      payload: { success: false, message: 'Sistema temporariamente indisponível' }
+    };
+  }
+
+  if (userError || !user) {
+    const logMessageLoginNotFound = `❌ [LOGIN] Usuário não encontrado: ${sanitizedEmailLogin}`;
+    console.log(logMessageLoginNotFound);
+    return {
+      ok: false,
+      status: 401,
+      payload: { success: false, message: 'Credenciais inválidas' }
+    };
+  }
+
+  if (!user.senha_hash || typeof user.senha_hash !== 'string') {
+    const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
+    console.log(logMessageInvalidPassword);
+    return {
+      ok: false,
+      status: 401,
+      payload: { success: false, message: 'Credenciais inválidas' }
+    };
+  }
+
+  const senhaValida = await bcrypt.compare(password, user.senha_hash);
+  if (!senhaValida) {
+    const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
+    console.log(logMessageInvalidPassword);
+    return {
+      ok: false,
+      status: 401,
+      payload: { success: false, message: 'Credenciais inválidas' }
+    };
+  }
+
+  if (user.saldo === 0 || user.saldo === null) {
+    try {
+      const { error: updateError } = await supabase
+        .from('usuarios')
+        .update({ saldo: calculateInitialBalance('regular') })
+        .eq('id', user.id);
+
+      if (!updateError) {
+        user.saldo = calculateInitialBalance('regular');
+        const logMessageBalance = `💰 [LOGIN] Saldo inicial de R$ ${calculateInitialBalance('regular')} adicionado para usuário ${sanitizedEmailLogin}`;
+        console.log(logMessageBalance);
+      }
+    } catch (saldoError) {
+      console.log('⚠️ [LOGIN] Erro ao adicionar saldo inicial:', saldoError.message);
+    }
+  }
+
+  /** @type {{ userId: string, email: string, username: string }} */
+  const tokenPayload = {
+    userId: user.id,
+    email: user.email,
+    username: user.username
+  };
+  const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+  const logMessageLoginSuccess = `✅ [LOGIN] Login realizado: ${sanitizedEmailLogin}`;
+  console.log(logMessageLoginSuccess);
+
+  return {
+    ok: true,
+    token,
+    message: 'Login realizado com sucesso',
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      saldo: user.saldo,
+      tipo: user.tipo,
+      total_apostas: user.total_apostas,
+      total_ganhos: user.total_ganhos
+    }
+  };
+}
+
 // ⚠️ REGRA V1:
 // Qualquer alteração neste endpoint exige passar no teste de login feliz.
 // Não remover @ts-check desta seção.
@@ -876,126 +953,17 @@ app.post('/api/auth/login', async (req, res) => {
      * @param {{ email: string, password: string }} body
      */
     const { email, password } = /** @type {{ email: string, password: string }} */ (req.body);
-    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email e senha são obrigatórios'
-      });
+    const result = await loginPlayerWithEmailPassword(email, password);
+    if (!result.ok) {
+      return res.status(result.status).json(result.payload);
     }
-
-    /** @type {string} */
-    const sanitizedEmailLogin = email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '');
-
-    // APENAS SUPABASE REAL - SEM FALLBACK
-    if (!dbConnected || !supabase) {
-      return res.status(503).json({
-        success: false,
-        message: 'Sistema temporariamente indisponível'
-      });
-    }
-
-    // Buscar usuário
-    let user;
-    let userError;
-    try {
-      const result = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('email', email)
-        .eq('ativo', true)
-        .single();
-      user = result.data;
-      userError = result.error;
-    } catch (supabaseError) {
-      console.error('❌ [LOGIN] Erro Supabase:', supabaseError?.message || supabaseError);
-      return res.status(503).json({
-        success: false,
-        message: 'Sistema temporariamente indisponível'
-      });
-    }
-
-    if (userError || !user) {
-      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-      const logMessageLoginNotFound = `❌ [LOGIN] Usuário não encontrado: ${sanitizedEmailLogin}`;
-      console.log(logMessageLoginNotFound);
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-
-    // Verificar senha
-    if (!user.senha_hash || typeof user.senha_hash !== 'string') {
-      const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
-      console.log(logMessageInvalidPassword);
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-
-    const senhaValida = await bcrypt.compare(password, user.senha_hash);
-    if (!senhaValida) {
-      // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-      const logMessageInvalidPassword = `❌ [LOGIN] Senha inválida para: ${sanitizedEmailLogin}`;
-      console.log(logMessageInvalidPassword);
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-
-    // Verificar se usuário precisa de saldo inicial (para usuários antigos)
-    if (user.saldo === 0 || user.saldo === null) {
-      try {
-        const { error: updateError } = await supabase
-          .from('usuarios')
-          .update({ saldo: calculateInitialBalance('regular') })
-          .eq('id', user.id);
-        
-        if (!updateError) {
-          user.saldo = calculateInitialBalance('regular');
-          // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-          const logMessageBalance = `💰 [LOGIN] Saldo inicial de R$ ${calculateInitialBalance('regular')} adicionado para usuário ${sanitizedEmailLogin}`;
-          console.log(logMessageBalance);
-        }
-      } catch (saldoError) {
-        console.log('⚠️ [LOGIN] Erro ao adicionar saldo inicial:', saldoError.message);
-      }
-    }
-
-    // Gerar token JWT
-    /** @type {{ userId: string, email: string, username: string }} */
-    const tokenPayload = {
-      userId: user.id,
-      email: user.email,
-      username: user.username
-    };
-    const token = jwt.sign(
-      tokenPayload,
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    // ✅ CORREÇÃO FORMAT STRING: Combinar string antes de logar
-    const logMessageLoginSuccess = `✅ [LOGIN] Login realizado: ${sanitizedEmailLogin}`;
-    console.log(logMessageLoginSuccess);
 
     res.json({
       success: true,
-      message: 'Login realizado com sucesso',
-      token: token,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        saldo: user.saldo,
-        tipo: user.tipo,
-        total_apostas: user.total_apostas,
-        total_ganhos: user.total_ganhos
-      }
+      message: result.message,
+      token: result.token,
+      user: result.user
     });
-
   } catch (error) {
     console.error('❌ [LOGIN] Erro:', error);
     res.status(500).json({
@@ -1204,132 +1172,130 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
     }
 
-    // Obter ou criar lote para este valor
-    const lote = getOrCreateLoteByValue(amount);
-    
-    // Validar integridade do lote antes de processar chute
-    const integrityValidation = loteIntegrityValidator.validateBeforeShot(lote, {
-      direction: direction,
-      amount: amount,
-      userId: req.user.userId
+    const { data: shootApplyRow, error: shootApplyError } = await supabase.rpc('shoot_apply', {
+      p_usuario_id: req.user.userId,
+      p_direcao: direction,
+      p_valor_aposta: amount
     });
 
-    if (!integrityValidation.valid) {
-      console.error('❌ [SHOOT] Problema de integridade do lote:', integrityValidation.error);
-      return res.status(400).json({
-        success: false,
-        message: integrityValidation.error
-      });
-    }
-    
-    // Incrementar contador global
-    contadorChutesGlobal++;
-    
-    // Verificar se é Gol de Ouro (a cada 1000 chutes)
-    const isGolDeOuro = contadorChutesGlobal % 1000 === 0;
-    
-    // Salvar contador no Supabase
-    await saveGlobalCounter();
-    
-    // Determinar se é gol baseado no sistema de lotes
-    const shotIndex = lote.chutes.length;
-    const isGoal = shotIndex === lote.winnerIndex;
-    const result = isGoal ? 'goal' : 'miss';
-    
-    let premio = 0;
-    let premioGolDeOuro = 0;
-    
-    if (isGoal) {
-      // Prêmio normal: R$5 fixo (independente do valor apostado)
-      premio = 5.00;
-      
-      // Gol de Ouro: R$100 adicional
-      if (isGolDeOuro) {
-        premioGolDeOuro = 100.00;
-        ultimoGolDeOuro = contadorChutesGlobal;
-        console.log(`🏆 [GOL DE OURO] Chute #${contadorChutesGlobal} - Prêmio: R$ ${premioGolDeOuro}`);
+    if (shootApplyError) {
+      const errMsg = String(shootApplyError.message || shootApplyError.details || '');
+      if (errMsg.includes('SHOOT_APPLY_SALDO_INSUFICIENTE')) {
+        return res.status(400).json({
+          success: false,
+          message: 'Saldo insuficiente'
+        });
       }
-      
-      // Encerrar o lote imediatamente após o gol (um vencedor por lote)
-      // Isso evita novos chutes no mesmo lote e alinha com o validador de integridade.
-      lote.status = 'completed';
-      lote.ativo = false;
-    }
-    
-    // Adicionar chute ao lote
-    const chute = {
-      id: `${lote.id}_${shotIndex}`,
-      // Campo esperado pelo validador
-      userId: req.user.userId,
-      direction,
-      amount,
-      result,
-      premio,
-      premioGolDeOuro,
-      isGolDeOuro,
-      shotIndex: shotIndex + 1,
-      timestamp: new Date().toISOString()
-    };
-    
-    lote.chutes.push(chute);
-    lote.totalArrecadado += amount;
-    lote.premioTotal += premio + premioGolDeOuro;
-
-    // Validar integridade do lote após adicionar chute
-    const postShotValidation = loteIntegrityValidator.validateAfterShot(lote, {
-      result: result,
-      premio: premio,
-      premioGolDeOuro: premioGolDeOuro,
-      timestamp: new Date().toISOString()
-    });
-
-    if (!postShotValidation.valid) {
-      console.error('❌ [SHOOT] Problema de integridade após chute:', postShotValidation.error);
-      // Reverter chute do lote
-      lote.chutes.pop();
-      lote.totalArrecadado -= amount;
-      lote.premioTotal -= premio + premioGolDeOuro;
-      return res.status(400).json({
-        success: false,
-        message: postShotValidation.error
-      });
-    }
-
-    // Salvar chute no banco de dados (usar tabela 'chutes' para acionar gatilhos de métricas/saldo)
-    const { error: chuteError } = await supabase
-      .from('chutes')
-      .insert({
-        usuario_id: req.user.userId,
-        lote_id: lote.id,
-        direcao: direction,
-        valor_aposta: amount,
-        resultado: result,
-        premio: premio,
-        premio_gol_de_ouro: premioGolDeOuro,
-        is_gol_de_ouro: isGolDeOuro,
-        contador_global: contadorChutesGlobal,
-        shot_index: shotIndex + 1
-      });
-
-    if (chuteError) {
-      console.error('❌ [SHOOT] Erro ao salvar chute:', chuteError);
+      if (errMsg.includes('SHOOT_APPLY_USUARIO_NAO_ENCONTRADO')) {
+        return res.status(404).json({
+          success: false,
+          message: 'Usuário não encontrado'
+        });
+      }
+      if (errMsg.includes('SHOOT_APPLY_METRICAS_AUSENTE')) {
+        console.error('❌ [SHOOT] metricas_globais id=1 ausente');
+        return res.status(503).json({
+          success: false,
+          message: 'Sistema temporariamente indisponível'
+        });
+      }
+      if (errMsg.includes('SHOOT_APPLY_DIRECAO_INVALIDA')) {
+        return res.status(400).json({
+          success: false,
+          message: 'Direção inválida'
+        });
+      }
+      if (errMsg.includes('SHOOT_APPLY_VALOR_INVALIDO')) {
+        return res.status(400).json({
+          success: false,
+          message: 'Valor de aposta inválido. Use: 1, 2, 5 ou 10'
+        });
+      }
+      if (
+        errMsg.includes('SHOOT_APPLY_LOTE_CHEIO') ||
+        errMsg.includes('SHOOT_APPLY_LOTE_ALOCAR_FALHOU')
+      ) {
+        console.error('❌ [SHOOT] Concorrência / lote:', errMsg);
+        return res.status(503).json({
+          success: false,
+          message: 'Conflito ao alocar lote. Tente novamente.'
+        });
+      }
+      console.error('❌ [SHOOT] shoot_apply:', shootApplyError);
       return res.status(500).json({
         success: false,
         message: 'Erro ao registrar chute. Tente novamente.'
       });
     }
 
-    // Verificar se lote está completo
-    // Já encerrado em caso de gol, mas mantém fechamento por tamanho para consistência
-    if (lote.chutes.length >= lote.config.size && lote.status !== 'completed') {
-      lote.status = 'completed';
-      // Desativar para o validador entender que não aceita mais chutes
-      lote.ativo = false;
-      console.log(`🏆 [LOTE] Lote ${lote.id} completado: ${lote.chutes.length} chutes, R$${lote.totalArrecadado} arrecadado, R$${lote.premioTotal} em prêmios`);
+    let rpcPayload = null;
+    if (shootApplyRow != null && typeof shootApplyRow === 'object') {
+      rpcPayload = shootApplyRow;
+    } else if (typeof shootApplyRow === 'string') {
+      try {
+        rpcPayload = JSON.parse(shootApplyRow);
+      } catch (_) {
+        rpcPayload = null;
+      }
     }
-    
+    const saldoRpc = rpcPayload != null ? rpcPayload.novo_saldo : null;
+    const contadorRpc = rpcPayload != null ? rpcPayload.contador_global : null;
+    if (saldoRpc === undefined || saldoRpc === null || Number.isNaN(Number(saldoRpc))) {
+      console.error('❌ [SHOOT] Resposta inválida de shoot_apply:', shootApplyRow);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao confirmar saldo após chute.'
+      });
+    }
+    if (contadorRpc === undefined || contadorRpc === null || Number.isNaN(Number(contadorRpc))) {
+      console.error('❌ [SHOOT] Resposta inválida (contador) de shoot_apply:', shootApplyRow);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao confirmar métricas após chute.'
+      });
+    }
+
+    const loteIdRpc = rpcPayload.lote_id != null ? String(rpcPayload.lote_id).replace(/^"|"$/g, '') : null;
+    const posLote = Number(rpcPayload.posicao_lote);
+    const tamLote = Number(rpcPayload.tamanho_lote);
+    const isLoteCompleteRpc = !!rpcPayload.is_lote_complete;
+    if (!loteIdRpc || Number.isNaN(posLote) || Number.isNaN(tamLote)) {
+      console.error('❌ [SHOOT] Resposta inválida (lote) de shoot_apply:', shootApplyRow);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao confirmar lote após chute.'
+      });
+    }
+
+    let result = rpcPayload.resultado;
+    if (typeof result === 'string') {
+      result = result.replace(/^"|"$/g, '');
+    }
+    if (result !== 'goal' && result !== 'miss') {
+      console.error('❌ [SHOOT] resultado inválido da RPC:', result);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao confirmar resultado do chute.'
+      });
+    }
+
+    contadorChutesGlobal = Number(contadorRpc);
+    ultimoGolDeOuro = Number(rpcPayload.ultimo_gol_de_ouro != null ? rpcPayload.ultimo_gol_de_ouro : ultimoGolDeOuro);
+
+    const premio = Number.isFinite(Number(rpcPayload.premio)) ? Number(rpcPayload.premio) : 0;
+    const premioGolDeOuro = Number.isFinite(Number(rpcPayload.premio_gol_de_ouro))
+      ? Number(rpcPayload.premio_gol_de_ouro)
+      : 0;
+    const isGolDeOuro = !!rpcPayload.is_gol_de_ouro;
+
+    if (premioGolDeOuro > 0) {
+      console.log(`🏆 [GOL DE OURO] Chute #${contadorChutesGlobal} - Prêmio: R$ ${premioGolDeOuro}`);
+    }
+
+    const remainingLote = Math.max(0, tamLote - posLote);
+
     const shootResult = {
-      loteId: lote.id,
+      loteId: loteIdRpc,
       direction,
       amount,
       result,
@@ -1340,48 +1306,17 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       timestamp: new Date().toISOString(),
       playerId: req.user.userId,
       loteProgress: {
-        current: lote.chutes.length,
-        total: lote.config.size,
-        remaining: lote.config.size - lote.chutes.length
+        current: posLote,
+        total: tamLote,
+        remaining: remainingLote
       },
-      isLoteComplete: lote.status === 'completed'
+      isLoteComplete: isLoteCompleteRpc
     };
 
-    // Ajuste de saldo:
-    // - Perdas: gatilho do banco subtrai 'valor_aposta' automaticamente
-    // - Vitórias: gatilho do banco credita apenas o prêmio (premio + premioGolDeOuro)
-    //   Para manter a economia esperada (todos pagam a aposta), subtrair manualmente
-    //   o valor da aposta apenas quando houver gol (evita dupla cobrança nas derrotas).
-    if (isGoal) {
-      const novoSaldoVencedor = Number(user.saldo) - amount + premio + premioGolDeOuro;
-      const { error: saldoWinnerError } = await supabase
-        .from('usuarios')
-        .update({ saldo: novoSaldoVencedor })
-        .eq('id', req.user.userId);
-      if (saldoWinnerError) {
-        console.error('❌ [SHOOT] Erro ao ajustar saldo do vencedor:', saldoWinnerError);
-        return res.status(500).json({
-          success: false,
-          message: 'Erro ao atualizar saldo após gol.'
-        });
-      }
+    shootResult.novoSaldo = Number(saldoRpc);
+    if (rpcPayload.chute_id !== undefined && rpcPayload.chute_id !== null) {
+      shootResult.chuteId = rpcPayload.chute_id;
     }
-
-    // Saldo final sempre lido do banco após insert + trigger + eventual update de gol
-    const { data: saldoRow, error: saldoReadError } = await supabase
-      .from('usuarios')
-      .select('saldo')
-      .eq('id', req.user.userId)
-      .single();
-
-    if (saldoReadError || saldoRow == null || saldoRow.saldo === undefined || saldoRow.saldo === null) {
-      console.error('❌ [SHOOT] Falha ao ler saldo final:', saldoReadError);
-      return res.status(500).json({
-        success: false,
-        message: 'Erro ao confirmar saldo após chute.'
-      });
-    }
-    shootResult.novoSaldo = Number(saldoRow.saldo);
     
     console.log(`⚽ [SHOOT] Chute #${contadorChutesGlobal}: ${result} por usuário ${req.user.userId}`);
     
@@ -1779,6 +1714,76 @@ app.get('/api/withdraw/history', authenticateToken, async (req, res) => {
 // SISTEMA DE PAGAMENTOS PIX CORRIGIDO
 // =====================================================
 
+/**
+ * Normaliza o ID do recurso `payment` do Mercado Pago (webhook JSON pode enviar number ou string).
+ * @param {unknown} raw
+ * @returns {{ idStr: string, idNum: number } | null}
+ */
+function normalizeMercadoPagoPaymentResourceId(raw) {
+  if (raw === null || raw === undefined) return null;
+  const s = String(raw).trim();
+  if (!/^\d+$/.test(s)) return null;
+  const idNum = parseInt(s, 10);
+  if (Number.isNaN(idNum) || idNum <= 0) return null;
+  return { idStr: s, idNum };
+}
+
+/**
+ * Claim idempotente + crédito de saldo quando o MP já está em approved.
+ * @param {string} idStr — payment_id / external_id como string só dígitos
+ * @returns {Promise<boolean>} true se este fluxo aplicou crédito ou já estava consistente com claim ganho
+ */
+async function claimAndCreditApprovedPixDeposit(idStr) {
+  if (!supabase) return false;
+  let claimed = null;
+  const { data: claimByPaymentId, error: claimErr1 } = await supabase
+    .from('pagamentos_pix')
+    .update({ status: 'approved', updated_at: new Date().toISOString() })
+    .eq('payment_id', idStr)
+    .neq('status', 'approved')
+    .select('id, usuario_id, amount, valor');
+  if (!claimErr1 && claimByPaymentId && claimByPaymentId.length === 1) {
+    claimed = claimByPaymentId[0];
+  }
+  if (!claimed) {
+    const { data: claimByExternalId, error: claimErr2 } = await supabase
+      .from('pagamentos_pix')
+      .update({ status: 'approved', updated_at: new Date().toISOString() })
+      .eq('external_id', idStr)
+      .neq('status', 'approved')
+      .select('id, usuario_id, amount, valor');
+    if (!claimErr2 && claimByExternalId && claimByExternalId.length === 1) {
+      claimed = claimByExternalId[0];
+    }
+  }
+  if (!claimed) {
+    console.log('📨 [PIX][CLAIM] Claim não aplicado (já aprovado ou registro inexistente):', idStr);
+    return false;
+  }
+  const pixRecord = claimed;
+  const { data: user, error: userError } = await supabase
+    .from('usuarios')
+    .select('saldo')
+    .eq('id', pixRecord.usuario_id)
+    .single();
+  if (userError || !user) {
+    console.error('❌ [PIX][CLAIM] Erro ao buscar usuário:', userError);
+    return false;
+  }
+  const credit = Number(pixRecord.amount ?? pixRecord.valor ?? 0);
+  const novoSaldo = Number(user.saldo || 0) + credit;
+  const { error: saldoError } = await supabase
+    .from('usuarios')
+    .update({ saldo: novoSaldo })
+    .eq('id', pixRecord.usuario_id);
+  if (saldoError) {
+    console.error('❌ [PIX][CLAIM] Erro ao atualizar saldo:', saldoError);
+    return false;
+  }
+  console.log('💰 [PIX][CLAIM] Pagamento aprovado e saldo creditado:', idStr);
+  return true;
+}
+
 // Criar pagamento PIX
 app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
   try {
@@ -1811,6 +1816,14 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
       return res.status(503).json({
         success: false,
         message: 'Sistema de pagamento temporariamente indisponível. Tente novamente em alguns minutos.'
+      });
+    }
+
+    if (!dbConnected || !supabase) {
+      console.error('❌ [PIX] Supabase indisponível — abortando criação de PIX');
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível. Tente novamente em alguns minutos.'
       });
     }
 
@@ -1878,27 +1891,37 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
         throw new Error(`Resposta inválida do Mercado Pago: ${JSON.stringify(response.data || {})}`);
       }
       
-      // Salvar no banco de dados
-      if (dbConnected && supabase) {
-        const { data: pixRecord, error: insertError } = await supabase
-          .from('pagamentos_pix')
-          .insert({
-            usuario_id: req.user.userId,
-            external_id: String(payment.id),
-            payment_id: String(payment.id),
-            amount: parseFloat(amount),
-            valor: parseFloat(amount),
-            status: 'pending',
-            qr_code: payment.point_of_interaction?.transaction_data?.qr_code || null,
-            qr_code_base64: payment.point_of_interaction?.transaction_data?.qr_code_base64 || null,
-            pix_copy_paste: payment.point_of_interaction?.transaction_data?.qr_code || null
-          })
-          .select()
-          .single();
+      const { data: pixRecord, error: insertError } = await supabase
+        .from('pagamentos_pix')
+        .insert({
+          usuario_id: req.user.userId,
+          external_id: String(payment.id),
+          payment_id: String(payment.id),
+          amount: parseFloat(amount),
+          valor: parseFloat(amount),
+          status: 'pending',
+          qr_code: payment.point_of_interaction?.transaction_data?.qr_code || null,
+          qr_code_base64: payment.point_of_interaction?.transaction_data?.qr_code_base64 || null,
+          pix_copy_paste: payment.point_of_interaction?.transaction_data?.qr_code || null
+        })
+        .select()
+        .single();
 
-        if (insertError) {
-          console.error('❌ [PIX] Erro ao salvar no banco:', insertError);
-        }
+      if (insertError) {
+        console.error('❌ [PIX] Erro ao salvar no banco:', insertError);
+        return res.status(500).json({
+          success: false,
+          message: 'PIX gerado no provedor, mas falhou o registro interno. Não conclua o pagamento; solicite novo PIX ou contate o suporte.',
+          code: 'PERSIST_PIX_FAILED'
+        });
+      }
+      if (!pixRecord) {
+        console.error('❌ [PIX] Insert retornou sem registro');
+        return res.status(500).json({
+          success: false,
+          message: 'Falha ao confirmar registro do PIX. Tente novamente.',
+          code: 'PERSIST_PIX_EMPTY'
+        });
       }
 
       console.log(`💰 [PIX] PIX real criado: R$ ${amount} para usuário ${req.user.userId}`);
@@ -2038,6 +2061,113 @@ app.get('/api/payments/pix/usuario', authenticateToken, async (req, res) => {
   }
 });
 
+// Consultar status do PIX (Mercado Pago + sincronização local) — contrato alinhado ao player
+async function handleGetPixStatus(req, res) {
+  try {
+    const paymentIdRaw =
+      req.query.paymentId ??
+      req.query.payment_id ??
+      req.params.paymentId;
+    const norm = normalizeMercadoPagoPaymentResourceId(paymentIdRaw);
+    if (!norm) {
+      return res.status(400).json({
+        success: false,
+        message: 'paymentId inválido ou ausente'
+      });
+    }
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+    if (!mercadoPagoAccessToken) {
+      return res.status(503).json({
+        success: false,
+        message: 'Consulta de pagamento temporariamente indisponível'
+      });
+    }
+
+    let { data: row, error: rowErr } = await supabase
+      .from('pagamentos_pix')
+      .select('*')
+      .eq('usuario_id', req.user.userId)
+      .eq('payment_id', norm.idStr)
+      .maybeSingle();
+    if (rowErr) {
+      console.error('❌ [PIX][STATUS] Erro ao buscar pagamento:', rowErr);
+      return res.status(500).json({ success: false, message: 'Erro ao consultar pagamento' });
+    }
+    if (!row) {
+      const alt = await supabase
+        .from('pagamentos_pix')
+        .select('*')
+        .eq('usuario_id', req.user.userId)
+        .eq('external_id', norm.idStr)
+        .maybeSingle();
+      row = alt.data;
+      rowErr = alt.error;
+      if (rowErr) {
+        console.error('❌ [PIX][STATUS] Erro ao buscar pagamento (external_id):', rowErr);
+        return res.status(500).json({ success: false, message: 'Erro ao consultar pagamento' });
+      }
+    }
+    if (!row) {
+      return res.status(404).json({
+        success: false,
+        message: 'Pagamento não encontrado'
+      });
+    }
+
+    const mpResp = await axios.get(
+      `https://api.mercadopago.com/v1/payments/${norm.idNum}`,
+      {
+        headers: {
+          Authorization: `Bearer ${mercadoPagoAccessToken}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 5000
+      }
+    );
+    const mp = mpResp.data;
+    const mpStatus = mp?.status;
+
+    if (mpStatus === 'approved' && row.status !== 'approved') {
+      await claimAndCreditApprovedPixDeposit(norm.idStr);
+    }
+
+    const { data: rowFresh } = await supabase
+      .from('pagamentos_pix')
+      .select('*')
+      .eq('id', row.id)
+      .maybeSingle();
+    const effective = rowFresh || row;
+    const effectiveStatus =
+      effective.status === 'approved' ? 'approved' : (mpStatus || effective.status);
+
+    return res.json({
+      success: true,
+      data: {
+        status: effectiveStatus,
+        payment_id: norm.idStr,
+        amount: effective.amount ?? effective.valor,
+        mp_status: mpStatus,
+        created_at: effective.created_at,
+        updated_at: effective.updated_at
+      }
+    });
+  } catch (e) {
+    console.error('❌ [PIX][STATUS] Erro:', e.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro ao consultar status do pagamento'
+    });
+  }
+}
+
+app.get('/api/payments/pix/status', authenticateToken, handleGetPixStatus);
+app.get('/api/payments/pix/status/:paymentId', authenticateToken, handleGetPixStatus);
+
 // =====================================================
 // WEBHOOK PIX CORRIGIDO
 // =====================================================
@@ -2071,37 +2201,35 @@ app.post('/api/payments/webhook', async (req, res, next) => {
     
     res.status(200).json({ received: true }); // Responder imediatamente
     
-    if (type === 'payment' && data?.id) {
+    if (type === 'payment' && data != null) {
+      const norm = normalizeMercadoPagoPaymentResourceId(data.id);
+      if (!norm) {
+        console.error('❌ [WEBHOOK] ID de pagamento inválido:', data.id);
+        return;
+      }
+
+      if (!supabase) {
+        console.error('❌ [WEBHOOK] Supabase indisponível');
+        return;
+      }
+
       // Verificar se já foi processado (idempotência)
       let { data: existingPayment, error: checkError } = await supabase
         .from('pagamentos_pix')
         .select('id, status')
-        .eq('external_id', data.id)
+        .eq('external_id', norm.idStr)
         .maybeSingle();
       if ((!existingPayment || checkError) && (!existingPayment?.id)) {
-        // fallback por payment_id (schemas legados)
         const alt = await supabase
           .from('pagamentos_pix')
           .select('id, status')
-          .eq('payment_id', String(data.id))
+          .eq('payment_id', norm.idStr)
           .maybeSingle();
         existingPayment = alt.data;
       }
         
       if (existingPayment && existingPayment.status === 'approved') {
-        console.log('📨 [WEBHOOK] Pagamento já processado:', data.id);
-        return;
-      }
-      
-      // ✅ CORREÇÃO SSRF: Validar data.id antes de usar na URL
-      if (!data.id || typeof data.id !== 'string' || !/^\d+$/.test(data.id)) {
-        console.error('❌ [WEBHOOK] ID de pagamento inválido:', data.id);
-        return;
-      }
-      
-      const paymentId = parseInt(data.id, 10);
-      if (isNaN(paymentId) || paymentId <= 0) {
-        console.error('❌ [WEBHOOK] ID de pagamento inválido (não é número positivo):', data.id);
+        console.log('📨 [WEBHOOK] Pagamento já processado:', norm.idStr);
         return;
       }
       
@@ -2110,9 +2238,8 @@ app.post('/api/payments/webhook', async (req, res, next) => {
         return;
       }
 
-      // Verificar pagamento no Mercado Pago
-      const payment = await axios.get(
-        `https://api.mercadopago.com/v1/payments/${paymentId}`,
+      const mpRes = await axios.get(
+        `https://api.mercadopago.com/v1/payments/${norm.idNum}`,
         { 
           headers: { 
             'Authorization': `Bearer ${mercadoPagoAccessToken}`,
@@ -2122,56 +2249,8 @@ app.post('/api/payments/webhook', async (req, res, next) => {
         }
       );
       
-      if (payment.data.status === 'approved') {
-        // Claim atômico: atualizar para approved SOMENTE se ainda não estiver approved; creditar saldo APENAS se exatamente 1 linha afetada
-        let claimed = null;
-        const { data: claimByPaymentId, error: claimErr1 } = await supabase
-          .from('pagamentos_pix')
-          .update({ status: 'approved', updated_at: new Date().toISOString() })
-          .eq('payment_id', String(data.id))
-          .neq('status', 'approved')
-          .select('id, usuario_id, amount, valor');
-        if (!claimErr1 && claimByPaymentId && claimByPaymentId.length === 1) {
-          claimed = claimByPaymentId[0];
-        }
-        if (!claimed) {
-          const { data: claimByExternalId, error: claimErr2 } = await supabase
-            .from('pagamentos_pix')
-            .update({ status: 'approved', updated_at: new Date().toISOString() })
-            .eq('external_id', String(data.id))
-            .neq('status', 'approved')
-            .select('id, usuario_id, amount, valor');
-          if (!claimErr2 && claimByExternalId && claimByExternalId.length === 1) {
-            claimed = claimByExternalId[0];
-          }
-        }
-        if (!claimed) {
-          console.log('📨 [WEBHOOK] Claim perdeu: pagamento já processado ou não encontrado:', data.id);
-          return;
-        }
-        {
-          const pixRecord = claimed;
-          const { data: user, error: userError } = await supabase
-            .from('usuarios')
-            .select('saldo')
-            .eq('id', pixRecord.usuario_id)
-            .single();
-          if (userError || !user) {
-            console.error('❌ [WEBHOOK] Erro ao buscar usuário:', userError);
-            return;
-          }
-          const credit = pixRecord.amount ?? pixRecord.valor ?? 0;
-          const novoSaldo = user.saldo + credit;
-          const { error: saldoError } = await supabase
-            .from('usuarios')
-            .update({ saldo: novoSaldo })
-            .eq('id', pixRecord.usuario_id);
-          if (saldoError) {
-            console.error('❌ [WEBHOOK] Erro ao atualizar saldo:', saldoError);
-            return;
-          }
-          console.log('💰 [WEBHOOK] Claim ganhou: pagamento aprovado e saldo creditado:', data.id);
-        }
+      if (mpRes.data.status === 'approved') {
+        await claimAndCreditApprovedPixDeposit(norm.idStr);
       }
     }
   } catch (error) {
@@ -2435,41 +2514,9 @@ async function reconcilePendingPayments() {
         });
         const status = resp?.data?.status;
         if (status === 'approved') {
-          // Claim atômico: atualizar por id do registro pendente SOMENTE se status != 'approved'; creditar APENAS se exatamente 1 linha afetada
-          const { data: claimedRows, error: claimErr } = await supabase
-            .from('pagamentos_pix')
-            .update({ status: 'approved', updated_at: new Date().toISOString() })
-            .eq('id', p.id)
-            .neq('status', 'approved')
-            .select('id, usuario_id, amount, valor');
-          if (claimErr || !claimedRows || claimedRows.length !== 1) {
-            if (!claimErr && claimedRows && claimedRows.length === 0) {
-              // Já processado por webhook ou ciclo anterior
-            } else if (claimErr) {
-              console.error('❌ [RECON] Falha ao aprovar registro:', claimErr.message);
-            }
-            continue;
-          }
-          const pixRecord = claimedRows[0];
-          const credit = Number(pixRecord.amount ?? pixRecord.valor ?? 0);
-          if (credit > 0) {
-            const { data: userRow, error: userErr } = await supabase
-              .from('usuarios')
-              .select('saldo')
-              .eq('id', pixRecord.usuario_id)
-              .single();
-            if (!userErr && userRow) {
-              const novoSaldo = Number(userRow.saldo || 0) + credit;
-              const { error: saldoErr } = await supabase
-                .from('usuarios')
-                .update({ saldo: novoSaldo })
-                .eq('id', pixRecord.usuario_id);
-              if (saldoErr) {
-                console.error('❌ [RECON] Erro ao creditar saldo:', saldoErr.message);
-              } else {
-                console.log(`✅ [RECON] Claim ganhou: pagamento ${mpId} aprovado e saldo +${credit} aplicado ao usuário ${pixRecord.usuario_id}`);
-              }
-            }
+          const credited = await claimAndCreditApprovedPixDeposit(mpId);
+          if (credited) {
+            console.log(`✅ [RECON] Pagamento ${mpId} reconciliado e saldo creditado (usuário pendente ${p.usuario_id})`);
           }
         }
       } catch (mpErr) {
@@ -2856,79 +2903,27 @@ app.put('/api/auth/change-password', authenticateToken, async (req, res) => {
   }
 });
 
-// Endpoint /auth/login para compatibilidade (implementação direta)
+// Endpoint /auth/login para compatibilidade — mesmo núcleo que /api/auth/login
 app.post('/auth/login', async (req, res) => {
   console.log('🔄 [COMPATIBILITY] Endpoint /auth/login chamado diretamente');
-  
+
   try {
-    const { email, password } = req.body;
-    
-    // Validar entrada
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email e senha são obrigatórios'
-      });
-    }
-    
-    // APENAS SUPABASE REAL - SEM FALLBACK
-    if (!dbConnected || !supabase) {
-      return res.status(503).json({ 
-        success: false,
-        message: 'Sistema temporariamente indisponível' 
-      });
-    }
-    
-    // Buscar usuário no Supabase
-    const { data: user, error: userError } = await supabase
-      .from('usuarios')
-      .select('*')
-      .eq('email', email)
-      .eq('ativo', true)
-      .single();
-    
-    if (userError || !user) {
-      console.log('❌ [LOGIN] Usuário não encontrado:', email);
-      return res.status(401).json({
-      success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-    
-    // Verificar senha
-    const senhaValida = await bcrypt.compare(password, user.senha_hash);
-    if (!senhaValida) {
-      console.log('❌ [LOGIN] Senha inválida para:', email);
-      return res.status(401).json({
-        success: false,
-        message: 'Credenciais inválidas'
-      });
-    }
-    
-    // Usuário deve depositar para ter saldo - sem crédito automático
-    
-    // Gerar token JWT
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, username: user.username },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const { email, password } = /** @type {{ email?: string, password?: string }} */ (body);
+    const result = await loginPlayerWithEmailPassword(
+      typeof email === 'string' ? email : '',
+      typeof password === 'string' ? password : ''
     );
-    
-    console.log('✅ [LOGIN] Login realizado com sucesso:', email);
-    
+    if (!result.ok) {
+      return res.status(result.status).json(result.payload);
+    }
+
     res.json({
       success: true,
-      message: 'Login realizado com sucesso',
-      token: token,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        saldo: user.saldo,
-        tipo: user.tipo
-      }
+      message: result.message,
+      token: result.token,
+      user: result.user
     });
-    
   } catch (error) {
     console.error('❌ [COMPATIBILITY] Erro no endpoint login:', error.message);
     res.status(500).json({
@@ -3009,8 +3004,15 @@ app.get('/api/production-status', (req, res) => {
   }
 });
 
-// Endpoint de debug para verificar token
+// Endpoint de debug para verificar token (desativado em produção — BLOCO M corte mínimo V1)
 app.get('/api/debug/token', (req, res) => {
+  if (isProduction()) {
+    return res.status(404).json({
+      success: false,
+      message: 'Not found'
+    });
+  }
+
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   

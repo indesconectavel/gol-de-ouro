@@ -10,19 +10,13 @@ import AdvancedStats from '../components/AdvancedStats'
 import AvatarSystem from '../components/AvatarSystem'
 import NotificationCenter from '../components/NotificationCenter'
 
+/** Texto neutro quando a API não envia o campo (evita email/nome/datas inventados). */
+const NOT_INFORMED = '—'
+
 const Profile = () => {
   const { userStats, badges, achievements, loading: gamificationLoading } = useAdvancedGamification()
-  const [user, setUser] = useState({
-    name: 'Carregando...',
-    email: 'carregando@email.com',
-    balance: 0.00,
-    totalBets: 0,
-    totalWins: 0,
-    winRate: 0,
-    joinDate: '2024-01-01',
-    level: 'Bronze',
-    avatar: '👤'
-  })
+  const [user, setUser] = useState(null)
+  const [profileLoadError, setProfileLoadError] = useState(null)
   const [activeTab, setActiveTab] = useState('info')
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState({
@@ -39,39 +33,50 @@ const Profile = () => {
   const loadUserProfile = async () => {
     try {
       setLoading(true)
+      setProfileLoadError(null)
       const response = await apiClient.get(API_ENDPOINTS.PROFILE)
       if (response.data.success) {
         const userData = response.data.data
+        const displayName =
+          (userData.nome && String(userData.nome).trim()) ||
+          (userData.email && userData.email.split('@')[0]) ||
+          NOT_INFORMED
+        const displayEmail =
+          (userData.email && String(userData.email).trim()) || NOT_INFORMED
+        const joinDate = userData.created_at?.split('T')[0] || NOT_INFORMED
+        const saldoRaw = userData.saldo
+        const saldoNum =
+          saldoRaw !== undefined && saldoRaw !== null && saldoRaw !== ''
+            ? Number(saldoRaw)
+            : NaN
+        const balance = Number.isFinite(saldoNum) ? saldoNum : null
+
         setUser({
-          name: userData.nome || userData.email?.split('@')[0] || 'Usuário',
-          email: userData.email || 'usuario@email.com',
-          balance: userData.saldo || 0,
-          totalBets: userData.total_apostas || 0,
-          totalWins: userData.total_ganhos || 0,
-          winRate: userData.total_apostas > 0 ? Math.round((userData.total_ganhos / userData.total_apostas) * 100) : 0,
-          joinDate: userData.created_at?.split('T')[0] || '2024-01-01',
+          name: displayName,
+          email: displayEmail,
+          balance,
+          totalBets: userData.total_apostas ?? 0,
+          totalWins: userData.total_ganhos ?? 0,
+          winRate:
+            userData.total_apostas > 0
+              ? Math.round((userData.total_ganhos / userData.total_apostas) * 100)
+              : 0,
+          joinDate,
           level: userData.tipo === 'admin' ? 'Admin' : 'Jogador',
           avatar: '👤'
         })
         setEditForm({
-          name: userData.nome || userData.email?.split('@')[0] || 'Usuário',
-          email: userData.email || 'usuario@email.com'
+          name: (userData.nome && String(userData.nome).trim()) || '',
+          email: (userData.email && String(userData.email).trim()) || ''
         })
+      } else {
+        setUser(null)
+        setProfileLoadError('Não foi possível carregar o perfil.')
       }
     } catch (error) {
       console.error('Erro ao carregar perfil:', error)
-             // Fallback para dados mínimos
-             setUser({
-               name: 'free10signer',
-               email: 'free10signer@gmail.com',
-               balance: 0.00,
-               totalBets: 0,
-               totalWins: 0,
-               winRate: 0,
-               joinDate: '2024-01-01',
-               level: 'Jogador',
-               avatar: '👤'
-             })
+      setUser(null)
+      setProfileLoadError('Não foi possível carregar os dados. Verifique a conexão e tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -81,13 +86,7 @@ const Profile = () => {
 
   const withdrawalHistory = [] // Dados reais serão carregados do backend
 
-  // Usar achievements do hook de gamificação
-  const localAchievements = achievements || [
-    { id: 1, name: 'Primeiro Gol', description: 'Marque seu primeiro gol', icon: '⚽', unlocked: true },
-    { id: 2, name: 'Goleiro Vencido', description: 'Marque 10 gols', icon: '🥅', unlocked: true },
-    { id: 3, name: 'Artilheiro', description: 'Marque 50 gols', icon: '👑', unlocked: false },
-    { id: 4, name: 'Lenda', description: 'Marque 100 gols', icon: '🏆', unlocked: false },
-  ]
+  const localAchievements = Array.isArray(achievements) ? achievements : []
 
   const handleEdit = () => {
     setIsEditing(true)
@@ -102,11 +101,16 @@ const Profile = () => {
       })
       
       if (response.data.success) {
-        // Atualizar o estado do usuário com os novos dados
+        const d = response.data.data
+        const nextName =
+          (d.nome && String(d.nome).trim()) ||
+          (d.email && d.email.split('@')[0]) ||
+          NOT_INFORMED
+        const nextEmail = (d.email && String(d.email).trim()) || NOT_INFORMED
         setUser(prev => ({
           ...prev,
-          name: response.data.data.nome,
-          email: response.data.data.email
+          name: nextName,
+          email: nextEmail
         }))
         setIsEditing(false)
         alert('Perfil atualizado com sucesso!')
@@ -122,6 +126,7 @@ const Profile = () => {
   }
 
   const handleCancel = () => {
+    if (!user) return
     setEditForm({
       name: user.name,
       email: user.email
@@ -183,6 +188,21 @@ const Profile = () => {
           <div className="w-10"></div>
         </div>
 
+        {loading && !profileLoadError ? (
+          <div className="text-center text-white/80 py-16">Carregando...</div>
+        ) : profileLoadError ? (
+          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 mb-6 border border-white/20 shadow-2xl text-center">
+            <p className="text-white mb-4">{profileLoadError}</p>
+            <button
+              type="button"
+              onClick={() => loadUserProfile()}
+              className="bg-white/10 backdrop-blur-lg border border-sky-400/45 text-sky-100 hover:bg-white/15 hover:border-sky-400/70 font-bold py-3 px-6 rounded-lg transition-all duration-200"
+            >
+              Tentar novamente
+            </button>
+          </div>
+        ) : user ? (
+          <>
         {/* Card Principal do Usuário - Glassmorphism */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20 shadow-2xl">
           <div className="flex items-center justify-between mb-6">
@@ -205,7 +225,11 @@ const Profile = () => {
           {/* Estatísticas Principais */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
-              <p className="text-2xl font-bold text-yellow-400">R$ {user.balance.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-yellow-400">
+                {user.balance != null && !Number.isNaN(user.balance)
+                  ? `R$ ${Number(user.balance).toFixed(2)}`
+                  : NOT_INFORMED}
+              </p>
               <p className="text-white/70 text-sm">Saldo Atual</p>
             </div>
             <div className="text-center bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
@@ -433,6 +457,11 @@ const Profile = () => {
         {activeTab === 'achievements' && (
           <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-2xl">
             <h3 className="text-xl font-bold text-white mb-6">Conquistas</h3>
+            {localAchievements.length === 0 ? (
+              <p className="text-center text-white/70 py-8">
+                Nenhuma meta de conquista disponível para exibir.
+              </p>
+            ) : (
             <div className="grid grid-cols-2 gap-4">
               {localAchievements.map((achievement) => (
                 <div key={achievement.id} className={`p-4 rounded-lg border-2 transition-all duration-200 backdrop-blur-lg ${
@@ -461,6 +490,7 @@ const Profile = () => {
                 </div>
               ))}
             </div>
+            )}
           </div>
         )}
 
@@ -544,6 +574,8 @@ const Profile = () => {
         {activeTab === 'notifications' && (
           <NotificationCenter />
         )}
+          </>
+        ) : null}
       </div>
       </div>
     </div>
