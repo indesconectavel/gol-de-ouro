@@ -11,10 +11,11 @@ import { quickDashboardTest } from '../utils/dashboardTest'
 
 const Dashboard = () => {
   const { logout } = useAuth()
-  const [balance, setBalance] = useState(0.00)
+  const [balance, setBalance] = useState(null)
   const [user, setUser] = useState(null)
   const [recentBets, setRecentBets] = useState([])
   const [loading, setLoading] = useState(true)
+  const [profileLoadError, setProfileLoadError] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -36,14 +37,19 @@ const Dashboard = () => {
   const loadUserData = async () => {
     try {
       setLoading(true)
-      
+      setProfileLoadError(null)
+
       // Buscar perfil do usuário - COM RETRY LOGIC
       const profileResponse = await retryDataRequest(() => 
         apiClient.get(API_ENDPOINTS.PROFILE)
       )
       if (profileResponse.data.success) {
         setUser(profileResponse.data.data)
-        setBalance(profileResponse.data.data.saldo || 0)
+        setBalance(profileResponse.data.data.saldo ?? 0)
+      } else {
+        setUser(null)
+        setBalance(null)
+        setProfileLoadError('Não foi possível carregar os dados do perfil.')
       }
 
       // Buscar dados PIX do usuário (inclui histórico) - COM RETRY LOGIC E TRATAMENTO DE ERRO ROBUSTO
@@ -62,15 +68,10 @@ const Dashboard = () => {
 
     } catch (error) {
       console.error('❌ [DASHBOARD] Erro ao carregar dados do usuário após retry:', error)
-      // Fallback para dados mínimos em caso de erro
-      setUser({
-        id: 3,
-        email: 'free10signer@gmail.com',
-        nome: 'free10signer',
-        saldo: 0
-      })
-      setBalance(0)
+      setUser(null)
+      setBalance(null)
       setRecentBets([])
+      setProfileLoadError('Não foi possível carregar os dados. Verifique a conexão e tente novamente.')
     } finally {
       setLoading(false)
     }
@@ -145,7 +146,24 @@ const Dashboard = () => {
                   <span className="text-2xl">💰</span>
                   <h2 className="text-white/80 text-lg font-medium">Saldo Disponível</h2>
                 </div>
-                <p className="text-4xl font-bold text-yellow-400 mb-2">R$ {balance.toFixed(2)}</p>
+                {loading ? (
+                  <p className="text-4xl font-bold text-yellow-400/80 mb-2">Carregando…</p>
+                ) : profileLoadError ? (
+                  <div className="space-y-3">
+                    <p className="text-white/90 text-sm mb-2">{profileLoadError}</p>
+                    <button
+                      type="button"
+                      onClick={() => loadUserData()}
+                      className="text-sm font-semibold text-yellow-400 hover:text-yellow-300 underline"
+                    >
+                      Tentar novamente
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-4xl font-bold text-yellow-400 mb-2">
+                    R$ {(balance ?? 0).toFixed(2)}
+                  </p>
+                )}
                 {/* Dados reais serão implementados quando houver histórico */}
               </div>
             </div>
