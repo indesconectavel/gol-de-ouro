@@ -2892,8 +2892,15 @@ app.get('/api/production-status', (req, res) => {
   }
 });
 
-// Endpoint de debug para verificar token
+// Endpoint de debug para verificar token (desativado em produção — BLOCO M corte mínimo V1)
 app.get('/api/debug/token', (req, res) => {
+  if (isProduction()) {
+    return res.status(404).json({
+      success: false,
+      message: 'Not found'
+    });
+  }
+
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   
