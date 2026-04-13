@@ -2206,16 +2206,18 @@ app.post('/api/payments/webhook', async (req, res, next) => {
     const validation = webhookSignatureValidator.validateMercadoPagoWebhook(req);
     if (!validation.valid) {
       console.error('❌ [WEBHOOK][DEPOSIT] assinatura rejeitada:', validation.error);
-      // Em produção, rejeitar; em desenvolvimento, apenas logar
-      if (process.env.NODE_ENV === 'production') {
-        return res.status(401).json({
-          success: false,
-          error: 'Webhook signature inválida',
-          message: validation.error
-        });
-      } else {
-        console.warn('⚠️ [WEBHOOK] Signature inválida ignorada em modo não-produção');
+
+      if (process.env.MERCADOPAGO_WEBHOOK_DEPOSIT_RELAX_SIGNATURE === 'true') {
+        console.warn('⚠️ [WEBHOOK][DEPOSIT] MODO DIAGNÓSTICO ATIVO — ignorando assinatura e seguindo processamento');
+        return next();
       }
+
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(401).json({ error: 'Invalid signature' });
+      }
+
+      console.warn('⚠️ [WEBHOOK][DEPOSIT] assinatura inválida (dev), prosseguindo');
+      return next();
     } else {
       req.webhookValidation = validation;
       console.log('✅ [WEBHOOK][DEPOSIT] assinatura OK');
