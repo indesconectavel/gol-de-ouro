@@ -1729,6 +1729,19 @@ function normalizeMercadoPagoPaymentResourceId(raw) {
 }
 
 /**
+ * Reconcile: escolhe o ID numérico do Mercado Pago para GET /v1/payments/{id}.
+ * Preferência a payment_id quando só dígitos; senão external_id se só dígitos.
+ * Evita external_id legado (ex.: deposito_...) bloquear o uso de payment_id numérico.
+ */
+function pickMercadoPagoPaymentIdForReconcile(row) {
+  const pid = row?.payment_id != null ? String(row.payment_id).trim() : '';
+  const ext = row?.external_id != null ? String(row.external_id).trim() : '';
+  if (/^\d+$/.test(pid)) return pid;
+  if (/^\d+$/.test(ext)) return ext;
+  return null;
+}
+
+/**
  * Claim idempotente + crédito de saldo quando o MP já está em approved.
  * @param {string} idStr — payment_id / external_id como string só dígitos
  * @returns {Promise<boolean>} true se este fluxo aplicou crédito ou já estava consistente com claim ganho
@@ -2174,11 +2187,25 @@ app.get('/api/payments/pix/status/:paymentId', authenticateToken, handleGetPixSt
 
 // Webhook principal com validação de signature (modo permissivo para desenvolvimento/testes)
 app.post('/api/payments/webhook', async (req, res, next) => {
+  const body = req.body || {};
+  const t = body.type;
+  const rawId = body.data != null ? body.data.id : undefined;
+  let dataIdLog = null;
+  if (rawId !== undefined && rawId !== null) {
+    const s = String(rawId).trim();
+    dataIdLog = /^\d+$/.test(s) ? s : `[non-numeric:${s.slice(0, 20)}]`;
+  }
+  console.log('📥 [WEBHOOK][DEPOSIT] entrada', {
+    type: t,
+    dataId: dataIdLog,
+    signatureConfigured: !!process.env.MERCADOPAGO_WEBHOOK_SECRET
+  });
+
   // Validar signature apenas se MERCADOPAGO_WEBHOOK_SECRET estiver configurado
   if (process.env.MERCADOPAGO_WEBHOOK_SECRET) {
     const validation = webhookSignatureValidator.validateMercadoPagoWebhook(req);
     if (!validation.valid) {
-      console.error('❌ [WEBHOOK] Signature inválida:', validation.error);
+      console.error('❌ [WEBHOOK][DEPOSIT] assinatura rejeitada:', validation.error);
       // Em produção, rejeitar; em desenvolvimento, apenas logar
       if (process.env.NODE_ENV === 'production') {
         return res.status(401).json({
@@ -2191,6 +2218,7 @@ app.post('/api/payments/webhook', async (req, res, next) => {
       }
     } else {
       req.webhookValidation = validation;
+      console.log('✅ [WEBHOOK][DEPOSIT] assinatura OK');
     }
   }
   next();
@@ -2251,6 +2279,11 @@ app.post('/api/payments/webhook', async (req, res, next) => {
       
       if (mpRes.data.status === 'approved') {
         await claimAndCreditApprovedPixDeposit(norm.idStr);
+      } else {
+        console.log('ℹ️ [WEBHOOK][DEPOSIT] MP status não approved:', {
+          id: norm.idStr,
+          mpStatus: mpRes.data.status
+        });
       }
     }
   } catch (error) {
@@ -2492,15 +2525,15 @@ async function reconcilePendingPayments() {
     if (!pendings || pendings.length === 0) return;
 
     for (const p of pendings) {
-      const mpId = String(p.external_id || p.payment_id || '').trim();
-      if (!mpId) continue;
-
-      // ✅ CORREÇÃO SSRF: Validar mpId antes de usar na URL
-      if (!/^\d+$/.test(mpId)) {
-        console.error('❌ [RECON] ID de pagamento inválido (não é número):', mpId);
+      const mpId = pickMercadoPagoPaymentIdForReconcile(p);
+      if (!mpId) {
+        console.warn('⚠️ [RECON] Pendente sem ID MP numérico (reconcile ignorado):', {
+          localId: p.id,
+          usuario_id: p.usuario_id
+        });
         continue;
       }
-      
+
       const paymentId = parseInt(mpId, 10);
       if (isNaN(paymentId) || paymentId <= 0) {
         console.error('❌ [RECON] ID de pagamento inválido (não é número positivo):', mpId);
