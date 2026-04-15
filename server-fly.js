@@ -1125,10 +1125,19 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
 // Endpoint para chutar
 app.post('/api/games/shoot', authenticateToken, async (req, res) => {
   try {
-    const { direction, amount } = req.body;
+    const { direction, amount } = req.body || {};
+    const userId = req.user?.userId;
+    const parsedAmount = Number(amount);
+
+    console.log('🎯 [SHOOT] Início', {
+      userId,
+      direction,
+      amountRaw: amount,
+      amountParsed: parsedAmount
+    });
     
     // Validar entrada
-    if (!direction || !amount) {
+    if (!direction || amount === undefined || amount === null || !Number.isFinite(parsedAmount)) {
       return res.status(400).json({
         success: false,
         message: 'Direção e valor são obrigatórios'
@@ -1136,7 +1145,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     }
 
     // Validar valor de aposta
-    if (!batchConfigs[amount]) {
+    if (!batchConfigs[parsedAmount]) {
       return res.status(400).json({
         success: false,
         message: 'Valor de aposta inválido. Use: 1, 2, 5 ou 10'
@@ -1155,7 +1164,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     const { data: user, error: userError } = await supabase
       .from('usuarios')
       .select('saldo')
-      .eq('id', req.user.userId)
+      .eq('id', userId)
       .single();
 
     if (userError || !user) {
@@ -1165,7 +1174,7 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
     }
 
-    if (user.saldo < amount) {
+    if (Number(user.saldo) < parsedAmount) {
       return res.status(400).json({
       success: false,
         message: 'Saldo insuficiente'
@@ -1173,13 +1182,24 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     }
 
     const { data: shootApplyRow, error: shootApplyError } = await supabase.rpc('shoot_apply', {
-      p_usuario_id: req.user.userId,
+      p_usuario_id: userId,
       p_direcao: direction,
-      p_valor_aposta: amount
+      p_valor_aposta: parsedAmount
     });
 
     if (shootApplyError) {
       const errMsg = String(shootApplyError.message || shootApplyError.details || '');
+      if (
+        errMsg.includes('function public.shoot_apply') ||
+        errMsg.includes('Could not find the function public.shoot_apply') ||
+        errMsg.includes('PGRST202')
+      ) {
+        console.error('❌ [SHOOT] RPC indisponível no runtime:', shootApplyError);
+        return res.status(503).json({
+          success: false,
+          message: 'Serviço de chute indisponível no momento'
+        });
+      }
       if (errMsg.includes('SHOOT_APPLY_SALDO_INSUFICIENTE')) {
         return res.status(400).json({
           success: false,
@@ -1229,8 +1249,13 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     }
 
     let rpcPayload = null;
-    if (shootApplyRow != null && typeof shootApplyRow === 'object') {
+    if (Array.isArray(shootApplyRow)) {
+      rpcPayload = shootApplyRow[0] ?? null;
+    } else if (shootApplyRow != null && typeof shootApplyRow === 'object') {
       rpcPayload = shootApplyRow;
+      if (rpcPayload && rpcPayload.data && typeof rpcPayload.data === 'object') {
+        rpcPayload = rpcPayload.data;
+      }
     } else if (typeof shootApplyRow === 'string') {
       try {
         rpcPayload = JSON.parse(shootApplyRow);
@@ -1238,41 +1263,75 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
         rpcPayload = null;
       }
     }
-    const saldoRpc = rpcPayload != null ? rpcPayload.novo_saldo : null;
-    const contadorRpc = rpcPayload != null ? rpcPayload.contador_global : null;
+
+    const rpcMeta = {
+      userId,
+      payloadType: Array.isArray(shootApplyRow) ? 'array' : typeof shootApplyRow,
+      payloadKeys: rpcPayload && typeof rpcPayload === 'object' ? Object.keys(rpcPayload) : null
+    };
+
+    const pickNumber = (...values) => {
+      for (const v of values) {
+        const n = Number(v);
+        if (v !== undefined && v !== null && Number.isFinite(n)) {
+          return n;
+        }
+      }
+      return null;
+    };
+
+    const pickString = (...values) => {
+      for (const v of values) {
+        if (v === undefined || v === null) continue;
+        const s = String(v).replace(/^"|"$/g, '').trim();
+        if (s) return s;
+      }
+      return null;
+    };
+
+    const saldoRpc = rpcPayload != null ? pickNumber(rpcPayload.novo_saldo, rpcPayload.novoSaldo, rpcPayload.saldo) : null;
+    const contadorRpc = rpcPayload != null ? pickNumber(rpcPayload.contador_global, rpcPayload.contadorGlobal) : null;
     if (saldoRpc === undefined || saldoRpc === null || Number.isNaN(Number(saldoRpc))) {
-      console.error('❌ [SHOOT] Resposta inválida de shoot_apply:', shootApplyRow);
+      console.error('❌ [SHOOT] Resposta inválida de shoot_apply (saldo):', { ...rpcMeta, raw: shootApplyRow });
       return res.status(500).json({
         success: false,
         message: 'Erro ao confirmar saldo após chute.'
       });
     }
     if (contadorRpc === undefined || contadorRpc === null || Number.isNaN(Number(contadorRpc))) {
-      console.error('❌ [SHOOT] Resposta inválida (contador) de shoot_apply:', shootApplyRow);
+      console.error('❌ [SHOOT] Resposta inválida (contador) de shoot_apply:', { ...rpcMeta, raw: shootApplyRow });
       return res.status(500).json({
         success: false,
         message: 'Erro ao confirmar métricas após chute.'
       });
     }
 
-    const loteIdRpc = rpcPayload.lote_id != null ? String(rpcPayload.lote_id).replace(/^"|"$/g, '') : null;
-    const posLote = Number(rpcPayload.posicao_lote);
-    const tamLote = Number(rpcPayload.tamanho_lote);
+    const loteIdRpc = pickString(
+      rpcPayload?.lote_id,
+      rpcPayload?.loteId
+    );
+    const posLote = pickNumber(rpcPayload?.posicao_lote, rpcPayload?.posicaoLote, rpcPayload?.shot_index, 0);
+    const tamLote = pickNumber(
+      rpcPayload?.tamanho_lote,
+      rpcPayload?.tamanhoLote,
+      rpcPayload?.lote_tamanho,
+      batchConfigs[parsedAmount]?.size
+    );
     const isLoteCompleteRpc = !!rpcPayload.is_lote_complete;
     if (!loteIdRpc || Number.isNaN(posLote) || Number.isNaN(tamLote)) {
-      console.error('❌ [SHOOT] Resposta inválida (lote) de shoot_apply:', shootApplyRow);
+      console.error('❌ [SHOOT] Resposta inválida (lote) de shoot_apply:', { ...rpcMeta, raw: shootApplyRow });
       return res.status(500).json({
         success: false,
         message: 'Erro ao confirmar lote após chute.'
       });
     }
 
-    let result = rpcPayload.resultado;
+    let result = pickString(rpcPayload?.resultado, rpcPayload?.result);
     if (typeof result === 'string') {
-      result = result.replace(/^"|"$/g, '');
+      result = result.toLowerCase();
     }
     if (result !== 'goal' && result !== 'miss') {
-      console.error('❌ [SHOOT] resultado inválido da RPC:', result);
+      console.error('❌ [SHOOT] resultado inválido da RPC:', { ...rpcMeta, result, raw: shootApplyRow });
       return res.status(500).json({
         success: false,
         message: 'Erro ao confirmar resultado do chute.'
@@ -1282,10 +1341,8 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     contadorChutesGlobal = Number(contadorRpc);
     ultimoGolDeOuro = Number(rpcPayload.ultimo_gol_de_ouro != null ? rpcPayload.ultimo_gol_de_ouro : ultimoGolDeOuro);
 
-    const premio = Number.isFinite(Number(rpcPayload.premio)) ? Number(rpcPayload.premio) : 0;
-    const premioGolDeOuro = Number.isFinite(Number(rpcPayload.premio_gol_de_ouro))
-      ? Number(rpcPayload.premio_gol_de_ouro)
-      : 0;
+    const premio = pickNumber(rpcPayload?.premio, 0);
+    const premioGolDeOuro = pickNumber(rpcPayload?.premio_gol_de_ouro, rpcPayload?.premioGolDeOuro, 0);
     const isGolDeOuro = !!rpcPayload.is_gol_de_ouro;
 
     if (premioGolDeOuro > 0) {
@@ -1297,14 +1354,14 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     const shootResult = {
       loteId: loteIdRpc,
       direction,
-      amount,
+      amount: parsedAmount,
       result,
       premio,
       premioGolDeOuro,
       isGolDeOuro,
       contadorGlobal: contadorChutesGlobal,
       timestamp: new Date().toISOString(),
-      playerId: req.user.userId,
+      playerId: userId,
       loteProgress: {
         current: posLote,
         total: tamLote,
@@ -1318,7 +1375,14 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       shootResult.chuteId = rpcPayload.chute_id;
     }
     
-    console.log(`⚽ [SHOOT] Chute #${contadorChutesGlobal}: ${result} por usuário ${req.user.userId}`);
+    console.log('✅ [SHOOT] Sucesso', {
+      userId,
+      direction,
+      amount: parsedAmount,
+      result,
+      contadorGlobal: contadorChutesGlobal,
+      novoSaldo: shootResult.novoSaldo
+    });
     
     res.status(200).json({
       success: true,
