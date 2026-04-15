@@ -314,6 +314,28 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Tratamento específico para payload JSON inválido (evita cair como 500 global)
+app.use((err, req, res, next) => {
+  const isJsonSyntaxError =
+    err &&
+    (err.type === 'entity.parse.failed' ||
+      (err instanceof SyntaxError && err.status === 400 && Object.prototype.hasOwnProperty.call(err, 'body')));
+
+  if (!isJsonSyntaxError) {
+    return next(err);
+  }
+
+  console.warn('⚠️ [HTTP] JSON inválido no request body', {
+    method: req.method,
+    path: req.originalUrl
+  });
+
+  return res.status(400).json({
+    success: false,
+    message: 'JSON inválido no corpo da requisição'
+  });
+});
+
 
 // =====================================================
 // MIDDLEWARE DE VALIDAÇÃO
@@ -337,28 +359,40 @@ const validateData = (req, res, next) => {
 // =====================================================
 
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  try {
+    const authHeader = req.headers.authorization;
 
-  if (!token) {
-    console.log('❌ [AUTH] Token não fornecido');
-        return res.status(401).json({
-          success: false,
-      message: 'Token de acesso requerido' 
-    });
-  }
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('❌ [AUTH] Token não fornecido');
+      return res.status(401).json({
+        success: false,
+        message: 'Token de acesso requerido'
+      });
+    }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      console.log('❌ [AUTH] Token inválido:', err.message);
+    const token = authHeader.slice(7).trim();
+    if (!token) {
+      console.log('❌ [AUTH] Token vazio');
+      return res.status(401).json({
+        success: false,
+        message: 'Token de acesso requerido'
+      });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        console.log('❌ [AUTH] Token inválido:', err.message);
         return res.status(403).json({
           success: false,
-        message: 'Token inválido' 
+          message: 'Token inválido'
         });
       }
-    req.user = user;
+      req.user = user;
       next();
-  });
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 // =====================================================
@@ -3245,6 +3279,38 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
 
 // Middleware de tratamento de erros global (deve ser o último)
     app.use((err, req, res, next) => {
+      if (res.headersSent) {
+        return next(err);
+      }
+
+      // Reforço defensivo para garantir contrato HTTP mesmo se erro escapar de camadas anteriores
+      const isJsonSyntaxError =
+        err &&
+        (err.type === 'entity.parse.failed' ||
+          (err instanceof SyntaxError && err.status === 400 && Object.prototype.hasOwnProperty.call(err, 'body')));
+      if (isJsonSyntaxError) {
+        console.warn('⚠️ [HTTP] JSON inválido capturado no handler global', {
+          method: req.method,
+          path: req.originalUrl
+        });
+        return res.status(400).json({
+          success: false,
+          message: 'JSON inválido no corpo da requisição'
+        });
+      }
+
+      if (err && (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError' || err.name === 'NotBeforeError')) {
+        console.warn('⚠️ [AUTH] Erro JWT capturado no handler global', {
+          path: req.originalUrl,
+          method: req.method,
+          error: err.name
+        });
+        return res.status(403).json({
+          success: false,
+          message: 'Token inválido'
+        });
+      }
+
       console.error('❌ [ERROR] Erro não tratado:', err);
       
       // Incrementar contador de erros
@@ -3255,18 +3321,6 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
       console.error('❌ [ERROR] URL:', req.url);
       console.error('❌ [ERROR] Method:', req.method);
       console.error('❌ [ERROR] IP:', req.ip);
-      
-      // Resposta padronizada
-      res.status(500).json({
-        success: false,
-        message: 'Erro interno do servidor',
-        timestamp: new Date().toISOString(),
-        requestId: req.headers['x-request-id'] || 'unknown'
-      });
-    });
-
-    // Middleware global de tratamento de erros
-    app.use((err, req, res, next) => {
       try {
         logger.error('Unhandled error', {
           path: req.originalUrl,
@@ -3278,9 +3332,13 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
       } catch (_) {
         console.error('❌ [ERROR] Unhandled error (logger fallback):', err);
       }
+      
+      // Resposta padronizada
       res.status(500).json({
         success: false,
-        message: 'Erro interno do servidor'
+        message: 'Erro interno do servidor',
+        timestamp: new Date().toISOString(),
+        requestId: req.headers['x-request-id'] || 'unknown'
       });
     });
 
