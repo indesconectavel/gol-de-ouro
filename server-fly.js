@@ -1221,6 +1221,14 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       p_valor_aposta: parsedAmount
     });
 
+    console.log('🔍 [SHOOT] Retorno bruto RPC shoot_apply:', {
+      userId,
+      direction,
+      amount: parsedAmount,
+      data: shootApplyRow,
+      error: shootApplyError
+    });
+
     if (shootApplyError) {
       const errMsg = String(shootApplyError.message || shootApplyError.details || '');
       if (
