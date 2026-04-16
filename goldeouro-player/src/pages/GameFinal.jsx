@@ -230,6 +230,17 @@ const GameFinal = () => {
     });
     timersRef.current = [];
   }, []);
+
+  const refreshProfileFresh = useCallback(async () => {
+    const profileRes = await apiClient.get(API_ENDPOINTS.PROFILE, { skipCache: true });
+    if (profileRes.data?.success && profileRes.data?.data) {
+      const d = profileRes.data.data;
+      setBalance(Number(d.saldo) || 0);
+      setTotalChutes(Number(d.total_apostas) || 0);
+      setTotalWinnings(Number(d.total_ganhos) || 0);
+      setTotalGoldenGoals(Number(d.total_gols_de_ouro) || 0);
+    }
+  }, []);
   
   // =====================================================
   // CÁLCULO DE ESCALA DO GAME STAGE (função estável)
@@ -287,15 +298,8 @@ const GameFinal = () => {
       let initSucceeded = true;
       try {
         setLoading(true);
-        // Perfil: saldo e totais da conta
-        const profileRes = await apiClient.get(API_ENDPOINTS.PROFILE);
-        if (profileRes.data?.success && profileRes.data?.data) {
-          const d = profileRes.data.data;
-          setBalance(Number(d.saldo) || 0);
-          setTotalChutes(Number(d.total_apostas) || 0);
-          setTotalWinnings(Number(d.total_ganhos) || 0);
-          setTotalGoldenGoals(Number(d.total_gols_de_ouro) || 0);
-        }
+        // Perfil: saldo e totais da conta (sempre sem cache stale)
+        await refreshProfileFresh();
         // Métricas globais e gameService (shotsUntilGoldenGoal)
         const initResult = await gameService.initialize();
         if (initResult?.success && initResult?.gameInfo?.goldenGoal) {
@@ -334,7 +338,7 @@ const GameFinal = () => {
       // NÃO resetar isInitializedRef para evitar loops
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Array vazio - executa apenas uma vez na montagem
+  }, [refreshProfileFresh]); // executa na montagem com reidratação fresh
   
   // =====================================================
   // RESET VISUAL
@@ -464,6 +468,16 @@ const GameFinal = () => {
       } else {
         setShotsUntilGoldenGoal(prev => isGoldenGoal ? 10 : Math.max(0, prev - 1));
       }
+
+      // Evita stale cache do profile ao sair/voltar para /game
+      if (typeof apiClient.invalidateCache === 'function') {
+        apiClient.invalidateCache(API_ENDPOINTS.PROFILE);
+      }
+
+      // Reconciliar totais da conta com leitura fresca sem bloquear animação/jogada
+      refreshProfileFresh().catch((error) => {
+        console.warn('⚠️ [GAMEFINAL] Falha ao reconciliar profile fresh:', error?.message || error);
+      });
       
       // 5. Mostrar resultado
       setGamePhase(GAME_PHASE.RESULT);
@@ -557,7 +571,7 @@ const GameFinal = () => {
       resetVisuals();
       setGamePhase(GAME_PHASE.IDLE);
     }
-  }, [gamePhase, balance, totalChutes, playKickSound, playGoalSound, playDefenseSound, getGoalieJumpPosition, resetVisuals, addTimer]);
+  }, [gamePhase, balance, totalChutes, playKickSound, playGoalSound, playDefenseSound, getGoalieJumpPosition, resetVisuals, addTimer, refreshProfileFresh]);
   
   // =====================================================
   // VALORES E MEMOIZAÇÕES (ANTES DE QUALQUER RETURN)
