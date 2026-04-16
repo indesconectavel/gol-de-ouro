@@ -1047,6 +1047,7 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
         tipo: user.tipo,
         total_apostas: user.total_apostas,
         total_ganhos: user.total_ganhos,
+        total_gols_de_ouro: user.total_gols_de_ouro,
         created_at: user.created_at,
         updated_at: user.updated_at
       }
