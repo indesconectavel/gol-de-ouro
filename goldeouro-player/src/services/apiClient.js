@@ -42,7 +42,7 @@ apiClient.interceptors.request.use(
     }
     
     // Verificar cache para requests GET
-    if (config.method === 'get') {
+    if (config.method === 'get' && !config.skipCache) {
       const cachedData = requestCache.get(config.url, config.method, config.params);
       if (cachedData) {
         // Retornar dados do cache sem fazer request
@@ -98,7 +98,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     // Armazenar no cache para requests GET bem-sucedidos
-    if (response.config.method === 'get') {
+    if (response.config.method === 'get' && !response.config.skipCache) {
       const ttl = response.config.url.includes('/meta') ? 60000 : 30000; // 1 min para meta, 30s para outros
       requestCache.set(
         response.config.url,
@@ -184,5 +184,14 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// Utilitários de cache para uso pontual (ex.: rota /game)
+apiClient.invalidateCache = (url, method = 'GET') => {
+  return requestCache.invalidate(url, method);
+};
+
+apiClient.clearCache = () => {
+  requestCache.clear();
+};
 
 export default apiClient;

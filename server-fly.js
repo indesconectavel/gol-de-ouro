@@ -1047,6 +1047,7 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
         tipo: user.tipo,
         total_apostas: user.total_apostas,
         total_ganhos: user.total_ganhos,
+        total_gols_de_ouro: user.total_gols_de_ouro,
         created_at: user.created_at,
         updated_at: user.updated_at
       }
@@ -1215,11 +1216,28 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
       });
     }
 
-    const { data: shootApplyRow, error: shootApplyError } = await supabase.rpc('shoot_apply', {
+    const idemHeader =
+      req.headers['x-idempotency-key'] ||
+      req.headers['X-Idempotency-Key'] ||
+      req.headers['idempotency-key'];
+    const idempotencyKeyRaw =
+      typeof idemHeader === 'string' ? idemHeader.trim() : '';
+    const idempotencyKey =
+      idempotencyKeyRaw.length > 0 ? idempotencyKeyRaw.slice(0, 200) : null;
+
+    const shootRpcArgs = {
       p_usuario_id: userId,
       p_direcao: direction,
       p_valor_aposta: parsedAmount
-    });
+    };
+    if (idempotencyKey) {
+      shootRpcArgs.p_idempotency_key = idempotencyKey;
+    }
+
+    const { data: shootApplyRow, error: shootApplyError } = await supabase.rpc(
+      'shoot_apply',
+      shootRpcArgs
+    );
 
     console.log('🔍 [SHOOT] Retorno bruto RPC shoot_apply:', {
       userId,
@@ -1271,6 +1289,19 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
         return res.status(400).json({
           success: false,
           message: 'Valor de aposta inválido. Use: 1, 2, 5 ou 10'
+        });
+      }
+      if (errMsg.includes('SHOOT_APPLY_IDEMPOTENCY_KEY_INVALIDA')) {
+        return res.status(400).json({
+          success: false,
+          message: 'Chave de idempotência inválida'
+        });
+      }
+      if (errMsg.includes('SHOOT_APPLY_IDEMPOTENCY_CONFLITO')) {
+        return res.status(409).json({
+          success: false,
+          message:
+            'A mesma chave de idempotência foi reutilizada com parâmetros diferentes.'
         });
       }
       if (
@@ -1393,6 +1424,8 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
 
     const remainingLote = Math.max(0, tamLote - posLote);
 
+    const idempotentReplay = !!rpcPayload.idempotent_replay;
+
     const shootResult = {
       loteId: loteIdRpc,
       direction,
@@ -1409,7 +1442,8 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
         total: tamLote,
         remaining: remainingLote
       },
-      isLoteComplete: isLoteCompleteRpc
+      isLoteComplete: isLoteCompleteRpc,
+      idempotentReplay
     };
 
     shootResult.novoSaldo = Number(saldoRpc);

@@ -220,6 +220,12 @@ BEGIN
   UPDATE public.usuarios AS u
   SET
     saldo = v_novo_saldo,
+    total_apostas = coalesce(u.total_apostas, 0) + 1,
+    total_ganhos = coalesce(u.total_ganhos, 0) + v_credito,
+    total_gols_de_ouro = coalesce(u.total_gols_de_ouro, 0) + CASE
+      WHEN v_is_goal AND v_milestone THEN 1
+      ELSE 0
+    END,
     updated_at = now()
   WHERE u.id = p_usuario_id;
 
