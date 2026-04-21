@@ -232,12 +232,14 @@ app.set('trust proxy', 1);
 
 // CORS configurado
 const parseCorsOrigins = () => {
-  const csv = process.env.CORS_ORIGIN || '';
+  // Canonico: CORS_ORIGIN. Compatibilidade temporaria: CORS_ORIGINS.
+  const csv = process.env.CORS_ORIGIN || process.env.CORS_ORIGINS || '';
   const list = csv.split(',').map(s => s.trim()).filter(Boolean);
   return list.length > 0 ? list : [
     'https://goldeouro.lol',
     'https://www.goldeouro.lol',
-    'https://admin.goldeouro.lol'
+    'https://admin.goldeouro.lol',
+    'https://app.goldeouro.lol'
   ];
 };
 
