@@ -395,6 +395,22 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
+/**
+ * Normaliza o shape do usuário para manter compatibilidade entre login/register/profile.
+ * @param {Record<string, any>} user
+ */
+const buildAuthUserPayload = (user) => ({
+  id: user.id,
+  email: user.email,
+  username: user.username || null,
+  nome: user.nome || user.username || null,
+  saldo: typeof user.saldo === 'number' ? user.saldo : 0,
+  tipo: user.tipo || 'jogador',
+  total_apostas: user.total_apostas ?? 0,
+  total_ganhos: user.total_ganhos ?? 0,
+  total_gols_de_ouro: user.total_gols_de_ouro ?? 0
+});
+
 // =====================================================
 // VALORES DE APOSTA (validação HTTP; lote e vencedor vivem no BD — shoot_apply)
 // =====================================================
@@ -484,8 +500,6 @@ app.post('/api/auth/forgot-password', [
     
     // ✅ CORREÇÃO STRING ESCAPING: Sanitizar dados antes de usar em logs
     const sanitizedEmail = typeof email === 'string' ? email.replace(/[<>\"'`\x00-\x1F\x7F-\x9F]/g, '') : String(email);
-    const sanitizedToken = typeof resetToken === 'string' ? resetToken.substring(0, 20) + '...' : '***';
-    
     // ✅ CORREÇÃO FORMAT STRING: Combinar mensagem e variáveis em string única antes de logar
     if (emailResult.success) {
       const logMessage = `📧 [FORGOT-PASSWORD] Email enviado para ${sanitizedEmail}: ${emailResult.messageId}`;
@@ -493,9 +507,6 @@ app.post('/api/auth/forgot-password', [
     } else {
       const logMessage = `⚠️ [FORGOT-PASSWORD] Falha ao enviar email para ${sanitizedEmail}: ${emailResult.error}`;
       console.log(logMessage);
-      const frontendBaseLog = (process.env.FRONTEND_URL || 'https://goldeouro.lol').replace(/\/+$/, '');
-      const tokenMessage = `🔗 [FORGOT-PASSWORD] Link de recuperação: ${frontendBaseLog}/reset-password?token=${sanitizedToken}`;
-      console.log(tokenMessage);
       return res.status(503).json({
         success: false,
         message: emailResult.message || 'Serviço de email temporariamente indisponível. Tente novamente mais tarde.'
@@ -535,23 +546,36 @@ app.post('/api/auth/reset-password', [
       });
     }
 
-    // Verificar se token existe e é válido
+    // Buscar token para validar estado atual e evitar mensagens ambíguas
     const { data: tokenData, error: tokenError } = await supabase
       .from('password_reset_tokens')
-      .select('user_id, expires_at, used')
+      .select('id, user_id, expires_at, used')
       .eq('token', token)
-      .eq('used', false)
       .single();
 
     if (tokenError || !tokenData) {
       return res.status(400).json({
         success: false,
-        message: 'Token inválido ou expirado'
+        message: 'Token inválido'
+      });
+    }
+
+    if (tokenData.used) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token já utilizado'
       });
     }
 
     // Verificar se token não expirou
     if (new Date() > new Date(tokenData.expires_at)) {
+      // Melhor esforço para impedir reutilização de token expirado em novas tentativas.
+      await supabase
+        .from('password_reset_tokens')
+        .update({ used: true })
+        .eq('id', tokenData.id)
+        .eq('used', false);
+
       return res.status(400).json({
         success: false,
         message: 'Token expirado'
@@ -562,31 +586,47 @@ app.post('/api/auth/reset-password', [
     const saltRounds = 10;
     const newPasswordHash = await bcrypt.hash(newPassword, saltRounds);
 
-    // Atualizar senha do usuário
+    // Consumir token primeiro para impedir reset com sucesso parcial sem invalidação.
+    const { data: consumedToken, error: consumeTokenError } = await supabase
+      .from('password_reset_tokens')
+      .update({ used: true })
+      .eq('id', tokenData.id)
+      .eq('used', false)
+      .select('id, user_id')
+      .single();
+
+    if (consumeTokenError || !consumedToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token inválido ou já utilizado'
+      });
+    }
+
+    // Atualizar senha do usuário após consumo bem-sucedido do token.
     const { error: updateError } = await supabase
       .from('usuarios')
-      .update({ 
+      .update({
         senha_hash: newPasswordHash,
         updated_at: new Date().toISOString()
       })
-      .eq('id', tokenData.user_id);
+      .eq('id', consumedToken.user_id);
 
     if (updateError) {
+      // Compensação para evitar travar o token em erro transitório.
+      const { error: rollbackTokenError } = await supabase
+        .from('password_reset_tokens')
+        .update({ used: false })
+        .eq('id', consumedToken.id);
+
       console.error('❌ [RESET-PASSWORD] Erro ao atualizar senha:', updateError);
+      if (rollbackTokenError) {
+        console.error('❌ [RESET-PASSWORD] Falha ao reverter consumo do token:', rollbackTokenError);
+      }
+
       return res.status(500).json({
         success: false,
         message: 'Erro ao atualizar senha'
       });
-    }
-
-    // Marcar token como usado
-    const { error: markUsedError } = await supabase
-      .from('password_reset_tokens')
-      .update({ used: true })
-      .eq('token', token);
-
-    if (markUsedError) {
-      console.error('❌ [RESET-PASSWORD] Erro ao marcar token como usado:', markUsedError);
     }
 
     console.log(`✅ [RESET-PASSWORD] Senha alterada com sucesso para usuário ${tokenData.user_id}`);
@@ -752,15 +792,7 @@ app.post('/api/auth/register', async (req, res) => {
         success: true,
               message: 'Login realizado com sucesso',
               token: token,
-        user: {
-                id: user.id,
-                email: user.email,
-                username: user.username,
-                saldo: user.saldo,
-                tipo: user.tipo,
-                total_apostas: user.total_apostas,
-                total_ganhos: user.total_ganhos
-              }
+              user: buildAuthUserPayload(user)
             });
           }
         }
@@ -828,13 +860,7 @@ app.post('/api/auth/register', async (req, res) => {
         success: true,
       message: 'Usuário criado com sucesso',
       token: token,
-        user: {
-        id: newUser.id,
-        email: newUser.email,
-        username: newUser.username,
-        saldo: newUser.saldo,
-        tipo: newUser.tipo
-      }
+        user: buildAuthUserPayload(newUser)
     });
 
   } catch (error) {
@@ -958,15 +984,7 @@ async function loginPlayerWithEmailPassword(email, password) {
     ok: true,
     token,
     message: 'Login realizado com sucesso',
-    user: {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      saldo: user.saldo,
-      tipo: user.tipo,
-      total_apostas: user.total_apostas,
-      total_ganhos: user.total_ganhos
-    }
+    user: buildAuthUserPayload(user)
   };
 }
 
@@ -1039,15 +1057,7 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       data: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        nome: user.username, // Compatibilidade com frontend
-        saldo: user.saldo,
-        tipo: user.tipo,
-        total_apostas: user.total_apostas,
-        total_ganhos: user.total_ganhos,
-        total_gols_de_ouro: user.total_gols_de_ouro,
+        ...buildAuthUserPayload(user),
         created_at: user.created_at,
         updated_at: user.updated_at
       }
