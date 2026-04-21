@@ -4,6 +4,21 @@ import { API_ENDPOINTS } from '../config/api'
 
 const AuthContext = createContext()
 
+const normalizeAuthUser = (userData) => {
+  if (!userData || typeof userData !== 'object') return null
+
+  return {
+    ...userData,
+    username: userData.username || userData.nome || null,
+    nome: userData.nome || userData.username || null,
+    saldo: typeof userData.saldo === 'number' ? userData.saldo : 0,
+    tipo: userData.tipo || 'jogador',
+    total_apostas: userData.total_apostas ?? 0,
+    total_ganhos: userData.total_ganhos ?? 0,
+    total_gols_de_ouro: userData.total_gols_de_ouro ?? 0
+  }
+}
+
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
@@ -35,7 +50,7 @@ export const AuthProvider = ({ children }) => {
         .then(response => {
           // Backend retorna { success, data: { id, email, username, ... } }; manter user no mesmo shape de login/cadastro
           const userData = response.data?.data ? response.data.data : response.data
-          setUser(userData)
+          setUser(normalizeAuthUser(userData))
         })
         .catch((error) => {
           console.log('🔒 Token inválido ou expirado:', error.response?.status)
@@ -63,7 +78,7 @@ export const AuthProvider = ({ children }) => {
       
       const { token, user: userData } = response.data
       localStorage.setItem('authToken', token)
-      setUser(userData)
+      setUser(normalizeAuthUser(userData))
       
       return { success: true, user: userData }
     } catch (error) {
@@ -92,7 +107,7 @@ export const AuthProvider = ({ children }) => {
       
       // Fazer login automático após registro
       localStorage.setItem('authToken', token)
-      setUser(userData)
+      setUser(normalizeAuthUser(userData))
       
       return { success: true, data: response.data, user: userData }
     } catch (error) {

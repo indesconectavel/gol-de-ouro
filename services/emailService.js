@@ -52,7 +52,6 @@ class EmailService {
   async sendPasswordResetEmail(email, username, resetToken) {
     if (!this.isConfigured) {
       console.warn('⚠️ [EMAIL] Serviço de email não configurado');
-      console.log(`📧 [EMAIL] Token para ${email}: ${resetToken}`);
       return {
         success: false,
         error: 'Serviço de email não configurado',
@@ -94,9 +93,12 @@ class EmailService {
   // Enviar email de verificação de conta
   async sendVerificationEmail(email, username, verificationToken) {
     if (!this.isConfigured) {
-      console.warn('⚠️ [EMAIL] Serviço de email não configurado, apenas logando token');
-      console.log(`📧 [EMAIL] Token de verificação para ${email}: ${verificationToken}`);
-      return { success: true, message: 'Email simulado (serviço não configurado)' };
+      console.warn('⚠️ [EMAIL] Serviço de email não configurado');
+      return {
+        success: false,
+        error: 'Serviço de email não configurado',
+        message: 'Serviço de email não configurado'
+      };
     }
 
     try {
