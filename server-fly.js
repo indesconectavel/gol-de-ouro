@@ -276,19 +276,18 @@ const limiter = rateLimit({
   }
 });
 
-// Rate limiting específico para autenticação
-const authLimiter = rateLimit({
+// Rate limiting específico para login
+const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 5, // máximo 5 tentativas de login por IP
   validate: { trustProxy: false }, // ✅ CORRIGIDO: Desabilitar validação de trust proxy
-  skip: (req) => req.path === '/login',
   message: {
-        success: false,
+    success: false,
     message: 'Muitas tentativas de login. Tente novamente em 15 minutos.'
   },
   skipSuccessfulRequests: true, // Não contar tentativas bem-sucedidas
   handler: (req, res) => {
-    console.log(`🚫 [AUTH-LIMIT] IP ${req.ip} bloqueado por excesso de tentativas de login`);
+    console.log(`🚫 [LOGIN-LIMIT] IP ${req.ip} bloqueado por excesso de tentativas de login`);
     res.status(429).json({
       success: false,
       message: 'Muitas tentativas de login. Tente novamente em 15 minutos.'
@@ -296,10 +295,27 @@ const authLimiter = rateLimit({
   }
 });
 
+// Rate limiting específico para recuperação de senha
+const recoveryLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5, // máximo 5 tentativas de recuperação por IP
+  validate: { trustProxy: false }, // ✅ CORRIGIDO: Desabilitar validação de trust proxy
+  message: {
+    success: false,
+    message: 'Muitas tentativas de recuperação de senha. Tente novamente em 15 minutos.'
+  },
+  skipSuccessfulRequests: true, // Não contar tentativas bem-sucedidas
+  handler: (req, res) => {
+    console.log(`🚫 [RECOVERY-LIMIT] IP ${req.ip} bloqueado por excesso de tentativas de recuperação (${req.path})`);
+    res.status(429).json({
+      success: false,
+      message: 'Muitas tentativas de recuperação de senha. Tente novamente em 15 minutos.'
+    });
+  }
+});
+
 app.use(limiter); // Rate limiting global
 app.use('/api/', limiter);
-app.use('/api/auth/', authLimiter);
-app.use('/auth/', authLimiter);
 
 // Body parsing
 app.use(express.json({ 
@@ -431,7 +447,7 @@ const batchConfigs = {
 // =====================================================
 
 // Recuperação de senha - GERAR TOKEN
-app.post('/api/auth/forgot-password', [
+app.post('/api/auth/forgot-password', recoveryLimiter, [
   body('email').isEmail().normalizeEmail()
 ], validateData, async (req, res) => {
   try {
@@ -531,7 +547,7 @@ app.post('/api/auth/forgot-password', [
 });
 
 // Reset de senha - VALIDAR TOKEN E ALTERAR SENHA
-app.post('/api/auth/reset-password', [
+app.post('/api/auth/reset-password', recoveryLimiter, [
   body('token').notEmpty(),
   body('newPassword').isLength({ min: 6 })
 ], validateData, async (req, res) => {
@@ -992,7 +1008,7 @@ async function loginPlayerWithEmailPassword(email, password) {
 // Qualquer alteração neste endpoint exige passar no teste de login feliz.
 // Não remover @ts-check desta seção.
 // Login de usuário
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', loginLimiter, async (req, res) => {
   try {
     if (!req.body || typeof req.body !== 'object') {
       return res.status(400).json({
@@ -3099,7 +3115,7 @@ app.put('/api/auth/change-password', authenticateToken, async (req, res) => {
 });
 
 // Endpoint /auth/login para compatibilidade — mesmo núcleo que /api/auth/login
-app.post('/auth/login', async (req, res) => {
+app.post('/auth/login', loginLimiter, async (req, res) => {
   console.log('🔄 [COMPATIBILITY] Endpoint /auth/login chamado diretamente');
 
   try {
