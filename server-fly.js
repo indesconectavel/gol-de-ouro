@@ -1243,11 +1243,21 @@ app.post('/api/games/shoot', authenticateToken, async (req, res) => {
     if (idempotencyKey) {
       shootRpcArgs.p_idempotency_key = idempotencyKey;
     }
+    console.log('PARAMS SHOOT:', {
+      params: shootRpcArgs,
+      types: {
+        p_usuario_id: typeof shootRpcArgs.p_usuario_id,
+        p_direcao: typeof shootRpcArgs.p_direcao,
+        p_valor_aposta: typeof shootRpcArgs.p_valor_aposta,
+        p_idempotency_key: typeof shootRpcArgs.p_idempotency_key
+      }
+    });
 
     const { data: shootApplyRow, error: shootApplyError } = await supabase.rpc(
       'shoot_apply',
       shootRpcArgs
     );
+    console.log('RPC RESPONSE:', { data: shootApplyRow, error: shootApplyError });
 
     console.log('🔍 [SHOOT] Retorno bruto RPC shoot_apply:', {
       userId,
