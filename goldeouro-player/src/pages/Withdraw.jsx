@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Logo from '../components/Logo'
 import InternalPageLayout from '../components/InternalPageLayout'
-import paymentService from '../services/paymentService'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ErrorMessage from '../components/ErrorMessage'
 import EmptyState from '../components/EmptyState'
@@ -24,6 +23,40 @@ const Withdraw = () => {
   const [historyLoading, setHistoryLoading] = useState(true)
   const [historyError, setHistoryError] = useState(null)
   const navigate = useNavigate()
+  const minWithdrawAmount = 10
+  const withdrawFee = 2
+
+  const mapPixTypeToBackend = (pixType) => {
+    switch (pixType) {
+      case 'phone':
+        return 'telefone'
+      case 'random':
+        return 'aleatoria'
+      default:
+        return pixType
+    }
+  }
+
+  const mapStatusLabel = (status) => {
+    switch (String(status || '').toLowerCase()) {
+      case 'processado':
+      case 'concluido':
+      case 'completed':
+        return 'Processado'
+      case 'pendente':
+      case 'pending':
+      case 'processando':
+      case 'aguardando_confirmacao':
+        return 'Pendente'
+      case 'cancelado':
+      case 'cancelled':
+      case 'rejeitado':
+      case 'falhou':
+        return 'Cancelado'
+      default:
+        return 'Pendente'
+    }
+  }
 
   // Carregar dados iniciais
   useEffect(() => {
@@ -57,20 +90,29 @@ const Withdraw = () => {
     try {
       setHistoryLoading(true)
       setHistoryError(null)
-      
-      const result = await paymentService.getUserPix()
-      
-      if (result.success) {
-        setWithdrawalHistory(Array.isArray(result.data) ? result.data : [])
+
+      const response = await apiClient.get(`${API_ENDPOINTS.WITHDRAW}/history`)
+      if (response.data?.success) {
+        const rawHistory = response.data?.data?.saques || []
+        const normalizedHistory = rawHistory.map((row) => ({
+          id: row.id,
+          amount: Number(row.amount ?? row.valor ?? 0),
+          method: 'PIX',
+          pixKey: row.pix_key || '-',
+          status: mapStatusLabel(row.status),
+          date: row.created_at
+            ? new Date(row.created_at).toLocaleString('pt-BR')
+            : '-'
+        }))
+        setWithdrawalHistory(normalizedHistory)
       } else {
-        setHistoryError(result.error)
-        // Sem fallback - manter lista vazia em caso de erro
+        setHistoryError(response.data?.message || 'Erro ao carregar histórico de saques')
         setWithdrawalHistory([])
       }
-      
     } catch (err) {
       console.error('Erro ao carregar histórico de saques:', err)
       setHistoryError('Erro ao carregar histórico de saques')
+      setWithdrawalHistory([])
     } finally {
       setHistoryLoading(false)
     }
@@ -103,34 +145,34 @@ const Withdraw = () => {
         throw new Error('Saldo insuficiente')
       }
 
-      // Criar PIX usando o serviço
-      const result = await paymentService.createPix(
-        amount,
-        formData.pixKey,
-        `Saque Gol de Ouro - ${formData.pixType}`
-      )
+      const payload = {
+        valor: amount,
+        chave_pix: formData.pixKey,
+        tipo_chave: mapPixTypeToBackend(formData.pixType)
+      }
+      const response = await apiClient.post(`${API_ENDPOINTS.WITHDRAW}/request`, payload)
 
-      if (result.success) {
+      if (response.data?.success) {
+        const serverAmount = Number(response.data?.data?.amount ?? amount)
         setShowSuccess(true)
-        
+
         // Atualizar saldo local
-        setBalance(prev => prev - amount)
-        
+        setBalance(prev => Math.max(0, prev - serverAmount))
+
         // Recarregar histórico
         await loadWithdrawalHistory()
-        
+
         // Resetar formulário após sucesso
         setTimeout(() => {
           setFormData({ amount: '', pixKey: '', pixType: 'cpf' })
           setShowSuccess(false)
         }, 3000)
       } else {
-        throw new Error(result.error || 'Erro ao processar saque')
+        throw new Error(response.data?.message || 'Erro ao processar saque')
       }
-      
     } catch (err) {
       console.error('Erro ao processar saque:', err)
-      setError(err.message || 'Erro ao processar saque')
+      setError(err?.response?.data?.message || err.message || 'Erro ao processar saque')
     } finally {
       setIsSubmitting(false)
     }
@@ -228,10 +270,7 @@ const Withdraw = () => {
               <h2 className="text-white/80 text-lg font-medium">Saldo Disponível</h2>
             </div>
             <p className="text-4xl font-bold text-yellow-400 mb-2">R$ {balance.toFixed(2)}</p>
-            <p className="text-white/70 text-sm">Valor mínimo para saque: R$ {paymentService.getConfig().minAmount.toFixed(2)}</p>
-            {paymentService.isSandboxMode() && (
-              <p className="text-yellow-400 text-sm mt-2">🔧 Modo Sandbox Ativo</p>
-            )}
+            <p className="text-white/70 text-sm">Valor mínimo para saque: R$ {minWithdrawAmount.toFixed(2)}</p>
           </div>
         </div>
 
@@ -268,7 +307,7 @@ const Withdraw = () => {
                   onChange={(e) => handleAmountChange(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent backdrop-blur-lg"
                   placeholder="0,00"
-                  min="10"
+                  min={minWithdrawAmount}
                   max={balance}
                   step="0.01"
                   required
@@ -276,7 +315,7 @@ const Withdraw = () => {
               </div>
               <div className="flex justify-between items-center mt-1">
                 <p className="text-white/70 text-sm">
-                  Valor mínimo: R$ 10,00
+                  Valor mínimo: R$ {minWithdrawAmount.toFixed(2)}
                 </p>
                 <button
                   type="button"
@@ -347,12 +386,12 @@ const Withdraw = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/70">Taxa de processamento:</span>
-                    <span className="text-white font-medium">R$ 2,00</span>
+                    <span className="text-white font-medium">R$ {withdrawFee.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between border-t border-white/20 pt-2">
                     <span className="text-white font-bold">Valor a receber:</span>
                     <span className="text-green-400 font-bold">
-                      R$ {(parseFloat(formData.amount || 0) - 2).toFixed(2)}
+                      R$ {(parseFloat(formData.amount || 0) - withdrawFee).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -367,8 +406,8 @@ const Withdraw = () => {
               </h4>
               <ul className="text-white/80 text-sm space-y-1">
                 <li>• O saque será processado em até 24 horas</li>
-                <li>• Taxa de processamento: R$ 2,00</li>
-                <li>• Valor mínimo para saque: R$ 10,00</li>
+                <li>• Taxa de processamento: R$ {withdrawFee.toFixed(2)}</li>
+                <li>• Valor mínimo para saque: R$ {minWithdrawAmount.toFixed(2)}</li>
                 <li>• Verifique se os dados estão corretos</li>
                 <li>• O valor será creditado na conta PIX informada</li>
               </ul>
@@ -417,30 +456,43 @@ const Withdraw = () => {
             <span className="text-2xl">📊</span>
             <h3 className="text-xl font-bold text-white">Histórico de Saques</h3>
           </div>
-          
-          <div className="space-y-3">
-            {withdrawalHistory.map((withdrawal) => (
-              <div key={withdrawal.id} className="flex items-center justify-between bg-white/10 backdrop-blur-lg rounded-lg p-4 hover:bg-white/20 transition-colors border border-white/20">
-                <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    withdrawal.status === 'Processado' ? 'bg-green-400' : 
-                    withdrawal.status === 'Pendente' ? 'bg-yellow-400' : 'bg-red-400'
-                  }`}></div>
-                  <div>
-                    <p className="text-white font-medium">R$ {withdrawal.amount.toFixed(2)}</p>
-                    <p className="text-white/70 text-sm">{withdrawal.method} • {withdrawal.pixKey}</p>
-                    <p className="text-white/50 text-xs">{withdrawal.date}</p>
+
+          {historyLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <LoadingSpinner />
+            </div>
+          ) : historyError ? (
+            <ErrorMessage message={historyError} onRetry={loadWithdrawalHistory} />
+          ) : withdrawalHistory.length === 0 ? (
+            <EmptyState
+              title="Nenhum saque encontrado"
+              description="Seu histórico de saques aparecerá aqui."
+            />
+          ) : (
+            <div className="space-y-3">
+              {withdrawalHistory.map((withdrawal) => (
+                <div key={withdrawal.id} className="flex items-center justify-between bg-white/10 backdrop-blur-lg rounded-lg p-4 hover:bg-white/20 transition-colors border border-white/20">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${
+                      withdrawal.status === 'Processado' ? 'bg-green-400' :
+                        withdrawal.status === 'Pendente' ? 'bg-yellow-400' : 'bg-red-400'
+                    }`}></div>
+                    <div>
+                      <p className="text-white font-medium">R$ {withdrawal.amount.toFixed(2)}</p>
+                      <p className="text-white/70 text-sm">{withdrawal.method} • {withdrawal.pixKey}</p>
+                      <p className="text-white/50 text-xs">{withdrawal.date}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-bold backdrop-blur-lg ${getStatusColor(withdrawal.status)}`}>
+                      <span>{getStatusIcon(withdrawal.status)}</span>
+                      <span>{withdrawal.status}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-bold backdrop-blur-lg ${getStatusColor(withdrawal.status)}`}>
-                    <span>{getStatusIcon(withdrawal.status)}</span>
-                    <span>{withdrawal.status}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
         </div>
       </div>
