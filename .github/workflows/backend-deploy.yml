@@ -115,14 +115,13 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
         
       - name: 🚀 Deploy para Fly.io
-        continue-on-error: true
         run: |
           echo "🚀 Iniciando deploy para Fly.io..."
           if [ -z "${{ secrets.FLY_API_TOKEN }}" ]; then
             echo "⚠️ FLY_API_TOKEN não configurado. Pulando deploy."
             exit 0
           fi
-          flyctl deploy --remote-only --no-cache --app ${{ env.FLY_APP_NAME }}
+          flyctl deploy --remote-only --no-cache --app ${{ env.FLY_APP_NAME }} --build-arg GIT_COMMIT="${{ github.sha }}"
           echo "✅ Deploy concluído"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
@@ -197,14 +196,13 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
         
       - name: 🚀 Deploy para desenvolvimento
-        continue-on-error: true
         run: |
           echo "🔄 Deploy para ambiente de desenvolvimento..."
           if [ -z "${{ secrets.FLY_API_TOKEN }}" ]; then
             echo "⚠️ FLY_API_TOKEN não configurado. Pulando deploy."
             exit 0
           fi
-          flyctl deploy --remote-only --no-cache --app ${{ env.FLY_APP_NAME }}
+          flyctl deploy --remote-only --no-cache --app ${{ env.FLY_APP_NAME }} --build-arg GIT_COMMIT="${{ github.sha }}"
           echo "✅ Deploy de desenvolvimento concluído"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
