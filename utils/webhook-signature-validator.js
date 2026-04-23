@@ -7,6 +7,11 @@ class WebhookSignatureValidator {
     this.secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
     this.allowedAlgorithms = ['sha256', 'sha1'];
     this.maxTimestampDiff = 5 * 60 * 1000; // 5 minutos
+    // MP pode reentregar a mesma notificação (mesmo `ts` no header) após minutos; 5m barra antes do HMAC.
+    const skewEnv = process.env.MERCADOPAGO_WEBHOOK_MAX_TS_SKEW_MS;
+    this.mercadoPagoWebhookMaxTimestampDiff = skewEnv
+      ? Math.max(0, parseInt(String(skewEnv), 10) || 0) || 30 * 60 * 1000
+      : 30 * 60 * 1000;
   }
 
   // Validar assinatura do webhook
@@ -141,43 +146,170 @@ class WebhookSignatureValidator {
     return hmac.digest('hex');
   }
 
-  // Validar webhook do Mercado Pago
+  /**
+   * Mercado Pago (notificações webhooks): X-Signature = "ts=<ms>,v1=<hex>"
+   * Manifest: id:<data.id>;request-id:<x-request-id>;ts:<ts>;
+   * data.id vem preferencialmente da query (?data.id=); fallback body.data.id (proxies).
+   * @see https://www.mercadopago.com.br/developers/pt/docs/your-integrations/notifications/webhooks
+   */
+  parseMercadoPagoSignatureHeader(xSignature) {
+    if (!xSignature || typeof xSignature !== 'string') return null;
+    let ts = null;
+    let v1 = null;
+    for (const part of xSignature.split(',')) {
+      const eq = part.indexOf('=');
+      if (eq === -1) continue;
+      const key = part.slice(0, eq).trim();
+      const value = part.slice(eq + 1).trim();
+      if (key === 'ts') ts = value;
+      else if (key === 'v1') v1 = value;
+    }
+    if (!ts || !v1) return null;
+    return { ts, v1 };
+  }
+
+  normalizeMercadoPagoManifestDataId(raw) {
+    if (raw == null) return '';
+    const s = String(raw).trim();
+    if (!s) return '';
+    if (/^[a-f0-9]+$/i.test(s)) return s.toLowerCase();
+    if (/[a-z]/i.test(s)) return s.toLowerCase();
+    return s;
+  }
+
+  /**
+   * Mesma ordem dos exemplos oficiais (PHP/Go): id; request-id; ts — valores vazios mantêm o segmento.
+   * data.id deve refletir o usado pelo MP na assinatura (query ?data.id= com fallback body.data.id).
+   */
+  buildMercadoPagoSignatureManifest({ dataId, xRequestId, ts }) {
+    const idPart = dataId == null ? '' : String(dataId).trim();
+    const rid = xRequestId == null ? '' : String(xRequestId).trim();
+    return `id:${idPart};request-id:${rid};ts:${ts};`;
+  }
+
+  validateTimestampMilliseconds(tsMs, maxDiffMs) {
+    const limit =
+      maxDiffMs != null && maxDiffMs > 0 ? maxDiffMs : this.maxTimestampDiff;
+    try {
+      if (Number.isNaN(tsMs)) {
+        return { valid: false, error: 'Timestamp ts inválido' };
+      }
+      const now = Date.now();
+      const diffMs = Math.abs(now - tsMs);
+      if (diffMs > limit) {
+        return {
+          valid: false,
+          error: 'Timestamp da notificação fora da janela tolerada'
+        };
+      }
+      return { valid: true, timeDiffMs: diffMs };
+    } catch (e) {
+      return { valid: false, error: 'Timestamp inválido' };
+    }
+  }
+
+  normalizeMercadoPagoTsToMilliseconds(rawTs) {
+    if (rawTs == null) return NaN;
+    const tsStr = String(rawTs).trim();
+    if (!/^\d+$/.test(tsStr)) return NaN;
+
+    // Mercado Pago pode enviar ts em segundos (10) ou milissegundos (13).
+    if (tsStr.length === 10) return Number(tsStr) * 1000;
+    if (tsStr.length === 13) return Number(tsStr);
+
+    // Fallback conservador para formatos numéricos fora do padrão.
+    const n = Number(tsStr);
+    if (!Number.isFinite(n)) return NaN;
+    return tsStr.length < 13 ? n * 1000 : n;
+  }
+
+  // Validar webhook do Mercado Pago (notificações oficiais: X-Signature ts/v1 + manifest)
   validateMercadoPagoWebhook(req) {
     try {
-      const signature = req.headers['x-signature'];
-      const timestamp = req.headers['x-timestamp'];
-      const payload = typeof req.rawBody === 'string' && req.rawBody.length > 0 
-        ? req.rawBody 
-        : JSON.stringify(req.body);
+      if (!this.secret) {
+        return {
+          valid: false,
+          error: 'MERCADOPAGO_WEBHOOK_SECRET não configurado'
+        };
+      }
 
-      if (!signature) {
+      const xSignature = req.headers['x-signature'] || req.headers['X-Signature'];
+      if (!xSignature) {
         return {
           valid: false,
           error: 'Header X-Signature não encontrado'
         };
       }
 
-      const validation = this.validateSignature(payload, signature, timestamp);
-      
-      if (!validation.valid) {
+      const parts = this.parseMercadoPagoSignatureHeader(xSignature);
+      if (!parts) {
         return {
           valid: false,
-          error: validation.error,
-          headers: {
-            signature: signature,
-            timestamp: timestamp
-          }
+          error: 'Formato de X-Signature inválido (esperado ts=...,v1=... conforme Mercado Pago)'
+        };
+      }
+
+      const tsMs = this.normalizeMercadoPagoTsToMilliseconds(parts.ts);
+      const tsCheck = this.validateTimestampMilliseconds(
+        tsMs,
+        this.mercadoPagoWebhookMaxTimestampDiff
+      );
+      if (!tsCheck.valid) {
+        return { valid: false, error: tsCheck.error };
+      }
+
+      const xRequestId =
+        req.headers['x-request-id'] ||
+        req.headers['X-Request-Id'] ||
+        '';
+
+      const q = req.query || {};
+      let rawDataId = q['data.id'];
+      if (Array.isArray(rawDataId)) rawDataId = rawDataId[0];
+      let dataId = rawDataId != null && rawDataId !== '' ? String(rawDataId).trim() : '';
+
+      if (!dataId && req.body && req.body.data != null && req.body.data.id != null) {
+        dataId = String(req.body.data.id).trim();
+      }
+
+      dataId = this.normalizeMercadoPagoManifestDataId(dataId);
+
+      const manifest = this.buildMercadoPagoSignatureManifest({
+        dataId,
+        xRequestId,
+        ts: parts.ts
+      });
+
+      const expectedHex = crypto
+        .createHmac('sha256', this.secret)
+        .update(manifest, 'utf8')
+        .digest('hex');
+
+      const got = String(parts.v1).toLowerCase().trim();
+      if (!/^[a-f0-9]+$/.test(got) || got.length % 2 !== 0) {
+        return { valid: false, error: 'Valor v1 em X-Signature inválido' };
+      }
+
+      const gotBuf = Buffer.from(got, 'hex');
+      const expBuf = Buffer.from(expectedHex, 'hex');
+      if (gotBuf.length !== expBuf.length || gotBuf.length === 0) {
+        return { valid: false, error: 'Signature v1 não confere (tamanho)' };
+      }
+
+      if (!crypto.timingSafeEqual(gotBuf, expBuf)) {
+        return {
+          valid: false,
+          error: 'Signature v1 não confere (HMAC-SHA256 do manifest)'
         };
       }
 
       return {
         valid: true,
         payload: req.body,
-        signature: signature,
-        timestamp: timestamp,
-        algorithm: validation.algorithm
+        signature: xSignature,
+        timestamp: parts.ts,
+        algorithm: 'sha256'
       };
-
     } catch (error) {
       return {
         valid: false,
