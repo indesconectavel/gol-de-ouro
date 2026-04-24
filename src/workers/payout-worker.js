@@ -94,6 +94,8 @@ async function runCycle() {
   }
 }
 
+const payoutAutoFromRaw = process.env.PAYOUT_AUTO_FROM_AT;
+console.log('ℹ️ [PAYOUT][WORKER] Config PAYOUT_AUTO_FROM_AT (corte mínimo de created_at):', payoutAutoFromRaw == null || String(payoutAutoFromRaw).trim() === '' ? '(não definida — processPendingWithdrawals não processa saques)' : String(payoutAutoFromRaw).trim());
 console.log(`🕒 [PAYOUT][WORKER] Ativo. Intervalo ${intervalMs}ms`);
 runCycle();
 setInterval(runCycle, intervalMs);

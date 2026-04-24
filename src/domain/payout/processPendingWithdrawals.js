@@ -4,6 +4,26 @@ const payoutCounters = { success: 0, fail: 0 };
 let ledgerUserIdColumn = null;
 
 /**
+ * Corte mínimo de `created_at` para saque automático (env obrigatória em produção).
+ * @returns {{ valid: true, iso: string } | { valid: false, error: string }}
+ */
+function parsePayoutAutoFromAt() {
+  const raw = process.env.PAYOUT_AUTO_FROM_AT;
+  if (raw == null || String(raw).trim() === '') {
+    return { valid: false, error: 'PAYOUT_AUTO_FROM_AT ausente ou vazia' };
+  }
+  const s = String(raw).trim();
+  const t = Date.parse(s);
+  if (Number.isNaN(t)) {
+    return {
+      valid: false,
+      error: `PAYOUT_AUTO_FROM_AT inválida (esperada data/hora ISO-8601): ${s}`
+    };
+  }
+  return { valid: true, iso: new Date(t).toISOString() };
+}
+
+/**
  * Insere uma linha no ledger usando a coluna de usuário existente no ambiente.
  * Tenta user_id primeiro (produção), depois usuario_id; grava em cache a que funcionar.
  * Nunca lança exceção; em falha retorna { success: false, error }.
@@ -164,10 +184,22 @@ const processPendingWithdrawals = async ({
       throw new Error('createPixWithdraw não fornecido');
     }
 
+    const cut = parsePayoutAutoFromAt();
+    if (!cut.valid) {
+      console.error('❌ [PAYOUT] Corte PAYOUT_AUTO_FROM_AT inválido — nenhum saque será processado, Mercado Pago não será chamado:', cut.error);
+      console.log('🟦 [PAYOUT][WORKER] Resumo', {
+        payouts_sucesso: payoutCounters.success,
+        payouts_falha: payoutCounters.fail
+      });
+      return { success: false, error: cut.error, payoutAutoFromAtInvalid: true };
+    }
+    console.log('✅ [PAYOUT] Corte mínimo created_at (PAYOUT_AUTO_FROM_AT) aplicado:', { payoutAutoFromAt: cut.iso });
+
     const { data: pendentes, error: listError } = await supabase
       .from('saques')
       .select('id, usuario_id, amount, valor, fee, net_amount, pix_key, pix_type, chave_pix, tipo_chave, status, correlation_id, created_at')
       .in('status', ['pendente', 'pending'])
+      .gte('created_at', cut.iso)
       .order('created_at', { ascending: true })
       .limit(1);
 
