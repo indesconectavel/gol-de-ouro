@@ -137,7 +137,7 @@ jobs:
       - name: 📊 Logs do deploy
         run: |
           echo "📊 Coletando logs..."
-          flyctl logs --app ${{ env.FLY_APP_NAME }} --lines 50
+          flyctl logs --app ${{ env.FLY_APP_NAME }} --no-tail
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           
