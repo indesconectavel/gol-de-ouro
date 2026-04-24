@@ -3007,11 +3007,15 @@ app.get('/api/monitoring/health', (req, res) => {
 // Endpoint /meta para compatibilidade com frontend
 app.get('/meta', (req, res) => {
   try {
+    const gitCommitRaw = process.env.GIT_COMMIT;
+    const gitCommit =
+      typeof gitCommitRaw === 'string' && gitCommitRaw.trim() ? gitCommitRaw.trim() : null;
     res.json({
       success: true,
       data: {
         version: '1.2.1',
         build: '2025-10-21',
+        gitCommit,
         environment: 'production',
         compatibility: {
           minVersion: '1.0.0',
