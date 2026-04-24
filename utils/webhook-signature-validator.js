@@ -2,6 +2,53 @@
 // ===================================================
 const crypto = require('crypto');
 
+/**
+ * Formato real do header X-Signature do Mercado Pago: "ts=...,v1=..."
+ * @param {string} xSignature
+ * @returns {{ ts: string, v1: string } | null}
+ */
+function parseMercadoPagoTsV1(xSignature) {
+  if (!xSignature || typeof xSignature !== 'string') return null;
+  const out = {};
+  for (const part of xSignature.split(',')) {
+    const trimmed = part.trim();
+    const i = trimmed.indexOf('=');
+    if (i === -1) continue;
+    const key = trimmed.slice(0, i).trim();
+    const value = trimmed.slice(i + 1).trim();
+    if (key === 'ts' || key === 'v1') {
+      out[key] = value;
+    }
+  }
+  if (!out.ts || !out.v1) return null;
+  return { ts: String(out.ts), v1: String(out.v1) };
+}
+
+function firstScalar(v) {
+  if (v === undefined || v === null) return null;
+  if (Array.isArray(v)) {
+    return v[0] !== undefined && v[0] !== null && String(v[0]).length > 0
+      ? String(v[0])
+      : null;
+  }
+  return String(v).length > 0 ? String(v) : null;
+}
+
+/** @param {object} req — Express request */
+function getMercadoPagoWebhookDataId(req) {
+  const q = req.query && firstScalar(req.query['data.id']);
+  if (q) return q;
+  const b = req.body && req.body.data && firstScalar(req.body.data.id);
+  return b || null;
+}
+
+/**
+ * Manifest exato exigido pelo Mercado Pago (notificações v2)
+ */
+function buildMercadoPagoSignatureManifest(dataId, requestId, ts) {
+  return `id:${dataId};request-id:${requestId};ts:${ts};`;
+}
+
 class WebhookSignatureValidator {
   constructor() {
     this.secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
@@ -114,6 +161,45 @@ class WebhookSignatureValidator {
     }
   }
 
+  /**
+   * ts do header X-Signature (Mercado Pago) em segundos Unix.
+   * Janela: MERCADOPAGO_WEBHOOK_MAX_TS_SKEW_MS (milissegundos), default 30 min.
+   * Não altera validateTimestamp (5 min) usada por outros fluxos.
+   */
+  validateMercadoPagoSignatureTs(ts) {
+    try {
+      const defaultMs = 30 * 60 * 1000;
+      const raw = process.env.MERCADOPAGO_WEBHOOK_MAX_TS_SKEW_MS;
+      let maxSkewMs = defaultMs;
+      if (raw != null && String(raw).trim() !== '') {
+        const n = parseInt(String(raw).trim(), 10);
+        if (Number.isFinite(n) && n > 0) {
+          maxSkewMs = n;
+        }
+      }
+      const maxSkewSec = maxSkewMs / 1000;
+      const webhookTime = parseInt(String(ts), 10);
+      if (Number.isNaN(webhookTime) || webhookTime < 0) {
+        return { valid: false, error: 'Timestamp inválido' };
+      }
+      const currentTime = Math.floor(Date.now() / 1000);
+      const timeDiff = Math.abs(currentTime - webhookTime);
+      if (timeDiff > maxSkewSec) {
+        return {
+          valid: false,
+          error: 'Timestamp fora da janela (Mercado Pago)'
+        };
+      }
+      return {
+        valid: true,
+        timestamp: webhookTime,
+        timeDiff
+      };
+    } catch (error) {
+      return { valid: false, error: 'Timestamp inválido' };
+    }
+  }
+
   // Parsear signature
   parseSignature(signature) {
     try {
@@ -141,43 +227,98 @@ class WebhookSignatureValidator {
     return hmac.digest('hex');
   }
 
-  // Validar webhook do Mercado Pago
+  // Validar webhook do Mercado Pago (X-Signature: ts=...,v1=... + manifest, sem corpo bruto)
   validateMercadoPagoWebhook(req) {
     try {
-      const signature = req.headers['x-signature'];
-      const timestamp = req.headers['x-timestamp'];
-      const payload = typeof req.rawBody === 'string' && req.rawBody.length > 0 
-        ? req.rawBody 
-        : JSON.stringify(req.body);
+      if (!this.secret) {
+        return {
+          valid: false,
+          error: 'MERCADOPAGO_WEBHOOK_SECRET não configurado'
+        };
+      }
 
-      if (!signature) {
+      const xSignature = req.headers['x-signature'];
+      if (!xSignature) {
         return {
           valid: false,
           error: 'Header X-Signature não encontrado'
         };
       }
 
-      const validation = this.validateSignature(payload, signature, timestamp);
-      
-      if (!validation.valid) {
+      const parsed = parseMercadoPagoTsV1(xSignature);
+      if (!parsed) {
         return {
           valid: false,
-          error: validation.error,
-          headers: {
-            signature: signature,
-            timestamp: timestamp
-          }
+          error: 'Formato de X-Signature inválido (esperado ts=...,v1=...)'
+        };
+      }
+
+      const { ts, v1 } = parsed;
+      const tsCheck = this.validateMercadoPagoSignatureTs(ts);
+      if (!tsCheck.valid) {
+        return {
+          valid: false,
+          error: tsCheck.error
+        };
+      }
+
+      const dataId = getMercadoPagoWebhookDataId(req);
+      if (!dataId) {
+        return {
+          valid: false,
+          error: 'data.id ausente (query ou body.data.id)'
+        };
+      }
+
+      const requestId = req.headers['x-request-id'];
+      if (requestId === undefined || requestId === null || String(requestId).length === 0) {
+        return {
+          valid: false,
+          error: 'Header x-request-id ausente'
+        };
+      }
+
+      const manifest = buildMercadoPagoSignatureManifest(
+        dataId,
+        String(requestId),
+        String(ts)
+      );
+
+      const expectedHex = crypto
+        .createHmac('sha256', this.secret)
+        .update(manifest, 'utf8')
+        .digest('hex');
+      const v1Norm = String(v1).trim().toLowerCase();
+      if (!/^[0-9a-f]+$/.test(v1Norm) || v1Norm.length % 2 !== 0) {
+        return { valid: false, error: 'v1 de assinatura inválida' };
+      }
+      if (!/^[0-9a-f]+$/i.test(expectedHex) || expectedHex.length !== v1Norm.length) {
+        return { valid: false, error: 'Comprimento de assinatura incompatível' };
+      }
+
+      const expectedBuf = Buffer.from(expectedHex, 'hex');
+      const v1Buf = Buffer.from(v1Norm, 'hex');
+      if (expectedBuf.length !== v1Buf.length) {
+        return { valid: false, error: 'Comprimento de assinatura incompatível' };
+      }
+
+      const isValid = crypto.timingSafeEqual(expectedBuf, v1Buf);
+      if (!isValid) {
+        return {
+          valid: false,
+          error: 'Assinatura v1 não confere com o manifest',
+          headers: { signature: xSignature, ts, requestId: String(requestId) }
         };
       }
 
       return {
         valid: true,
         payload: req.body,
-        signature: signature,
-        timestamp: timestamp,
-        algorithm: validation.algorithm
+        signature: xSignature,
+        timestamp: String(ts),
+        algorithm: 'sha256',
+        manifest
       };
-
     } catch (error) {
       return {
         valid: false,
@@ -318,4 +459,37 @@ class WebhookSignatureValidator {
   }
 }
 
+/**
+ * Debug controlado: não altera validação nem crédito.
+ * Com MERCADOPAGO_WEBHOOK_DEBUG_LOG=1 loga headers e o manifest de assinatura (sem usar body bruto).
+ */
+function logMercadoPagoWebhookDebugRequest(req) {
+  if (String(process.env.MERCADOPAGO_WEBHOOK_DEBUG_LOG || '') !== '1') {
+    return;
+  }
+  try {
+    const dataId = getMercadoPagoWebhookDataId(req);
+    const requestId = req.headers['x-request-id'];
+    const parsed = parseMercadoPagoTsV1(req.headers['x-signature']);
+    const manifest =
+      dataId && requestId && parsed
+        ? buildMercadoPagoSignatureManifest(String(dataId), String(requestId), String(parsed.ts))
+        : null;
+    const snapshot = {
+      'x-signature': req.headers['x-signature'],
+      'x-request-id': requestId,
+      'query.data.id': req.query && req.query['data.id'],
+      query: req.query,
+      'body.data.id': req.body && req.body.data && req.body.data.id,
+      body: req.body,
+      headers: req.headers,
+      manifestUsadoPelaValidacao: manifest
+    };
+    console.log('🔬 [MP WEBHOOK DEBUG]', JSON.stringify(snapshot, null, 2));
+  } catch (e) {
+    console.error('🔬 [MP WEBHOOK DEBUG] falha ao serializar:', e && e.message);
+  }
+}
+
 module.exports = WebhookSignatureValidator;
+module.exports.logMercadoPagoWebhookDebugRequest = logMercadoPagoWebhookDebugRequest;
