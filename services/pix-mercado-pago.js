@@ -1,20 +1,83 @@
 // Serviço PIX Real - Mercado Pago - Gol de Ouro v1.1.1 + SIMPLE_MVP
+// Payout (Money Out): POST /v1/transaction-intents/process — doc oficial Payouts BR
 const axios = require('axios');
 const crypto = require('crypto');
 
-// Configurações do Mercado Pago
 const MP_CONFIG = {
   accessToken: process.env.MERCADOPAGO_PAYOUT_ACCESS_TOKEN,
   baseUrl: 'https://api.mercadopago.com',
   webhookUrl: process.env.PIX_WEBHOOK_URL || 'https://goldeouro-backend-v2.fly.dev/api/payments/pix/webhook'
 };
 
-// Verificar se token está configurado
 const isConfigured = () => {
   return !!(
     MP_CONFIG.accessToken &&
     (MP_CONFIG.accessToken.startsWith('APP_USR-') || MP_CONFIG.accessToken.startsWith('APP_USR_'))
   );
+};
+
+const loadPayoutPrivateKeyPem = () => {
+  const raw = process.env.MP_PAYOUT_PRIVATE_KEY;
+  if (!raw || typeof raw !== 'string' || !raw.trim()) return null;
+  return raw.trim().replace(/\\n/g, '\n');
+};
+
+const signPayoutBodyEd25519 = (bodyUtf8, pem) => {
+  const privateKey = crypto.createPrivateKey(pem);
+  const sig = crypto.sign(null, Buffer.from(bodyUtf8, 'utf8'), privateKey);
+  return sig.toString('base64');
+};
+
+const sanitizePayoutResponse = (raw) => {
+  if (!raw || typeof raw !== 'object') return null;
+  return {
+    id: raw.id,
+    status: raw.status,
+    status_detail: raw.status_detail,
+    external_reference: raw.external_reference,
+    last_updated_date: raw.last_updated_date,
+    created_date: raw.created_date,
+    transaction: raw.transaction
+      ? {
+          total_amount: raw.transaction.total_amount,
+          paid_amount: raw.transaction.paid_amount,
+          refunded_amount: raw.transaction.refunded_amount
+        }
+      : undefined
+  };
+};
+
+/**
+ * Consulta transaction intent no MP (confirmação / reconciliação).
+ * @param {string} intentId
+ */
+const getTransactionIntent = async (intentId) => {
+  try {
+    if (!isConfigured()) {
+      return { success: false, error: 'Token do Mercado Pago não configurado' };
+    }
+    if (!intentId || String(intentId).length > 128) {
+      return { success: false, error: 'intentId inválido' };
+    }
+    const response = await axios.get(`${MP_CONFIG.baseUrl}/v1/transaction-intents/${encodeURIComponent(intentId)}`, {
+      headers: {
+        Authorization: `Bearer ${MP_CONFIG.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 15000
+    });
+    return {
+      success: true,
+      data: response.data,
+      sanitized: sanitizePayoutResponse(response.data)
+    };
+  } catch (error) {
+    console.error('❌ [PIX][MP] Erro GET transaction-intent:', error.response?.status, error.response?.data || error.message);
+    return {
+      success: false,
+      error: error.response?.data?.message || error.message
+    };
+  }
 };
 
 // Criar PIX real no Mercado Pago (HARDENED)
@@ -24,30 +87,26 @@ const createPixPayment = async (amount, userId, description = 'Depósito Gol de 
       throw new Error('Token de payout do Mercado Pago não configurado');
     }
 
-    // Validar valor (hardening)
-    const minAmount = 1.00;
-    const maxAmount = 1000.00;
-    
+    const minAmount = 1.0;
+    const maxAmount = 1000.0;
+
     if (amount < minAmount || amount > maxAmount) {
       throw new Error(`Valor deve estar entre R$ ${minAmount} e R$ ${maxAmount}`);
     }
 
-    // Validar userId (prevenir injection)
     if (!userId || typeof userId !== 'string' || userId.length > 100) {
       throw new Error('UserId inválido');
     }
 
-    // Gerar ID único para idempotência
     const paymentId = crypto.randomUUID();
     const externalReference = `goldeouro_${userId}_${paymentId}`;
 
-    // Dados do pagamento (hardened)
     const paymentData = {
       transaction_amount: parseFloat(amount),
-      description: description.substring(0, 100), // Limitar tamanho
+      description: description.substring(0, 100),
       payment_method_id: 'pix',
       payer: {
-        email: 'user@example.com' // Em produção, buscar email do usuário
+        email: 'user@example.com'
       },
       external_reference: externalReference,
       notification_url: MP_CONFIG.webhookUrl,
@@ -58,22 +117,16 @@ const createPixPayment = async (amount, userId, description = 'Depósito Gol de 
       }
     };
 
-    // Criar pagamento no Mercado Pago
-    const response = await axios.post(
-      `${MP_CONFIG.baseUrl}/v1/payments`,
-      paymentData,
-      {
-        headers: {
-          'Authorization': `Bearer ${MP_CONFIG.accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 10000
-      }
-    );
+    const response = await axios.post(`${MP_CONFIG.baseUrl}/v1/payments`, paymentData, {
+      headers: {
+        Authorization: `Bearer ${MP_CONFIG.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 10000
+    });
 
     const payment = response.data;
 
-    // Retornar dados do PIX
     return {
       success: true,
       data: {
@@ -86,7 +139,6 @@ const createPixPayment = async (amount, userId, description = 'Depósito Gol de 
         created_at: payment.date_created
       }
     };
-
   } catch (error) {
     console.error('Erro ao criar PIX no Mercado Pago:', error.response?.data || error.message);
     return {
@@ -96,22 +148,18 @@ const createPixPayment = async (amount, userId, description = 'Depósito Gol de 
   }
 };
 
-// Verificar status do pagamento
 const getPaymentStatus = async (paymentId) => {
   try {
     if (!isConfigured()) {
       throw new Error('Token de payout do Mercado Pago não configurado');
     }
 
-    const response = await axios.get(
-      `${MP_CONFIG.baseUrl}/v1/payments/${paymentId}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${MP_CONFIG.accessToken}`
-        },
-        timeout: 5000
-      }
-    );
+    const response = await axios.get(`${MP_CONFIG.baseUrl}/v1/payments/${paymentId}`, {
+      headers: {
+        Authorization: `Bearer ${MP_CONFIG.accessToken}`
+      },
+      timeout: 5000
+    });
 
     const payment = response.data;
 
@@ -125,7 +173,6 @@ const getPaymentStatus = async (paymentId) => {
         external_reference: payment.external_reference
       }
     };
-
   } catch (error) {
     console.error('Erro ao verificar status do PIX:', error.response?.data || error.message);
     return {
@@ -135,28 +182,24 @@ const getPaymentStatus = async (paymentId) => {
   }
 };
 
-// Processar webhook do Mercado Pago (HARDENED)
 const processWebhook = async (webhookData) => {
   try {
     const { type, data } = webhookData;
 
-    // Validação de tipo
     if (type !== 'payment') {
       console.log(`⚠️ [PIX] Webhook tipo não suportado: ${type}`);
       return { success: false, error: 'Tipo de webhook não suportado' };
     }
 
-    // Validação de dados
     if (!data || !data.id) {
       console.log('❌ [PIX] Webhook sem payment ID');
       return { success: false, error: 'Payment ID não fornecido' };
     }
 
     const paymentId = data.id;
-    
-    // Buscar dados do pagamento
+
     const statusResult = await getPaymentStatus(paymentId);
-    
+
     if (!statusResult.success) {
       console.log(`❌ [PIX] Erro ao buscar status do pagamento ${paymentId}:`, statusResult.error);
       return statusResult;
@@ -164,9 +207,7 @@ const processWebhook = async (webhookData) => {
 
     const payment = statusResult.data;
 
-    // Validação de status
     if (payment.status === 'approved') {
-      // Extrair userId do external_reference (hardened)
       const externalRef = payment.external_reference;
       if (!externalRef || !externalRef.startsWith('goldeouro_')) {
         console.log(`❌ [PIX] External reference inválido: ${externalRef}`);
@@ -182,7 +223,6 @@ const processWebhook = async (webhookData) => {
       const userId = parts[1];
       const amount = payment.amount;
 
-      // Log de segurança
       console.log(`✅ [PIX] Pagamento aprovado: ${paymentId} - Usuário: ${userId} - Valor: R$ ${amount}`);
 
       return {
@@ -198,7 +238,6 @@ const processWebhook = async (webhookData) => {
       };
     }
 
-    // Log para outros status
     console.log(`ℹ️ [PIX] Pagamento ${paymentId} status: ${payment.status}`);
 
     return {
@@ -209,7 +248,6 @@ const processWebhook = async (webhookData) => {
         message: 'Pagamento não aprovado'
       }
     };
-
   } catch (error) {
     console.error('❌ [PIX] Erro ao processar webhook:', error);
     return {
@@ -219,40 +257,61 @@ const processWebhook = async (webhookData) => {
   }
 };
 
-// Criar saque PIX automático (HARDENED)
-const createPixWithdraw = async (amount, pixKey, pixKeyType, userId, saqueId, correlationId) => {
+const formatPixPhoneValue = (phone) => {
+  const d = String(phone).replace(/\D/g, '');
+  if (d.startsWith('55') && d.length >= 12) return `+${d}`;
+  if (d.length === 11) return `+55${d}`;
+  if (d.length > 0) return `+${d}`;
+  return String(phone);
+};
+
+/**
+ * Saque Pix via Money Out oficial (transaction-intents/process).
+ * @param {number} amount valor líquido (net)
+ * @param {string} pixKey
+ * @param {string} pixKeyType cpf|cnpj|email|phone|random|telefone|aleatoria
+ * @param {string} userId
+ * @param {string} saqueId
+ * @param {string} correlationId
+ * @param {{
+ *   payoutExternalReference: string,
+ *   idempotencyKey: string,
+ *   notificationUrl?: string,
+ *   ownerIdentification: { type: 'CPF'|'CNPJ', number: string }
+ * }} options
+ */
+const createPixWithdraw = async (amount, pixKey, pixKeyType, userId, saqueId, correlationId, options = {}) => {
   try {
     if (!isConfigured()) {
       throw new Error('Token do Mercado Pago não configurado');
     }
 
-    // Validação de valor (hardening)
-    const minAmount = 0.50; // R$ 0,50 mínimo
-    const maxAmount = 1000.00; // R$ 1.000,00 máximo
-    
+    const minAmount = 0.5;
+    const maxAmount = 1000.0;
+
     if (amount < minAmount || amount > maxAmount) {
       throw new Error(`Valor deve estar entre R$ ${minAmount} e R$ ${maxAmount}`);
     }
 
-    // Validar chave PIX (hardening)
     if (!pixKey || !pixKeyType) {
       throw new Error('Chave PIX e tipo são obrigatórios');
     }
 
-    // Validar tipos de chave PIX
+    const tipo = String(pixKeyType).toLowerCase();
+    const normalizedTipo = tipo === 'telefone' ? 'phone' : tipo === 'aleatoria' ? 'random' : tipo;
+
     const validKeyTypes = ['cpf', 'cnpj', 'email', 'phone', 'random'];
-    if (!validKeyTypes.includes(pixKeyType)) {
+    if (!validKeyTypes.includes(normalizedTipo)) {
       throw new Error('Tipo de chave PIX inválido');
     }
 
-    // Validar formato da chave PIX
-    if (pixKeyType === 'cpf' && !/^\d{11}$/.test(pixKey)) {
+    if (normalizedTipo === 'cpf' && !/^\d{11}$/.test(String(pixKey).replace(/\D/g, ''))) {
       throw new Error('CPF deve ter 11 dígitos');
     }
-    if (pixKeyType === 'cnpj' && !/^\d{14}$/.test(pixKey)) {
+    if (normalizedTipo === 'cnpj' && !/^\d{14}$/.test(String(pixKey).replace(/\D/g, ''))) {
       throw new Error('CNPJ deve ter 14 dígitos');
     }
-    if (pixKeyType === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pixKey)) {
+    if (normalizedTipo === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pixKey)) {
       throw new Error('Email inválido');
     }
 
@@ -260,74 +319,150 @@ const createPixWithdraw = async (amount, pixKey, pixKeyType, userId, saqueId, co
       throw new Error('saqueId e correlationId são obrigatórios para payout');
     }
 
-    const externalReference = `${saqueId}_${correlationId}`;
+    const { payoutExternalReference, idempotencyKey, notificationUrl, ownerIdentification } = options;
+    if (!payoutExternalReference || typeof payoutExternalReference !== 'string') {
+      throw new Error('options.payoutExternalReference é obrigatório');
+    }
+    if (payoutExternalReference.length > 64) {
+      throw new Error('payoutExternalReference excede 64 caracteres (limite MP)');
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(payoutExternalReference)) {
+      throw new Error('payoutExternalReference contém caracteres não permitidos pelo MP');
+    }
+    if (!idempotencyKey || typeof idempotencyKey !== 'string') {
+      throw new Error('options.idempotencyKey é obrigatório');
+    }
+    if (!ownerIdentification?.type || !ownerIdentification?.number) {
+      throw new Error('options.ownerIdentification (type, number) é obrigatório');
+    }
 
-    const keyTypeMap = {
+    const ownerIdDigits = String(ownerIdentification.number).replace(/\D/g, '');
+    if (ownerIdentification.type === 'CPF' && ownerIdDigits.length !== 11) {
+      throw new Error('ownerIdentification CPF inválido');
+    }
+    if (ownerIdentification.type === 'CNPJ' && ownerIdDigits.length !== 14) {
+      throw new Error('ownerIdentification CNPJ inválido');
+    }
+
+    const keyTypeToMp = {
       cpf: 'CPF',
       cnpj: 'CNPJ',
       email: 'EMAIL',
       phone: 'PHONE',
-      random: 'EVP',
-      evp: 'EVP',
-      CPF: 'CPF',
-      CNPJ: 'CNPJ',
-      EMAIL: 'EMAIL',
-      PHONE: 'PHONE',
-      EVP: 'EVP'
+      random: 'PIX_CODE'
     };
-    const normalizedKeyType = keyTypeMap[pixKeyType] || keyTypeMap[String(pixKeyType).toLowerCase()];
-    if (!normalizedKeyType) {
-      throw new Error('Tipo de chave PIX inválido para payout');
+    const mpChaveType = keyTypeToMp[normalizedTipo];
+    let mpChaveValue = pixKey;
+    if (normalizedTipo === 'cpf' || normalizedTipo === 'cnpj') {
+      mpChaveValue = String(pixKey).replace(/\D/g, '');
+    } else if (normalizedTipo === 'phone') {
+      mpChaveValue = formatPixPhoneValue(pixKey);
     }
 
-    const transferData = {
-      amount: parseFloat(amount),
-      description: 'Saque Gol de Ouro',
-      external_reference: externalReference,
-      receiver: {
-        pix_key: pixKey,
-        pix_key_type: normalizedKeyType
+    const total = parseFloat(amount);
+    const payload = {
+      external_reference: payoutExternalReference,
+      point_of_interaction: { type: 'PSP_TRANSFER' },
+      transaction: {
+        from: {
+          accounts: [{ amount: total }]
+        },
+        to: {
+          accounts: [
+            {
+              type: 'current',
+              amount: total,
+              chave: {
+                type: mpChaveType,
+                value: mpChaveValue
+              },
+              owner: {
+                identification: {
+                  type: ownerIdentification.type,
+                  number: ownerIdDigits
+                }
+              }
+            }
+          ]
+        },
+        total_amount: total
       }
     };
 
-    const response = await axios.post(
-      `${MP_CONFIG.baseUrl}/v1/transfers`,
-      transferData,
-      {
-        headers: {
-          'Authorization': `Bearer ${MP_CONFIG.accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 10000
-      }
-    );
+    if (notificationUrl && String(notificationUrl).length <= 500) {
+      payload.seller_configuration = {
+        notification_info: {
+          notification_url: String(notificationUrl)
+        }
+      };
+    }
 
-    const transfer = response.data;
-    console.log(`🎯 [PIX] Payout enviado ao MP`, {
+    const bodyStr = JSON.stringify(payload);
+
+    const testToken = String(process.env.MP_PAYOUT_TEST_TOKEN || '').toLowerCase() === 'true';
+    const enforceSig = String(process.env.MP_PAYOUT_ENFORCE_SIGNATURE || '').toLowerCase() === 'true';
+    const pem = loadPayoutPrivateKeyPem();
+
+    if (enforceSig && !pem) {
+      throw new Error('MP_PAYOUT_ENFORCE_SIGNATURE=true exige MP_PAYOUT_PRIVATE_KEY (Ed25519 PEM)');
+    }
+
+    const headers = {
+      Authorization: `Bearer ${MP_CONFIG.accessToken}`,
+      'Content-Type': 'application/json',
+      'X-Idempotency-Key': idempotencyKey,
+      'X-Test-Token': testToken ? 'true' : 'false',
+      'X-Enforce-Signature': enforceSig ? 'true' : 'false'
+    };
+
+    if (pem) {
+      try {
+        headers['X-signature'] = signPayoutBodyEd25519(bodyStr, pem);
+      } catch (e) {
+        console.error('❌ [PIX][MP] Falha ao assinar payout (Ed25519):', e.message);
+        throw new Error('Falha ao assinar requisição de payout');
+      }
+    } else if (enforceSig) {
+      throw new Error('Assinatura obrigatória e MP_PAYOUT_PRIVATE_KEY ausente');
+    }
+
+    const response = await axios.post(`${MP_CONFIG.baseUrl}/v1/transaction-intents/process`, bodyStr, {
+      headers,
+      timeout: 30000,
+      transformRequest: [(d) => d]
+    });
+
+    const data = response.data;
+    const httpStatus = response.status;
+
+    console.log(`🎯 [PIX][MP] transaction-intent enviado`, {
       saqueId,
       userId,
       correlationId,
-      status: transfer?.status,
-      external_reference: transfer?.external_reference
+      mpId: data?.id,
+      httpStatus,
+      status: data?.status
     });
 
     return {
       success: true,
       data: {
-        id: transfer?.id,
-        status: transfer?.status,
-        amount: transfer?.amount,
-        external_reference: transfer?.external_reference,
-        created_at: transfer?.date_created,
-        raw: transfer
+        id: data?.id,
+        status: data?.status,
+        status_detail: data?.status_detail,
+        external_reference: data?.external_reference,
+        created_at: data?.created_date,
+        http_status: httpStatus,
+        raw: data,
+        sanitized: sanitizePayoutResponse(data)
       }
     };
-
   } catch (error) {
-    console.error('❌ [PIX] Erro ao criar saque PIX:', error.response?.data || error.message);
+    const msg = error.response?.data?.message || error.message;
+    console.error('❌ [PIX] Erro ao criar saque PIX (transaction-intents):', error.response?.data || error.message);
     return {
       success: false,
-      error: error.response?.data?.message || error.message
+      error: msg
     };
   }
 };
@@ -337,5 +472,6 @@ module.exports = {
   getPaymentStatus,
   processWebhook,
   createPixWithdraw,
+  getTransactionIntent,
   isConfigured
 };

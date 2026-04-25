@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const payoutCounters = { success: 0, fail: 0 };
 
 /** Cache da coluna de usuário no ledger: 'user_id' | 'usuario_id' | null (ainda não descoberto). */
@@ -93,6 +95,84 @@ const createLedgerEntry = async ({ supabase, tipo, usuarioId, valor, referencia,
   } catch (error) {
     return { success: false, error };
   }
+};
+
+/**
+ * Garante `payout_external_reference` curto e único (<= 64 chars) antes do POST ao MP.
+ */
+const ensurePayoutExternalReference = async (supabase, saqueId) => {
+  const { data: row, error: selErr } = await supabase
+    .from('saques')
+    .select('payout_external_reference')
+    .eq('id', saqueId)
+    .maybeSingle();
+
+  if (selErr) {
+    return { success: false, error: selErr };
+  }
+  if (row?.payout_external_reference) {
+    return { success: true, ref: row.payout_external_reference };
+  }
+
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const candidate = `wd_${crypto.randomBytes(12).toString('hex')}`;
+    const { data: clash } = await supabase
+      .from('saques')
+      .select('id')
+      .eq('payout_external_reference', candidate)
+      .maybeSingle();
+    if (clash?.id) continue;
+
+    const { data: updated, error: upErr } = await supabase
+      .from('saques')
+      .update({ payout_external_reference: candidate, updated_at: new Date().toISOString() })
+      .eq('id', saqueId)
+      .is('payout_external_reference', null)
+      .select('payout_external_reference')
+      .maybeSingle();
+
+    if (!upErr && updated?.payout_external_reference) {
+      return { success: true, ref: updated.payout_external_reference };
+    }
+
+    const { data: again } = await supabase
+      .from('saques')
+      .select('payout_external_reference')
+      .eq('id', saqueId)
+      .maybeSingle();
+    if (again?.payout_external_reference) {
+      return { success: true, ref: again.payout_external_reference };
+    }
+  }
+
+  return { success: false, error: new Error('Não foi possível gerar payout_external_reference único') };
+};
+
+const buildOwnerIdentification = async ({ supabase, userId, pixKey, pixType }) => {
+  const tipo = String(pixType || '').toLowerCase();
+  const normalizedTipo = tipo === 'telefone' ? 'phone' : tipo === 'aleatoria' ? 'random' : tipo;
+
+  if (normalizedTipo === 'cpf') {
+    const n = String(pixKey).replace(/\D/g, '');
+    return { success: true, owner: { type: 'CPF', number: n } };
+  }
+  if (normalizedTipo === 'cnpj') {
+    const n = String(pixKey).replace(/\D/g, '');
+    return { success: true, owner: { type: 'CNPJ', number: n } };
+  }
+
+  const { data: prof, error } = await supabase.from('usuarios').select('cpf').eq('id', userId).maybeSingle();
+  if (error) {
+    return { success: false, error: error.message || 'Erro ao buscar CPF do usuário' };
+  }
+  const cpf = prof?.cpf ? String(prof.cpf).replace(/\D/g, '') : '';
+  if (cpf.length === 11) {
+    return { success: true, owner: { type: 'CPF', number: cpf } };
+  }
+  return {
+    success: false,
+    error: 'CPF do titular ausente no perfil — obrigatório para Pix Out com chave email/telefone/aleatória'
+  };
 };
 
 const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amount, fee, motivo }) => {
@@ -197,7 +277,9 @@ const processPendingWithdrawals = async ({
 
     const { data: pendentes, error: listError } = await supabase
       .from('saques')
-      .select('id, usuario_id, amount, valor, fee, net_amount, pix_key, pix_type, chave_pix, tipo_chave, status, correlation_id, created_at')
+      .select(
+        'id, usuario_id, amount, valor, fee, net_amount, pix_key, pix_type, chave_pix, tipo_chave, status, correlation_id, created_at, payout_external_reference, mp_transaction_intent_id, mp_payout_status'
+      )
       .in('status', ['pendente', 'pending'])
       .gte('created_at', cut.iso)
       .order('created_at', { ascending: true })
@@ -269,8 +351,110 @@ const processPendingWithdrawals = async ({
       return { success: true, processed: false, duplicate: true };
     }
 
-    console.log('🟦 [PAYOUT][WORKER] Payout iniciado', { saqueId, userId, correlationId, amount, netAmount });
-    const payoutResult = await createPixWithdraw(netAmount, pixKey, pixType, userId, saqueId, correlationId);
+    const refRes = await ensurePayoutExternalReference(supabase, saqueId);
+    if (!refRes.success) {
+      console.error('❌ [PAYOUT] Falha ao garantir payout_external_reference:', refRes.error);
+      await createLedgerEntry({
+        supabase,
+        tipo: 'falha_payout',
+        usuarioId: userId,
+        valor: netAmount,
+        referencia: saqueId,
+        correlationId
+      });
+      await rollbackWithdraw({ supabase, saqueId, userId, correlationId, amount, fee, motivo: 'payout_external_reference' });
+      payoutCounters.fail++;
+      return { success: false, error: refRes.error };
+    }
+
+    const ownerRes = await buildOwnerIdentification({ supabase, userId, pixKey, pixType });
+    if (!ownerRes.success) {
+      console.error('❌ [PAYOUT] Titular Pix:', ownerRes.error);
+      await createLedgerEntry({
+        supabase,
+        tipo: 'falha_payout',
+        usuarioId: userId,
+        valor: netAmount,
+        referencia: saqueId,
+        correlationId
+      });
+      await rollbackWithdraw({ supabase, saqueId, userId, correlationId, amount, fee, motivo: 'titular_pix' });
+      payoutCounters.fail++;
+      return { success: false, error: ownerRes.error };
+    }
+
+    const payoutExternalReference = refRes.ref;
+    const idempotencyKey = `idem-saque-${saqueId}`;
+    const notificationUrl = process.env.MP_PAYOUT_WEBHOOK_URL || null;
+
+    console.log('🟦 [PAYOUT][WORKER] Payout iniciado', {
+      saqueId,
+      userId,
+      correlationId,
+      amount,
+      netAmount,
+      payoutExternalReference
+    });
+
+    const payoutResult = await createPixWithdraw(netAmount, pixKey, pixType, userId, saqueId, correlationId, {
+      payoutExternalReference,
+      idempotencyKey,
+      notificationUrl: notificationUrl || undefined,
+      ownerIdentification: ownerRes.owner
+    });
+
+    const mpSan = payoutResult?.data?.sanitized ?? null;
+    const mpId = payoutResult?.data?.id ?? null;
+    const mpSt = payoutResult?.data?.status ?? null;
+
+    const mpPatch = {
+      mp_payout_raw: mpSan,
+      last_mp_sync_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    if (mpId) mpPatch.mp_transaction_intent_id = mpId;
+    if (mpSt) mpPatch.mp_payout_status = mpSt;
+    await supabase.from('saques').update(mpPatch).eq('id', saqueId);
+
+    const terminalFail =
+      payoutResult?.success === false ||
+      ['rejected', 'cancelled', 'failed', 'error'].includes(String(mpSt || '').toLowerCase());
+
+    if (terminalFail) {
+      await createLedgerEntry({
+        supabase,
+        tipo: 'falha_payout',
+        usuarioId: userId,
+        valor: netAmount,
+        referencia: saqueId,
+        correlationId
+      });
+      await rollbackWithdraw({
+        supabase,
+        saqueId,
+        userId,
+        correlationId,
+        amount,
+        fee,
+        motivo: payoutResult?.success === false ? 'payout_mp_erro' : `payout_mp_${mpSt}`
+      });
+      payoutCounters.fail++;
+      console.error('❌ [PAYOUT][FALHOU] rollback acionado', {
+        saqueId,
+        userId,
+        correlationId,
+        amount,
+        netAmount,
+        mp_status: mpSt,
+        erro: payoutResult?.error
+      });
+      console.log('🟦 [PAYOUT][WORKER] Resumo', {
+        payouts_sucesso: payoutCounters.success,
+        payouts_falha: payoutCounters.fail
+      });
+      return { success: false, error: payoutResult?.error || mpSt || 'payout falhou' };
+    }
+
     if (payoutResult?.success === true) {
       const { error: awaitingError } = await supabase
         .from('saques')
@@ -301,30 +485,16 @@ const processPendingWithdrawals = async ({
       return { success: true, processed: false, awaiting_confirmation: true };
     }
 
-    await createLedgerEntry({
-      supabase,
-      tipo: 'falha_payout',
-      usuarioId: userId,
-      valor: netAmount,
-      referencia: saqueId,
-      correlationId
-    });
-
-    await rollbackWithdraw({ supabase, saqueId, userId, correlationId, amount, fee, motivo: 'payout falhou' });
     payoutCounters.fail++;
-    console.error('❌ [PAYOUT][FALHOU] rollback acionado', {
+    console.error('❌ [PAYOUT][FALHOU] resposta inesperada do provedor', {
       saqueId,
-      userId,
-      correlationId,
-      amount,
-      netAmount,
-      status_original_do_provedor: payoutResult?.data?.status || 'unknown'
+      payoutResult
     });
     console.log('🟦 [PAYOUT][WORKER] Resumo', {
       payouts_sucesso: payoutCounters.success,
       payouts_falha: payoutCounters.fail
     });
-    return { success: false, error: payoutResult?.error || 'payout falhou' };
+    return { success: false, error: 'Resposta inesperada do provedor de payout' };
   } catch (error) {
     console.error('❌ [SAQUE][WORKER] Erro inesperado:', error);
     console.log('🟦 [PAYOUT][WORKER] Resumo', {
