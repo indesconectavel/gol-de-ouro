@@ -141,26 +141,38 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           
-      - name: 🧪 Teste de saúde
-        continue-on-error: true
+      - name: 🧪 Teste de saúde (retry com backoff)
         run: |
           echo "🧪 Testando endpoint de saúde..."
-          # Retry logic: 6 tentativas com intervalo de 10s (total ~60s)
+          HEALTH_URL="https://${{ env.FLY_APP_NAME }}.fly.dev/health"
           SUCCESS=0
-          for i in {1..6}; do
-            echo "Tentativa $i de 6..."
-            if curl -f --max-time 30 https://${{ env.FLY_APP_NAME }}.fly.dev/health; then
-              echo "✅ Endpoint de saúde funcionando na tentativa $i"
+          # 5 tentativas com backoff progressivo para reduzir falso-negativo transitório
+          for i in 1 2 3 4 5; do
+            case $i in
+              1) WAIT=5 ;;
+              2) WAIT=10 ;;
+              3) WAIT=20 ;;
+              4) WAIT=30 ;;
+              5) WAIT=45 ;;
+            esac
+            echo "Tentativa $i/5 → GET $HEALTH_URL"
+            if curl -fsS --max-time 30 "$HEALTH_URL"; then
+              echo "✅ Endpoint de saúde respondeu com sucesso na tentativa $i"
               SUCCESS=1
               break
             fi
-            if [ $i -lt 6 ]; then
-              echo "⏳ Aguardando 10s antes da próxima tentativa..."
-              sleep 10
+            if [ $i -lt 5 ]; then
+              echo "⚠️ Tentativa $i falhou; aguardando ${WAIT}s..."
+              sleep "$WAIT"
             fi
           done
           if [ "$SUCCESS" = "0" ]; then
-            echo "⚠️ Health check falhou após 6 tentativas"
+            echo "❌ Health check falhou após 5 tentativas com backoff."
+            echo "📘 Rollback manual recomendado:"
+            echo "1) flyctl releases --app ${{ env.FLY_APP_NAME }} --image"
+            echo "2) escolher a última release complete"
+            echo "3) flyctl deploy --app ${{ env.FLY_APP_NAME }} --image <IMAGE_ESTAVEL>"
+            exit 1
           fi
           
       - name: 📢 Notificar sucesso
