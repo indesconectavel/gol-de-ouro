@@ -17,7 +17,7 @@ const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
 const http = require('http');
 const crypto = require('crypto'); // ✅ Adicionado para geração segura de números aleatórios
-const { createPixWithdraw } = require('./services/pix-mercado-pago');
+const { createPixWithdraw, getTransactionIntent } = require('./services/pix-mercado-pago');
 const {
   payoutCounters,
   createLedgerEntry,
@@ -2476,74 +2476,114 @@ app.post('/api/payments/webhook', async (req, res, next) => {
 });
 
 // =====================================================
-// WEBHOOK MERCADO PAGO - Payout PIX (Transfers)
+// WEBHOOK MERCADO PAGO - Payout PIX (Money Out / transaction-intents)
+// Depósito continua em POST /api/payments/webhook — não misturar fluxos.
 // =====================================================
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 app.post('/webhooks/mercadopago', async (req, res) => {
   try {
-    console.log('🟦 [WEBHOOK][MP] recebido', {
-      body: req.body
+    console.log('🟦 [WEBHOOK][MP][PAYOUT] recebido', {
+      keys: req.body && typeof req.body === 'object' ? Object.keys(req.body) : []
     });
 
     res.status(200).json({ received: true });
 
     const payload = req.body || {};
-    const statusRaw = payload.status || payload?.data?.status || payload?.data?.payment?.status;
-    const externalReference =
-      payload.external_reference ||
-      payload?.data?.external_reference ||
-      payload?.data?.payment?.external_reference;
-    const payoutId = payload.id || payload?.data?.id || payload?.data?.transfer_id;
 
-    if (!statusRaw || !externalReference) {
-      console.warn('⚠️ [WEBHOOK][MP] Payload incompleto', { statusRaw, externalReference, payoutId });
-      return;
-    }
-
-    const [saqueId, correlationId] = String(externalReference).split('_');
-    if (!saqueId || !correlationId) {
-      console.warn('⚠️ [WEBHOOK][MP] external_reference inválido', { externalReference });
+    if (payload.type === 'payment' && payload.data && /^\d+$/.test(String(payload.data.id || '').trim())) {
+      console.log('ℹ️ [WEBHOOK][MP][PAYOUT] evento payment numérico ignorado nesta rota (use /api/payments/webhook)');
       return;
     }
 
     const payoutEnabled = String(process.env.PAYOUT_PIX_ENABLED || '').toLowerCase() === 'true';
     if (!payoutEnabled) {
-      console.warn('⚠️ [WEBHOOK][MP] PAYOUT_PIX_ENABLED=false, ignorando confirmação', {
-        saqueId,
-        correlationId
-      });
+      console.warn('⚠️ [WEBHOOK][MP][PAYOUT] PAYOUT_PIX_ENABLED=false — ignorando');
       return;
     }
 
     if (!dbConnected || !supabase) {
-      console.error('❌ [WEBHOOK][MP] Supabase indisponível');
+      console.error('❌ [WEBHOOK][MP][PAYOUT] Supabase indisponível');
       return;
     }
 
-    const { data: saqueRow, error: saqueError } = await supabase
+    let statusRaw = payload.status;
+    let statusDetail = payload.status_detail;
+    let externalReference = payload.external_reference;
+    let intentId = payload.id;
+
+    if ((!externalReference || !statusRaw) && intentId) {
+      const got = await getTransactionIntent(String(intentId));
+      if (got.success && got.data) {
+        externalReference = got.data.external_reference || externalReference;
+        statusRaw = got.data.status || statusRaw;
+        statusDetail = got.data.status_detail || statusDetail;
+      } else {
+        console.warn('⚠️ [WEBHOOK][MP][PAYOUT] GET transaction-intents falhou', { intentId, err: got.error });
+      }
+    }
+
+    if (!externalReference) {
+      console.warn('⚠️ [WEBHOOK][MP][PAYOUT] Sem external_reference após parse/GET', { intentId });
+      return;
+    }
+
+    if (!statusRaw) {
+      console.warn('⚠️ [WEBHOOK][MP][PAYOUT] Sem status após parse/GET', { externalReference, intentId });
+      return;
+    }
+
+    let saqueRow = null;
+    const { data: byRef, error: refErr } = await supabase
       .from('saques')
-      .select('id, usuario_id, status, amount, valor, fee, net_amount, correlation_id')
-      .eq('id', saqueId)
+      .select('id, usuario_id, status, amount, valor, fee, net_amount, correlation_id, payout_external_reference, mp_transaction_intent_id')
+      .eq('payout_external_reference', String(externalReference))
       .maybeSingle();
 
-    if (saqueError || !saqueRow) {
-      console.error('❌ [WEBHOOK][MP] Saque não encontrado', { saqueId, saqueError });
+    if (refErr) {
+      console.error('❌ [WEBHOOK][MP][PAYOUT] Erro ao buscar por payout_external_reference', refErr);
+      return;
+    }
+    saqueRow = byRef;
+
+    if (!saqueRow) {
+      const parts = String(externalReference).split('_');
+      if (parts.length === 2 && UUID_RE.test(parts[0]) && UUID_RE.test(parts[1])) {
+        const legacySaqueId = parts[0];
+        const legacyCorr = parts[1];
+        const { data: leg, error: legErr } = await supabase
+          .from('saques')
+          .select('id, usuario_id, status, amount, valor, fee, net_amount, correlation_id, payout_external_reference, mp_transaction_intent_id')
+          .eq('id', legacySaqueId)
+          .maybeSingle();
+        if (!legErr && leg && String(leg.correlation_id) === String(legacyCorr)) {
+          saqueRow = leg;
+        }
+      }
+    }
+
+    if (!saqueRow?.id) {
+      console.warn('⚠️ [WEBHOOK][MP][PAYOUT] Saque não identificado de forma inequívoca', {
+        externalReference,
+        intentId
+      });
       return;
     }
 
-    if (String(saqueRow.correlation_id) !== String(correlationId)) {
-      console.warn('⚠️ [WEBHOOK][MP] correlation_id divergente', {
+    const saqueId = saqueRow.id;
+    const correlationId = saqueRow.correlation_id;
+
+    if (intentId && saqueRow.mp_transaction_intent_id && String(saqueRow.mp_transaction_intent_id) !== String(intentId)) {
+      console.warn('⚠️ [WEBHOOK][MP][PAYOUT] intent id divergente do persistido — abortando', {
         saqueId,
-        correlationId,
-        correlation_db: saqueRow.correlation_id
+        intentId,
+        persisted: saqueRow.mp_transaction_intent_id
       });
       return;
     }
 
     if (['processado', 'falhou'].includes(String(saqueRow.status))) {
-      console.log('ℹ️ [WEBHOOK][MP] Saque já finalizado', {
-        saqueId,
-        status: saqueRow.status
-      });
+      console.log('ℹ️ [WEBHOOK][MP][PAYOUT] Saque já finalizado', { saqueId, status: saqueRow.status });
       return;
     }
 
@@ -2556,11 +2596,11 @@ app.post('/webhooks/mercadopago', async (req, res) => {
       .maybeSingle();
 
     if (ledgerError) {
-      console.error('❌ [WEBHOOK][MP] Erro ao verificar idempotência', ledgerError);
+      console.error('❌ [WEBHOOK][MP][PAYOUT] Erro ao verificar idempotência', ledgerError);
       return;
     }
     if (existingLedger?.id) {
-      console.log('ℹ️ [WEBHOOK][MP] Evento duplicado ignorado', {
+      console.log('ℹ️ [WEBHOOK][MP][PAYOUT] Evento duplicado ignorado', {
         saqueId,
         correlationId,
         tipo: existingLedger.tipo
@@ -2569,11 +2609,25 @@ app.post('/webhooks/mercadopago', async (req, res) => {
     }
 
     const normalizedStatus = String(statusRaw).toLowerCase();
+    const detail = String(statusDetail || '').toLowerCase();
     const amount = parseFloat(saqueRow.amount ?? saqueRow.valor ?? 0);
     const fee = parseFloat(saqueRow.fee ?? 0);
     const netAmount = parseFloat(saqueRow.net_amount ?? (amount - fee));
 
-    if (['approved', 'credited'].includes(normalizedStatus)) {
+    await supabase
+      .from('saques')
+      .update({
+        mp_payout_status: statusRaw,
+        last_mp_sync_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', saqueId);
+
+    const approvedLike =
+      ['approved', 'credited'].includes(normalizedStatus) ||
+      (normalizedStatus === 'processed' && detail === 'approved');
+
+    if (approvedLike) {
       const ledgerPayout = await createLedgerEntry({
         supabase,
         tipo: 'payout_confirmado',
@@ -2584,35 +2638,39 @@ app.post('/webhooks/mercadopago', async (req, res) => {
       });
 
       if (!ledgerPayout.success) {
-        console.error('❌ [WEBHOOK][MP] Falha ao registrar payout_confirmado', ledgerPayout.error);
+        console.error('❌ [WEBHOOK][MP][PAYOUT] Falha ao registrar payout_confirmado', ledgerPayout.error);
         return;
       }
 
-      await supabase.from('saques').update({ status: 'processado' }).eq('id', saqueId);
+      await supabase.from('saques').update({ status: 'processado', updated_at: new Date().toISOString() }).eq('id', saqueId);
       payoutCounters.success++;
       console.log('✅ [PAYOUT][CONFIRMADO]', {
         saqueId,
         userId: saqueRow.usuario_id,
         correlationId,
-        payoutId,
-        status_original_do_provedor: normalizedStatus
+        intentId,
+        status_original_do_provedor: normalizedStatus,
+        status_detail: statusDetail
       });
       return;
     }
 
-    if (normalizedStatus === 'in_process') {
-      await supabase.from('saques').update({ status: 'aguardando_confirmacao' }).eq('id', saqueId);
+    if (['in_process', 'pending', 'created'].includes(normalizedStatus)) {
+      await supabase.from('saques').update({ status: 'aguardando_confirmacao', updated_at: new Date().toISOString() }).eq('id', saqueId);
       console.warn('⚠️ [PAYOUT][EM_PROCESSAMENTO]', {
         saqueId,
         userId: saqueRow.usuario_id,
         correlationId,
-        payoutId,
+        intentId,
         status_original_do_provedor: normalizedStatus
       });
       return;
     }
 
-    if (['rejected', 'cancelled'].includes(normalizedStatus)) {
+    if (
+      ['rejected', 'cancelled', 'failed'].includes(normalizedStatus) ||
+      (normalizedStatus === 'processed' && detail && detail !== 'approved')
+    ) {
       await createLedgerEntry({
         supabase,
         tipo: 'falha_payout',
@@ -2629,27 +2687,29 @@ app.post('/webhooks/mercadopago', async (req, res) => {
         correlationId,
         amount,
         fee,
-        motivo: `payout ${normalizedStatus}`
+        motivo: `payout ${normalizedStatus}${detail ? `_${detail}` : ''}`
       });
       payoutCounters.fail++;
       console.error('❌ [PAYOUT][REJEITADO] rollback acionado', {
         saqueId,
         userId: saqueRow.usuario_id,
         correlationId,
-        payoutId,
-        status_original_do_provedor: normalizedStatus
+        intentId,
+        status_original_do_provedor: normalizedStatus,
+        status_detail: statusDetail
       });
       return;
     }
 
-    console.warn('⚠️ [WEBHOOK][MP] Status não tratado', {
+    console.warn('⚠️ [WEBHOOK][MP][PAYOUT] Status não tratado', {
       saqueId,
       correlationId,
-      payoutId,
-      status_original_do_provedor: normalizedStatus
+      intentId,
+      status_original_do_provedor: normalizedStatus,
+      status_detail: statusDetail
     });
   } catch (error) {
-    console.error('❌ [WEBHOOK][MP] Erro inesperado:', error);
+    console.error('❌ [WEBHOOK][MP][PAYOUT] Erro inesperado:', error);
   }
 });
 
