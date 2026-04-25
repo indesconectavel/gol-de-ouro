@@ -148,32 +148,97 @@ const ensurePayoutExternalReference = async (supabase, saqueId) => {
   return { success: false, error: new Error('Não foi possível gerar payout_external_reference único') };
 };
 
+const ONLY_DIGITS = (v) => String(v == null ? '' : v).replace(/\D/g, '');
+
+const USUARIO_DOC_CANDIDATE_COLS = String(
+  process.env.PAYOUT_USUARIOS_CPF_CANDIDATES || 'cpf,documento,cpf_cnpj,docuimento_fiscal,nu_cpf,cnpj'
+)
+  .split(/[\s,]+/)
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+/**
+ * true quando o PostgREST indica coluna inexistente / não exposta.
+ */
+const isUsuariosColumnMissingError = (err) => {
+  if (!err) return false;
+  const m = String(err.message || err.details || err.hint || '');
+  const c = String(err.code || '');
+  if (/PGRST204|42703|column .* does not exist|Could not find the .* column/i.test(m + c)) return true;
+  if (/schema cache/i.test(m) && /column/i.test(m)) return true;
+  return false;
+};
+
+/**
+ * Tenta a primeira coluna de documento existente em `public.usuarios` (não supõe `cpf`).
+ */
+const fetchUsuarioFiscalDocument = async (supabase, userId) => {
+  const extra = (process.env.PAYOUT_USUARIOS_CPF_COLUMN || '').trim();
+  const ordered = extra ? [extra, ...USUARIO_DOC_CANDIDATE_COLS] : USUARIO_DOC_CANDIDATE_COLS;
+  const seen = new Set();
+  for (const col of ordered) {
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(col)) continue;
+    if (seen.has(col)) continue;
+    seen.add(col);
+    const { data, error } = await supabase.from('usuarios').select(col).eq('id', userId).maybeSingle();
+    if (error) {
+      if (isUsuariosColumnMissingError(error)) continue;
+      return { success: false, error: error.message || 'Erro ao buscar documento do titular' };
+    }
+    const raw = data?.[col];
+    if (raw == null || String(raw).trim() === '') continue;
+    return { success: true, value: String(raw) };
+  }
+  return { success: true, value: null };
+};
+
+const buildOwnerFromDigits = (digits) => {
+  if (digits.length === 11) return { success: true, owner: { type: 'CPF', number: digits } };
+  if (digits.length === 14) return { success: true, owner: { type: 'CNPJ', number: digits } };
+  return {
+    success: false,
+    error: 'Documento do titular inválido (esperado CPF com 11 ou CNPJ com 14 dígitos numéricos)'
+  };
+};
+
 const buildOwnerIdentification = async ({ supabase, userId, pixKey, pixType }) => {
   const tipo = String(pixType || '').toLowerCase();
   const normalizedTipo = tipo === 'telefone' ? 'phone' : tipo === 'aleatoria' ? 'random' : tipo;
 
   if (normalizedTipo === 'cpf') {
-    const n = String(pixKey).replace(/\D/g, '');
+    const n = ONLY_DIGITS(pixKey);
+    if (n.length !== 11) {
+      return { success: false, error: 'Chave Pix CPF inválida (esperado 11 dígitos)' };
+    }
     return { success: true, owner: { type: 'CPF', number: n } };
   }
   if (normalizedTipo === 'cnpj') {
-    const n = String(pixKey).replace(/\D/g, '');
+    const n = ONLY_DIGITS(pixKey);
+    if (n.length !== 14) {
+      return { success: false, error: 'Chave Pix CNPJ inválida (esperado 14 dígitos)' };
+    }
     return { success: true, owner: { type: 'CNPJ', number: n } };
   }
 
-  const { data: prof, error } = await supabase.from('usuarios').select('cpf').eq('id', userId).maybeSingle();
-  if (error) {
-    return { success: false, error: error.message || 'Erro ao buscar CPF do usuário' };
+  const doc = await fetchUsuarioFiscalDocument(supabase, userId);
+  if (!doc.success) {
+    return { success: false, error: doc.error || 'Documento do titular ausente' };
   }
-  const cpf = prof?.cpf ? String(prof.cpf).replace(/\D/g, '') : '';
-  if (cpf.length === 11) {
-    return { success: true, owner: { type: 'CPF', number: cpf } };
+  if (doc.value == null) {
+    return {
+      success: false,
+      error:
+        'Documento do titular ausente — obrigatório para Pix com chave email, telefone ou chave aleatória'
+    };
   }
-  return {
-    success: false,
-    error: 'CPF do titular ausente no perfil — obrigatório para Pix Out com chave email/telefone/aleatória'
-  };
+  const digits = ONLY_DIGITS(doc.value);
+  return buildOwnerFromDigits(digits);
 };
+
+const ROLLBACK_STATUS_TRIES = String(process.env.SAQUE_ROLLBACK_STATUS_LIST || 'cancelado,falhou')
+  .split(/[\s,]+/)
+  .map((s) => s.trim())
+  .filter(Boolean);
 
 const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amount, fee, motivo }) => {
   try {
@@ -201,7 +266,7 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
       return { success: false, error: saldoError };
     }
 
-    await createLedgerEntry({
+    const { success: r1, error: e1 } = await createLedgerEntry({
       supabase,
       tipo: 'rollback',
       usuarioId: userId,
@@ -209,9 +274,13 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
       referencia: saqueId,
       correlationId
     });
+    if (!r1) {
+      console.error('❌ [SAQUE][ROLLBACK] Erro ao registrar ledger (valor bruto):', e1);
+      return { success: false, error: e1, phase: 'ledger_valor' };
+    }
 
     if (parseFloat(fee) > 0) {
-      await createLedgerEntry({
+      const { success: r2, error: e2 } = await createLedgerEntry({
         supabase,
         tipo: 'rollback',
         usuarioId: userId,
@@ -219,15 +288,63 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
         referencia: `${saqueId}:fee`,
         correlationId
       });
+      if (!r2) {
+        console.error('❌ [SAQUE][ROLLBACK] Erro ao registrar ledger (taxa):', e2);
+        return { success: false, error: e2, phase: 'ledger_taxa' };
+      }
     }
 
-    await supabase
-      .from('saques')
-      .update({ status: 'falhou' })
-      .eq('id', saqueId);
+    let lastStatusError = null;
+    let finalStatus = null;
+    for (const st of ROLLBACK_STATUS_TRIES) {
+      const { data: upd, error: stErr } = await supabase
+        .from('saques')
+        .update({ status: st, updated_at: new Date().toISOString() })
+        .eq('id', saqueId)
+        .select('id, status')
+        .single();
 
-    console.log(`✅ [SAQUE][ROLLBACK] Concluído`, { saqueId, userId, correlationId });
-    return { success: true };
+      if (stErr) {
+        lastStatusError = stErr;
+        continue;
+      }
+      if (upd?.id) {
+        finalStatus = upd.status || st;
+        break;
+      }
+    }
+
+    if (!finalStatus) {
+      console.error('❌ [SAQUE][ROLLBACK] CRÍTICO: nenhum status de rollback foi aceito pelo banco', {
+        saqueId,
+        lastStatusError
+      });
+      return {
+        success: false,
+        error: lastStatusError || new Error('status_rollback_falhou'),
+        statusUpdateFailed: true,
+        phase: 'status_unresolved'
+      };
+    }
+
+    const { data: checkRow, error: checkErr } = await supabase
+      .from('saques')
+      .select('status')
+      .eq('id', saqueId)
+      .single();
+
+    if (checkErr) {
+      console.error('❌ [SAQUE][ROLLBACK] CRÍTICO: não foi possível validar status pós-rollback', checkErr);
+      return { success: false, error: checkErr, statusUpdateFailed: true, phase: 'status_verify' };
+    }
+
+    if (String(checkRow?.status).toLowerCase() === 'processando') {
+      console.error('❌ [SAQUE][ROLLBACK] CRÍTICO: saque segue em processando após rollback', { saqueId, userId });
+      return { success: false, statusUpdateFailed: true, phase: 'stuck_processando' };
+    }
+
+    console.log(`✅ [SAQUE][ROLLBACK] Concluído`, { saqueId, userId, correlationId, statusFinal: checkRow?.status });
+    return { success: true, statusFinal: checkRow?.status };
   } catch (error) {
     console.error('❌ [SAQUE][ROLLBACK] Erro inesperado:', error);
     return { success: false, error };
@@ -334,6 +451,17 @@ const processPendingWithdrawals = async ({
       return { success: false, error: 'correlation_id ausente' };
     }
 
+    const ownerRes = await buildOwnerIdentification({ supabase, userId, pixKey, pixType });
+    if (!ownerRes.success) {
+      console.error('❌ [PAYOUT] Titular Pix (pré-bloqueio):', ownerRes.error);
+      payoutCounters.fail++;
+      console.log('🟦 [PAYOUT][WORKER] Resumo', {
+        payouts_sucesso: payoutCounters.success,
+        payouts_falha: payoutCounters.fail
+      });
+      return { success: false, error: ownerRes.error, processed: false, titularBloqueado: true };
+    }
+
     const { data: locked, error: lockError } = await supabase
       .from('saques')
       .update({ status: 'processando' })
@@ -362,25 +490,13 @@ const processPendingWithdrawals = async ({
         referencia: saqueId,
         correlationId
       });
-      await rollbackWithdraw({ supabase, saqueId, userId, correlationId, amount, fee, motivo: 'payout_external_reference' });
+      const rb = await rollbackWithdraw({ supabase, saqueId, userId, correlationId, amount, fee, motivo: 'payout_external_reference' });
       payoutCounters.fail++;
+      if (!rb.success) {
+        console.error('❌ [PAYOUT] Rollback pós-falha de payout_external_reference não concluiu com sucesso', rb);
+        return { success: false, error: refRes.error, rollbackResult: rb };
+      }
       return { success: false, error: refRes.error };
-    }
-
-    const ownerRes = await buildOwnerIdentification({ supabase, userId, pixKey, pixType });
-    if (!ownerRes.success) {
-      console.error('❌ [PAYOUT] Titular Pix:', ownerRes.error);
-      await createLedgerEntry({
-        supabase,
-        tipo: 'falha_payout',
-        usuarioId: userId,
-        valor: netAmount,
-        referencia: saqueId,
-        correlationId
-      });
-      await rollbackWithdraw({ supabase, saqueId, userId, correlationId, amount, fee, motivo: 'titular_pix' });
-      payoutCounters.fail++;
-      return { success: false, error: ownerRes.error };
     }
 
     const payoutExternalReference = refRes.ref;
@@ -429,7 +545,7 @@ const processPendingWithdrawals = async ({
         referencia: saqueId,
         correlationId
       });
-      await rollbackWithdraw({
+      const rb = await rollbackWithdraw({
         supabase,
         saqueId,
         userId,
@@ -439,6 +555,9 @@ const processPendingWithdrawals = async ({
         motivo: payoutResult?.success === false ? 'payout_mp_erro' : `payout_mp_${mpSt}`
       });
       payoutCounters.fail++;
+      if (!rb.success) {
+        console.error('❌ [PAYOUT][FALHOU] rollback financeiro/ledger executado, mas conclusão do rollback falhou', rb);
+      }
       console.error('❌ [PAYOUT][FALHOU] rollback acionado', {
         saqueId,
         userId,
