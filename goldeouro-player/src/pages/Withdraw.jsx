@@ -15,7 +15,8 @@ const Withdraw = () => {
   const [formData, setFormData] = useState({
     amount: '',
     pixKey: '',
-    pixType: 'cpf'
+    pixType: 'cpf',
+    cpfCnpj: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -25,6 +26,11 @@ const Withdraw = () => {
   const navigate = useNavigate()
   const minWithdrawAmount = 10
   const withdrawFee = 2
+  const [profileData, setProfileData] = useState({
+    nome: '',
+    email: '',
+    cpf_cnpj: ''
+  })
 
   const mapPixTypeToBackend = (pixType) => {
     switch (pixType) {
@@ -58,6 +64,13 @@ const Withdraw = () => {
     }
   }
 
+  const sanitizeDoc = (value) => String(value || '').replace(/\D/g, '')
+  const docLooksValid = (value) => {
+    const digits = sanitizeDoc(value)
+    return digits.length === 11 || digits.length === 14
+  }
+  const requiresDocByPixType = (pixType) => ['email', 'phone', 'random'].includes(String(pixType || '').toLowerCase())
+
   // Carregar dados iniciais
   useEffect(() => {
     loadUserData()
@@ -72,7 +85,17 @@ const Withdraw = () => {
       // Buscar saldo real do usuário
       const response = await apiClient.get(API_ENDPOINTS.PROFILE)
       if (response.data.success) {
-        setBalance(response.data.data.saldo || 0)
+        const data = response.data.data || {}
+        setBalance(data.saldo || 0)
+        setProfileData({
+          nome: data.nome || data.username || '',
+          email: data.email || '',
+          cpf_cnpj: sanitizeDoc(data.cpf_cnpj)
+        })
+        setFormData((prev) => ({
+          ...prev,
+          cpfCnpj: sanitizeDoc(data.cpf_cnpj)
+        }))
       } else {
              setBalance(0) // Fallback
       }
@@ -145,6 +168,31 @@ const Withdraw = () => {
         throw new Error('Saldo insuficiente')
       }
 
+      const needsDoc = requiresDocByPixType(formData.pixType)
+      if (needsDoc) {
+        if (!docLooksValid(formData.cpfCnpj)) {
+          throw new Error('Para solicitar saque com essa chave Pix, cadastre seu CPF ou CNPJ.')
+        }
+
+        const nextDoc = sanitizeDoc(formData.cpfCnpj)
+        const currentDoc = sanitizeDoc(profileData.cpf_cnpj)
+        if (nextDoc !== currentDoc) {
+          if (!profileData.nome || !profileData.email) {
+            throw new Error('Não foi possível atualizar CPF/CNPJ no perfil. Atualize seu perfil e tente novamente.')
+          }
+          const profilePayload = {
+            nome: profileData.nome,
+            email: profileData.email,
+            cpf_cnpj: nextDoc
+          }
+          const profileRes = await apiClient.put(API_ENDPOINTS.PROFILE, profilePayload)
+          if (!profileRes.data?.success) {
+            throw new Error(profileRes.data?.message || 'Falha ao atualizar CPF/CNPJ no perfil.')
+          }
+          setProfileData((prev) => ({ ...prev, cpf_cnpj: nextDoc }))
+        }
+      }
+
       const payload = {
         valor: amount,
         chave_pix: formData.pixKey,
@@ -164,7 +212,7 @@ const Withdraw = () => {
 
         // Resetar formulário após sucesso
         setTimeout(() => {
-          setFormData({ amount: '', pixKey: '', pixType: 'cpf' })
+          setFormData((prev) => ({ ...prev, amount: '', pixKey: '', pixType: 'cpf' }))
           setShowSuccess(false)
         }, 3000)
       } else {
@@ -375,6 +423,25 @@ const Withdraw = () => {
               </div>
             </div>
 
+            {requiresDocByPixType(formData.pixType) && (
+              <div>
+                <label className="block text-white/80 text-sm font-medium mb-2">
+                  CPF ou CNPJ do Titular
+                </label>
+                <input
+                  type="text"
+                  value={formData.cpfCnpj}
+                  onChange={(e) => setFormData({ ...formData, cpfCnpj: sanitizeDoc(e.target.value) })}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent backdrop-blur-lg"
+                  placeholder="Somente números (11 ou 14 dígitos)"
+                  required
+                />
+                <p className="text-white/60 text-xs mt-1">
+                  Obrigatório para saque com chave Pix e-mail, telefone ou aleatória.
+                </p>
+              </div>
+            )}
+
             {/* Resumo do Saque */}
             {formData.amount && (
               <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 border border-green-500/30 rounded-lg p-4 backdrop-blur-lg">
@@ -416,7 +483,7 @@ const Withdraw = () => {
             {/* Botão de Envio */}
             <button
               type="submit"
-              disabled={isSubmitting || !formData.amount || !formData.pixKey}
+              disabled={isSubmitting || !formData.amount || !formData.pixKey || (requiresDocByPixType(formData.pixType) && !docLooksValid(formData.cpfCnpj))}
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? (

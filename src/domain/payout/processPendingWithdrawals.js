@@ -151,7 +151,7 @@ const ensurePayoutExternalReference = async (supabase, saqueId) => {
 const ONLY_DIGITS = (v) => String(v == null ? '' : v).replace(/\D/g, '');
 
 const USUARIO_DOC_CANDIDATE_COLS = String(
-  process.env.PAYOUT_USUARIOS_CPF_CANDIDATES || 'cpf,documento,cpf_cnpj,docuimento_fiscal,nu_cpf,cnpj'
+  process.env.PAYOUT_USUARIOS_CPF_CANDIDATES || 'cpf_cnpj,cpf,documento,docuimento_fiscal,nu_cpf,cnpj'
 )
   .split(/[\s,]+/)
   .map((s) => s.trim())
