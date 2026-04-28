@@ -1092,6 +1092,7 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
       success: true,
       data: {
         ...buildAuthUserPayload(user),
+        cpf_cnpj: user.cpf_cnpj || null,
         created_at: user.created_at,
         updated_at: user.updated_at
       }
@@ -1109,7 +1110,9 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
 // Atualizar perfil do usuário
 app.put('/api/user/profile', authenticateToken, async (req, res) => {
   try {
-    const { nome, email } = req.body;
+    const { nome, email, cpf_cnpj } = req.body;
+    const normalizedCpfCnpjRaw = cpf_cnpj == null ? '' : String(cpf_cnpj).replace(/\D/g, '');
+    const normalizedCpfCnpj = normalizedCpfCnpjRaw.length > 0 ? normalizedCpfCnpjRaw : null;
     
     // APENAS SUPABASE REAL - SEM FALLBACK
     if (!dbConnected || !supabase) {
@@ -1119,29 +1122,40 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
       });
     }
 
-    // Validar dados
-    if (!nome || !email) {
+    // Validar dados (permite atualização parcial, incluindo cpf_cnpj)
+    if (!nome && !email && normalizedCpfCnpj == null) {
       return res.status(400).json({ 
         success: false,
-        message: 'Nome e email são obrigatórios' 
+        message: 'Informe ao menos um campo para atualização' 
       });
     }
 
-    // Verificar se email já existe (exceto para o usuário atual)
-    const { data: existingUser, error: checkError } = await supabase
-      .from('usuarios')
-      .select('id')
-      .eq('email', email)
-      .neq('id', req.user.userId)
-      .single();
+    if (normalizedCpfCnpj != null && ![11, 14].includes(normalizedCpfCnpj.length)) {
+      return res.status(400).json({
+        success: false,
+        message: 'CPF/CNPJ inválido. Informe 11 ou 14 dígitos numéricos.'
+      });
+    }
 
-    if (checkError && checkError.code !== 'PGRST116') {
-      console.error('❌ [PROFILE] Erro ao verificar email:', checkError);
-      return res.status(500).json({ 
-      success: false,
-      message: 'Erro interno do servidor'
-    });
-  }
+    let existingUser = null;
+    if (email) {
+      // Verificar se email já existe (exceto para o usuário atual)
+      const { data, error: checkError } = await supabase
+        .from('usuarios')
+        .select('id')
+        .eq('email', email)
+        .neq('id', req.user.userId)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        console.error('❌ [PROFILE] Erro ao verificar email:', checkError);
+        return res.status(500).json({ 
+          success: false,
+          message: 'Erro interno do servidor'
+        });
+      }
+      existingUser = data;
+    }
 
     if (existingUser) {
       return res.status(400).json({ 
@@ -1150,14 +1164,17 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
       });
     }
 
+    const updatePayload = {
+      updated_at: new Date().toISOString()
+    };
+    if (nome) updatePayload.username = nome;
+    if (email) updatePayload.email = email;
+    if (normalizedCpfCnpj != null) updatePayload.cpf_cnpj = normalizedCpfCnpj;
+
     // Atualizar usuário
     const { data: updatedUser, error: updateError } = await supabase
       .from('usuarios')
-      .update({
-        username: nome,
-        email: email,
-        updated_at: new Date().toISOString()
-      })
+      .update(updatePayload)
       .eq('id', req.user.userId)
       .select()
       .single();
@@ -1180,6 +1197,7 @@ app.put('/api/user/profile', authenticateToken, async (req, res) => {
         email: updatedUser.email,
         username: updatedUser.username,
         nome: updatedUser.username, // Compatibilidade
+        cpf_cnpj: updatedUser.cpf_cnpj || null,
         saldo: updatedUser.saldo || 0,
         total_apostas: updatedUser.total_apostas || 0,
         total_ganhos: updatedUser.total_ganhos || 0,
@@ -1700,7 +1718,7 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
     // Verificar saldo do usuário
     const { data: usuario, error: userError } = await supabase
       .from('usuarios')
-      .select('saldo')
+      .select('saldo, cpf_cnpj')
       .eq('id', userId)
       .single();
 
@@ -1723,6 +1741,19 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
         success: false,
         message: 'Saldo insuficiente'
       });
+    }
+
+    // Para email/telefone/aleatória, documento fiscal do titular é obrigatório (pré-débito)
+    const normalizedPixType = String(validation.data.pixType || '').toLowerCase();
+    const requiresOwnerDocument = ['email', 'phone', 'telefone', 'random', 'aleatoria'].includes(normalizedPixType);
+    if (requiresOwnerDocument) {
+      const ownerDocDigits = String(usuario.cpf_cnpj || '').replace(/\D/g, '');
+      if (![11, 14].includes(ownerDocDigits.length)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Para solicitar saque com essa chave Pix, cadastre seu CPF ou CNPJ.'
+        });
+      }
     }
 
     // Calcular taxa de saque
