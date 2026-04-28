@@ -242,40 +242,107 @@ const ROLLBACK_STATUS_TRIES = String(process.env.SAQUE_ROLLBACK_STATUS_LIST || '
 
 const TERMINAL_FALLBACK_STATUSES = ['falhou', 'cancelado', 'rejeitado'];
 
+const toErrInfo = (err) => ({
+  code: err?.code || null,
+  message: err?.message || null,
+  details: err?.details || null,
+  hint: err?.hint || null
+});
+
+const isMpPayoutStatusColumnIssue = (err) => {
+  if (!err) return false;
+  const msg = `${err.message || ''} ${err.details || ''} ${err.hint || ''} ${err.code || ''}`;
+  return /mp_payout_status/i.test(msg) && /PGRST204|42703|column .* does not exist|schema cache/i.test(msg);
+};
+
 async function setSaqueTerminalStatus(supabase, saqueId, motivo) {
-  const tryStatuses = Array.from(new Set([...ROLLBACK_STATUS_TRIES, ...TERMINAL_FALLBACK_STATUSES]));
+  // Ordem canônica para ambientes com constraint rígida.
+  const tryStatuses = Array.from(new Set([...TERMINAL_FALLBACK_STATUSES, ...ROLLBACK_STATUS_TRIES]));
+  const attempts = [];
   let lastStatusError = null;
-  let finalStatus = null;
+  let statusApplied = null;
+
   for (const st of tryStatuses) {
-    const patch = {
+    const basePatch = {
       status: st,
       motivo_rejeicao: String(motivo || 'payout_rollback'),
       processed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      mp_payout_status: 'failed'
+      updated_at: new Date().toISOString()
     };
-    const { data: upd, error: stErr } = await supabase
+
+    // Tentativa 1: inclui mp_payout_status quando disponível no schema.
+    const withMpPatch = { ...basePatch, mp_payout_status: 'failed' };
+    const t1 = await supabase
       .from('saques')
-      .update(patch)
+      .update(withMpPatch)
       .eq('id', saqueId)
       .select('id, status')
       .single();
 
-    if (stErr) {
-      lastStatusError = stErr;
-      continue;
-    }
-    if (upd?.id) {
-      finalStatus = upd.status || st;
+    if (!t1.error && t1.data?.id) {
+      attempts.push({ status: st, withMpPayoutStatus: true, success: true, error: null });
+      statusApplied = t1.data.status || st;
       break;
     }
+
+    const err1 = toErrInfo(t1.error);
+    attempts.push({ status: st, withMpPayoutStatus: true, success: false, error: err1 });
+    console.error('[SAQUE][STATUS][TERMINAL] tentativa falhou', {
+      saqueId,
+      statusTentado: st,
+      withMpPayoutStatus: true,
+      ...err1
+    });
+    lastStatusError = t1.error || lastStatusError;
+
+    // Tentativa 2 (fallback schema): sem mp_payout_status quando essa coluna não existe/exposta.
+    if (!isMpPayoutStatusColumnIssue(t1.error)) {
+      continue;
+    }
+    const t2 = await supabase
+      .from('saques')
+      .update(basePatch)
+      .eq('id', saqueId)
+      .select('id, status')
+      .single();
+
+    if (!t2.error && t2.data?.id) {
+      attempts.push({ status: st, withMpPayoutStatus: false, success: true, error: null });
+      statusApplied = t2.data.status || st;
+      break;
+    }
+
+    const err2 = toErrInfo(t2.error);
+    attempts.push({ status: st, withMpPayoutStatus: false, success: false, error: err2 });
+    console.error('[SAQUE][STATUS][TERMINAL] fallback sem mp_payout_status falhou', {
+      saqueId,
+      statusTentado: st,
+      withMpPayoutStatus: false,
+      ...err2
+    });
+    lastStatusError = t2.error || lastStatusError;
   }
-  return { success: !!finalStatus, finalStatus, error: lastStatusError };
+
+  return {
+    success: !!statusApplied,
+    statusApplied,
+    attempts,
+    lastError: lastStatusError ? toErrInfo(lastStatusError) : null
+  };
 }
 
-const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amount, fee, motivo }) => {
+const rollbackWithdraw = async ({
+  supabase,
+  saqueId,
+  userId,
+  correlationId,
+  amount,
+  fee,
+  motivo,
+  statusOnly = false
+}) => {
   try {
-    console.log(`↩️ [SAQUE][ROLLBACK] Início`, { saqueId, userId, correlationId, motivo });
+    console.log(`↩️ [SAQUE][ROLLBACK] Início`, { saqueId, userId, correlationId, motivo, statusOnly });
 
     const rollbackRefMain = saqueId;
     const rollbackRefFee = `${saqueId}:fee`;
@@ -295,14 +362,14 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
     const hasFeeRollback = Array.isArray(existingRollbacks) && existingRollbacks.some((r) => r.referencia === rollbackRefFee);
     const rollbackAlreadyDone = hasMainRollback;
 
-    if (rollbackAlreadyDone) {
+    if (rollbackAlreadyDone && !statusOnly) {
       console.log('ℹ️ [SAQUE][ROLLBACK] rollback já existente para correlation_id — pulando reestorno de saldo', {
         saqueId,
         correlationId
       });
     }
 
-    if (!rollbackAlreadyDone) {
+    if (!rollbackAlreadyDone && !statusOnly) {
       const { data: userRow, error: userError } = await supabase
         .from('usuarios')
         .select('saldo')
@@ -326,7 +393,7 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
       }
     }
 
-    if (!hasMainRollback) {
+    if (!hasMainRollback && !statusOnly) {
       const { success: r1, error: e1 } = await createLedgerEntry({
         supabase,
         tipo: 'rollback',
@@ -341,7 +408,7 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
       }
     }
 
-    if (parseFloat(fee) > 0 && !hasFeeRollback) {
+    if (parseFloat(fee) > 0 && !hasFeeRollback && !statusOnly) {
       const { success: r2, error: e2 } = await createLedgerEntry({
         supabase,
         tipo: 'rollback',
@@ -357,18 +424,19 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
     }
 
     const statusUpdate = await setSaqueTerminalStatus(supabase, saqueId, motivo);
-    const finalStatus = statusUpdate.finalStatus;
+    const finalStatus = statusUpdate.statusApplied;
 
     if (!finalStatus) {
       console.error('❌ [SAQUE][ROLLBACK] CRÍTICO: nenhum status de rollback foi aceito pelo banco', {
         saqueId,
-        lastStatusError: statusUpdate.error
+        statusUpdate
       });
       return {
         success: false,
-        error: statusUpdate.error || new Error('status_rollback_falhou'),
+        error: statusUpdate.lastError || new Error('status_rollback_falhou'),
         statusUpdateFailed: true,
-        phase: 'status_unresolved'
+        phase: 'status_unresolved',
+        statusUpdate
       };
     }
 
@@ -454,14 +522,22 @@ async function healStuckProcessingWithRollback(supabase) {
       amount: Number.isFinite(amount) ? amount : 0,
       fee: Number.isFinite(fee) ? fee : 0
     });
+
+    // Já existe rollback: ajustar apenas status terminal, sem novo ledger/saldo/payout.
     const rb = await rollbackWithdraw({
       supabase,
       saqueId,
       userId: row.usuario_id,
       correlationId,
-      amount: Number.isFinite(amount) ? amount : 0,
-      fee: Number.isFinite(fee) ? fee : 0,
-      motivo: 'auto_heal_stuck_processando_pos_rollback'
+      amount: 0,
+      fee: 0,
+      motivo: 'auto_heal_stuck_processando_pos_rollback',
+      statusOnly: true
+    });
+    console.warn('[AUTO-HEAL] Retorno rollbackWithdraw', {
+      saqueId,
+      correlationId,
+      rollbackResult: rb
     });
     if (rb.success) fixed++;
   }
