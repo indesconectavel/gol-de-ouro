@@ -397,14 +397,28 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
 };
 
 async function healStuckProcessingWithRollback(supabase) {
+  const targetStatuses = ['processando', 'processing', 'em_processamento'];
+  console.log('[AUTO-HEAL] Início da varredura de saques travados', { targetStatuses });
+
   const { data: stuck, error: listErr } = await supabase
     .from('saques')
     .select('id, usuario_id, correlation_id, amount, valor, fee, status')
-    .eq('status', 'processando')
+    .in('status', targetStatuses)
     .order('updated_at', { ascending: true })
     .limit(10);
 
-  if (listErr || !Array.isArray(stuck) || stuck.length === 0) {
+  if (listErr) {
+    console.error('[AUTO-HEAL] Falha ao buscar saques travados', {
+      message: listErr.message,
+      details: listErr.details,
+      hint: listErr.hint,
+      code: listErr.code
+    });
+    return { checked: 0, fixed: 0, error: listErr };
+  }
+
+  if (!Array.isArray(stuck) || stuck.length === 0) {
+    console.log('[AUTO-HEAL] Nenhum saque travado encontrado');
     return { checked: 0, fixed: 0, error: listErr || null };
   }
 
@@ -426,8 +440,20 @@ async function healStuckProcessingWithRollback(supabase) {
     const hasRollback = ledgerRows.some((l) => l.tipo === 'rollback' && l.referencia === saqueId);
     if (!hasRollback) continue;
 
+    console.warn('[AUTO-HEAL] Saque detectado para correção', {
+      saqueId,
+      correlationId,
+      status: row.status
+    });
+
     const amount = parseFloat(row.amount ?? row.valor ?? 0);
     const fee = parseFloat(row.fee ?? 0);
+    console.warn('[AUTO-HEAL] Corrigindo status com rollback idempotente', {
+      saqueId,
+      correlationId,
+      amount: Number.isFinite(amount) ? amount : 0,
+      fee: Number.isFinite(fee) ? fee : 0
+    });
     const rb = await rollbackWithdraw({
       supabase,
       saqueId,
@@ -440,6 +466,7 @@ async function healStuckProcessingWithRollback(supabase) {
     if (rb.success) fixed++;
   }
 
+  console.log('[AUTO-HEAL] Fim da varredura', { checked: stuck.length, fixed });
   return { checked: stuck.length, fixed };
 }
 
@@ -474,6 +501,7 @@ const processPendingWithdrawals = async ({
     }
 
     const heal = await healStuckProcessingWithRollback(supabase);
+    console.log('[AUTO-HEAL] Resultado do ciclo', heal);
     if (heal?.fixed > 0) {
       console.warn('⚠️ [PAYOUT][WORKER] Auto-heal de saques presos em processando aplicado', heal);
     }
