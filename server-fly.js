@@ -63,6 +63,18 @@ const PORT = process.env.PORT || 8080;
 const pixValidator = new PixValidator();
 const webhookSignatureValidator = new WebhookSignatureValidator();
 
+function financeLog(event, payload = {}) {
+  const base = {
+    ts: new Date().toISOString(),
+    event
+  };
+  try {
+    console.log(`💼 [FINANCE] ${event}`, { ...base, ...payload });
+  } catch (_) {
+    console.log(`💼 [FINANCE] ${event}`, base);
+  }
+}
+
 // =====================================================
 // CONFIGURAÇÃO SUPABASE UNIFICADA
 // =====================================================
@@ -1574,6 +1586,13 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
     );
 
     console.log(`🔄 [SAQUE] Início`, { userId, correlationId });
+    financeLog('withdraw_request_start', {
+      correlation_id: correlationId,
+      user_id: userId,
+      tipo: 'saque',
+      status: 'starting',
+      valor: Number(valor || 0)
+    });
 
     // Validar dados de entrada usando PixValidator
     const withdrawData = {
@@ -1624,6 +1643,13 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
     }
 
     if (existingWithdraw?.id) {
+      financeLog('withdraw_request_idempotent', {
+        correlation_id: correlationId,
+        user_id: userId,
+        tipo: 'saque',
+        status: existingWithdraw.status,
+        valor: Number(existingWithdraw.amount ?? existingWithdraw.valor ?? 0)
+      });
       console.log(`✅ [SAQUE] Idempotência - saque já existente`, { userId, correlationId, saqueId: existingWithdraw.id });
       return res.status(200).json({
         success: true,
@@ -1659,6 +1685,12 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
     }
 
     if (pendingWithdrawals && pendingWithdrawals.length > 0) {
+      financeLog('withdraw_request_blocked_pending', {
+        correlation_id: correlationId,
+        user_id: userId,
+        tipo: 'saque',
+        status: 'blocked_pending'
+      });
       return res.status(409).json({
         success: false,
         message: 'Já existe um saque pendente em processamento'
@@ -1680,6 +1712,13 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
     }
 
     if (parseFloat(usuario.saldo) < requestedAmount) {
+      financeLog('withdraw_request_insufficient_balance', {
+        correlation_id: correlationId,
+        user_id: userId,
+        tipo: 'saque',
+        status: 'insufficient_balance',
+        valor: requestedAmount
+      });
       return res.status(400).json({
         success: false,
         message: 'Saldo insuficiente'
@@ -1708,6 +1747,14 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
 
     if (saldoUpdateError || !saldoAtualizado) {
       console.error('❌ [SAQUE] Erro ao debitar saldo:', saldoUpdateError);
+      financeLog('withdraw_request_balance_update_conflict', {
+        correlation_id: correlationId,
+        user_id: userId,
+        tipo: 'saque',
+        status: 'conflict',
+        valor: requestedAmount,
+        error: saldoUpdateError?.message || 'saldo_conflito'
+      });
       return res.status(409).json({
         success: false,
         message: 'Saldo atualizado recentemente. Tente novamente.'
@@ -1748,6 +1795,14 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
       if (rollback.error) {
         console.error('❌ [SAQUE] Falha ao reverter saldo:', rollback.error);
       }
+      financeLog('withdraw_request_insert_error', {
+        correlation_id: correlationId,
+        user_id: userId,
+        tipo: 'saque',
+        status: 'error',
+        valor: requestedAmount,
+        error: saqueError.message
+      });
       return res.status(500).json({
         success: false,
         message: 'Erro ao criar saque'
@@ -1773,6 +1828,13 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
         amount: requestedAmount,
         fee: taxa,
         motivo: 'Erro ao registrar ledger do saque'
+      });
+      financeLog('withdraw_request_ledger_debit_error', {
+        correlation_id: correlationId,
+        user_id: userId,
+        tipo: 'saque',
+        status: 'error',
+        valor: requestedAmount
       });
       return res.status(500).json({
         success: false,
@@ -1800,15 +1862,57 @@ app.post('/api/withdraw/request', authenticateToken, async (req, res) => {
         fee: taxa,
         motivo: 'Erro ao registrar ledger da taxa'
       });
+      financeLog('withdraw_request_ledger_fee_error', {
+        correlation_id: correlationId,
+        user_id: userId,
+        tipo: 'saque',
+        status: 'error',
+        valor: taxa
+      });
       return res.status(500).json({
         success: false,
         message: 'Erro ao registrar saque'
       });
     }
 
+    // Consistência mínima saldo vs ledger da operação atual (não altera contrato externo)
+    const { data: ledgerRows, error: ledgerCheckError } = await supabase
+      .from('ledger_financeiro')
+      .select('tipo, valor')
+      .eq('correlation_id', correlationId)
+      .in('tipo', ['saque', 'taxa']);
+
+    if (ledgerCheckError || !Array.isArray(ledgerRows) || ledgerRows.length < 2) {
+      console.error('❌ [SAQUE] Inconsistência: ledger incompleto para correlation_id', {
+        correlationId,
+        ledgerCheckError
+      });
+      await rollbackWithdraw({
+        supabase,
+        saqueId: saque.id,
+        userId,
+        correlationId,
+        amount: requestedAmount,
+        fee: taxa,
+        motivo: 'inconsistencia_ledger_incompleto'
+      });
+      return res.status(500).json({
+        success: false,
+        message: 'Inconsistência financeira detectada. Operação revertida.'
+      });
+    }
+
     // Transação contábil: delegada para processador externo/contábil (removida do backend direto)
 
     console.log(`✅ [SAQUE] Sucesso`, { saqueId: saque.id, userId, correlationId });
+    financeLog('withdraw_request_created', {
+      correlation_id: correlationId,
+      payment_id: saque.id,
+      user_id: userId,
+      tipo: 'saque',
+      status: 'pending',
+      valor: requestedAmount
+    });
 
     res.status(201).json({
       success: true,
@@ -1930,53 +2034,132 @@ function pickMercadoPagoPaymentIdForReconcile(row) {
  */
 async function claimAndCreditApprovedPixDeposit(idStr) {
   if (!supabase) return false;
-  let claimed = null;
-  const { data: claimByPaymentId, error: claimErr1 } = await supabase
-    .from('pagamentos_pix')
-    .update({ status: 'approved', updated_at: new Date().toISOString() })
-    .eq('payment_id', idStr)
-    .neq('status', 'approved')
-    .select('id, usuario_id, amount, valor');
-  if (!claimErr1 && claimByPaymentId && claimByPaymentId.length === 1) {
-    claimed = claimByPaymentId[0];
-  }
-  if (!claimed) {
-    const { data: claimByExternalId, error: claimErr2 } = await supabase
+  const paymentId = String(idStr || '').trim();
+  if (!paymentId) return false;
+  financeLog('deposit_claim_start', {
+    payment_id: paymentId,
+    tipo: 'deposito',
+    status: 'starting'
+  });
+
+  try {
+    // Caminho canônico: função SQL atômica (se disponível no runtime)
+    const { data: rpcResult, error: rpcError } = await supabase.rpc(
+      'claim_and_credit_approved_pix_deposit',
+      { p_mercadopago_id: paymentId }
+    );
+
+    if (!rpcError && rpcResult && typeof rpcResult === 'object') {
+      const ok = !!rpcResult.ok;
+      const credited = !!rpcResult.credited;
+      financeLog('deposit_claim_sql', {
+        payment_id: paymentId,
+        tipo: 'deposito',
+        status: ok ? (credited ? 'credited' : 'idempotent') : 'not_credited',
+        payload: rpcResult
+      });
+      return ok;
+    }
+
+    // Se a função não existir no ambiente, usar fallback legado sem quebrar contrato
+    if (rpcError && !/claim_and_credit_approved_pix_deposit|does not exist|PGRST202/i.test(String(rpcError.message || ''))) {
+      financeLog('deposit_claim_sql_error', {
+        payment_id: paymentId,
+        tipo: 'deposito',
+        status: 'error',
+        error: rpcError.message || String(rpcError)
+      });
+      return false;
+    }
+
+    let claimed = null;
+    const { data: claimByPaymentId, error: claimErr1 } = await supabase
       .from('pagamentos_pix')
       .update({ status: 'approved', updated_at: new Date().toISOString() })
-      .eq('external_id', idStr)
+      .eq('payment_id', paymentId)
       .neq('status', 'approved')
-      .select('id, usuario_id, amount, valor');
-    if (!claimErr2 && claimByExternalId && claimByExternalId.length === 1) {
-      claimed = claimByExternalId[0];
+      .select('id, usuario_id, amount, valor, payment_id, external_id');
+
+    if (!claimErr1 && claimByPaymentId && claimByPaymentId.length === 1) {
+      claimed = claimByPaymentId[0];
     }
-  }
-  if (!claimed) {
-    console.log('📨 [PIX][CLAIM] Claim não aplicado (já aprovado ou registro inexistente):', idStr);
+
+    if (!claimed) {
+      const { data: claimByExternalId, error: claimErr2 } = await supabase
+        .from('pagamentos_pix')
+        .update({ status: 'approved', updated_at: new Date().toISOString() })
+        .eq('external_id', paymentId)
+        .neq('status', 'approved')
+        .select('id, usuario_id, amount, valor, payment_id, external_id');
+      if (!claimErr2 && claimByExternalId && claimByExternalId.length === 1) {
+        claimed = claimByExternalId[0];
+      }
+    }
+
+    if (!claimed) {
+      financeLog('deposit_claim_idempotent_or_missing', {
+        payment_id: paymentId,
+        tipo: 'deposito',
+        status: 'idempotent_or_missing'
+      });
+      return false;
+    }
+
+    const pixRecord = claimed;
+    const userId = pixRecord.usuario_id;
+    const credit = Number(pixRecord.amount ?? pixRecord.valor ?? 0);
+
+    const { data: user, error: userError } = await supabase
+      .from('usuarios')
+      .select('saldo')
+      .eq('id', userId)
+      .single();
+    if (userError || !user) {
+      financeLog('deposit_claim_user_error', {
+        payment_id: paymentId,
+        user_id: userId,
+        tipo: 'deposito',
+        status: 'error',
+        error: userError?.message || 'user_not_found'
+      });
+      return false;
+    }
+
+    const saldoAnterior = Number(user.saldo || 0);
+    const novoSaldo = saldoAnterior + credit;
+    const { error: saldoError } = await supabase
+      .from('usuarios')
+      .update({ saldo: novoSaldo })
+      .eq('id', userId);
+    if (saldoError) {
+      financeLog('deposit_claim_balance_error', {
+        payment_id: paymentId,
+        user_id: userId,
+        tipo: 'deposito',
+        status: 'error',
+        valor: credit,
+        error: saldoError.message
+      });
+      return false;
+    }
+
+    financeLog('deposit_claim_credited_fallback', {
+      payment_id: paymentId,
+      user_id: userId,
+      tipo: 'deposito',
+      status: 'approved',
+      valor: credit
+    });
+    return true;
+  } catch (error) {
+    financeLog('deposit_claim_unexpected_error', {
+      payment_id: paymentId,
+      tipo: 'deposito',
+      status: 'error',
+      error: error.message
+    });
     return false;
   }
-  const pixRecord = claimed;
-  const { data: user, error: userError } = await supabase
-    .from('usuarios')
-    .select('saldo')
-    .eq('id', pixRecord.usuario_id)
-    .single();
-  if (userError || !user) {
-    console.error('❌ [PIX][CLAIM] Erro ao buscar usuário:', userError);
-    return false;
-  }
-  const credit = Number(pixRecord.amount ?? pixRecord.valor ?? 0);
-  const novoSaldo = Number(user.saldo || 0) + credit;
-  const { error: saldoError } = await supabase
-    .from('usuarios')
-    .update({ saldo: novoSaldo })
-    .eq('id', pixRecord.usuario_id);
-  if (saldoError) {
-    console.error('❌ [PIX][CLAIM] Erro ao atualizar saldo:', saldoError);
-    return false;
-  }
-  console.log('💰 [PIX][CLAIM] Pagamento aprovado e saldo creditado:', idStr);
-  return true;
 }
 
 // Criar pagamento PIX
@@ -2120,6 +2303,13 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
       }
 
       console.log(`💰 [PIX] PIX real criado: R$ ${amount} para usuário ${req.user.userId}`);
+      financeLog('deposit_created', {
+        payment_id: String(payment.id),
+        user_id: req.user.userId,
+        tipo: 'deposito',
+        status: 'pending',
+        valor: Number(amount)
+      });
 
       res.json({
         success: true,
@@ -2367,7 +2557,7 @@ app.get('/api/payments/pix/status/:paymentId', authenticateToken, handleGetPixSt
 // WEBHOOK PIX CORRIGIDO
 // =====================================================
 
-// Webhook principal com validação de signature (modo permissivo para desenvolvimento/testes)
+// Webhook principal com validação de signature (modo estrito)
 app.post('/api/payments/webhook', async (req, res, next) => {
   const body = req.body || {};
   const t = body.type;
@@ -2383,28 +2573,20 @@ app.post('/api/payments/webhook', async (req, res, next) => {
     signatureConfigured: !!process.env.MERCADOPAGO_WEBHOOK_SECRET
   });
 
-  // Validar signature apenas se MERCADOPAGO_WEBHOOK_SECRET estiver configurado
-  if (process.env.MERCADOPAGO_WEBHOOK_SECRET) {
-    const validation = webhookSignatureValidator.validateMercadoPagoWebhook(req);
-    if (!validation.valid) {
-      console.error('❌ [WEBHOOK][DEPOSIT] assinatura rejeitada:', validation.error);
-
-      if (process.env.MERCADOPAGO_WEBHOOK_DEPOSIT_RELAX_SIGNATURE === 'true') {
-        console.warn('⚠️ [WEBHOOK][DEPOSIT] MODO DIAGNÓSTICO ATIVO — ignorando assinatura e seguindo processamento');
-        return next();
-      }
-
-      if (process.env.NODE_ENV === 'production') {
-        return res.status(401).json({ error: 'Invalid signature' });
-      }
-
-      console.warn('⚠️ [WEBHOOK][DEPOSIT] assinatura inválida (dev), prosseguindo');
-      return next();
-    } else {
-      req.webhookValidation = validation;
-      console.log('✅ [WEBHOOK][DEPOSIT] assinatura OK');
-    }
+  // Hardening: nunca processar sem validação de assinatura
+  const validation = webhookSignatureValidator.validateMercadoPagoWebhook(req);
+  if (!validation.valid) {
+    financeLog('deposit_webhook_rejected', {
+      payment_id: dataIdLog,
+      tipo: 'deposito',
+      status: 'rejected',
+      reason: validation.error
+    });
+    console.error('❌ [WEBHOOK][DEPOSIT] assinatura rejeitada:', validation.error);
+    return res.status(401).json({ error: 'Invalid signature' });
   }
+  req.webhookValidation = validation;
+  console.log('✅ [WEBHOOK][DEPOSIT] assinatura OK');
   next();
 }, async (req, res) => {
   try {
@@ -2441,6 +2623,11 @@ app.post('/api/payments/webhook', async (req, res, next) => {
       }
         
       if (existingPayment && existingPayment.status === 'approved') {
+        financeLog('deposit_webhook_duplicate', {
+          payment_id: norm.idStr,
+          tipo: 'deposito',
+          status: 'idempotent'
+        });
         console.log('📨 [WEBHOOK] Pagamento já processado:', norm.idStr);
         return;
       }
@@ -2462,8 +2649,18 @@ app.post('/api/payments/webhook', async (req, res, next) => {
       );
       
       if (mpRes.data.status === 'approved') {
-        await claimAndCreditApprovedPixDeposit(norm.idStr);
+        const credited = await claimAndCreditApprovedPixDeposit(norm.idStr);
+        financeLog('deposit_webhook_claim', {
+          payment_id: norm.idStr,
+          tipo: 'deposito',
+          status: credited ? 'approved' : 'idempotent'
+        });
       } else {
+        financeLog('deposit_webhook_non_terminal', {
+          payment_id: norm.idStr,
+          tipo: 'deposito',
+          status: String(mpRes.data.status || 'unknown')
+        });
         console.log('ℹ️ [WEBHOOK][DEPOSIT] MP status não approved:', {
           id: norm.idStr,
           mpStatus: mpRes.data.status
@@ -2600,6 +2797,14 @@ app.post('/webhooks/mercadopago', async (req, res) => {
       return;
     }
     if (existingLedger?.id) {
+      financeLog('withdraw_webhook_duplicate', {
+        correlation_id: correlationId,
+        payment_id: saqueId,
+        user_id: saqueRow.usuario_id,
+        tipo: 'saque',
+        status: 'idempotent',
+        valor: netAmount
+      });
       console.log('ℹ️ [WEBHOOK][MP][PAYOUT] Evento duplicado ignorado', {
         saqueId,
         correlationId,
@@ -2644,6 +2849,14 @@ app.post('/webhooks/mercadopago', async (req, res) => {
 
       await supabase.from('saques').update({ status: 'processado', updated_at: new Date().toISOString() }).eq('id', saqueId);
       payoutCounters.success++;
+      financeLog('withdraw_webhook_confirmed', {
+        correlation_id: correlationId,
+        payment_id: saqueId,
+        user_id: saqueRow.usuario_id,
+        tipo: 'saque',
+        status: 'processado',
+        valor: netAmount
+      });
       console.log('✅ [PAYOUT][CONFIRMADO]', {
         saqueId,
         userId: saqueRow.usuario_id,
@@ -2657,6 +2870,14 @@ app.post('/webhooks/mercadopago', async (req, res) => {
 
     if (['in_process', 'pending', 'created'].includes(normalizedStatus)) {
       await supabase.from('saques').update({ status: 'aguardando_confirmacao', updated_at: new Date().toISOString() }).eq('id', saqueId);
+      financeLog('withdraw_webhook_awaiting_confirmation', {
+        correlation_id: correlationId,
+        payment_id: saqueId,
+        user_id: saqueRow.usuario_id,
+        tipo: 'saque',
+        status: 'aguardando_confirmacao',
+        valor: netAmount
+      });
       console.warn('⚠️ [PAYOUT][EM_PROCESSAMENTO]', {
         saqueId,
         userId: saqueRow.usuario_id,
@@ -2690,6 +2911,14 @@ app.post('/webhooks/mercadopago', async (req, res) => {
         motivo: `payout ${normalizedStatus}${detail ? `_${detail}` : ''}`
       });
       payoutCounters.fail++;
+      financeLog('withdraw_webhook_failed_rollback', {
+        correlation_id: correlationId,
+        payment_id: saqueId,
+        user_id: saqueRow.usuario_id,
+        tipo: 'saque',
+        status: 'falhou',
+        valor: netAmount
+      });
       console.error('❌ [PAYOUT][REJEITADO] rollback acionado', {
         saqueId,
         userId: saqueRow.usuario_id,
@@ -2750,9 +2979,17 @@ async function reconcilePendingPayments() {
   }
   try {
     reconciling = true;
-    const maxAgeMin = parseInt(process.env.MP_RECONCILE_MIN_AGE_MIN || '2', 10);
-    const limit = parseInt(process.env.MP_RECONCILE_LIMIT || '10', 10);
+    const maxAgeRaw = parseInt(process.env.MP_RECONCILE_MIN_AGE_MIN || '2', 10);
+    const limitRaw = parseInt(process.env.MP_RECONCILE_LIMIT || '10', 10);
+    const maxAgeMin = Number.isFinite(maxAgeRaw) && maxAgeRaw > 0 ? Math.min(maxAgeRaw, 120) : 2;
+    const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 200) : 10;
     const sinceIso = new Date(Date.now() - maxAgeMin * 60 * 1000).toISOString();
+    financeLog('deposit_reconcile_cycle_start', {
+      tipo: 'deposito',
+      status: 'running',
+      max_age_min: maxAgeMin,
+      limit
+    });
 
     const { data: pendings, error: listError } = await supabase
       .from('pagamentos_pix')
@@ -2766,7 +3003,13 @@ async function reconcilePendingPayments() {
       console.error('❌ [RECON] Erro ao listar pendentes:', listError.message);
       return;
     }
-    if (!pendings || pendings.length === 0) return;
+    if (!pendings || pendings.length === 0) {
+      financeLog('deposit_reconcile_cycle_empty', {
+        tipo: 'deposito',
+        status: 'empty'
+      });
+      return;
+    }
 
     for (const p of pendings) {
       const mpId = pickMercadoPagoPaymentIdForReconcile(p);
@@ -2792,9 +3035,21 @@ async function reconcilePendingPayments() {
         const status = resp?.data?.status;
         if (status === 'approved') {
           const credited = await claimAndCreditApprovedPixDeposit(mpId);
-          if (credited) {
-            console.log(`✅ [RECON] Pagamento ${mpId} reconciliado e saldo creditado (usuário pendente ${p.usuario_id})`);
-          }
+          financeLog('deposit_reconcile_claim', {
+            payment_id: mpId,
+            user_id: p.usuario_id,
+            tipo: 'deposito',
+            status: credited ? 'approved' : 'idempotent',
+            valor: Number(p.amount ?? p.valor ?? 0)
+          });
+          if (credited) console.log(`✅ [RECON] Pagamento ${mpId} reconciliado e saldo creditado (usuário pendente ${p.usuario_id})`);
+        } else {
+          financeLog('deposit_reconcile_skip_non_approved', {
+            payment_id: mpId,
+            user_id: p.usuario_id,
+            tipo: 'deposito',
+            status: String(status || 'unknown')
+          });
         }
       } catch (mpErr) {
         console.log(`⚠️ [RECON] Erro consultando MP ${mpId}:`, mpErr.response?.data || mpErr.message);
@@ -2803,6 +3058,10 @@ async function reconcilePendingPayments() {
   } catch (err) {
     console.error('❌ [RECON] Erro geral:', err.message);
   } finally {
+    financeLog('deposit_reconcile_cycle_end', {
+      tipo: 'deposito',
+      status: 'done'
+    });
     reconciling = false;
   }
 }

@@ -441,6 +441,28 @@ const processPendingWithdrawals = async ({
       pixKey: maskedPixKey
     });
 
+    if (!Number.isFinite(amount) || !Number.isFinite(fee) || !Number.isFinite(netAmount) || amount <= 0 || netAmount <= 0) {
+      console.error('❌ [PAYOUT][WORKER] Valores financeiros inválidos no saque', {
+        saqueId,
+        userId,
+        correlationId,
+        amount,
+        fee,
+        netAmount
+      });
+      await rollbackWithdraw({
+        supabase,
+        saqueId,
+        userId,
+        correlationId: correlationId || 'invalid_amount',
+        amount: Number.isFinite(amount) ? amount : 0,
+        fee: Number.isFinite(fee) ? fee : 0,
+        motivo: 'valores_financeiros_invalidos'
+      });
+      payoutCounters.fail++;
+      return { success: false, error: 'valores financeiros inválidos no saque' };
+    }
+
     if (!correlationId) {
       console.error('❌ [SAQUE][WORKER] correlation_id ausente', { saqueId, userId });
       await rollbackWithdraw({ supabase, saqueId, userId, correlationId: 'missing', amount, fee, motivo: 'correlation_id ausente' });
