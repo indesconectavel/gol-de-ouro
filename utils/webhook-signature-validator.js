@@ -49,6 +49,18 @@ function buildMercadoPagoSignatureManifest(dataId, requestId, ts) {
   return `id:${dataId};request-id:${requestId};ts:${ts};`;
 }
 
+function getRequestIdHeader(req) {
+  const direct = req.headers['x-request-id'];
+  if (direct !== undefined && direct !== null && String(direct).trim().length > 0) {
+    return String(direct).trim();
+  }
+  const alt = req.headers['x-requestid'];
+  if (alt !== undefined && alt !== null && String(alt).trim().length > 0) {
+    return String(alt).trim();
+  }
+  return null;
+}
+
 class WebhookSignatureValidator {
   constructor() {
     this.secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
@@ -270,8 +282,8 @@ class WebhookSignatureValidator {
         };
       }
 
-      const requestId = req.headers['x-request-id'];
-      if (requestId === undefined || requestId === null || String(requestId).length === 0) {
+      const requestId = getRequestIdHeader(req);
+      if (!requestId) {
         return {
           valid: false,
           error: 'Header x-request-id ausente'
@@ -280,7 +292,7 @@ class WebhookSignatureValidator {
 
       const manifest = buildMercadoPagoSignatureManifest(
         dataId,
-        String(requestId),
+        requestId,
         String(ts)
       );
 
@@ -307,7 +319,7 @@ class WebhookSignatureValidator {
         return {
           valid: false,
           error: 'Assinatura v1 não confere com o manifest',
-          headers: { signature: xSignature, ts, requestId: String(requestId) }
+          headers: { signature: xSignature, ts, requestId }
         };
       }
 
@@ -469,7 +481,7 @@ function logMercadoPagoWebhookDebugRequest(req) {
   }
   try {
     const dataId = getMercadoPagoWebhookDataId(req);
-    const requestId = req.headers['x-request-id'];
+    const requestId = getRequestIdHeader(req);
     const parsed = parseMercadoPagoTsV1(req.headers['x-signature']);
     const manifest =
       dataId && requestId && parsed
