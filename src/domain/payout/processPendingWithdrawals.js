@@ -240,46 +240,108 @@ const ROLLBACK_STATUS_TRIES = String(process.env.SAQUE_ROLLBACK_STATUS_LIST || '
   .map((s) => s.trim())
   .filter(Boolean);
 
+const TERMINAL_FALLBACK_STATUSES = ['falhou', 'cancelado', 'rejeitado'];
+
+async function setSaqueTerminalStatus(supabase, saqueId, motivo) {
+  const tryStatuses = Array.from(new Set([...ROLLBACK_STATUS_TRIES, ...TERMINAL_FALLBACK_STATUSES]));
+  let lastStatusError = null;
+  let finalStatus = null;
+  for (const st of tryStatuses) {
+    const patch = {
+      status: st,
+      motivo_rejeicao: String(motivo || 'payout_rollback'),
+      processed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      mp_payout_status: 'failed'
+    };
+    const { data: upd, error: stErr } = await supabase
+      .from('saques')
+      .update(patch)
+      .eq('id', saqueId)
+      .select('id, status')
+      .single();
+
+    if (stErr) {
+      lastStatusError = stErr;
+      continue;
+    }
+    if (upd?.id) {
+      finalStatus = upd.status || st;
+      break;
+    }
+  }
+  return { success: !!finalStatus, finalStatus, error: lastStatusError };
+}
+
 const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amount, fee, motivo }) => {
   try {
     console.log(`↩️ [SAQUE][ROLLBACK] Início`, { saqueId, userId, correlationId, motivo });
 
-    const { data: userRow, error: userError } = await supabase
-      .from('usuarios')
-      .select('saldo')
-      .eq('id', userId)
-      .single();
+    const rollbackRefMain = saqueId;
+    const rollbackRefFee = `${saqueId}:fee`;
+    const { data: existingRollbacks, error: existingRbErr } = await supabase
+      .from('ledger_financeiro')
+      .select('id, referencia')
+      .eq('correlation_id', correlationId)
+      .eq('tipo', 'rollback')
+      .in('referencia', [rollbackRefMain, rollbackRefFee]);
 
-    if (userError || !userRow) {
-      console.error('❌ [SAQUE][ROLLBACK] Erro ao buscar usuário:', userError);
-      return { success: false, error: userError };
+    if (existingRbErr) {
+      console.error('❌ [SAQUE][ROLLBACK] Erro ao verificar rollback existente:', existingRbErr);
+      return { success: false, error: existingRbErr, phase: 'rollback_existing_check' };
     }
 
-    const saldoReconstituido = parseFloat(userRow.saldo) + parseFloat(amount);
-    const { error: saldoError } = await supabase
-      .from('usuarios')
-      .update({ saldo: saldoReconstituido, updated_at: new Date().toISOString() })
-      .eq('id', userId);
+    const hasMainRollback = Array.isArray(existingRollbacks) && existingRollbacks.some((r) => r.referencia === rollbackRefMain);
+    const hasFeeRollback = Array.isArray(existingRollbacks) && existingRollbacks.some((r) => r.referencia === rollbackRefFee);
+    const rollbackAlreadyDone = hasMainRollback;
 
-    if (saldoError) {
-      console.error('❌ [SAQUE][ROLLBACK] Erro ao reconstituir saldo:', saldoError);
-      return { success: false, error: saldoError };
+    if (rollbackAlreadyDone) {
+      console.log('ℹ️ [SAQUE][ROLLBACK] rollback já existente para correlation_id — pulando reestorno de saldo', {
+        saqueId,
+        correlationId
+      });
     }
 
-    const { success: r1, error: e1 } = await createLedgerEntry({
-      supabase,
-      tipo: 'rollback',
-      usuarioId: userId,
-      valor: parseFloat(amount),
-      referencia: saqueId,
-      correlationId
-    });
-    if (!r1) {
-      console.error('❌ [SAQUE][ROLLBACK] Erro ao registrar ledger (valor bruto):', e1);
-      return { success: false, error: e1, phase: 'ledger_valor' };
+    if (!rollbackAlreadyDone) {
+      const { data: userRow, error: userError } = await supabase
+        .from('usuarios')
+        .select('saldo')
+        .eq('id', userId)
+        .single();
+
+      if (userError || !userRow) {
+        console.error('❌ [SAQUE][ROLLBACK] Erro ao buscar usuário:', userError);
+        return { success: false, error: userError };
+      }
+
+      const saldoReconstituido = parseFloat(userRow.saldo) + parseFloat(amount);
+      const { error: saldoError } = await supabase
+        .from('usuarios')
+        .update({ saldo: saldoReconstituido, updated_at: new Date().toISOString() })
+        .eq('id', userId);
+
+      if (saldoError) {
+        console.error('❌ [SAQUE][ROLLBACK] Erro ao reconstituir saldo:', saldoError);
+        return { success: false, error: saldoError };
+      }
     }
 
-    if (parseFloat(fee) > 0) {
+    if (!hasMainRollback) {
+      const { success: r1, error: e1 } = await createLedgerEntry({
+        supabase,
+        tipo: 'rollback',
+        usuarioId: userId,
+        valor: parseFloat(amount),
+        referencia: saqueId,
+        correlationId
+      });
+      if (!r1) {
+        console.error('❌ [SAQUE][ROLLBACK] Erro ao registrar ledger (valor bruto):', e1);
+        return { success: false, error: e1, phase: 'ledger_valor' };
+      }
+    }
+
+    if (parseFloat(fee) > 0 && !hasFeeRollback) {
       const { success: r2, error: e2 } = await createLedgerEntry({
         supabase,
         tipo: 'rollback',
@@ -294,34 +356,17 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
       }
     }
 
-    let lastStatusError = null;
-    let finalStatus = null;
-    for (const st of ROLLBACK_STATUS_TRIES) {
-      const { data: upd, error: stErr } = await supabase
-        .from('saques')
-        .update({ status: st, updated_at: new Date().toISOString() })
-        .eq('id', saqueId)
-        .select('id, status')
-        .single();
-
-      if (stErr) {
-        lastStatusError = stErr;
-        continue;
-      }
-      if (upd?.id) {
-        finalStatus = upd.status || st;
-        break;
-      }
-    }
+    const statusUpdate = await setSaqueTerminalStatus(supabase, saqueId, motivo);
+    const finalStatus = statusUpdate.finalStatus;
 
     if (!finalStatus) {
       console.error('❌ [SAQUE][ROLLBACK] CRÍTICO: nenhum status de rollback foi aceito pelo banco', {
         saqueId,
-        lastStatusError
+        lastStatusError: statusUpdate.error
       });
       return {
         success: false,
-        error: lastStatusError || new Error('status_rollback_falhou'),
+        error: statusUpdate.error || new Error('status_rollback_falhou'),
         statusUpdateFailed: true,
         phase: 'status_unresolved'
       };
@@ -351,6 +396,53 @@ const rollbackWithdraw = async ({ supabase, saqueId, userId, correlationId, amou
   }
 };
 
+async function healStuckProcessingWithRollback(supabase) {
+  const { data: stuck, error: listErr } = await supabase
+    .from('saques')
+    .select('id, usuario_id, correlation_id, amount, valor, fee, status')
+    .eq('status', 'processando')
+    .order('updated_at', { ascending: true })
+    .limit(10);
+
+  if (listErr || !Array.isArray(stuck) || stuck.length === 0) {
+    return { checked: 0, fixed: 0, error: listErr || null };
+  }
+
+  let fixed = 0;
+  for (const row of stuck) {
+    const saqueId = row.id;
+    const correlationId = row.correlation_id;
+    if (!saqueId || !correlationId) continue;
+
+    const { data: ledgerRows, error: ledErr } = await supabase
+      .from('ledger_financeiro')
+      .select('tipo, referencia')
+      .eq('correlation_id', correlationId)
+      .in('tipo', ['rollback', 'payout_confirmado']);
+    if (ledErr || !Array.isArray(ledgerRows)) continue;
+
+    const hasPayoutConfirmed = ledgerRows.some((l) => l.tipo === 'payout_confirmado' && l.referencia === saqueId);
+    if (hasPayoutConfirmed) continue;
+    const hasRollback = ledgerRows.some((l) => l.tipo === 'rollback' && l.referencia === saqueId);
+    if (!hasRollback) continue;
+
+    const amount = parseFloat(row.amount ?? row.valor ?? 0);
+    const fee = parseFloat(row.fee ?? 0);
+    const rb = await rollbackWithdraw({
+      supabase,
+      saqueId,
+      userId: row.usuario_id,
+      correlationId,
+      amount: Number.isFinite(amount) ? amount : 0,
+      fee: Number.isFinite(fee) ? fee : 0,
+      motivo: 'auto_heal_stuck_processando_pos_rollback'
+    });
+    if (rb.success) fixed++;
+  }
+
+  return { checked: stuck.length, fixed };
+}
+
 const processPendingWithdrawals = async ({
   supabase,
   isDbConnected,
@@ -379,6 +471,11 @@ const processPendingWithdrawals = async ({
 
     if (typeof createPixWithdraw !== 'function') {
       throw new Error('createPixWithdraw não fornecido');
+    }
+
+    const heal = await healStuckProcessingWithRollback(supabase);
+    if (heal?.fixed > 0) {
+      console.warn('⚠️ [PAYOUT][WORKER] Auto-heal de saques presos em processando aplicado', heal);
     }
 
     const cut = parsePayoutAutoFromAt();
