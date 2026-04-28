@@ -18,7 +18,9 @@ const Pagamentos = () => {
 
   const carregarDados = useCallback(async () => {
     try {
-      const pagamentosResponse = await apiClient.get(API_ENDPOINTS.PIX_USER);
+      const pagamentosResponse = await apiClient.get(API_ENDPOINTS.PIX_USER, {
+        skipCache: true,
+      });
       if (pagamentosResponse.data?.success && pagamentosResponse.data?.data) {
         const data = pagamentosResponse.data.data;
         setPagamentos(Array.isArray(data.historico_pagamentos) ? data.historico_pagamentos : (data.payments || []));
@@ -73,11 +75,16 @@ const Pagamentos = () => {
       }
       
       const token = localStorage.getItem('authToken');
-      const response = await apiClient.get(`${API_ENDPOINTS.PIX_STATUS}?paymentId=${paymentId}`);
+      const response = await apiClient.get(`${API_ENDPOINTS.PIX_STATUS}?paymentId=${paymentId}`, {
+        skipCache: true,
+      });
 
       if (response.data) {
         if (response.data.data.status === 'approved') {
           toast.success('Pagamento aprovado! Saldo atualizado.');
+          if (typeof apiClient.invalidateCache === 'function') {
+            apiClient.invalidateCache(API_ENDPOINTS.PROFILE)
+          }
           carregarDados();
         }
         return response.data.data;

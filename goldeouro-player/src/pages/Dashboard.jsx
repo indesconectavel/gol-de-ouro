@@ -42,7 +42,7 @@ const Dashboard = () => {
 
       // Buscar perfil do usuário - COM RETRY LOGIC
       const profileResponse = await retryDataRequest(() => 
-        apiClient.get(API_ENDPOINTS.PROFILE)
+        apiClient.get(API_ENDPOINTS.PROFILE, { skipCache: true })
       )
       if (profileResponse.data.success) {
         setUser(profileResponse.data.data)
@@ -56,7 +56,7 @@ const Dashboard = () => {
       // Buscar dados PIX do usuário (inclui histórico) - COM RETRY LOGIC E TRATAMENTO DE ERRO ROBUSTO
       try {
         const pixResponse = await retryDataRequest(() => 
-          apiClient.get(API_ENDPOINTS.PIX_USER)
+          apiClient.get(API_ENDPOINTS.PIX_USER, { skipCache: true })
         )
         if (pixResponse.data.success) {
           setRecentPixDeposits(pixResponse.data.data.historico_pagamentos || [])

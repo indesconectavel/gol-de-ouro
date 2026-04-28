@@ -35,7 +35,7 @@ class GameService {
   // Carregar dados do usuário
   async loadUserData() {
     try {
-      const response = await apiClient.get('/api/user/profile');
+      const response = await apiClient.get('/api/user/profile', { skipCache: true });
       if (response.data.success) {
         this.userBalance = response.data.data.saldo;
         return response.data.data;

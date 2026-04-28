@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('authToken')
     if (token) {
       // Verificar se token é válido
-      apiClient.get(API_ENDPOINTS.PROFILE)
+      apiClient.get(API_ENDPOINTS.PROFILE, { skipCache: true })
         .then(response => {
           // Backend retorna { success, data: { id, email, username, ... } }; manter user no mesmo shape de login/cadastro
           const userData = response.data?.data ? response.data.data : response.data

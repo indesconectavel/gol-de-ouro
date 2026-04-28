@@ -34,7 +34,7 @@ const Profile = () => {
     try {
       setLoading(true)
       setProfileLoadError(null)
-      const response = await apiClient.get(API_ENDPOINTS.PROFILE)
+      const response = await apiClient.get(API_ENDPOINTS.PROFILE, { skipCache: true })
       if (response.data.success) {
         const userData = response.data.data
         const displayName =
@@ -113,6 +113,9 @@ const Profile = () => {
           email: nextEmail
         }))
         setIsEditing(false)
+        if (typeof apiClient.invalidateCache === 'function') {
+          apiClient.invalidateCache(API_ENDPOINTS.PROFILE)
+        }
         alert('Perfil atualizado com sucesso!')
       } else {
         alert(response.data.message || 'Erro ao atualizar perfil')
