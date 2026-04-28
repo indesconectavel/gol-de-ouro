@@ -75,7 +75,7 @@ Antes de prosseguir para validacao de email e criacao de usuario, o backend agor
 
 - `node --check server-fly.js`
 - validacao de diff restrito ao escopo autorizado
-- sem commit
+- commit local realizado: 324df6b
 - sem deploy
 
 ## 9. Risco final
