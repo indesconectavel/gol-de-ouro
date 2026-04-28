@@ -763,13 +763,34 @@ app.post('/api/auth/verify-email', [
 // Registro de usuário
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { email, password, username } = req.body;
+    const {
+      email,
+      password,
+      username,
+      acceptedTerms,
+      accepted_terms,
+      termsAccepted,
+      isAdultConfirmed,
+      ageConfirmed
+    } = req.body || {};
 
     // APENAS SUPABASE REAL - SEM FALLBACK
     if (!dbConnected || !supabase) {
       return res.status(503).json({
         success: false,
         message: 'Sistema temporariamente indisponível' 
+      });
+    }
+
+    const isTruthyConsent = (value) =>
+      value === true || value === 1 || value === '1' || String(value || '').toLowerCase() === 'true';
+    const hasAcceptedTerms = [acceptedTerms, accepted_terms, termsAccepted].some(isTruthyConsent);
+    const hasAdultConfirmation = [isAdultConfirmed, ageConfirmed].some(isTruthyConsent);
+
+    if (!hasAcceptedTerms || !hasAdultConfirmation) {
+      return res.status(400).json({
+        success: false,
+        message: 'É necessário aceitar os Termos de Uso e confirmar maioridade para criar sua conta.'
       });
     }
 
