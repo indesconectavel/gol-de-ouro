@@ -61,7 +61,7 @@ export const testDashboardLoading = async () => {
     const profileStart = Date.now();
     try {
       const profileResponse = await retryDataRequest(() => 
-        apiClient.get(API_ENDPOINTS.PROFILE)
+        apiClient.get(API_ENDPOINTS.PROFILE, { skipCache: true })
       );
       results.tests.profile.success = true;
       results.tests.profile.duration = Date.now() - profileStart;
@@ -81,7 +81,7 @@ export const testDashboardLoading = async () => {
     const pixStart = Date.now();
     try {
       const pixResponse = await retryDataRequest(() => 
-        apiClient.get(API_ENDPOINTS.PIX_USER)
+        apiClient.get(API_ENDPOINTS.PIX_USER, { skipCache: true })
       );
       results.tests.pix.success = true;
       results.tests.pix.duration = Date.now() - pixStart;
@@ -135,7 +135,7 @@ export const quickDashboardTest = async () => {
   try {
     // Apenas teste do perfil (crítico)
     const profileResponse = await retryDataRequest(() => 
-      apiClient.get(API_ENDPOINTS.PROFILE)
+      apiClient.get(API_ENDPOINTS.PROFILE, { skipCache: true })
     );
     
     console.log('⚡ [DASHBOARD TEST] Teste rápido OK');

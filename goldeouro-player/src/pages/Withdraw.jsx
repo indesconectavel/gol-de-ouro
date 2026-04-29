@@ -83,7 +83,7 @@ const Withdraw = () => {
       setError(null)
       
       // Buscar saldo real do usuário
-      const response = await apiClient.get(API_ENDPOINTS.PROFILE)
+      const response = await apiClient.get(API_ENDPOINTS.PROFILE, { skipCache: true })
       if (response.data.success) {
         const data = response.data.data || {}
         setBalance(data.saldo || 0)
@@ -114,7 +114,9 @@ const Withdraw = () => {
       setHistoryLoading(true)
       setHistoryError(null)
 
-      const response = await apiClient.get(`${API_ENDPOINTS.WITHDRAW}/history`)
+      const response = await apiClient.get(`${API_ENDPOINTS.WITHDRAW}/history`, {
+        skipCache: true,
+      })
       if (response.data?.success) {
         const rawHistory = response.data?.data?.saques || []
         const normalizedHistory = rawHistory.map((row) => ({
@@ -201,13 +203,13 @@ const Withdraw = () => {
       const response = await apiClient.post(`${API_ENDPOINTS.WITHDRAW}/request`, payload)
 
       if (response.data?.success) {
-        const serverAmount = Number(response.data?.data?.amount ?? amount)
         setShowSuccess(true)
 
-        // Atualizar saldo local
-        setBalance(prev => Math.max(0, prev - serverAmount))
-
-        // Recarregar histórico
+        if (typeof apiClient.invalidateCache === 'function') {
+          apiClient.invalidateCache(API_ENDPOINTS.PROFILE)
+          apiClient.invalidateCache(`${API_ENDPOINTS.WITHDRAW}/history`)
+        }
+        await loadUserData()
         await loadWithdrawalHistory()
 
         // Resetar formulário após sucesso

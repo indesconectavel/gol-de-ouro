@@ -13,7 +13,8 @@ const Dashboard = () => {
   const { logout } = useAuth()
   const [balance, setBalance] = useState(null)
   const [user, setUser] = useState(null)
-  const [recentBets, setRecentBets] = useState([])
+  /** Linhas do histórico PIX (depósitos) — mesmo payload de /api/payments/pix/usuario; não são apostas/chutes. */
+  const [recentPixDeposits, setRecentPixDeposits] = useState([])
   const [loading, setLoading] = useState(true)
   const [profileLoadError, setProfileLoadError] = useState(null)
   const navigate = useNavigate()
@@ -41,7 +42,7 @@ const Dashboard = () => {
 
       // Buscar perfil do usuário - COM RETRY LOGIC
       const profileResponse = await retryDataRequest(() => 
-        apiClient.get(API_ENDPOINTS.PROFILE)
+        apiClient.get(API_ENDPOINTS.PROFILE, { skipCache: true })
       )
       if (profileResponse.data.success) {
         setUser(profileResponse.data.data)
@@ -55,22 +56,21 @@ const Dashboard = () => {
       // Buscar dados PIX do usuário (inclui histórico) - COM RETRY LOGIC E TRATAMENTO DE ERRO ROBUSTO
       try {
         const pixResponse = await retryDataRequest(() => 
-          apiClient.get(API_ENDPOINTS.PIX_USER)
+          apiClient.get(API_ENDPOINTS.PIX_USER, { skipCache: true })
         )
         if (pixResponse.data.success) {
-          setRecentBets(pixResponse.data.data.historico_pagamentos || [])
+          setRecentPixDeposits(pixResponse.data.data.historico_pagamentos || [])
         }
       } catch (pixError) {
         console.warn('⚠️ [DASHBOARD] Erro ao carregar dados PIX após retry:', pixError.message)
-        // Fallback para lista vazia em caso de erro PIX
-        setRecentBets([])
+        setRecentPixDeposits([])
       }
 
     } catch (error) {
       console.error('❌ [DASHBOARD] Erro ao carregar dados do usuário após retry:', error)
       setUser(null)
       setBalance(null)
-      setRecentBets([])
+      setRecentPixDeposits([])
       setProfileLoadError('Não foi possível carregar os dados. Verifique a conexão e tente novamente.')
     } finally {
       setLoading(false)
@@ -207,12 +207,13 @@ const Dashboard = () => {
               </button>
             </div>
 
-            {/* Apostas Recentes */}
+            {/* Depósitos PIX recentes (fonte: GET /api/payments/pix/usuario → historico_pagamentos) */}
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-2xl">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-white">Apostas Recentes</h3>
+                <h3 className="text-xl font-bold text-white">Depósitos Recentes</h3>
                 <button 
-                  onClick={() => alert('Histórico completo será implementado em breve!')}
+                  type="button"
+                  onClick={() => navigate('/pagamentos')}
                   className="text-yellow-400 text-sm hover:text-yellow-300 transition-colors"
                 >
                   Ver todas →
@@ -221,38 +222,37 @@ const Dashboard = () => {
               <div className="space-y-3">
                 {loading ? (
                   <div className="text-center text-white/70">Carregando...</div>
-                ) : recentBets.length > 0 ? (
-                  recentBets.map((bet, index) => (
+                ) : recentPixDeposits.length > 0 ? (
+                  recentPixDeposits.map((row, index) => (
                     <div 
-                      key={bet.id} 
+                      key={row.id} 
                       className="flex items-center justify-between bg-white/10 backdrop-blur-lg rounded-lg p-3 hover:bg-white/20 transition-all duration-200 border border-white/20"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${bet.status === 'processado' ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
+                        <div className={`w-3 h-3 rounded-full ${row.status === 'processado' ? 'bg-green-400' : 'bg-yellow-400'}`}></div>
                         <div>
-                          <p className="text-white font-medium">R$ {bet.valor.toFixed(2)}</p>
-                          <p className="text-white/70 text-sm">{bet.data}</p>
+                          <p className="text-white font-medium">R$ {row.valor.toFixed(2)}</p>
+                          <p className="text-white/70 text-sm">{row.data}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className={`font-bold flex items-center space-x-1 ${bet.status === 'processado' ? 'text-green-400' : 'text-yellow-400'}`}>
-                          <span>{bet.status === 'processado' ? '✅' : '⏳'}</span>
-                          <span>{bet.status}</span>
+                        <p className={`font-bold flex items-center space-x-1 ${row.status === 'processado' ? 'text-green-400' : 'text-yellow-400'}`}>
+                          <span>{row.status === 'processado' ? '✅' : '⏳'}</span>
+                          <span>{row.status}</span>
                         </p>
-                        <p className="text-white/70 text-sm">{bet.tipo}</p>
+                        <p className="text-white/70 text-sm">{row.tipo}</p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center text-white/70">Nenhuma transação encontrada</div>
+                  <div className="text-center text-white/70">Nenhum depósito PIX recente</div>
                 )}
               </div>
               
-              {/* Estatísticas serão implementadas com dados reais */}
               <div className="mt-4 pt-4 border-t border-white/20">
                 <div className="text-center text-white/70">
-                  <p className="text-sm">Estatísticas serão exibidas quando houver jogos realizados</p>
+                  <p className="text-sm">Histórico de partidas aparece ao jogar; aqui apenas depósitos via PIX.</p>
                 </div>
               </div>
             </div>

@@ -97,5 +97,20 @@ async function runCycle() {
 const payoutAutoFromRaw = process.env.PAYOUT_AUTO_FROM_AT;
 console.log('ℹ️ [PAYOUT][WORKER] Config PAYOUT_AUTO_FROM_AT (corte mínimo de created_at):', payoutAutoFromRaw == null || String(payoutAutoFromRaw).trim() === '' ? '(não definida — processPendingWithdrawals não processa saques)' : String(payoutAutoFromRaw).trim());
 console.log(`🕒 [PAYOUT][WORKER] Ativo. Intervalo ${intervalMs}ms`);
+
+/** Heartbeat só para observabilidade (fly logs / grep). Não dispara payout. */
+const workerStartMs = Date.now();
+const heartbeatMs = Math.min(
+  120000,
+  Math.max(30000, parseInt(process.env.PAYOUT_WORKER_HEARTBEAT_LOG_MS || '60000', 10) || 60000)
+);
+setInterval(() => {
+  console.log(
+    `[PAYOUT][WORKER][HEARTBEAT] ts=${new Date().toISOString()} uptime_s=${Math.floor(
+      (Date.now() - workerStartMs) / 1000
+    )} payout_cycle_ms=${intervalMs} pid=${process.pid}`
+  );
+}, heartbeatMs);
+
 runCycle();
 setInterval(runCycle, intervalMs);
