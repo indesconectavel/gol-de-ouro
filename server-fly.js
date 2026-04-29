@@ -279,7 +279,8 @@ const limiter = rateLimit({
   validate: { trustProxy: false }, // ✅ CORRIGIDO: Desabilitar validação de trust proxy para evitar erro
   skip: (req) => {
     // Pular rate limiting para health check, meta e auth
-    return req.path === '/health' || 
+    return req.path === '/health' ||
+           req.path === '/health/workers' ||
            req.path === '/meta' || 
            req.path.startsWith('/auth/') ||
            req.path.startsWith('/api/auth/');
@@ -3175,6 +3176,25 @@ app.get('/health', async (req, res) => {
     mercadoPago: mercadoPagoConnected ? 'connected' : 'disconnected',
     contadorChutes: contadorChutesGlobal,
     ultimoGolDeOuro: ultimoGolDeOuro
+  });
+});
+
+// Apenas leitura de intencao do deploy (ENV no Fly igual ao segundo processo).
+// Para evidencia real do payout_worker usar logs: [PAYOUT][WORKER][HEARTBEAT]
+app.get('/health/workers', (req, res) => {
+  const envTrue = (v) => String(v || '').toLowerCase() === 'true';
+
+  res.json({
+    success: true,
+    timestamp: new Date().toISOString(),
+    data: {
+      payoutWorker: {
+        enabledByEnv: envTrue(process.env.ENABLE_PIX_PAYOUT_WORKER),
+        payoutPixProcessingEnabled: envTrue(process.env.PAYOUT_PIX_ENABLED),
+        note:
+          'Flags do ambiente. Liveness real do processo payout_worker: filtrar fly logs por [PAYOUT][WORKER][HEARTBEAT] ou ciclos do worker.'
+      }
+    }
   });
 });
 
