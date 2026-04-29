@@ -47,6 +47,68 @@ const sanitizePayoutResponse = (raw) => {
   };
 };
 
+const maskDocumentDigits = (value) => {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (!digits) return value;
+  if (digits.length <= 4) return `***${digits}`;
+  return `***${digits.slice(-4)}`;
+};
+
+const sanitizeForLogs = (input) => {
+  const SENSITIVE_KEYS = new Set([
+    'authorization',
+    'access_token',
+    'token',
+    'x-signature',
+    'signature',
+    'private_key'
+  ]);
+  const DOCUMENT_KEYS = new Set([
+    'cpf',
+    'cnpj',
+    'document',
+    'documento',
+    'number'
+  ]);
+
+  const walk = (value, keyName = '') => {
+    if (value == null) return value;
+
+    if (Array.isArray(value)) {
+      return value.map((item) => walk(item));
+    }
+
+    if (typeof value === 'object') {
+      const out = {};
+      for (const [k, v] of Object.entries(value)) {
+        const keyLower = String(k).toLowerCase();
+        if (SENSITIVE_KEYS.has(keyLower)) {
+          out[k] = '[REDACTED]';
+          continue;
+        }
+        if (DOCUMENT_KEYS.has(keyLower) && (typeof v === 'string' || typeof v === 'number')) {
+          out[k] = maskDocumentDigits(v);
+          continue;
+        }
+        out[k] = walk(v, keyLower);
+      }
+      return out;
+    }
+
+    // Mask plain document-like values when key indicates identification.
+    if (
+      (keyName === 'number' || keyName === 'document' || keyName === 'documento' || keyName === 'cpf' || keyName === 'cnpj') &&
+      (typeof value === 'string' || typeof value === 'number')
+    ) {
+      return maskDocumentDigits(value);
+    }
+
+    return value;
+  };
+
+  return walk(input);
+};
+
 /**
  * Consulta transaction intent no MP (confirmação / reconciliação).
  * @param {string} intentId
@@ -458,8 +520,23 @@ const createPixWithdraw = async (amount, pixKey, pixKeyType, userId, saqueId, co
       }
     };
   } catch (error) {
-    const msg = error.response?.data?.message || error.message;
-    console.error('❌ [PIX] Erro ao criar saque PIX (transaction-intents):', error.response?.data || error.message);
+    const httpStatus = error.response?.status || null;
+    const rawData = error.response?.data || null;
+    const msg = rawData?.message || error.message;
+    const safeData = sanitizeForLogs(rawData);
+    const safeCause = sanitizeForLogs(rawData?.cause || null);
+
+    console.error('❌ [PIX][MP][PAYOUT][ERRO_BRUTO_SANITIZADO]', {
+      http_status: httpStatus,
+      code: rawData?.code || null,
+      message: msg || null,
+      cause: safeCause,
+      response_data: safeData,
+      payout_external_reference: options?.payoutExternalReference || null,
+      saqueId: saqueId || null,
+      correlation_id: correlationId || null
+    });
+
     return {
       success: false,
       error: msg
