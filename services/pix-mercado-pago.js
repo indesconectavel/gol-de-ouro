@@ -477,15 +477,14 @@ const createPixWithdraw = async (amount, pixKey, pixKeyType, userId, saqueId, co
       'X-Enforce-Signature': enforceSig ? 'true' : 'false'
     };
 
-    if (pem) {
+    // Assinatura Ed25519 só quando explícito (enforce + PEM). Sem isso: Bearer + payload iguais, sem X-signature.
+    if (enforceSig && pem) {
       try {
         headers['X-signature'] = signPayoutBodyEd25519(bodyStr, pem);
       } catch (e) {
         console.error('❌ [PIX][MP] Falha ao assinar payout (Ed25519):', e.message);
         throw new Error('Falha ao assinar requisição de payout');
       }
-    } else if (enforceSig) {
-      throw new Error('Assinatura obrigatória e MP_PAYOUT_PRIVATE_KEY ausente');
     }
 
     const response = await axios.post(`${MP_CONFIG.baseUrl}/v1/transaction-intents/process`, bodyStr, {
