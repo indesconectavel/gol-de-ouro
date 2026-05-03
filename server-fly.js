@@ -24,6 +24,7 @@ const {
   rollbackWithdraw,
   processPendingWithdrawals
 } = require('./src/domain/payout/processPendingWithdrawals');
+const adminWithdrawController = require('./controllers/adminWithdrawController');
 // Logger opcional - fallback para console se não disponível
 let logger;
 try {
@@ -2047,6 +2048,37 @@ app.get('/api/withdraw/history', authenticateToken, async (req, res) => {
       message: 'Erro interno do servidor'
     });
   }
+});
+
+const requireAdministradorDb = async (req, res, next) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({ success: false, message: 'Sistema temporariamente indisponível' });
+    }
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Não autorizado' });
+    }
+    const { data: row, error } = await supabase.from('usuarios').select('tipo').eq('id', userId).maybeSingle();
+    if (error) {
+      console.error('❌ [ADMIN AUTH] Erro ao validar tipo de usuário:', error);
+      return res.status(500).json({ success: false, message: 'Erro ao validar permissão' });
+    }
+    if (String(row?.tipo || '').toLowerCase() !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Acesso restrito a administradores' });
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+app.post('/api/admin/withdraw/approve', authenticateToken, requireAdministradorDb, async (req, res) => {
+  return adminWithdrawController.approveManualWithdraw(req, res, supabase);
+});
+
+app.post('/api/admin/withdraw/cancel', authenticateToken, requireAdministradorDb, async (req, res) => {
+  return adminWithdrawController.cancelManualWithdraw(req, res, supabase);
 });
 
 // =====================================================
