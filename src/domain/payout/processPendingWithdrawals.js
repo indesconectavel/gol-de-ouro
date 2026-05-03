@@ -88,7 +88,13 @@ const createLedgerEntry = async ({ supabase, tipo, usuarioId, valor, referencia,
     const insertResult = await insertLedgerRow(supabase, payloadBase, usuarioId);
 
     if (!insertResult.success) {
-      return { success: false, error: insertResult.error };
+      const err = insertResult.error;
+      const code = err?.code;
+      const msg = String(err?.message || '').toLowerCase();
+      if (code === '23505' || msg.includes('duplicate') || msg.includes('unique')) {
+        return { success: true, id: null, deduped: true };
+      }
+      return { success: false, error: err };
     }
 
     return { success: true, id: insertResult.data?.id };
@@ -500,12 +506,19 @@ async function healStuckProcessingWithRollback(supabase) {
       .from('ledger_financeiro')
       .select('tipo, referencia')
       .eq('correlation_id', correlationId)
-      .in('tipo', ['rollback', 'payout_confirmado']);
+      .in('tipo', ['rollback', 'rollback_manual', 'payout_confirmado', 'payout_manual_confirmado']);
     if (ledErr || !Array.isArray(ledgerRows)) continue;
 
-    const hasPayoutConfirmed = ledgerRows.some((l) => l.tipo === 'payout_confirmado' && l.referencia === saqueId);
+    const hasPayoutConfirmed = ledgerRows.some(
+      (l) =>
+        (l.tipo === 'payout_confirmado' || l.tipo === 'payout_manual_confirmado') &&
+        String(l.referencia) === String(saqueId)
+    );
     if (hasPayoutConfirmed) continue;
-    const hasRollback = ledgerRows.some((l) => l.tipo === 'rollback' && l.referencia === saqueId);
+    const hasRollback = ledgerRows.some(
+      (l) =>
+        (l.tipo === 'rollback' || l.tipo === 'rollback_manual') && String(l.referencia) === String(saqueId)
+    );
     if (!hasRollback) continue;
 
     console.warn('[AUTO-HEAL] Saque detectado para correção', {
@@ -546,6 +559,287 @@ async function healStuckProcessingWithRollback(supabase) {
   return { checked: stuck.length, fixed };
 }
 
+const isPendenteSaqueStatus = (status) => {
+  const s = String(status || '').toLowerCase();
+  return s === 'pendente' || s === 'pending';
+};
+
+/**
+ * Rollback administrativo: credita saldo + ledger `rollback_manual` + status `cancelado_manual`.
+ * Idempotente; não usa `rollbackWithdraw` (mantém comportamento MP intocado).
+ */
+const rollbackWithdrawManualAdmin = async ({
+  supabase,
+  saqueId,
+  userId,
+  correlationId,
+  amount,
+  fee,
+  motivo
+}) => {
+  const tipoLedger = 'rollback_manual';
+  const rollbackRefMain = String(saqueId);
+  const rollbackRefFee = `${saqueId}:fee`;
+
+  const { data: existingRows, error: existingErr } = await supabase
+    .from('ledger_financeiro')
+    .select('id, referencia')
+    .eq('correlation_id', correlationId)
+    .eq('tipo', tipoLedger)
+    .in('referencia', [rollbackRefMain, rollbackRefFee]);
+
+  if (existingErr) {
+    return { success: false, error: existingErr, phase: 'ledger_existing_check' };
+  }
+
+  const hasMainRollback = Array.isArray(existingRows) && existingRows.some((r) => String(r.referencia) === rollbackRefMain);
+  const hasFeeRollback =
+    Array.isArray(existingRows) && existingRows.some((r) => String(r.referencia) === rollbackRefFee);
+  const rollbackAlreadyDone = hasMainRollback;
+
+  if (rollbackAlreadyDone) {
+    const { data: updated, error: upOnly } = await supabase
+      .from('saques')
+      .update({
+        status: 'cancelado_manual',
+        motivo_rejeicao: String(motivo || 'cancelamento_admin_manual'),
+        processed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', saqueId)
+      .in('status', ['pendente', 'pending'])
+      .select('id')
+      .maybeSingle();
+    if (upOnly) {
+      return { success: false, error: upOnly, phase: 'status_idempotent' };
+    }
+    if (updated?.id) {
+      return { success: true, deduped: true, statusFinal: 'cancelado_manual' };
+    }
+    const { data: cur, error: curErr } = await supabase.from('saques').select('status').eq('id', saqueId).maybeSingle();
+    if (curErr) {
+      return { success: false, error: curErr, phase: 'status_read_idempotent' };
+    }
+    const curSt = String(cur?.status || '').toLowerCase();
+    if (curSt === 'cancelado_manual') {
+      return { success: true, deduped: true, statusFinal: 'cancelado_manual' };
+    }
+    return { success: false, error: new Error(`status_invalido:${cur?.status}`), code: 'INVALID_STATUS' };
+  }
+
+  const mainLedger = await createLedgerEntry({
+    supabase,
+    tipo: tipoLedger,
+    usuarioId: userId,
+    valor: parseFloat(amount),
+    referencia: rollbackRefMain,
+    correlationId
+  });
+  if (!mainLedger.success) {
+    return { success: false, error: mainLedger.error, phase: 'ledger_valor' };
+  }
+
+  const shouldCreditSaldo = !mainLedger.deduped;
+
+  if (shouldCreditSaldo) {
+    const { data: userRow, error: userError } = await supabase.from('usuarios').select('saldo').eq('id', userId).single();
+    if (userError || !userRow) {
+      return { success: false, error: userError || new Error('usuario_nao_encontrado'), phase: 'usuario' };
+    }
+
+    const saldoReconstituido = parseFloat(userRow.saldo) + parseFloat(amount);
+    const { error: saldoError } = await supabase
+      .from('usuarios')
+      .update({ saldo: saldoReconstituido, updated_at: new Date().toISOString() })
+      .eq('id', userId);
+
+    if (saldoError) {
+      return { success: false, error: saldoError, phase: 'saldo' };
+    }
+  }
+
+  if (parseFloat(fee) > 0 && !hasFeeRollback) {
+    const { success: r2, error: e2 } = await createLedgerEntry({
+      supabase,
+      tipo: tipoLedger,
+      usuarioId: userId,
+      valor: parseFloat(fee),
+      referencia: rollbackRefFee,
+      correlationId
+    });
+    if (!r2) {
+      return { success: false, error: e2, phase: 'ledger_taxa' };
+    }
+  }
+
+  const { data: finalized, error: upErr } = await supabase
+    .from('saques')
+    .update({
+      status: 'cancelado_manual',
+      motivo_rejeicao: String(motivo || 'cancelamento_admin_manual'),
+      processed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', saqueId)
+    .in('status', ['pendente', 'pending'])
+    .select('id')
+    .maybeSingle();
+
+  if (upErr) {
+    return { success: false, error: upErr, phase: 'status_final' };
+  }
+  if (!finalized?.id) {
+    return { success: false, error: new Error('conflito_status_ou_concorrencia'), code: 'CONFLICT' };
+  }
+
+  return { success: true, statusFinal: 'cancelado_manual' };
+};
+
+/**
+ * Confirma pagamento Pix feito manualmente pelo operador (sem MP).
+ */
+const approveWithdrawManualAdmin = async ({ supabase, saqueId }) => {
+  const { data: saqueRow, error: selErr } = await supabase
+    .from('saques')
+    .select('id, usuario_id, correlation_id, amount, valor, fee, net_amount, status')
+    .eq('id', saqueId)
+    .maybeSingle();
+
+  if (selErr) {
+    return { success: false, error: selErr };
+  }
+  if (!saqueRow?.id) {
+    return { success: false, error: new Error('saque_nao_encontrado') };
+  }
+
+  const correlationId = saqueRow.correlation_id;
+  if (!correlationId) {
+    return { success: false, error: new Error('correlation_id_ausente') };
+  }
+
+  const st = String(saqueRow.status || '').toLowerCase();
+  if (st === 'pago_manual') {
+    return { success: true, deduped: true, statusFinal: 'pago_manual' };
+  }
+  if (!isPendenteSaqueStatus(saqueRow.status)) {
+    return { success: false, error: new Error(`status_invalido:${saqueRow.status}`), code: 'INVALID_STATUS' };
+  }
+
+  const { data: conflictRb } = await supabase
+    .from('ledger_financeiro')
+    .select('id')
+    .eq('correlation_id', correlationId)
+    .in('tipo', ['rollback', 'rollback_manual'])
+    .eq('referencia', String(saqueId))
+    .limit(1)
+    .maybeSingle();
+
+  if (conflictRb?.id) {
+    return { success: false, error: new Error('saque_ja_tem_rollback'), code: 'HAS_ROLLBACK' };
+  }
+
+  const amount = parseFloat(saqueRow.amount ?? saqueRow.valor ?? 0);
+  const fee = parseFloat(saqueRow.fee ?? 0);
+  const netAmount = parseFloat(saqueRow.net_amount ?? (amount - fee));
+  if (!Number.isFinite(netAmount) || netAmount <= 0) {
+    return { success: false, error: new Error('net_amount_invalido') };
+  }
+
+  const ledgerRes = await createLedgerEntry({
+    supabase,
+    tipo: 'payout_manual_confirmado',
+    usuarioId: saqueRow.usuario_id,
+    valor: netAmount,
+    referencia: String(saqueId),
+    correlationId
+  });
+  if (!ledgerRes.success) {
+    return { success: false, error: ledgerRes.error, phase: 'ledger' };
+  }
+
+  const { data: updated, error: upErr } = await supabase
+    .from('saques')
+    .update({
+      status: 'pago_manual',
+      processed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', saqueId)
+    .in('status', ['pendente', 'pending'])
+    .select('id, status')
+    .maybeSingle();
+
+  if (upErr) {
+    return { success: false, error: upErr, phase: 'update_status' };
+  }
+  if (!updated?.id) {
+    return { success: false, error: new Error('conflito_status_ou_concorrencia'), code: 'CONFLICT' };
+  }
+
+  return { success: true, statusFinal: updated.status || 'pago_manual' };
+};
+
+/**
+ * Cancela saque pendente e reestorna saldo (ledger `rollback_manual`).
+ */
+const cancelWithdrawManualAdmin = async ({ supabase, saqueId, motivo }) => {
+  const { data: saqueRow, error: selErr } = await supabase
+    .from('saques')
+    .select('id, usuario_id, correlation_id, amount, valor, fee, net_amount, status')
+    .eq('id', saqueId)
+    .maybeSingle();
+
+  if (selErr) {
+    return { success: false, error: selErr };
+  }
+  if (!saqueRow?.id) {
+    return { success: false, error: new Error('saque_nao_encontrado') };
+  }
+
+  const correlationId = saqueRow.correlation_id;
+  if (!correlationId) {
+    return { success: false, error: new Error('correlation_id_ausente') };
+  }
+
+  const st = String(saqueRow.status || '').toLowerCase();
+  if (st === 'cancelado_manual') {
+    return { success: true, deduped: true, statusFinal: 'cancelado_manual' };
+  }
+
+  const { data: payoutLine } = await supabase
+    .from('ledger_financeiro')
+    .select('id')
+    .eq('correlation_id', correlationId)
+    .in('tipo', ['payout_confirmado', 'payout_manual_confirmado'])
+    .eq('referencia', String(saqueId))
+    .limit(1)
+    .maybeSingle();
+
+  if (payoutLine?.id) {
+    return { success: false, error: new Error('saque_ja_foi_pago'), code: 'ALREADY_PAID' };
+  }
+
+  if (!isPendenteSaqueStatus(saqueRow.status)) {
+    return { success: false, error: new Error(`status_invalido:${saqueRow.status}`), code: 'INVALID_STATUS' };
+  }
+
+  const amount = parseFloat(saqueRow.amount ?? saqueRow.valor ?? 0);
+  const fee = parseFloat(saqueRow.fee ?? 0);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return { success: false, error: new Error('amount_invalido') };
+  }
+
+  return rollbackWithdrawManualAdmin({
+    supabase,
+    saqueId,
+    userId: saqueRow.usuario_id,
+    correlationId,
+    amount,
+    fee,
+    motivo: motivo || 'cancelamento_admin_manual'
+  });
+};
+
 const processPendingWithdrawals = async ({
   supabase,
   isDbConnected,
@@ -561,6 +855,17 @@ const processPendingWithdrawals = async ({
         payouts_falha: payoutCounters.fail
       });
       return { success: false, disabled: true };
+    }
+
+    if (String(process.env.PAYOUT_MODE || '').toLowerCase() === 'manual') {
+      console.log(
+        `[PAYOUT][MANUAL_MODE] Payout automático desligado (PAYOUT_MODE=manual); saques pendentes aguardam ação administrativa`
+      );
+      console.log('🟦 [PAYOUT][WORKER] Resumo', {
+        payouts_sucesso: payoutCounters.success,
+        payouts_falha: payoutCounters.fail
+      });
+      return { success: true, processed: false, manualMode: true };
     }
 
     if (!isDbConnected || !supabase) {
@@ -851,5 +1156,8 @@ module.exports = {
   payoutCounters,
   createLedgerEntry,
   rollbackWithdraw,
-  processPendingWithdrawals
+  processPendingWithdrawals,
+  approveWithdrawManualAdmin,
+  cancelWithdrawManualAdmin,
+  rollbackWithdrawManualAdmin
 };
