@@ -26,6 +26,28 @@ async function approveManualWithdraw(req, res, supabase) {
       });
     }
 
+    if (result.code === 'INVARIANT_BROKEN') {
+      return res.status(409).json({
+        success: false,
+        message:
+          'Inconsistência detectada: há registro de pagamento no ledger, mas o saque ainda está pendente. Encaminhe para suporte técnico.'
+      });
+    }
+    if (result.code === 'LEDGER_WRITE_FAILED') {
+      if (result.compensated === false) {
+        return res.status(500).json({
+          success: false,
+          message:
+            'Falha ao registrar o pagamento no ledger e a reversão do saque também falhou. Estado crítico — acione suporte técnico.'
+        });
+      }
+      return res.status(503).json({
+        success: false,
+        message:
+          'Não foi possível registrar o pagamento no ledger; o saque foi revertido para pendente. Tente aprovar novamente em instantes.',
+        compensated: true
+      });
+    }
     if (result.code === 'HAS_ROLLBACK' || `${result.error?.message || ''}`.includes('rollback')) {
       return res.status(409).json({ success: false, message: 'Saque não pode ser pago após rollback' });
     }
