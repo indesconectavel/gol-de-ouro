@@ -51,6 +51,18 @@ async function approveManualWithdraw(req, res, supabase) {
     if (result.code === 'HAS_ROLLBACK' || `${result.error?.message || ''}`.includes('rollback')) {
       return res.status(409).json({ success: false, message: 'Saque não pode ser pago após rollback' });
     }
+    if (result.code === 'OK_COMPENSATED') {
+      return res.status(409).json({
+        success: false,
+        message: 'Saque já está compensado por rollback manual; não representa pagamento real.'
+      });
+    }
+    if (result.code === 'LEDGER_STATE_READ_FAILED') {
+      return res.status(503).json({
+        success: false,
+        message: 'Não foi possível validar o estado financeiro no momento. Tente novamente.'
+      });
+    }
     if (result.code === 'INVALID_STATUS') {
       return res.status(409).json({
         success: false,
@@ -104,6 +116,31 @@ async function cancelManualWithdraw(req, res, supabase) {
 
     if (result.code === 'ALREADY_PAID') {
       return res.status(409).json({ success: false, message: 'Saque já pago — não pode cancelar' });
+    }
+    if (result.code === 'INVARIANT_BROKEN') {
+      return res.status(409).json({
+        success: false,
+        message:
+          'Inconsistência detectada: existe payout_manual_confirmado sem rollback_manual. Operação bloqueada para segurança.'
+      });
+    }
+    if (result.code === 'OK_COMPENSATED') {
+      return res.status(200).json({
+        success: true,
+        message: 'Saque já está compensado (rollback_manual registrado). Nenhuma ação adicional necessária.',
+        data: {
+          saqueId,
+          status: result.statusFinal || 'cancelado',
+          deduped: true,
+          compensated: true
+        }
+      });
+    }
+    if (result.code === 'LEDGER_STATE_READ_FAILED') {
+      return res.status(503).json({
+        success: false,
+        message: 'Não foi possível validar o estado financeiro no momento. Tente novamente.'
+      });
     }
     if (result.code === 'INVALID_STATUS') {
       return res.status(409).json({
