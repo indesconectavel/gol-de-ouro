@@ -2111,10 +2111,21 @@ app.get('/api/admin/users/list', authenticateToken, requireAdministradorDb, asyn
     searchRaw = searchRaw.replace(/%/g, '');
     searchRaw = searchRaw.replace(/,/g, '');
 
-    const buildQuery = (includeUsername) => {
-      const selectCols = includeUsername
-        ? 'id, email, nome, username, saldo, tipo, ativo, created_at'
-        : 'id, email, nome, saldo, tipo, ativo, created_at';
+    /** Schemas reais variam (nome vs username); tentar selects compativeis antes de falhar. */
+    const selectAttempts = [
+      'id, email, nome, username, saldo, tipo, ativo, created_at',
+      'id, email, username, saldo, tipo, ativo, created_at',
+      'id, email, nome, saldo, tipo, ativo, created_at',
+      'id, email, saldo, tipo, ativo, created_at'
+    ];
+
+    let rows = [];
+    let error = null;
+
+    for (let i = 0; i < selectAttempts.length; i++) {
+      const selectCols = selectAttempts[i];
+      const hasNome = selectCols.includes('nome');
+      const hasUsername = selectCols.includes('username');
 
       let q = supabase
         .from('usuarios')
@@ -2127,23 +2138,23 @@ app.get('/api/admin/users/list', authenticateToken, requireAdministradorDb, asyn
 
       if (searchRaw.length > 0) {
         const pat = `%${searchRaw}%`;
-        if (includeUsername) {
-          q = q.or(`email.ilike.${pat},nome.ilike.${pat},username.ilike.${pat}`);
-        } else {
-          q = q.or(`email.ilike.${pat},nome.ilike.${pat}`);
-        }
+        const orParts = [`email.ilike.${pat}`];
+        if (hasNome) orParts.push(`nome.ilike.${pat}`);
+        if (hasUsername) orParts.push(`username.ilike.${pat}`);
+        q = q.or(orParts.join(','));
       }
 
-      return q;
-    };
-
-    let { data: rows, error } = await buildQuery(true);
-
-    if (error) {
-      const msg = String(error.message || '');
-      if (/username|column/i.test(msg)) {
-        ({ data: rows, error } = await buildQuery(false));
+      const attempt = await q;
+      if (!attempt.error) {
+        rows = Array.isArray(attempt.data) ? attempt.data : [];
+        error = null;
+        break;
       }
+      error = attempt.error;
+      console.warn(
+        `⚠️ [ADMIN][USERS][LIST] tentativa ${i + 1}/${selectAttempts.length} falhou (${selectCols}):`,
+        attempt.error?.message || attempt.error
+      );
     }
 
     if (error) {
