@@ -2073,6 +2073,145 @@ const requireAdministradorDb = async (req, res, next) => {
   }
 };
 
+const classifyWithdrawLedgerState = (ledgerRows, saqueId) => {
+  const idRef = String(saqueId || '');
+  if (!idRef) return 'NONE';
+
+  const refsRollback = new Set([idRef, `${idRef}:fee`]);
+  const hasPayoutManual = ledgerRows.some(
+    (l) => l.tipo === 'payout_manual_confirmado' && String(l.referencia || '') === idRef
+  );
+  const hasRollbackManual = ledgerRows.some((l) => {
+    if (l.tipo !== 'rollback_manual') return false;
+    const ref = String(l.referencia || '');
+    return refsRollback.has(ref) || ref.startsWith(`${idRef}:estorno_`);
+  });
+
+  if (hasPayoutManual && hasRollbackManual) return 'COMPENSATED';
+  if (hasPayoutManual) return 'PAYOUT_ONLY';
+  if (hasRollbackManual) return 'ROLLBACK_ONLY';
+  return 'NONE';
+};
+
+app.get('/api/admin/withdraw/list', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const rawLimit = parseInt(String(req.query.limit || '50'), 10);
+    const limit = Number.isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 200);
+    const statusFilter = String(req.query.status || '').trim();
+
+    let saquesQuery = supabase
+      .from('saques')
+      .select(
+        'id, usuario_id, valor, amount, fee, status, motivo_rejeicao, correlation_id, processed_at, created_at, updated_at'
+      )
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (statusFilter) {
+      saquesQuery = saquesQuery.eq('status', statusFilter);
+    }
+
+    const { data: saquesRows, error: saquesError } = await saquesQuery;
+    if (saquesError) {
+      console.error('❌ [ADMIN][WITHDRAW][LIST] erro ao buscar saques:', saquesError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao listar saques'
+      });
+    }
+
+    const saques = Array.isArray(saquesRows) ? saquesRows : [];
+    if (saques.length === 0) {
+      return res.json({
+        success: true,
+        data: [],
+        meta: { total: 0, limit, status: statusFilter || null }
+      });
+    }
+
+    const userIds = [...new Set(saques.map((s) => s.usuario_id).filter(Boolean))];
+    let userById = new Map();
+    if (userIds.length > 0) {
+      const { data: usersRows, error: usersError } = await supabase
+        .from('usuarios')
+        .select('id, email, nome, username')
+        .in('id', userIds);
+      if (!usersError && Array.isArray(usersRows)) {
+        userById = new Map(usersRows.map((u) => [u.id, u]));
+      }
+    }
+
+    const correlationIds = [...new Set(saques.map((s) => s.correlation_id).filter(Boolean))];
+    let ledgerByCorrelation = new Map();
+    if (correlationIds.length > 0) {
+      const { data: ledgerRows, error: ledgerError } = await supabase
+        .from('ledger_financeiro')
+        .select('correlation_id, tipo, referencia')
+        .in('correlation_id', correlationIds)
+        .in('tipo', ['payout_manual_confirmado', 'rollback_manual', 'payout_confirmado', 'rollback']);
+
+      if (!ledgerError && Array.isArray(ledgerRows)) {
+        for (const row of ledgerRows) {
+          const key = String(row.correlation_id || '');
+          if (!key) continue;
+          const list = ledgerByCorrelation.get(key) || [];
+          list.push(row);
+          ledgerByCorrelation.set(key, list);
+        }
+      }
+    }
+
+    const payload = saques.map((s) => {
+      const user = userById.get(s.usuario_id) || null;
+      const rows = ledgerByCorrelation.get(String(s.correlation_id || '')) || [];
+      return {
+        id: s.id,
+        usuario_id: s.usuario_id,
+        user: user
+          ? {
+              id: user.id,
+              email: user.email || null,
+              nome: user.nome || user.username || null
+            }
+          : null,
+        amount: s.amount != null ? s.amount : s.valor,
+        valor: s.valor != null ? s.valor : s.amount,
+        fee: s.fee != null ? s.fee : 0,
+        status: s.status,
+        motivo_rejeicao: s.motivo_rejeicao || null,
+        correlation_id: s.correlation_id || null,
+        ledger_state: classifyWithdrawLedgerState(rows, s.id),
+        processed_at: s.processed_at || null,
+        created_at: s.created_at || null,
+        updated_at: s.updated_at || null
+      };
+    });
+
+    return res.json({
+      success: true,
+      data: payload,
+      meta: {
+        total: payload.length,
+        limit,
+        status: statusFilter || null
+      }
+    });
+  } catch (error) {
+    console.error('❌ [ADMIN][WITHDRAW][LIST] erro interno:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
 app.post('/api/admin/withdraw/approve', authenticateToken, requireAdministradorDb, async (req, res) => {
   return adminWithdrawController.approveManualWithdraw(req, res, supabase);
 });
