@@ -2212,6 +2212,80 @@ app.get('/api/admin/withdraw/list', authenticateToken, requireAdministradorDb, a
   }
 });
 
+app.get('/api/admin/dashboard/stats', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const asNumber = (v) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const [
+      totalUsersResult,
+      saldoUsersResult,
+      saquesPendentesResult,
+      saquesTotalResult,
+      ledgerTotalResult,
+      ledgerVolumeResult
+    ] = await Promise.all([
+      supabase.from('usuarios').select('*', { count: 'exact', head: true }),
+      supabase.from('usuarios').select('saldo'),
+      supabase.from('saques').select('*', { count: 'exact', head: true }).in('status', ['pendente', 'processando']),
+      supabase.from('saques').select('*', { count: 'exact', head: true }),
+      supabase.from('ledger_financeiro').select('*', { count: 'exact', head: true }),
+      supabase.from('ledger_financeiro').select('valor, tipo').in('tipo', ['deposito', 'saque', 'payout_manual_confirmado'])
+    ]);
+
+    const possibleErrors = [
+      totalUsersResult.error,
+      saldoUsersResult.error,
+      saquesPendentesResult.error,
+      saquesTotalResult.error,
+      ledgerTotalResult.error,
+      ledgerVolumeResult.error
+    ].filter(Boolean);
+
+    if (possibleErrors.length > 0) {
+      console.error('❌ [ADMIN][DASHBOARD][STATS] erro ao agregar métricas:', possibleErrors[0]);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao consolidar métricas do dashboard'
+      });
+    }
+
+    const saldo_total = (saldoUsersResult.data || []).reduce((acc, row) => acc + asNumber(row?.saldo), 0);
+    const volume_financeiro_total = (ledgerVolumeResult.data || []).reduce(
+      (acc, row) => acc + asNumber(row?.valor),
+      0
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        total_users: totalUsersResult.count || 0,
+        saldo_total,
+        saques_pendentes: saquesPendentesResult.count || 0,
+        saques_total: saquesTotalResult.count || 0,
+        ledger_transacoes_total: ledgerTotalResult.count || 0,
+        volume_financeiro_total,
+        updated_at: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('❌ [ADMIN][DASHBOARD][STATS] erro interno:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
 app.post('/api/admin/withdraw/approve', authenticateToken, requireAdministradorDb, async (req, res) => {
   return adminWithdrawController.approveManualWithdraw(req, res, supabase);
 });
