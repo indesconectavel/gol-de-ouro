@@ -2286,6 +2286,81 @@ app.get('/api/admin/dashboard/stats', authenticateToken, requireAdministradorDb,
   }
 });
 
+app.get('/api/admin/financial/report', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const toNumber = (value) => {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const [ledgerRowsResult, usersSaldoResult, transacoesRecentesResult] = await Promise.all([
+      supabase.from('ledger_financeiro').select('id, tipo, valor, correlation_id, referencia, created_at').order('created_at', { ascending: false }),
+      supabase.from('usuarios').select('saldo'),
+      supabase
+        .from('ledger_financeiro')
+        .select('id, tipo, valor, correlation_id, referencia, created_at')
+        .order('created_at', { ascending: false })
+        .limit(20)
+    ]);
+
+    const errors = [ledgerRowsResult.error, usersSaldoResult.error, transacoesRecentesResult.error].filter(Boolean);
+    if (errors.length > 0) {
+      console.error('❌ [ADMIN][FINANCIAL][REPORT] erro ao consolidar relatório:', errors[0]);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao consolidar relatório financeiro'
+      });
+    }
+
+    const ledgerRows = Array.isArray(ledgerRowsResult.data) ? ledgerRowsResult.data : [];
+    const usersRows = Array.isArray(usersSaldoResult.data) ? usersSaldoResult.data : [];
+    const recentRows = Array.isArray(transacoesRecentesResult.data) ? transacoesRecentesResult.data : [];
+
+    const receitas_depositos = ledgerRows
+      .filter((row) => row.tipo === 'deposito')
+      .reduce((sum, row) => sum + toNumber(row.valor), 0);
+
+    const saques_total = ledgerRows
+      .filter((row) => row.tipo === 'saque' || row.tipo === 'payout_manual_confirmado')
+      .reduce((sum, row) => sum + toNumber(row.valor), 0);
+
+    const taxas_total = ledgerRows
+      .filter((row) => row.tipo === 'taxa')
+      .reduce((sum, row) => sum + toNumber(row.valor), 0);
+
+    const volume_ledger = ledgerRows.reduce((sum, row) => sum + toNumber(row.valor), 0);
+    const saldo_total_usuarios = usersRows.reduce((sum, row) => sum + toNumber(row.saldo), 0);
+    const resultado_liquido_estimado = receitas_depositos + taxas_total - saques_total;
+
+    return res.json({
+      success: true,
+      data: {
+        receitas_depositos,
+        saques_total,
+        taxas_total,
+        saldo_total_usuarios,
+        volume_ledger,
+        resultado_liquido_estimado,
+        transacoes_recentes: recentRows,
+        updated_at: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('❌ [ADMIN][FINANCIAL][REPORT] erro interno:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
 app.post('/api/admin/withdraw/approve', authenticateToken, requireAdministradorDb, async (req, res) => {
   return adminWithdrawController.approveManualWithdraw(req, res, supabase);
 });
