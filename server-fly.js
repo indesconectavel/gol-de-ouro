@@ -2093,6 +2093,107 @@ const classifyWithdrawLedgerState = (ledgerRows, saqueId) => {
   return 'NONE';
 };
 
+app.get('/api/admin/users/list', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const rawLimit = parseInt(String(req.query.limit || '50'), 10);
+    const limit = Number.isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 200);
+    const rawStatus = String(req.query.status || 'all').trim().toLowerCase();
+    const statusParam = ['active', 'blocked', 'all'].includes(rawStatus) ? rawStatus : 'all';
+
+    let searchRaw = String(req.query.search || '').trim().slice(0, 200);
+    searchRaw = searchRaw.replace(/%/g, '');
+    searchRaw = searchRaw.replace(/,/g, '');
+
+    const buildQuery = (includeUsername) => {
+      const selectCols = includeUsername
+        ? 'id, email, nome, username, saldo, tipo, ativo, created_at'
+        : 'id, email, nome, saldo, tipo, ativo, created_at';
+
+      let q = supabase
+        .from('usuarios')
+        .select(selectCols)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (statusParam === 'active') q = q.eq('ativo', true);
+      else if (statusParam === 'blocked') q = q.eq('ativo', false);
+
+      if (searchRaw.length > 0) {
+        const pat = `%${searchRaw}%`;
+        if (includeUsername) {
+          q = q.or(`email.ilike.${pat},nome.ilike.${pat},username.ilike.${pat}`);
+        } else {
+          q = q.or(`email.ilike.${pat},nome.ilike.${pat}`);
+        }
+      }
+
+      return q;
+    };
+
+    let { data: rows, error } = await buildQuery(true);
+
+    if (error) {
+      const msg = String(error.message || '');
+      if (/username|column/i.test(msg)) {
+        ({ data: rows, error } = await buildQuery(false));
+      }
+    }
+
+    if (error) {
+      console.error('❌ [ADMIN][USERS][LIST] erro:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao listar usuários'
+      });
+    }
+
+    const safeRows = Array.isArray(rows) ? rows : [];
+
+    const payload = safeRows.map((u) => {
+      const active = Boolean(u.ativo);
+      const nome =
+        (u.nome != null && String(u.nome).trim() !== '' ? u.nome : null) ||
+        ('username' in u && u.username ? u.username : null);
+      const saldoNum = Number(u.saldo);
+      return {
+        id: u.id,
+        email: u.email ?? null,
+        nome,
+        saldo: Number.isFinite(saldoNum) ? saldoNum : 0,
+        tipo: u.tipo ?? null,
+        account_status: active ? 'active' : 'blocked',
+        ativo: active,
+        created_at: u.created_at ?? null,
+        blocked_at: null
+      };
+    });
+
+    return res.json({
+      success: true,
+      data: payload,
+      meta: {
+        limit,
+        count: payload.length,
+        status: statusParam,
+        search: searchRaw.length > 0 ? searchRaw : null
+      }
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][USERS][LIST] erro interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
 app.get('/api/admin/withdraw/list', authenticateToken, requireAdministradorDb, async (req, res) => {
   try {
     if (!dbConnected || !supabase) {
@@ -2170,7 +2271,7 @@ app.get('/api/admin/withdraw/list', authenticateToken, requireAdministradorDb, a
 
     const payload = saques.map((s) => {
       const user = userById.get(s.usuario_id) || null;
-      const rows = ledgerByCorrelation.get(String(s.correlation_id || '')) || [];
+      const ledgerRowsForSaque = ledgerByCorrelation.get(String(s.correlation_id || '')) || [];
       return {
         id: s.id,
         usuario_id: s.usuario_id,
@@ -2187,7 +2288,7 @@ app.get('/api/admin/withdraw/list', authenticateToken, requireAdministradorDb, a
         status: s.status,
         motivo_rejeicao: s.motivo_rejeicao || null,
         correlation_id: s.correlation_id || null,
-        ledger_state: classifyWithdrawLedgerState(rows, s.id),
+        ledger_state: classifyWithdrawLedgerState(ledgerRowsForSaque, s.id),
         processed_at: s.processed_at || null,
         created_at: s.created_at || null,
         updated_at: s.updated_at || null
