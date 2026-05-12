@@ -1,6 +1,7 @@
 'use strict';
 
 const { approveWithdrawManualAdmin, cancelWithdrawManualAdmin } = require('../src/domain/payout/processPendingWithdrawals');
+const { logAdminAction, getClientIp } = require('../src/utils/adminAuditLogger');
 
 async function approveManualWithdraw(req, res, supabase) {
   try {
@@ -12,8 +13,25 @@ async function approveManualWithdraw(req, res, supabase) {
       return res.status(400).json({ success: false, message: 'saqueId é obrigatório (string UUID)' });
     }
 
-    const result = await approveWithdrawManualAdmin({ supabase, saqueId: String(saqueId).trim() });
+    const adminActorId = req.user?.userId;
+    const result = await approveWithdrawManualAdmin({
+      supabase,
+      saqueId: String(saqueId).trim(),
+      adminActorId
+    });
     if (result.success) {
+      await logAdminAction({
+        supabase,
+        adminId: adminActorId,
+        action: 'withdraw.approve',
+        targetType: 'withdrawal',
+        targetId: String(saqueId).trim(),
+        metadata: {
+          status_final: result.statusFinal || 'pago_manual',
+          deduped: !!result.deduped
+        },
+        ip: getClientIp(req)
+      });
       const code = result.deduped ? 200 : 200;
       return res.status(code).json({
         success: true,
@@ -96,13 +114,32 @@ async function cancelManualWithdraw(req, res, supabase) {
       return res.status(400).json({ success: false, message: 'saqueId é obrigatório (string UUID)' });
     }
 
+    const adminActorId = req.user?.userId;
     const result = await cancelWithdrawManualAdmin({
       supabase,
       saqueId: String(saqueId).trim(),
-      motivo
+      motivo,
+      adminActorId
     });
 
     if (result.success) {
+      const meta = {
+        status_final: result.statusFinal || 'cancelado_manual',
+        deduped: !!result.deduped,
+        compensated: !!result.compensated
+      };
+      if (motivo.trim()) {
+        meta.motivo_len = Math.min(motivo.trim().length, 500);
+      }
+      await logAdminAction({
+        supabase,
+        adminId: adminActorId,
+        action: 'withdraw.cancel',
+        targetType: 'withdrawal',
+        targetId: String(saqueId).trim(),
+        metadata: meta,
+        ip: getClientIp(req)
+      });
       return res.status(200).json({
         success: true,
         message: result.deduped ? 'Saque já estava cancelado manualmente' : 'Saque cancelado e saldo reestornado',
@@ -125,6 +162,19 @@ async function cancelManualWithdraw(req, res, supabase) {
       });
     }
     if (result.code === 'OK_COMPENSATED') {
+      await logAdminAction({
+        supabase,
+        adminId: adminActorId,
+        action: 'withdraw.cancel',
+        targetType: 'withdrawal',
+        targetId: String(saqueId).trim(),
+        metadata: {
+          outcome: 'ok_compensated',
+          status_final: result.statusFinal || 'cancelado',
+          deduped: true
+        },
+        ip: getClientIp(req)
+      });
       return res.status(200).json({
         success: true,
         message: 'Saque já está compensado (rollback_manual registrado). Nenhuma ação adicional necessária.',

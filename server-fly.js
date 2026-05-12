@@ -25,6 +25,7 @@ const {
   processPendingWithdrawals
 } = require('./src/domain/payout/processPendingWithdrawals');
 const adminWithdrawController = require('./controllers/adminWithdrawController');
+const { logAdminAction, getClientIp } = require('./src/utils/adminAuditLogger');
 // Logger opcional - fallback para console se não disponível
 let logger;
 try {
@@ -2249,6 +2250,20 @@ async function adminUsersMutationBlockOrUnblock(req, res, mode) {
       reason
     });
 
+    const auditMeta = { mode };
+    if (reason != null && String(reason).trim() !== '') {
+      auditMeta.reason_len = Math.min(String(reason).trim().length, 500);
+    }
+    await logAdminAction({
+      supabase,
+      adminId,
+      action: mode === 'block' ? 'user.block' : 'user.unblock',
+      targetType: 'user',
+      targetId: userId,
+      metadata: auditMeta,
+      ip: getClientIp(req)
+    });
+
     const { row, error: refetchErr } = await fetchUsuarioRowForAdminMap(supabase, userId);
     if (refetchErr || !row) {
       console.error('❌ [ADMIN][USERS][MUTATE] refetch:', refetchErr);
@@ -2660,6 +2675,62 @@ app.post('/api/admin/withdraw/approve', authenticateToken, requireAdministradorD
 
 app.post('/api/admin/withdraw/cancel', authenticateToken, requireAdministradorDb, async (req, res) => {
   return adminWithdrawController.cancelManualWithdraw(req, res, supabase);
+});
+
+app.get('/api/admin/audit/logs', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const rawLimit = parseInt(String(req.query.limit || '50'), 10);
+    const limit = Number.isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 200);
+    const actionParam = String(req.query.action || '').trim().slice(0, 200);
+    const adminIdParam = String(req.query.admin_id || '').trim();
+
+    if (adminIdParam && !isUuidString(adminIdParam)) {
+      return res.status(400).json({
+        success: false,
+        message: 'admin_id deve ser um UUID válido'
+      });
+    }
+
+    let query = supabase
+      .from('admin_logs')
+      .select('id, admin_id, action, target_type, target_id, metadata, ip, created_at')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (actionParam) {
+      query = query.eq('action', actionParam);
+    }
+    if (adminIdParam) {
+      query = query.eq('admin_id', adminIdParam);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error('❌ [ADMIN][AUDIT][LOGS] erro:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao listar auditoria'
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: Array.isArray(data) ? data : []
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][AUDIT][LOGS] interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
 });
 
 // =====================================================
