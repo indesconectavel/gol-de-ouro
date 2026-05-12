@@ -2073,6 +2073,204 @@ const requireAdministradorDb = async (req, res, next) => {
   }
 };
 
+/** Colunas de `usuarios` para admin: tentativas do mais completo ao mínimo (schemas variam). */
+const USUARIO_ADMIN_SELECT_ATTEMPTS = [
+  'id, email, nome, username, saldo, tipo, ativo, created_at, blocked_at, block_reason, account_status',
+  'id, email, nome, username, saldo, tipo, ativo, created_at, blocked_at, motivo_bloqueio, account_status',
+  'id, email, nome, username, saldo, tipo, ativo, created_at, account_status',
+  'id, email, nome, username, saldo, tipo, ativo, created_at, blocked_at',
+  'id, email, nome, username, saldo, tipo, ativo, created_at',
+  'id, email, username, saldo, tipo, ativo, created_at',
+  'id, email, nome, saldo, tipo, ativo, created_at',
+  'id, email, saldo, tipo, ativo, created_at'
+];
+
+function isUuidString(v) {
+  if (v == null || typeof v !== 'string') return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v.trim());
+}
+
+function logAdminUserMutation({ adminId, targetUserId, action, reason }) {
+  try {
+    console.log(
+      '🛡️ [ADMIN][USERS][ACTION]',
+      JSON.stringify({
+        admin_id: adminId,
+        target_user_id: targetUserId,
+        action,
+        reason: reason != null && String(reason).trim() !== '' ? String(reason).trim().slice(0, 500) : null,
+        timestamp: new Date().toISOString()
+      })
+    );
+  } catch (_) {
+    console.log('🛡️ [ADMIN][USERS][ACTION]', { adminId, targetUserId, action });
+  }
+}
+
+function mapUsuarioRowToAdminListItem(u) {
+  const active = Boolean(u.ativo);
+  const nome =
+    (u.nome != null && String(u.nome).trim() !== '' ? u.nome : null) ||
+    ('username' in u && u.username ? u.username : null);
+  const saldoNum = Number(u.saldo);
+  return {
+    id: u.id,
+    email: u.email ?? null,
+    nome,
+    saldo: Number.isFinite(saldoNum) ? saldoNum : 0,
+    tipo: u.tipo ?? null,
+    account_status: active ? 'active' : 'blocked',
+    ativo: active,
+    created_at: u.created_at ?? null,
+    blocked_at: u.blocked_at ?? null
+  };
+}
+
+async function applyUsuarioBlockStateWithFallbacks(supabase, userId, mode, reason) {
+  const reasonTrim = reason != null && String(reason).trim() !== '' ? String(reason).trim().slice(0, 500) : null;
+  const nowIso = new Date().toISOString();
+  let candidates;
+  if (mode === 'block') {
+    candidates = [
+      { ativo: false, account_status: 'blocked', blocked_at: nowIso, block_reason: reasonTrim },
+      { ativo: false, account_status: 'blocked', blocked_at: nowIso, motivo_bloqueio: reasonTrim },
+      { ativo: false, account_status: 'blocked', blocked_at: nowIso },
+      { ativo: false, account_status: 'blocked' },
+      { ativo: false, blocked_at: nowIso, block_reason: reasonTrim },
+      { ativo: false, blocked_at: nowIso, motivo_bloqueio: reasonTrim },
+      { ativo: false, blocked_at: nowIso },
+      { ativo: false }
+    ];
+  } else {
+    candidates = [
+      { ativo: true, account_status: 'active', blocked_at: null, block_reason: null },
+      { ativo: true, account_status: 'active', blocked_at: null, motivo_bloqueio: null },
+      { ativo: true, account_status: 'active', blocked_at: null },
+      { ativo: true, account_status: 'active' },
+      { ativo: true, blocked_at: null, block_reason: null },
+      { ativo: true, blocked_at: null, motivo_bloqueio: null },
+      { ativo: true, blocked_at: null },
+      { ativo: true }
+    ];
+  }
+  let lastErr = null;
+  for (const patch of candidates) {
+    const { error } = await supabase.from('usuarios').update(patch).eq('id', userId);
+    if (!error) {
+      return { ok: true };
+    }
+    lastErr = error;
+  }
+  return { ok: false, error: lastErr };
+}
+
+async function fetchUsuarioRowForAdminMap(supabase, userId) {
+  let lastErr = null;
+  for (let i = 0; i < USUARIO_ADMIN_SELECT_ATTEMPTS.length; i++) {
+    const selectCols = USUARIO_ADMIN_SELECT_ATTEMPTS[i];
+    const { data, error } = await supabase.from('usuarios').select(selectCols).eq('id', userId).maybeSingle();
+    if (!error && data) {
+      return { row: data, error: null };
+    }
+    lastErr = error;
+  }
+  return { row: null, error: lastErr };
+}
+
+async function adminUsersMutationBlockOrUnblock(req, res, mode) {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const adminId = req.user?.userId;
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const userId = body.userId != null ? String(body.userId).trim() : '';
+    const reason = body.reason;
+
+    if (!isUuidString(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'userId é obrigatório e deve ser um UUID válido'
+      });
+    }
+
+    if (String(userId) === String(adminId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Não é permitido bloquear ou desbloquear a própria conta'
+      });
+    }
+
+    const { data: target, error: loadErr } = await supabase
+      .from('usuarios')
+      .select('id, tipo, ativo')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (loadErr) {
+      console.error('❌ [ADMIN][USERS][MUTATE] load:', loadErr);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao verificar usuário'
+      });
+    }
+
+    if (!target) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+
+    if (mode === 'block' && String(target.tipo || '').toLowerCase() === 'admin') {
+      return res.status(400).json({
+        success: false,
+        message: 'Não é permitido bloquear um administrador'
+      });
+    }
+
+    const applied = await applyUsuarioBlockStateWithFallbacks(supabase, userId, mode, reason);
+    if (!applied.ok) {
+      console.error('❌ [ADMIN][USERS][MUTATE] update:', applied.error);
+      return res.status(500).json({
+        success: false,
+        message: applied.error?.message || 'Erro ao atualizar usuário'
+      });
+    }
+
+    logAdminUserMutation({
+      adminId,
+      targetUserId: userId,
+      action: mode === 'block' ? 'block' : 'unblock',
+      reason
+    });
+
+    const { row, error: refetchErr } = await fetchUsuarioRowForAdminMap(supabase, userId);
+    if (refetchErr || !row) {
+      console.error('❌ [ADMIN][USERS][MUTATE] refetch:', refetchErr);
+      return res.status(500).json({
+        success: false,
+        message: 'Usuário atualizado, mas falha ao carregar dados'
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: mapUsuarioRowToAdminListItem(row)
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][USERS][MUTATE] interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+}
+
 const classifyWithdrawLedgerState = (ledgerRows, saqueId) => {
   const idRef = String(saqueId || '');
   if (!idRef) return 'NONE';
@@ -2111,19 +2309,11 @@ app.get('/api/admin/users/list', authenticateToken, requireAdministradorDb, asyn
     searchRaw = searchRaw.replace(/%/g, '');
     searchRaw = searchRaw.replace(/,/g, '');
 
-    /** Schemas reais variam (nome vs username); tentar selects compativeis antes de falhar. */
-    const selectAttempts = [
-      'id, email, nome, username, saldo, tipo, ativo, created_at',
-      'id, email, username, saldo, tipo, ativo, created_at',
-      'id, email, nome, saldo, tipo, ativo, created_at',
-      'id, email, saldo, tipo, ativo, created_at'
-    ];
-
     let rows = [];
     let error = null;
 
-    for (let i = 0; i < selectAttempts.length; i++) {
-      const selectCols = selectAttempts[i];
+    for (let i = 0; i < USUARIO_ADMIN_SELECT_ATTEMPTS.length; i++) {
+      const selectCols = USUARIO_ADMIN_SELECT_ATTEMPTS[i];
       const hasNome = selectCols.includes('nome');
       const hasUsername = selectCols.includes('username');
 
@@ -2152,7 +2342,7 @@ app.get('/api/admin/users/list', authenticateToken, requireAdministradorDb, asyn
       }
       error = attempt.error;
       console.warn(
-        `⚠️ [ADMIN][USERS][LIST] tentativa ${i + 1}/${selectAttempts.length} falhou (${selectCols}):`,
+        `⚠️ [ADMIN][USERS][LIST] tentativa ${i + 1}/${USUARIO_ADMIN_SELECT_ATTEMPTS.length} falhou (${selectCols}):`,
         attempt.error?.message || attempt.error
       );
     }
@@ -2167,24 +2357,7 @@ app.get('/api/admin/users/list', authenticateToken, requireAdministradorDb, asyn
 
     const safeRows = Array.isArray(rows) ? rows : [];
 
-    const payload = safeRows.map((u) => {
-      const active = Boolean(u.ativo);
-      const nome =
-        (u.nome != null && String(u.nome).trim() !== '' ? u.nome : null) ||
-        ('username' in u && u.username ? u.username : null);
-      const saldoNum = Number(u.saldo);
-      return {
-        id: u.id,
-        email: u.email ?? null,
-        nome,
-        saldo: Number.isFinite(saldoNum) ? saldoNum : 0,
-        tipo: u.tipo ?? null,
-        account_status: active ? 'active' : 'blocked',
-        ativo: active,
-        created_at: u.created_at ?? null,
-        blocked_at: null
-      };
-    });
+    const payload = safeRows.map((u) => mapUsuarioRowToAdminListItem(u));
 
     return res.json({
       success: true,
@@ -2203,6 +2376,14 @@ app.get('/api/admin/users/list', authenticateToken, requireAdministradorDb, asyn
       message: 'Erro interno do servidor'
     });
   }
+});
+
+app.post('/api/admin/users/block', authenticateToken, requireAdministradorDb, (req, res) => {
+  void adminUsersMutationBlockOrUnblock(req, res, 'block');
+});
+
+app.post('/api/admin/users/unblock', authenticateToken, requireAdministradorDb, (req, res) => {
+  void adminUsersMutationBlockOrUnblock(req, res, 'unblock');
 });
 
 app.get('/api/admin/withdraw/list', authenticateToken, requireAdministradorDb, async (req, res) => {
