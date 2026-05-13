@@ -8,7 +8,9 @@
 
 ## 1. Resumo executivo
 
-Foi executada a **preparação automática** antes da cirurgia T14A: revisão do estado Git, **staging restrito** a três relatórios documentais acordados, **commit** dedicado, **tag anotada** de segurança e **push** da branch e da tag para `origin`. O ficheiro funcional `goldeouro-player/vercel.json` permanece **fora** do commit; scripts e restantes relatórios não listados permanecem **não rastreados** ou por commitar em lote separado.
+Foi executada a **preparação automática** antes da cirurgia T14A: revisão do estado Git, **staging restrito** a três relatórios documentais acordados, **commit** dedicado, **tag anotada** de segurança e **push** da branch e da tag para `origin`. Em seguida foi adicionado **um segundo commit** apenas com este relatório (`PREPARACAO-AUTOMATICA-...`), também enviado por `git push`. A **tag de segurança** continua a apontar para o commit dos três relatórios (`4f1a4a5`), que é o baseline documental acordado para rollback imediato antes de qualquer código T14A.
+
+O ficheiro funcional `goldeouro-player/vercel.json` permanece **fora** dos commits; scripts e restantes relatórios não listados permanecem **não rastreados** ou por commitar em lote separado.
 
 ---
 
@@ -82,7 +84,7 @@ Foi executada a **preparação automática** antes da cirurgia T14A: revisão do
 
 | Ação | Resultado |
 |------|-----------|
-| `git push` | **Sucesso** — `fix/admin-financial-integrity-v1` atualizado no remoto (`a5ada18..4f1a4a5`). |
+| `git push` | **Sucesso** — executado após o commit baseline (`a5ada18..4f1a4a5`) e novamente após o commit deste relatório (`4f1a4a5..3798a08`). |
 | `git push origin pre-t14a-painel-admin-v1-2026-05-12` | **Sucesso** — tag enviada (`[new tag]`). |
 
 **Limitação:** não aplicável nesta execução (push concluído sem `--force`).
@@ -97,7 +99,9 @@ Foi executada a **preparação automática** antes da cirurgia T14A: revisão do
 | **SHA** | `git reset --hard 4f1a4a5c38bac6454f9a8a5c274a4058236200c3` (apenas em branch local/feature, nunca force-push sem acordo). |
 | **Fly/Vercel** | Manter procedimento da pré-execução T14A (release anterior / redeploy). |
 
-O estado **imediato antes** deste commit documental continua acessível como parent: `99baaaf`.
+O estado **imediato antes** do commit dos três relatórios continua acessível como parent: `99baaaf`.
+
+**HEAD após documentar a preparação:** `3798a08` — `docs: relatorio preparacao automatica T14A painel admin V1` (apenas este ficheiro `.md`).
 
 ---
 
