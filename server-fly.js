@@ -2393,6 +2393,130 @@ app.get('/api/admin/users/list', authenticateToken, requireAdministradorDb, asyn
   }
 });
 
+app.get('/api/admin/users/:id', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+    const userId = String(req.params.id || '').trim();
+    if (!userId || userId === 'list') {
+      return res.status(400).json({
+        success: false,
+        message: 'Identificador de usuário inválido'
+      });
+    }
+    const { row, error } = await fetchUsuarioRowForAdminMap(supabase, userId);
+    if (error || !row) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+    const base = mapUsuarioRowToAdminListItem(row);
+    const activity = { total_chutes: null, total_gols: null };
+    try {
+      const chutesCount = await supabase
+        .from('chutes')
+        .select('*', { count: 'exact', head: true })
+        .eq('usuario_id', userId);
+      if (!chutesCount.error && chutesCount.count != null) {
+        activity.total_chutes = chutesCount.count;
+      }
+      const golsCount = await supabase
+        .from('chutes')
+        .select('*', { count: 'exact', head: true })
+        .eq('usuario_id', userId)
+        .gt('premio', 0);
+      if (!golsCount.error && golsCount.count != null) {
+        activity.total_gols = golsCount.count;
+      }
+    } catch (actErr) {
+      console.warn('⚠️ [ADMIN][USERS][GET] atividade resumida indisponível:', actErr?.message || actErr);
+    }
+    return res.json({
+      success: true,
+      data: {
+        ...base,
+        activity
+      }
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][USERS][GET] erro interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+app.get('/api/admin/chutes/recentes', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+    const rawLimit = parseInt(String(req.query.limit || '50'), 10);
+    const limit = Number.isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 100);
+    const { data: rows, error } = await supabase
+      .from('chutes')
+      .select('id, usuario_id, created_at, direcao, valor_aposta, resultado, premio, premio_gol_de_ouro, lote_id')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) {
+      console.error('❌ [ADMIN][CHUTES][RECENTES] erro:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao listar chutes recentes'
+      });
+    }
+    const list = Array.isArray(rows) ? rows : [];
+    const userIds = [...new Set(list.map((r) => r.usuario_id).filter(Boolean))];
+    let userById = new Map();
+    if (userIds.length > 0) {
+      const { data: usersRows, error: usersError } = await supabase
+        .from('usuarios')
+        .select('id, email, nome, username')
+        .in('id', userIds);
+      if (!usersError && Array.isArray(usersRows)) {
+        userById = new Map(usersRows.map((u) => [u.id, u]));
+      }
+    }
+    const items = list.map((r) => {
+      const u = userById.get(r.usuario_id) || null;
+      const nome =
+        (u?.nome && String(u.nome).trim()) || (u?.username && String(u.username).trim()) || u?.email || '—';
+      const premioNum = Number(r.premio);
+      const scored = Number.isFinite(premioNum) && premioNum > 0;
+      return {
+        id: r.id,
+        usuario_id: r.usuario_id,
+        user_name: nome,
+        game_id: r.lote_id != null ? String(r.lote_id) : '—',
+        direction: r.direcao != null ? String(r.direcao) : '—',
+        scored,
+        resultado: r.resultado != null ? String(r.resultado) : null,
+        valor_aposta: r.valor_aposta,
+        created_at: r.created_at
+      };
+    });
+    return res.json({
+      success: true,
+      data: { items }
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][CHUTES][RECENTES] interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
 app.post('/api/admin/users/block', authenticateToken, requireAdministradorDb, (req, res) => {
   void adminUsersMutationBlockOrUnblock(req, res, 'block');
 });
