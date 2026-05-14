@@ -12,8 +12,10 @@ Realizar deploy completo e seguro do projeto Gol de Ouro para produção.
 - [ ] Validar configurações de segurança
 
 ### 2. Deploy Backend (Fly.io)
-- [ ] Executar `fly deploy` no backend
-- [ ] Verificar health check: `https://goldeouro-backend.fly.dev/health`
+- [ ] Na raiz do backend, deploy **com rastreabilidade** (`GIT_COMMIT` na imagem → `/meta`):
+  - **Bash / Git Bash:** `fly deploy --remote-only --app goldeouro-backend-v2 --build-arg GIT_COMMIT="$(git rev-parse HEAD)"`
+  - **PowerShell:** `$sha = git rev-parse HEAD; fly deploy --remote-only --app goldeouro-backend-v2 --build-arg GIT_COMMIT=$sha`
+- [ ] Verificar health check: `https://goldeouro-backend-v2.fly.dev/health`
 - [ ] Testar endpoints críticos
 - [ ] Verificar logs de deploy
 
@@ -38,16 +40,17 @@ Realizar deploy completo e seguro do projeto Gol de Ouro para produção.
 
 ## Comandos Úteis
 ```bash
-# Backend
-fly deploy
-fly logs
+# Backend (obrigatório --build-arg para /meta.gitCommit — H2)
+fly deploy --remote-only --app goldeouro-backend-v2 --build-arg GIT_COMMIT="$(git rev-parse HEAD)"
+fly logs -a goldeouro-backend-v2
 
 # Frontend
 vercel --prod
 vercel logs
 
 # Verificação
-curl https://goldeouro-backend.fly.dev/health
+curl -sS "https://goldeouro-backend-v2.fly.dev/health"
+curl -sS "https://goldeouro-backend-v2.fly.dev/meta"
 ```
 
 ## Rollback (se necessário)

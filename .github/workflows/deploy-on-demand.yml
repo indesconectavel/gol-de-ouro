@@ -39,7 +39,7 @@ jobs:
           fi
           # Autenticar e publicar no app de produção (goldeouro-backend-v2)
           flyctl auth login --access-token "${FLY_API_TOKEN}"
-          flyctl deploy --config fly.toml --remote-only --app goldeouro-backend-v2
+          flyctl deploy --config fly.toml --remote-only --app goldeouro-backend-v2 --build-arg GIT_COMMIT="${{ github.sha }}"
 
       - name: Health check (Fly.io)
         run: |
