@@ -38,6 +38,11 @@ body[data-page="game"] {
 
 body[data-page="game"] .game-viewport {
   animation: gameG4StageEnter 200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
 }
 
 @keyframes gameG4StageEnter {
@@ -76,10 +81,35 @@ body[data-page="game"] .game-viewport {
 
 /* bloquear retrato somente aqui */
 .game-rotate{ display:none; }
+.game-rotate .rotate-title{
+  margin:0 0 8px;
+  font-size:1.25rem;
+  font-weight:700;
+}
+.game-rotate .rotate-sub{
+  margin:0;
+  font-size:0.95rem;
+  opacity:0.85;
+}
 @media (orientation: portrait){
-  .game-rotate{ position:fixed; inset:0; display:grid; place-items:center; z-index:9999; background:#0b1e2a; color:#fff; padding:24px; text-align:center; }
+  .game-rotate{
+    position:fixed;
+    inset:0;
+    display:grid;
+    place-items:center;
+    z-index:9999;
+    background:#0b1e2a;
+    color:#fff;
+    padding:max(24px, env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) max(24px, env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
+    text-align:center;
+  }
   .rotate-card{ border-radius:16px; padding:20px 24px; background:rgba(255,255,255,.06); backdrop-filter:blur(6px); }
   .game-stage-wrap{ display:none; }
+  /* GameFinal (H3.0B): ocultar palco em portrait — Opção A */
+  body[data-page="game"] .game-viewport > .game-scale{
+    display:none !important;
+    pointer-events:none !important;
+  }
 }
 
 /* ===== stage ocupa toda a viewport (sem fundo azul exposto) ===== */
@@ -884,5 +914,27 @@ body[data-page="game"] .game-topbar,
 body[data-page="game"] header.game-topbar,
 body[data-page="game"] .hud-header-clip,
 body[data-page="game"] .glass-strip { display:none !important; }
+
+/* ===== H3.0B — GameFinal: HUD compacto em landscape mobile ===== */
+@media (max-width: 767px) and (orientation: landscape) {
+  body[data-page="game"] .hud-header {
+    min-height: 4.5rem;
+    padding: 0.75rem 1rem;
+  }
+  body[data-page="game"] .hud-stats {
+    gap: 1rem;
+  }
+  body[data-page="game"] .hud-header .brand-small .brand-logo-small {
+    width: 120px !important;
+    min-width: 120px !important;
+    max-height: 120px !important;
+  }
+  body[data-page="game"] .game-stage .hud-bottom-left {
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body[data-page="game"] .game-stage .hud-bottom-right {
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
 
 /* Estilos finais limpos - sem debug */
