@@ -13,8 +13,8 @@ export const STAGE = {
 // BOLA
 // =====================================================
 export const BALL = {
-  // Posição inicial da bola (centro inferior do campo) — H3.5i: −60px X (alinhamento palco 960)
-  START: { x: 960, y: 1010 },
+  // Posição inicial da bola (centro inferior do campo) — H3.5i: −60px X; H3.5l: −25px Y
+  START: { x: 960, y: 985 },
   // Tamanho da bola
   SIZE: 90,
   // Velocidade da animação (ms)
@@ -48,12 +48,12 @@ export const GOALKEEPER = {
 // TARGETS (ZONAS CLICÁVEIS DO GOL)
 // =====================================================
 export const TARGETS = {
-  // Posições dos círculos clicáveis (centro exato de cada zona) — H3.5i: −60px X vs pré-H3.5i
-  TL: { x: 450, y: 520 },   // Top Left
-  TR: { x: 1470, y: 520 }, // Top Right
-  C: { x: 960, y: 520 },    // Center (eixo stage / goleiro idle)
-  BL: { x: 450, y: 740 },   // Bottom Left
-  BR: { x: 1470, y: 740 },  // Bottom Right
+  // Posições dos círculos clicáveis (centro exato de cada zona) — H3.5i: −60px X; H3.5l: −25px Y
+  TL: { x: 450, y: 495 },   // Top Left
+  TR: { x: 1470, y: 495 }, // Top Right
+  C: { x: 960, y: 495 },    // Center (eixo stage / goleiro idle)
+  BL: { x: 450, y: 715 },   // Bottom Left
+  BR: { x: 1470, y: 715 },  // Bottom Right
   // Tamanho dos círculos
   SIZE: 100,
   // Offset horizontal para aproximar laterais (ajuste fino)
