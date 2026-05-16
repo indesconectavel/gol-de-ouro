@@ -536,7 +536,7 @@ body[data-page="game"] .game-stage button.gs-zone.disabled {
 
 @media (hover: hover) and (pointer: fine) {
   body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):hover {
-    transform: translate(-50%, -50%) scale(1.05);
+    transform: scale(1.05);
     filter: brightness(1.12);
     background: rgba(0, 0, 0, 0.38);
     border-color: rgba(255, 255, 255, 0.88);
@@ -544,7 +544,7 @@ body[data-page="game"] .game-stage button.gs-zone.disabled {
 }
 
 body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):active {
-  transform: translate(-50%, -50%) scale(0.97);
+  transform: scale(0.97);
   filter: brightness(1.08);
   transition-duration: 120ms;
 }
@@ -555,7 +555,7 @@ body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):
   }
   body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):hover,
   body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):active {
-    transform: translate(-50%, -50%);
+    transform: none;
     filter: none;
   }
 }
@@ -624,50 +624,14 @@ body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):
   font-weight:700; z-index:10;
 }
 
-/* ===== H3.0B — GameFinal: layoutConfig inline; neutralizar translate legado ===== */
+/* ===== H3.5d — GameFinal: posição via inline (layoutConfig); sem translate legado duplicado ===== */
 body[data-page="game"] .game-stage img.gs-ball {
   transform: none !important;
-  left: auto;
-  top: auto;
-  width: auto;
-  height: auto;
-}
-
-body[data-page="game"] .game-stage img.gs-goalie {
-  left: auto;
-  top: auto;
-  width: auto;
-  height: auto;
 }
 
 body[data-page="game"] .game-stage button.gs-zone {
   transform: none;
   transform-origin: center center;
-  width: auto;
-  height: auto;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):hover {
-    transform: scale(1.05);
-    filter: brightness(1.12);
-    background: rgba(0, 0, 0, 0.38);
-    border-color: rgba(255, 255, 255, 0.88);
-  }
-}
-
-body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):active {
-  transform: scale(0.97);
-  filter: brightness(1.08);
-  transition-duration: 120ms;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):hover,
-  body[data-page="game"] .game-stage button.gs-zone:not(:disabled):not(.disabled):active {
-    transform: none;
-    filter: none;
-  }
 }
 
 @media (max-width: 767px) {
