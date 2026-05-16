@@ -38,11 +38,7 @@ body[data-page="game"] {
 
 body[data-page="game"] .game-viewport {
   animation: gameG4StageEnter 200ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  box-sizing: border-box;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-right: env(safe-area-inset-right, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  padding-left: env(safe-area-inset-left, 0px);
+  /* H3.5d: sem safe-area no palco — evita deslocar .game-scale; insets ficam no HUD/overlay */
 }
 
 @keyframes gameG4StageEnter {
