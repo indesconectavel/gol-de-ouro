@@ -25,6 +25,7 @@ const {
   processPendingWithdrawals
 } = require('./src/domain/payout/processPendingWithdrawals');
 const adminWithdrawController = require('./controllers/adminWithdrawController');
+const { logAdminAction, getClientIp } = require('./src/utils/adminAuditLogger');
 // Logger opcional - fallback para console se não disponível
 let logger;
 try {
@@ -2073,12 +2074,787 @@ const requireAdministradorDb = async (req, res, next) => {
   }
 };
 
+/** Colunas de `usuarios` para admin: tentativas do mais completo ao mínimo (schemas variam). */
+const USUARIO_ADMIN_SELECT_ATTEMPTS = [
+  'id, email, nome, username, saldo, tipo, ativo, created_at, blocked_at, block_reason, account_status',
+  'id, email, nome, username, saldo, tipo, ativo, created_at, blocked_at, motivo_bloqueio, account_status',
+  'id, email, nome, username, saldo, tipo, ativo, created_at, account_status',
+  'id, email, nome, username, saldo, tipo, ativo, created_at, blocked_at',
+  'id, email, nome, username, saldo, tipo, ativo, created_at',
+  'id, email, username, saldo, tipo, ativo, created_at',
+  'id, email, nome, saldo, tipo, ativo, created_at',
+  'id, email, saldo, tipo, ativo, created_at'
+];
+
+function isUuidString(v) {
+  if (v == null || typeof v !== 'string') return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v.trim());
+}
+
+function logAdminUserMutation({ adminId, targetUserId, action, reason }) {
+  try {
+    console.log(
+      '🛡️ [ADMIN][USERS][ACTION]',
+      JSON.stringify({
+        admin_id: adminId,
+        target_user_id: targetUserId,
+        action,
+        reason: reason != null && String(reason).trim() !== '' ? String(reason).trim().slice(0, 500) : null,
+        timestamp: new Date().toISOString()
+      })
+    );
+  } catch (_) {
+    console.log('🛡️ [ADMIN][USERS][ACTION]', { adminId, targetUserId, action });
+  }
+}
+
+function mapUsuarioRowToAdminListItem(u) {
+  const active = Boolean(u.ativo);
+  const nome =
+    (u.nome != null && String(u.nome).trim() !== '' ? u.nome : null) ||
+    ('username' in u && u.username ? u.username : null);
+  const saldoNum = Number(u.saldo);
+  return {
+    id: u.id,
+    email: u.email ?? null,
+    nome,
+    saldo: Number.isFinite(saldoNum) ? saldoNum : 0,
+    tipo: u.tipo ?? null,
+    account_status: active ? 'active' : 'blocked',
+    ativo: active,
+    created_at: u.created_at ?? null,
+    blocked_at: u.blocked_at ?? null
+  };
+}
+
+async function applyUsuarioBlockStateWithFallbacks(supabase, userId, mode, reason) {
+  const reasonTrim = reason != null && String(reason).trim() !== '' ? String(reason).trim().slice(0, 500) : null;
+  const nowIso = new Date().toISOString();
+  let candidates;
+  if (mode === 'block') {
+    candidates = [
+      { ativo: false, account_status: 'blocked', blocked_at: nowIso, block_reason: reasonTrim },
+      { ativo: false, account_status: 'blocked', blocked_at: nowIso, motivo_bloqueio: reasonTrim },
+      { ativo: false, account_status: 'blocked', blocked_at: nowIso },
+      { ativo: false, account_status: 'blocked' },
+      { ativo: false, blocked_at: nowIso, block_reason: reasonTrim },
+      { ativo: false, blocked_at: nowIso, motivo_bloqueio: reasonTrim },
+      { ativo: false, blocked_at: nowIso },
+      { ativo: false }
+    ];
+  } else {
+    candidates = [
+      { ativo: true, account_status: 'active', blocked_at: null, block_reason: null },
+      { ativo: true, account_status: 'active', blocked_at: null, motivo_bloqueio: null },
+      { ativo: true, account_status: 'active', blocked_at: null },
+      { ativo: true, account_status: 'active' },
+      { ativo: true, blocked_at: null, block_reason: null },
+      { ativo: true, blocked_at: null, motivo_bloqueio: null },
+      { ativo: true, blocked_at: null },
+      { ativo: true }
+    ];
+  }
+  let lastErr = null;
+  for (const patch of candidates) {
+    const { error } = await supabase.from('usuarios').update(patch).eq('id', userId);
+    if (!error) {
+      return { ok: true };
+    }
+    lastErr = error;
+  }
+  return { ok: false, error: lastErr };
+}
+
+async function fetchUsuarioRowForAdminMap(supabase, userId) {
+  let lastErr = null;
+  for (let i = 0; i < USUARIO_ADMIN_SELECT_ATTEMPTS.length; i++) {
+    const selectCols = USUARIO_ADMIN_SELECT_ATTEMPTS[i];
+    const { data, error } = await supabase.from('usuarios').select(selectCols).eq('id', userId).maybeSingle();
+    if (!error && data) {
+      return { row: data, error: null };
+    }
+    lastErr = error;
+  }
+  return { row: null, error: lastErr };
+}
+
+async function adminUsersMutationBlockOrUnblock(req, res, mode) {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const adminId = req.user?.userId;
+    const body = req.body && typeof req.body === 'object' ? req.body : {};
+    const userId = body.userId != null ? String(body.userId).trim() : '';
+    const reason = body.reason;
+
+    if (!isUuidString(userId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'userId é obrigatório e deve ser um UUID válido'
+      });
+    }
+
+    if (String(userId) === String(adminId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Não é permitido bloquear ou desbloquear a própria conta'
+      });
+    }
+
+    const { data: target, error: loadErr } = await supabase
+      .from('usuarios')
+      .select('id, tipo, ativo')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (loadErr) {
+      console.error('❌ [ADMIN][USERS][MUTATE] load:', loadErr);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao verificar usuário'
+      });
+    }
+
+    if (!target) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+
+    if (mode === 'block' && String(target.tipo || '').toLowerCase() === 'admin') {
+      return res.status(400).json({
+        success: false,
+        message: 'Não é permitido bloquear um administrador'
+      });
+    }
+
+    const applied = await applyUsuarioBlockStateWithFallbacks(supabase, userId, mode, reason);
+    if (!applied.ok) {
+      console.error('❌ [ADMIN][USERS][MUTATE] update:', applied.error);
+      return res.status(500).json({
+        success: false,
+        message: applied.error?.message || 'Erro ao atualizar usuário'
+      });
+    }
+
+    logAdminUserMutation({
+      adminId,
+      targetUserId: userId,
+      action: mode === 'block' ? 'block' : 'unblock',
+      reason
+    });
+
+    const auditMeta = { mode };
+    if (reason != null && String(reason).trim() !== '') {
+      auditMeta.reason_len = Math.min(String(reason).trim().length, 500);
+    }
+    await logAdminAction({
+      supabase,
+      adminId,
+      action: mode === 'block' ? 'user.block' : 'user.unblock',
+      targetType: 'user',
+      targetId: userId,
+      metadata: auditMeta,
+      ip: getClientIp(req)
+    });
+
+    const { row, error: refetchErr } = await fetchUsuarioRowForAdminMap(supabase, userId);
+    if (refetchErr || !row) {
+      console.error('❌ [ADMIN][USERS][MUTATE] refetch:', refetchErr);
+      return res.status(500).json({
+        success: false,
+        message: 'Usuário atualizado, mas falha ao carregar dados'
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: mapUsuarioRowToAdminListItem(row)
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][USERS][MUTATE] interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+}
+
+const classifyWithdrawLedgerState = (ledgerRows, saqueId) => {
+  const idRef = String(saqueId || '');
+  if (!idRef) return 'NONE';
+
+  const refsRollback = new Set([idRef, `${idRef}:fee`]);
+  const hasPayoutManual = ledgerRows.some(
+    (l) => l.tipo === 'payout_manual_confirmado' && String(l.referencia || '') === idRef
+  );
+  const hasRollbackManual = ledgerRows.some((l) => {
+    if (l.tipo !== 'rollback_manual') return false;
+    const ref = String(l.referencia || '');
+    return refsRollback.has(ref) || ref.startsWith(`${idRef}:estorno_`);
+  });
+
+  if (hasPayoutManual && hasRollbackManual) return 'COMPENSATED';
+  if (hasPayoutManual) return 'PAYOUT_ONLY';
+  if (hasRollbackManual) return 'ROLLBACK_ONLY';
+  return 'NONE';
+};
+
+app.get('/api/admin/users/list', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const rawLimit = parseInt(String(req.query.limit || '50'), 10);
+    const limit = Number.isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 200);
+    const rawStatus = String(req.query.status || 'all').trim().toLowerCase();
+    const statusParam = ['active', 'blocked', 'all'].includes(rawStatus) ? rawStatus : 'all';
+
+    let searchRaw = String(req.query.search || '').trim().slice(0, 200);
+    searchRaw = searchRaw.replace(/%/g, '');
+    searchRaw = searchRaw.replace(/,/g, '');
+
+    let rows = [];
+    let error = null;
+
+    for (let i = 0; i < USUARIO_ADMIN_SELECT_ATTEMPTS.length; i++) {
+      const selectCols = USUARIO_ADMIN_SELECT_ATTEMPTS[i];
+      const hasNome = selectCols.includes('nome');
+      const hasUsername = selectCols.includes('username');
+
+      let q = supabase
+        .from('usuarios')
+        .select(selectCols)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (statusParam === 'active') q = q.eq('ativo', true);
+      else if (statusParam === 'blocked') q = q.eq('ativo', false);
+
+      if (searchRaw.length > 0) {
+        const pat = `%${searchRaw}%`;
+        const orParts = [`email.ilike.${pat}`];
+        if (hasNome) orParts.push(`nome.ilike.${pat}`);
+        if (hasUsername) orParts.push(`username.ilike.${pat}`);
+        q = q.or(orParts.join(','));
+      }
+
+      const attempt = await q;
+      if (!attempt.error) {
+        rows = Array.isArray(attempt.data) ? attempt.data : [];
+        error = null;
+        break;
+      }
+      error = attempt.error;
+      console.warn(
+        `⚠️ [ADMIN][USERS][LIST] tentativa ${i + 1}/${USUARIO_ADMIN_SELECT_ATTEMPTS.length} falhou (${selectCols}):`,
+        attempt.error?.message || attempt.error
+      );
+    }
+
+    if (error) {
+      console.error('❌ [ADMIN][USERS][LIST] erro:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao listar usuários'
+      });
+    }
+
+    const safeRows = Array.isArray(rows) ? rows : [];
+
+    const payload = safeRows.map((u) => mapUsuarioRowToAdminListItem(u));
+
+    return res.json({
+      success: true,
+      data: payload,
+      meta: {
+        limit,
+        count: payload.length,
+        status: statusParam,
+        search: searchRaw.length > 0 ? searchRaw : null
+      }
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][USERS][LIST] erro interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+app.get('/api/admin/users/:id', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+    const userId = String(req.params.id || '').trim();
+    if (!userId || userId === 'list') {
+      return res.status(400).json({
+        success: false,
+        message: 'Identificador de usuário inválido'
+      });
+    }
+    const { row, error } = await fetchUsuarioRowForAdminMap(supabase, userId);
+    if (error || !row) {
+      return res.status(404).json({
+        success: false,
+        message: 'Usuário não encontrado'
+      });
+    }
+    const base = mapUsuarioRowToAdminListItem(row);
+    const activity = { total_chutes: null, total_gols: null };
+    try {
+      const chutesCount = await supabase
+        .from('chutes')
+        .select('*', { count: 'exact', head: true })
+        .eq('usuario_id', userId);
+      if (!chutesCount.error && chutesCount.count != null) {
+        activity.total_chutes = chutesCount.count;
+      }
+      const golsCount = await supabase
+        .from('chutes')
+        .select('*', { count: 'exact', head: true })
+        .eq('usuario_id', userId)
+        .gt('premio', 0);
+      if (!golsCount.error && golsCount.count != null) {
+        activity.total_gols = golsCount.count;
+      }
+    } catch (actErr) {
+      console.warn('⚠️ [ADMIN][USERS][GET] atividade resumida indisponível:', actErr?.message || actErr);
+    }
+    return res.json({
+      success: true,
+      data: {
+        ...base,
+        activity
+      }
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][USERS][GET] erro interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+app.get('/api/admin/chutes/recentes', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+    const rawLimit = parseInt(String(req.query.limit || '50'), 10);
+    const limit = Number.isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 100);
+    const { data: rows, error } = await supabase
+      .from('chutes')
+      .select('id, usuario_id, created_at, direcao, valor_aposta, resultado, premio, premio_gol_de_ouro, lote_id')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) {
+      console.error('❌ [ADMIN][CHUTES][RECENTES] erro:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao listar chutes recentes'
+      });
+    }
+    const list = Array.isArray(rows) ? rows : [];
+    const userIds = [...new Set(list.map((r) => r.usuario_id).filter(Boolean))];
+    let userById = new Map();
+    if (userIds.length > 0) {
+      const { data: usersRows, error: usersError } = await supabase
+        .from('usuarios')
+        .select('id, email, nome, username')
+        .in('id', userIds);
+      if (!usersError && Array.isArray(usersRows)) {
+        userById = new Map(usersRows.map((u) => [u.id, u]));
+      }
+    }
+    const items = list.map((r) => {
+      const u = userById.get(r.usuario_id) || null;
+      const nome =
+        (u?.nome && String(u.nome).trim()) || (u?.username && String(u.username).trim()) || u?.email || '—';
+      const premioNum = Number(r.premio);
+      const scored = Number.isFinite(premioNum) && premioNum > 0;
+      return {
+        id: r.id,
+        usuario_id: r.usuario_id,
+        user_name: nome,
+        game_id: r.lote_id != null ? String(r.lote_id) : '—',
+        direction: r.direcao != null ? String(r.direcao) : '—',
+        scored,
+        resultado: r.resultado != null ? String(r.resultado) : null,
+        valor_aposta: r.valor_aposta,
+        created_at: r.created_at
+      };
+    });
+    return res.json({
+      success: true,
+      data: { items }
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][CHUTES][RECENTES] interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+app.post('/api/admin/users/block', authenticateToken, requireAdministradorDb, (req, res) => {
+  void adminUsersMutationBlockOrUnblock(req, res, 'block');
+});
+
+app.post('/api/admin/users/unblock', authenticateToken, requireAdministradorDb, (req, res) => {
+  void adminUsersMutationBlockOrUnblock(req, res, 'unblock');
+});
+
+app.get('/api/admin/withdraw/list', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const rawLimit = parseInt(String(req.query.limit || '50'), 10);
+    const limit = Number.isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 200);
+    const statusFilter = String(req.query.status || '').trim();
+
+    let saquesQuery = supabase
+      .from('saques')
+      .select(
+        'id, usuario_id, valor, amount, fee, status, motivo_rejeicao, correlation_id, processed_at, created_at, updated_at'
+      )
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (statusFilter) {
+      saquesQuery = saquesQuery.eq('status', statusFilter);
+    }
+
+    const { data: saquesRows, error: saquesError } = await saquesQuery;
+    if (saquesError) {
+      console.error('❌ [ADMIN][WITHDRAW][LIST] erro ao buscar saques:', saquesError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao listar saques'
+      });
+    }
+
+    const saques = Array.isArray(saquesRows) ? saquesRows : [];
+    if (saques.length === 0) {
+      return res.json({
+        success: true,
+        data: [],
+        meta: { total: 0, limit, status: statusFilter || null }
+      });
+    }
+
+    const userIds = [...new Set(saques.map((s) => s.usuario_id).filter(Boolean))];
+    let userById = new Map();
+    if (userIds.length > 0) {
+      const { data: usersRows, error: usersError } = await supabase
+        .from('usuarios')
+        .select('id, email, nome, username')
+        .in('id', userIds);
+      if (!usersError && Array.isArray(usersRows)) {
+        userById = new Map(usersRows.map((u) => [u.id, u]));
+      }
+    }
+
+    const correlationIds = [...new Set(saques.map((s) => s.correlation_id).filter(Boolean))];
+    let ledgerByCorrelation = new Map();
+    if (correlationIds.length > 0) {
+      const { data: ledgerRows, error: ledgerError } = await supabase
+        .from('ledger_financeiro')
+        .select('correlation_id, tipo, referencia')
+        .in('correlation_id', correlationIds)
+        .in('tipo', ['payout_manual_confirmado', 'rollback_manual', 'payout_confirmado', 'rollback']);
+
+      if (!ledgerError && Array.isArray(ledgerRows)) {
+        for (const row of ledgerRows) {
+          const key = String(row.correlation_id || '');
+          if (!key) continue;
+          const list = ledgerByCorrelation.get(key) || [];
+          list.push(row);
+          ledgerByCorrelation.set(key, list);
+        }
+      }
+    }
+
+    const payload = saques.map((s) => {
+      const user = userById.get(s.usuario_id) || null;
+      const ledgerRowsForSaque = ledgerByCorrelation.get(String(s.correlation_id || '')) || [];
+      return {
+        id: s.id,
+        usuario_id: s.usuario_id,
+        user: user
+          ? {
+              id: user.id,
+              email: user.email || null,
+              nome: user.nome || user.username || null
+            }
+          : null,
+        amount: s.amount != null ? s.amount : s.valor,
+        valor: s.valor != null ? s.valor : s.amount,
+        fee: s.fee != null ? s.fee : 0,
+        status: s.status,
+        motivo_rejeicao: s.motivo_rejeicao || null,
+        correlation_id: s.correlation_id || null,
+        ledger_state: classifyWithdrawLedgerState(ledgerRowsForSaque, s.id),
+        processed_at: s.processed_at || null,
+        created_at: s.created_at || null,
+        updated_at: s.updated_at || null
+      };
+    });
+
+    return res.json({
+      success: true,
+      data: payload,
+      meta: {
+        total: payload.length,
+        limit,
+        status: statusFilter || null
+      }
+    });
+  } catch (error) {
+    console.error('❌ [ADMIN][WITHDRAW][LIST] erro interno:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+app.get('/api/admin/dashboard/stats', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const asNumber = (v) => {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const [
+      totalUsersResult,
+      saldoUsersResult,
+      saquesPendentesResult,
+      saquesTotalResult,
+      ledgerTotalResult,
+      ledgerVolumeResult
+    ] = await Promise.all([
+      supabase.from('usuarios').select('*', { count: 'exact', head: true }),
+      supabase.from('usuarios').select('saldo'),
+      supabase.from('saques').select('*', { count: 'exact', head: true }).in('status', ['pendente', 'processando']),
+      supabase.from('saques').select('*', { count: 'exact', head: true }),
+      supabase.from('ledger_financeiro').select('*', { count: 'exact', head: true }),
+      supabase.from('ledger_financeiro').select('valor, tipo').in('tipo', ['deposito', 'saque', 'payout_manual_confirmado'])
+    ]);
+
+    const possibleErrors = [
+      totalUsersResult.error,
+      saldoUsersResult.error,
+      saquesPendentesResult.error,
+      saquesTotalResult.error,
+      ledgerTotalResult.error,
+      ledgerVolumeResult.error
+    ].filter(Boolean);
+
+    if (possibleErrors.length > 0) {
+      console.error('❌ [ADMIN][DASHBOARD][STATS] erro ao agregar métricas:', possibleErrors[0]);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao consolidar métricas do dashboard'
+      });
+    }
+
+    const saldo_total = (saldoUsersResult.data || []).reduce((acc, row) => acc + asNumber(row?.saldo), 0);
+    const volume_financeiro_total = (ledgerVolumeResult.data || []).reduce(
+      (acc, row) => acc + asNumber(row?.valor),
+      0
+    );
+
+    return res.json({
+      success: true,
+      data: {
+        total_users: totalUsersResult.count || 0,
+        saldo_total,
+        saques_pendentes: saquesPendentesResult.count || 0,
+        saques_total: saquesTotalResult.count || 0,
+        ledger_transacoes_total: ledgerTotalResult.count || 0,
+        volume_financeiro_total,
+        updated_at: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('❌ [ADMIN][DASHBOARD][STATS] erro interno:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+app.get('/api/admin/financial/report', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const toNumber = (value) => {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const [ledgerRowsResult, usersSaldoResult, transacoesRecentesResult] = await Promise.all([
+      supabase.from('ledger_financeiro').select('id, tipo, valor, correlation_id, referencia, created_at').order('created_at', { ascending: false }),
+      supabase.from('usuarios').select('saldo'),
+      supabase
+        .from('ledger_financeiro')
+        .select('id, tipo, valor, correlation_id, referencia, created_at')
+        .order('created_at', { ascending: false })
+        .limit(20)
+    ]);
+
+    const errors = [ledgerRowsResult.error, usersSaldoResult.error, transacoesRecentesResult.error].filter(Boolean);
+    if (errors.length > 0) {
+      console.error('❌ [ADMIN][FINANCIAL][REPORT] erro ao consolidar relatório:', errors[0]);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao consolidar relatório financeiro'
+      });
+    }
+
+    const ledgerRows = Array.isArray(ledgerRowsResult.data) ? ledgerRowsResult.data : [];
+    const usersRows = Array.isArray(usersSaldoResult.data) ? usersSaldoResult.data : [];
+    const recentRows = Array.isArray(transacoesRecentesResult.data) ? transacoesRecentesResult.data : [];
+
+    const receitas_depositos = ledgerRows
+      .filter((row) => row.tipo === 'deposito')
+      .reduce((sum, row) => sum + toNumber(row.valor), 0);
+
+    const saques_total = ledgerRows
+      .filter((row) => row.tipo === 'saque' || row.tipo === 'payout_manual_confirmado')
+      .reduce((sum, row) => sum + toNumber(row.valor), 0);
+
+    const taxas_total = ledgerRows
+      .filter((row) => row.tipo === 'taxa')
+      .reduce((sum, row) => sum + toNumber(row.valor), 0);
+
+    const volume_ledger = ledgerRows.reduce((sum, row) => sum + toNumber(row.valor), 0);
+    const saldo_total_usuarios = usersRows.reduce((sum, row) => sum + toNumber(row.saldo), 0);
+    const resultado_liquido_estimado = receitas_depositos + taxas_total - saques_total;
+
+    return res.json({
+      success: true,
+      data: {
+        receitas_depositos,
+        saques_total,
+        taxas_total,
+        saldo_total_usuarios,
+        volume_ledger,
+        resultado_liquido_estimado,
+        transacoes_recentes: recentRows,
+        updated_at: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('❌ [ADMIN][FINANCIAL][REPORT] erro interno:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
 app.post('/api/admin/withdraw/approve', authenticateToken, requireAdministradorDb, async (req, res) => {
   return adminWithdrawController.approveManualWithdraw(req, res, supabase);
 });
 
 app.post('/api/admin/withdraw/cancel', authenticateToken, requireAdministradorDb, async (req, res) => {
   return adminWithdrawController.cancelManualWithdraw(req, res, supabase);
+});
+
+app.get('/api/admin/audit/logs', authenticateToken, requireAdministradorDb, async (req, res) => {
+  try {
+    if (!dbConnected || !supabase) {
+      return res.status(503).json({
+        success: false,
+        message: 'Sistema temporariamente indisponível'
+      });
+    }
+
+    const rawLimit = parseInt(String(req.query.limit || '50'), 10);
+    const limit = Number.isNaN(rawLimit) ? 50 : Math.min(Math.max(rawLimit, 1), 200);
+    const actionParam = String(req.query.action || '').trim().slice(0, 200);
+    const adminIdParam = String(req.query.admin_id || '').trim();
+
+    if (adminIdParam && !isUuidString(adminIdParam)) {
+      return res.status(400).json({
+        success: false,
+        message: 'admin_id deve ser um UUID válido'
+      });
+    }
+
+    let query = supabase
+      .from('admin_logs')
+      .select('id, admin_id, action, target_type, target_id, metadata, ip, created_at')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (actionParam) {
+      query = query.eq('action', actionParam);
+    }
+    if (adminIdParam) {
+      query = query.eq('admin_id', adminIdParam);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error('❌ [ADMIN][AUDIT][LOGS] erro:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao listar auditoria'
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: Array.isArray(data) ? data : []
+    });
+  } catch (err) {
+    console.error('❌ [ADMIN][AUDIT][LOGS] interno:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
 });
 
 // =====================================================

@@ -621,8 +621,21 @@ const GameFinal = () => {
         justifyContent: 'center'
       }}
     >
+      {/* H3.0B — portrait: overlay orientação (CSS em game-scene.css) */}
+      <div
+        className="game-rotate"
+        role="dialog"
+        aria-live="polite"
+        aria-label="Orientação do dispositivo"
+      >
+        <div className="rotate-card">
+          <p className="rotate-title">Gire o celular</p>
+          <p className="rotate-sub">Use o modo horizontal (paisagem) para jogar.</p>
+        </div>
+      </div>
+
       {/* FASE 1: GAME SCALE - Aplica transform: scale() */}
-      <div 
+      <div
         className="game-scale"
         style={gameScaleStyle}
       >

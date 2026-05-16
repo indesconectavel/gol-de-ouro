@@ -1,6 +1,7 @@
 'use strict';
 
 const { approveWithdrawManualAdmin, cancelWithdrawManualAdmin } = require('../src/domain/payout/processPendingWithdrawals');
+const { logAdminAction, getClientIp } = require('../src/utils/adminAuditLogger');
 
 async function approveManualWithdraw(req, res, supabase) {
   try {
@@ -12,8 +13,25 @@ async function approveManualWithdraw(req, res, supabase) {
       return res.status(400).json({ success: false, message: 'saqueId é obrigatório (string UUID)' });
     }
 
-    const result = await approveWithdrawManualAdmin({ supabase, saqueId: String(saqueId).trim() });
+    const adminActorId = req.user?.userId;
+    const result = await approveWithdrawManualAdmin({
+      supabase,
+      saqueId: String(saqueId).trim(),
+      adminActorId
+    });
     if (result.success) {
+      await logAdminAction({
+        supabase,
+        adminId: adminActorId,
+        action: 'withdraw.approve',
+        targetType: 'withdrawal',
+        targetId: String(saqueId).trim(),
+        metadata: {
+          status_final: result.statusFinal || 'pago_manual',
+          deduped: !!result.deduped
+        },
+        ip: getClientIp(req)
+      });
       const code = result.deduped ? 200 : 200;
       return res.status(code).json({
         success: true,
@@ -26,8 +44,42 @@ async function approveManualWithdraw(req, res, supabase) {
       });
     }
 
+    if (result.code === 'INVARIANT_BROKEN') {
+      return res.status(409).json({
+        success: false,
+        message:
+          'Inconsistência detectada: há registro de pagamento no ledger, mas o saque ainda está pendente. Encaminhe para suporte técnico.'
+      });
+    }
+    if (result.code === 'LEDGER_WRITE_FAILED') {
+      if (result.compensated === false) {
+        return res.status(500).json({
+          success: false,
+          message:
+            'Falha ao registrar o pagamento no ledger e a reversão do saque também falhou. Estado crítico — acione suporte técnico.'
+        });
+      }
+      return res.status(503).json({
+        success: false,
+        message:
+          'Não foi possível registrar o pagamento no ledger; o saque foi revertido para pendente. Tente aprovar novamente em instantes.',
+        compensated: true
+      });
+    }
     if (result.code === 'HAS_ROLLBACK' || `${result.error?.message || ''}`.includes('rollback')) {
       return res.status(409).json({ success: false, message: 'Saque não pode ser pago após rollback' });
+    }
+    if (result.code === 'OK_COMPENSATED') {
+      return res.status(409).json({
+        success: false,
+        message: 'Saque já está compensado por rollback manual; não representa pagamento real.'
+      });
+    }
+    if (result.code === 'LEDGER_STATE_READ_FAILED') {
+      return res.status(503).json({
+        success: false,
+        message: 'Não foi possível validar o estado financeiro no momento. Tente novamente.'
+      });
     }
     if (result.code === 'INVALID_STATUS') {
       return res.status(409).json({
@@ -62,13 +114,32 @@ async function cancelManualWithdraw(req, res, supabase) {
       return res.status(400).json({ success: false, message: 'saqueId é obrigatório (string UUID)' });
     }
 
+    const adminActorId = req.user?.userId;
     const result = await cancelWithdrawManualAdmin({
       supabase,
       saqueId: String(saqueId).trim(),
-      motivo
+      motivo,
+      adminActorId
     });
 
     if (result.success) {
+      const meta = {
+        status_final: result.statusFinal || 'cancelado_manual',
+        deduped: !!result.deduped,
+        compensated: !!result.compensated
+      };
+      if (motivo.trim()) {
+        meta.motivo_len = Math.min(motivo.trim().length, 500);
+      }
+      await logAdminAction({
+        supabase,
+        adminId: adminActorId,
+        action: 'withdraw.cancel',
+        targetType: 'withdrawal',
+        targetId: String(saqueId).trim(),
+        metadata: meta,
+        ip: getClientIp(req)
+      });
       return res.status(200).json({
         success: true,
         message: result.deduped ? 'Saque já estava cancelado manualmente' : 'Saque cancelado e saldo reestornado',
@@ -82,6 +153,44 @@ async function cancelManualWithdraw(req, res, supabase) {
 
     if (result.code === 'ALREADY_PAID') {
       return res.status(409).json({ success: false, message: 'Saque já pago — não pode cancelar' });
+    }
+    if (result.code === 'INVARIANT_BROKEN') {
+      return res.status(409).json({
+        success: false,
+        message:
+          'Inconsistência detectada: existe payout_manual_confirmado sem rollback_manual. Operação bloqueada para segurança.'
+      });
+    }
+    if (result.code === 'OK_COMPENSATED') {
+      await logAdminAction({
+        supabase,
+        adminId: adminActorId,
+        action: 'withdraw.cancel',
+        targetType: 'withdrawal',
+        targetId: String(saqueId).trim(),
+        metadata: {
+          outcome: 'ok_compensated',
+          status_final: result.statusFinal || 'cancelado',
+          deduped: true
+        },
+        ip: getClientIp(req)
+      });
+      return res.status(200).json({
+        success: true,
+        message: 'Saque já está compensado (rollback_manual registrado). Nenhuma ação adicional necessária.',
+        data: {
+          saqueId,
+          status: result.statusFinal || 'cancelado',
+          deduped: true,
+          compensated: true
+        }
+      });
+    }
+    if (result.code === 'LEDGER_STATE_READ_FAILED') {
+      return res.status(503).json({
+        success: false,
+        message: 'Não foi possível validar o estado financeiro no momento. Tente novamente.'
+      });
     }
     if (result.code === 'INVALID_STATUS') {
       return res.status(409).json({
