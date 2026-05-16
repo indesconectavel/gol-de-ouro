@@ -119,4 +119,9 @@ CSS: index-D7hr6dPE.css (inalterado)
 
 ## 9. PR
 
-*(preenchido após `gh pr create`)*
+| Item | Valor |
+|------|-------|
+| **URL** | https://github.com/indesconectavel/gol-de-ouro/pull/89 |
+| **Título** | H3.5i — Corrigir geometria visual da tela /game |
+| **Commit** | `6df2f73` |
+| **Merge** | Não (aguardar validação) |
