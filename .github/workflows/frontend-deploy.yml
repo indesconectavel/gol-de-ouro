@@ -1,6 +1,8 @@
 name: 🎨 Frontend Deploy (Vercel)
+# H3.6C — Único deployer Vercel --prod (paths goldeouro-player/**; docs/**/*.md não disparam).
 # Governação / fechamento enterprise: docs/relatorios/FECHAMENTO-OFICIAL-PIPELINE-FRONTEND-ENTERPRISE-2026-04-04.md
 # Gates SPA / blindagem: docs/relatorios/BLINDAGEM-DEFINITIVA-ENTERPRISE-PIPELINE-PLAYER-2026-04-05.md
+# Rollback prod: frontend-rollback-manual.yml · snapshot dpl_5CiXu7nXm… (H3-6C-PRE)
 
 on:
   push:
