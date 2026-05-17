@@ -38,6 +38,7 @@ Implementado o hardening de pipeline **H3.6C** para eliminar deploy Fly duplicad
 | R6 | `deploy-on-demand` publicava Fly | ✅ Fly removido |
 | R7 | Sem gate `/meta` === SHA | ✅ Gate adicionado |
 | R8 | Paths backend incompletos (`src/`, `utils/`) | ✅ Incluídos |
+| R9 | Merge H3.6C disparava deploy (self-path + `scripts/**`) | ✅ Removidos pós-revisão PR #94 |
 
 ---
 
@@ -118,7 +119,7 @@ Implementado o hardening de pipeline **H3.6C** para eliminar deploy Fly duplicad
 
 ### Quando o backend deploya
 
-- Push em **`main`** que altere ficheiros nos **paths backend** listados em `backend-deploy.yml` (incl. `server-fly.js`, `src/**`, `services/**`, …).
+- Push em **`main`** que altere ficheiros nos **paths backend funcionais** em `backend-deploy.yml` (incl. `server-fly.js`, `src/**`, `services/**`, …). **Excluídos:** `.github/workflows/**`, `scripts/**`, `docs/**` (merge H3.6C não republica Fly).
 - **`workflow_dispatch`** em `backend-deploy.yml` (SHA opcional via `release_sha`).
 - **Não** deploya em push que altere apenas `docs/**`, `**/*.md`, relatórios, ou `goldeouro-player/**`.
 

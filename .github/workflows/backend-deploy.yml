@@ -1,4 +1,5 @@
-# H3.6C — Único deployer Fly.io de produção (paths backend; docs/**/*.md não disparam).
+# H3.6C — Único deployer Fly.io de produção (só paths funcionais; sem workflows/scripts).
+# Alterações em .github/workflows/**, docs/** ou scripts/** NÃO disparam deploy automático.
 # Snapshot V1: ver docs/relatorios/H3-6C-PRE-SNAPSHOT-ROLLBACK-V1-2026-05-17.md
 name: 🚀 Backend Deploy (Fly.io)
 
@@ -17,8 +18,6 @@ on:
       - 'services/**'
       - 'src/**'
       - 'utils/**'
-      - 'scripts/**'
-      - '.github/workflows/backend-deploy.yml'
   pull_request:
     branches: [ main ]
     paths:
@@ -33,7 +32,6 @@ on:
       - 'services/**'
       - 'src/**'
       - 'utils/**'
-      - 'scripts/**'
   workflow_dispatch:
     inputs:
       release_sha:
