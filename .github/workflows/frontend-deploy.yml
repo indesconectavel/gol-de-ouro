@@ -1,7 +1,8 @@
 name: 🎨 Frontend Deploy (Vercel)
-# H3.6C — Único deployer Vercel --prod (paths goldeouro-player/**; docs/**/*.md não disparam).
-# Governação / fechamento enterprise: docs/relatorios/FECHAMENTO-OFICIAL-PIPELINE-FRONTEND-ENTERPRISE-2026-04-04.md
-# Gates SPA / blindagem: docs/relatorios/BLINDAGEM-DEFINITIVA-ENTERPRISE-PIPELINE-PLAYER-2026-04-05.md
+# H3.6C / H3.6C-FIX — Único deployer Vercel --prod (só paths funcionais do player).
+# Alterações em .github/workflows/**, docs/** ou scripts/** NÃO disparam deploy automático.
+# Config Vercel do player: goldeouro-player/vercel.json (coberto por goldeouro-player/**).
+# Baseline bundle pós-merge #94: index-B6M2smS9.js — ver docs/relatorios/H3-6C-FIX-BLINDAGEM-FRONTEND-DEPLOY-V1-2026-05-17.md
 # Rollback prod: frontend-rollback-manual.yml · snapshot dpl_5CiXu7nXm… (H3-6C-PRE)
 
 on:
@@ -9,7 +10,6 @@ on:
     branches: [ main, dev ]
     paths:
       - 'goldeouro-player/**'
-      - '.github/workflows/frontend-deploy.yml'
   pull_request:
     branches: [ main ]
     paths:
