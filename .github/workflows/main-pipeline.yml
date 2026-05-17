@@ -1,3 +1,6 @@
+# H3.6C — Integração contínua em main (SEM deploy Fly).
+# Deploy backend canónico: backend-deploy.yml
+# Deploy frontend prod: frontend-deploy.yml
 name: 🚀 Pipeline Principal - Gol de Ouro
 
 on:
@@ -7,15 +10,16 @@ on:
 
 env:
   NODE_VERSION: '20'
-  FLY_APP_NAME: goldeouro-backend-v2  # ✅ CORRIGIDO: Especifica app explicitamente
+  FLY_APP_NAME: goldeouro-backend-v2
 
 jobs:
-  build-and-deploy:
+  ci-main:
+    name: 🔍 CI Main (sem publicar)
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     steps:
-      - name: 🔍 Checkout do código
+      - name: 📥 Checkout do código
         uses: actions/checkout@v4
 
       - name: ⚙️ Configurar Node.js
@@ -26,69 +30,50 @@ jobs:
 
       - name: 📦 Instalar dependências
         run: |
-          echo "📦 Instalando dependências..."
           npm ci
-          echo "✅ Dependências instaladas com sucesso"
+          echo "✅ Dependências instaladas"
 
       - name: 🔍 Validar estrutura do projeto
         run: |
-          echo "🔍 Validando estrutura do projeto..."
-          test -f package.json && echo "✅ package.json encontrado"
-          test -f server-fly.js && echo "✅ server-fly.js encontrado"
-          test -f fly.toml && echo "✅ fly.toml encontrado"
-          echo "✅ Validação concluída"
+          test -f package.json && echo "✅ package.json"
+          test -f server-fly.js && echo "✅ server-fly.js"
+          test -f fly.toml && echo "✅ fly.toml"
+          node -c server-fly.js
+          echo "✅ Sintaxe server-fly.js"
 
-      - name: 🚀 Deploy Backend (Fly.io)
-        uses: superfly/flyctl-actions@master
-        with:
-          args: "deploy --remote-only --app ${{ env.FLY_APP_NAME }} --build-arg GIT_COMMIT=${{ github.sha }}"
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        continue-on-error: true
+      - name: 📋 Governança H3.6C — deployers oficiais
+        run: |
+          echo "ℹ️ Este workflow NÃO publica em produção (H3.6C)."
+          echo "   Backend Fly  → .github/workflows/backend-deploy.yml"
+          echo "   Frontend prod → .github/workflows/frontend-deploy.yml"
+          echo "   Docs/*.md    → não disparam backend-deploy (paths-filter)"
+          echo "   SHA integração: ${{ github.sha }}"
 
-      # REMOVIDO: deploy do frontend agora é exclusivo do frontend-deploy.yml
-      # (passo anterior: npx vercel --prod --yes em goldeouro-player)
-
-      - name: ✅ Validar endpoints principais
+      - name: ❤️ Smoke read-only produção (opcional)
         continue-on-error: true
         run: |
-          echo "🔍 Testando endpoints de produção..."
-          # Retry logic: 3 tentativas
-          SUCCESS=0
-          for i in {1..3}; do
-            echo "Tentativa $i de 3..."
-            if curl -f --max-time 30 https://goldeouro-backend-v2.fly.dev/health; then
-              echo "✅ Health check bem-sucedido na tentativa $i"
-              SUCCESS=1
-              break
-            fi
-            if [ $i -lt 3 ]; then
-              echo "⏳ Aguardando 10s antes da próxima tentativa..."
-              sleep 10
-            fi
+          set -euo pipefail
+          for url in \
+            "https://${{ env.FLY_APP_NAME }}.fly.dev/health" \
+            "https://www.goldeouro.lol/"
+          do
+            code=$(curl -sSL -o /dev/null -w "%{http_code}" --max-time 25 "$url" || echo "000")
+            echo "$url → HTTP $code"
           done
-          if [ "$SUCCESS" = "0" ]; then
-            echo "⚠️ Health check falhou após 3 tentativas"
-          fi
-          echo "✅ Validação concluída"
 
-      - name: 📊 Upload artifacts de deploy
+      - name: 📊 Upload artifacts de CI
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: deploy-artifacts-${{ github.run_number }}
+          name: ci-main-${{ github.run_number }}
           path: |
             package-lock.json
-            dist/
-            build/
           retention-days: 7
 
       - name: 📊 Log final
         run: |
           echo "=================================================="
-          echo "🏆 DEPLOY DO GOL DE OURO CONCLUÍDO COM SUCESSO!"
-          echo "🌐 Frontend: https://goldeouro.lol"
-          echo "⚙️ Backend:  https://goldeouro-backend-v2.fly.dev"
-          echo "📊 Admin:    https://admin.goldeouro.lol"
-          echo "📱 Mobile:   APK disponível nos artifacts"
+          echo "✅ CI main concluído (sem deploy)"
+          echo "⚙️ Backend prod: backend-deploy.yml"
+          echo "🌐 Frontend prod: frontend-deploy.yml"
           echo "=================================================="

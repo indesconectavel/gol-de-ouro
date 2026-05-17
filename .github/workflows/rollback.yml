@@ -1,14 +1,18 @@
+# H3.6C — Rollback Fly acionado por falha do deployer canónico (backend-deploy.yml).
 name: ⚠️ Rollback Automático – Gol de Ouro
 
 on:
   workflow_run:
-    workflows: ["🚀 Pipeline Principal - Gol de Ouro"]
+    workflows:
+      - "🚀 Backend Deploy (Fly.io)"
     types:
       - completed
 
 jobs:
   rollback:
-    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'failure'
+          && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30  # ✅ Adicionado timeout para evitar execução indefinida
     
@@ -25,7 +29,9 @@ jobs:
       - name: 🔁 Rollback Backend (Fly.io)
         continue-on-error: true
         run: |
-          echo "⚠️ Deploy do backend falhou. Iniciando rollback..."
+          echo "⚠️ backend-deploy.yml falhou. Iniciando rollback Fly..."
+          echo "📘 Snapshot V1: docs/relatorios/H3-6C-PRE-SNAPSHOT-ROLLBACK-V1-2026-05-17.md"
+          echo "   Release snapshot: v460 · meta cacc127 (pré-cirurgia)"
           if [ -z "${{ secrets.FLY_API_TOKEN }}" ]; then
             echo "⚠️ FLY_API_TOKEN não configurado. Pulando rollback do backend."
             exit 0
@@ -90,7 +96,7 @@ jobs:
         run: |
           echo "📢 Enviando notificação Discord..."
           curl -X POST -H 'Content-type: application/json' \
-            --data '{"content":"⚠️ **ROLLBACK EXECUTADO**\nPipeline principal falhou e foi revertido automaticamente"}' \
+            --data '{"content":"⚠️ **ROLLBACK EXECUTADO**\nbackend-deploy falhou e Fly foi revertido"}' \
             ${{ secrets.DISCORD_WEBHOOK_URL }} || echo "⚠️ Falha ao enviar notificação Discord"
 
       - name: 📊 Upload logs de rollback
