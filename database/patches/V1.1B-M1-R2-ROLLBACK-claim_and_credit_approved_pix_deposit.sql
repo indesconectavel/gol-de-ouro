@@ -1,0 +1,21 @@
+-- =============================================================================
+-- V1.1B-M1-R2 — ROLLBACK (restaurar RPC produção pré-R2)
+-- =============================================================================
+-- NÃO executar sem o corpo completo exportado de produção.
+--
+-- 1. Obter o snapshot pré-R2 (ou pré-apply):
+--    docs/relatorios/snapshots/claim_and_credit_approved_pix_deposit-ANTES-M1-producao-2026-05-17.sql
+--
+-- 2. Se já aplicou R2, o snapshot deve ter sido capturado ANTES do R2.
+--    Se não existir, exportar de backup ou pg_proc de réplica read-only.
+--
+-- 3. Colar abaixo o CREATE OR REPLACE completo do snapshot e executar UMA vez.
+--
+-- Placeholder — substituir pelo output de:
+--   SELECT pg_get_functiondef('public.claim_and_credit_approved_pix_deposit'::regproc);
+-- =============================================================================
+
+-- [COLAR AQUI O CORPO COMPLETO DO SNAPSHOT PRÉ-R2]
+
+-- Verificação pós-rollback:
+-- SELECT pg_get_functiondef('public.claim_and_credit_approved_pix_deposit'::regproc);

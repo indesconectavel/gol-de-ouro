@@ -1,0 +1,219 @@
+{
+  "timestamp": "2026-05-18T16:01:32.918Z",
+  "mission": "V1.1B-M1-R3",
+  "database_host": "aws-0-sa-east-1.pooler.supabase.com",
+  "blocked": false,
+  "block_reason": null,
+  "prod_snapshot": {
+    "source": "synthetic_baseline",
+    "path": "E:\\Chute de Ouro\\goldeouro-backend\\database\\patches\\V1.1B-M1-R3-PROD-BASELINE-claim_and_credit_approved_pix_deposit.sql"
+  },
+  "preflight": {
+    "fingerprint": {
+      "pix_total": 0,
+      "approved": 0
+    },
+    "rpc_def_length_before": 8237,
+    "had_m1_draft": false
+  },
+  "baseline_apply": {
+    "ok": true,
+    "def_length": 7989,
+    "self_heal_credits_saldo": false
+  },
+  "patch_apply": {
+    "ok": true,
+    "def_length": 8237
+  },
+  "pre_patch_regression": {
+    "pass": true,
+    "result": {
+      "ok": true,
+      "valor": 7.77,
+      "reason": "credited_now",
+      "credited": true,
+      "ledger_id": "9c14c646-3bf7-4790-a4b2-65414db20971",
+      "idempotent": false,
+      "payment_id": "999000000000004",
+      "saldo_after": 23.31,
+      "saldo_before": 15.54,
+      "pagamentos_pix_id": "c251c8b4-fb41-4412-808e-ac1010600705"
+    },
+    "state": {
+      "saldo": 23.31,
+      "status": "approved",
+      "pix_id": "c251c8b4-fb41-4412-808e-ac1010600705",
+      "ledger_count": 1,
+      "ledger_refs": [
+        "c251c8b4-fb41-4412-808e-ac1010600705"
+      ]
+    },
+    "note": "Baseline prod (bug): self-heal deve creditar saldo de novo"
+  },
+  "tests": {
+    "S1": {
+      "pass": true,
+      "result": {
+        "ok": true,
+        "valor": 7.77,
+        "reason": "credited_now",
+        "credited": true,
+        "ledger_id": "b09fcc60-96e7-4b43-a604-6fa931413b3c",
+        "idempotent": false,
+        "payment_id": "999000000000001",
+        "saldo_after": 31.08,
+        "saldo_before": 23.31,
+        "pagamentos_pix_id": "be6a521f-75cd-48e2-a7e6-4a71aeddf24b"
+      },
+      "state": {
+        "saldo": 31.08,
+        "status": "approved",
+        "pix_id": "be6a521f-75cd-48e2-a7e6-4a71aeddf24b",
+        "ledger_count": 1,
+        "ledger_refs": [
+          "be6a521f-75cd-48e2-a7e6-4a71aeddf24b"
+        ]
+      }
+    },
+    "S2": {
+      "pass": true,
+      "result": {
+        "ok": true,
+        "reason": "already_credited",
+        "credited": false,
+        "ledger_id": "b09fcc60-96e7-4b43-a604-6fa931413b3c",
+        "idempotent": true,
+        "payment_id": "999000000000001",
+        "pagamentos_pix_id": "be6a521f-75cd-48e2-a7e6-4a71aeddf24b"
+      },
+      "state": {
+        "saldo": 31.08,
+        "status": "approved",
+        "pix_id": "be6a521f-75cd-48e2-a7e6-4a71aeddf24b",
+        "ledger_count": 1,
+        "ledger_refs": [
+          "be6a521f-75cd-48e2-a7e6-4a71aeddf24b"
+        ]
+      }
+    },
+    "S3": {
+      "pass": true,
+      "result": {
+        "ok": true,
+        "reason": "already_credited",
+        "credited": false,
+        "ledger_id": "3c4a3947-476b-4f7d-9a6c-e1e02ae46e80",
+        "idempotent": true,
+        "payment_id": "999000000000003",
+        "pagamentos_pix_id": "280794e1-7c47-47d2-bb57-7199a4f295a5"
+      },
+      "state": {
+        "saldo": 38.85,
+        "status": "approved",
+        "pix_id": "280794e1-7c47-47d2-bb57-7199a4f295a5",
+        "ledger_count": 1,
+        "ledger_refs": [
+          "999000000000003"
+        ]
+      }
+    },
+    "S4": {
+      "pass": true,
+      "result": {
+        "ok": true,
+        "reason": "ledger_backfill",
+        "credited": false,
+        "ledger_id": "9242a27e-efe6-484c-9cd9-c3301d3aa4bd",
+        "idempotent": true,
+        "payment_id": "999000000000004",
+        "saldo_unchanged": true,
+        "pagamentos_pix_id": "4c617851-1048-482c-b0f5-cac3f8963a7c"
+      },
+      "state": {
+        "saldo": 46.62,
+        "status": "approved",
+        "pix_id": "4c617851-1048-482c-b0f5-cac3f8963a7c",
+        "ledger_count": 1,
+        "ledger_refs": [
+          "4c617851-1048-482c-b0f5-cac3f8963a7c"
+        ]
+      }
+    },
+    "S5": {
+      "pass": true,
+      "result": {
+        "ok": true,
+        "reason": "ledger_backfill",
+        "credited": false,
+        "ledger_id": "af0241d4-3f83-4ea8-9316-08598b4ef68b",
+        "idempotent": true,
+        "payment_id": "999000000000007",
+        "saldo_unchanged": true,
+        "pagamentos_pix_id": "a93e7d69-fe70-4fad-9610-b13f5d3c1277"
+      },
+      "state": {
+        "saldo": 0,
+        "status": "approved",
+        "pix_id": "a93e7d69-fe70-4fad-9610-b13f5d3c1277",
+        "ledger_count": 1,
+        "ledger_refs": [
+          "a93e7d69-fe70-4fad-9610-b13f5d3c1277"
+        ]
+      },
+      "runbook_manual": true
+    },
+    "S6": {
+      "pass": true,
+      "result_a": {
+        "ok": true,
+        "valor": 7.77,
+        "reason": "credited_now",
+        "credited": true,
+        "ledger_id": "f2089682-c81d-45cb-9e46-c2bcef60cb25",
+        "idempotent": false,
+        "payment_id": "999000000000006",
+        "saldo_after": 7.77,
+        "saldo_before": 0,
+        "pagamentos_pix_id": "67491c54-24d2-4b9f-9b06-bc057e50a498"
+      },
+      "result_b": {
+        "ok": true,
+        "reason": "already_credited",
+        "credited": false,
+        "ledger_id": "f2089682-c81d-45cb-9e46-c2bcef60cb25",
+        "idempotent": true,
+        "payment_id": "999000000000006",
+        "pagamentos_pix_id": "67491c54-24d2-4b9f-9b06-bc057e50a498"
+      },
+      "state": {
+        "saldo": 7.77,
+        "status": "approved",
+        "pix_id": "67491c54-24d2-4b9f-9b06-bc057e50a498",
+        "ledger_count": 1,
+        "ledger_refs": [
+          "67491c54-24d2-4b9f-9b06-bc057e50a498"
+        ]
+      }
+    }
+  },
+  "drift": {
+    "detected": true,
+    "only_self_heal_changed": false,
+    "notes": [
+      "Snapshot produção no repo ainda placeholder — baseline sintético (advisory lock + self-heal com saldo)",
+      "Diff além do bloco self-heal — rever pg_get_functiondef real vs patch"
+    ],
+    "baseline_len": 7989,
+    "patched_len": 8237,
+    "baseline_has_advisory": true,
+    "patched_has_advisory": true,
+    "patched_has_ledger_backfill": true,
+    "baseline_self_heal_credits_saldo": false,
+    "patched_self_heal_credits_saldo": false
+  },
+  "cleanup": {
+    "ok": true
+  },
+  "verdict": "GO COM RESSALVAS",
+  "test_user_id": "77ccbbd1-7c38-4efc-92f0-834ddc8e381f"
+}
