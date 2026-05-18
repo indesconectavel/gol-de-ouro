@@ -43,6 +43,27 @@ function getMercadoPagoWebhookDataId(req) {
 }
 
 /**
+ * data.id para webhook payout (transaction-intent).
+ * Aditivo: não altera getMercadoPagoWebhookDataId (depósito).
+ */
+function getMercadoPagoPayoutWebhookDataId(req) {
+  const q = req.query && firstScalar(req.query['data.id']);
+  if (q) return q;
+  const body = req.body || {};
+  if (body.type === 'payment' && body.data) {
+    const pid = firstScalar(body.data.id);
+    if (pid && /^\d+$/.test(String(pid).trim())) {
+      return null;
+    }
+  }
+  const fromData = body.data && firstScalar(body.data.id);
+  if (fromData) return fromData;
+  const intentId = firstScalar(body.id);
+  if (intentId) return intentId;
+  return null;
+}
+
+/**
  * Manifest exato exigido pelo Mercado Pago (notificações v2)
  */
 function buildMercadoPagoSignatureManifest(dataId, requestId, ts) {
@@ -239,8 +260,7 @@ class WebhookSignatureValidator {
     return hmac.digest('hex');
   }
 
-  // Validar webhook do Mercado Pago (X-Signature: ts=...,v1=... + manifest, sem corpo bruto)
-  validateMercadoPagoWebhook(req) {
+  _validateMercadoPagoManifestWebhook(req, getDataIdFn, dataIdErrorLabel) {
     try {
       if (!this.secret) {
         return {
@@ -274,11 +294,11 @@ class WebhookSignatureValidator {
         };
       }
 
-      const dataId = getMercadoPagoWebhookDataId(req);
+      const dataId = getDataIdFn(req);
       if (!dataId) {
         return {
           valid: false,
-          error: 'data.id ausente (query ou body.data.id)'
+          error: dataIdErrorLabel
         };
       }
 
@@ -329,7 +349,8 @@ class WebhookSignatureValidator {
         signature: xSignature,
         timestamp: String(ts),
         algorithm: 'sha256',
-        manifest
+        manifest,
+        dataId: String(dataId)
       };
     } catch (error) {
       return {
@@ -337,6 +358,24 @@ class WebhookSignatureValidator {
         error: `Erro na validação do webhook: ${error.message}`
       };
     }
+  }
+
+  // Validar webhook do Mercado Pago (X-Signature: ts=...,v1=... + manifest, sem corpo bruto)
+  validateMercadoPagoWebhook(req) {
+    return this._validateMercadoPagoManifestWebhook(
+      req,
+      getMercadoPagoWebhookDataId,
+      'data.id ausente (query ou body.data.id)'
+    );
+  }
+
+  /** Payout / transaction-intent — mesma HMAC MP; data.id estendido (query, body.id). */
+  validateMercadoPagoPayoutWebhook(req) {
+    return this._validateMercadoPagoManifestWebhook(
+      req,
+      getMercadoPagoPayoutWebhookDataId,
+      'data.id ausente (query, body.id ou body.data.id de intent)'
+    );
   }
 
   // Validar webhook genérico
@@ -503,5 +542,33 @@ function logMercadoPagoWebhookDebugRequest(req) {
   }
 }
 
+/**
+ * Gera headers/query assinados para testes (staging/local).
+ * @param {{ dataId: string, secret?: string, requestId?: string, ts?: string }} opts
+ */
+function buildMercadoPagoWebhookSignedRequest(opts) {
+  const secret = opts.secret || process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  if (!secret) {
+    throw new Error('MERCADOPAGO_WEBHOOK_SECRET ausente');
+  }
+  const dataId = String(opts.dataId);
+  const ts = opts.ts != null ? String(opts.ts) : String(Math.floor(Date.now() / 1000));
+  const requestId = opts.requestId || `stg-req-${Date.now()}`;
+  const manifest = buildMercadoPagoSignatureManifest(dataId, requestId, ts);
+  const v1 = crypto.createHmac('sha256', secret).update(manifest, 'utf8').digest('hex');
+  return {
+    headers: {
+      'x-signature': `ts=${ts},v1=${v1}`,
+      'x-request-id': requestId
+    },
+    query: { 'data.id': dataId },
+    manifest
+  };
+}
+
 module.exports = WebhookSignatureValidator;
 module.exports.logMercadoPagoWebhookDebugRequest = logMercadoPagoWebhookDebugRequest;
+module.exports.buildMercadoPagoSignatureManifest = buildMercadoPagoSignatureManifest;
+module.exports.getMercadoPagoWebhookDataId = getMercadoPagoWebhookDataId;
+module.exports.getMercadoPagoPayoutWebhookDataId = getMercadoPagoPayoutWebhookDataId;
+module.exports.buildMercadoPagoWebhookSignedRequest = buildMercadoPagoWebhookSignedRequest;

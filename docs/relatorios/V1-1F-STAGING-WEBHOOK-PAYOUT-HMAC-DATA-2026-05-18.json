@@ -1,0 +1,171 @@
+{
+  "timestamp": "2026-05-18T19:50:41.608Z",
+  "mission": "V1.1F-STAGING-WEBHOOK-PAYOUT-HMAC",
+  "environment": {
+    "local_api": "http://127.0.0.1:18981",
+    "production_api_touched": false,
+    "staging_db": "uatszaqzdqcwnfbipoxg",
+    "staging_pg_host": "pooler",
+    "production_fly_health_readonly": "ok (não usado nos testes de escrita)"
+  },
+  "unit": {
+    "deposit_data_id_resolver": "999000000000099",
+    "payout_data_id_resolver": "ti-stg-v11f-1779133842689",
+    "all_pass": true
+  },
+  "http": {
+    "deposit_unsigned": {
+      "status": 401,
+      "json": {
+        "error": "Invalid signature"
+      }
+    },
+    "deposit_signed": {
+      "status": 200,
+      "json": {
+        "received": true
+      }
+    },
+    "payout_unsigned": {
+      "status": 401,
+      "json": {
+        "error": "Invalid signature"
+      }
+    },
+    "payout_signed": {
+      "status": 200,
+      "json": {
+        "received": true
+      }
+    },
+    "payout_bad_signature": {
+      "status": 401,
+      "json": {
+        "error": "Invalid signature"
+      }
+    }
+  },
+  "ledger_staging": {
+    "before": {
+      "payout_confirmado": 0,
+      "falha_payout": 0,
+      "rollback": 0
+    },
+    "after": {
+      "payout_confirmado": 0,
+      "falha_payout": 0,
+      "rollback": 0
+    }
+  },
+  "tests": [
+    {
+      "id": "U1",
+      "name": "validateMercadoPagoWebhook sem assinatura → inválido",
+      "pass": true,
+      "detail": "Header X-Signature não encontrado"
+    },
+    {
+      "id": "U2",
+      "name": "validateMercadoPagoWebhook assinado (payment id) → válido",
+      "pass": true,
+      "detail": "id:999000000000099;request-id:stg-req-1779133842687;ts:1779133842;"
+    },
+    {
+      "id": "U3",
+      "name": "validateMercadoPagoPayoutWebhook sem assinatura → inválido",
+      "pass": true,
+      "detail": "Header X-Signature não encontrado"
+    },
+    {
+      "id": "U4",
+      "name": "validateMercadoPagoPayoutWebhook assinado (body.id) → válido",
+      "pass": true,
+      "detail": "id:ti-stg-v11f-1779133842689;request-id:stg-req-1779133842689;ts:1779133842;"
+    },
+    {
+      "id": "U5",
+      "name": "validateMercadoPagoPayoutWebhook data.id só na query → válido",
+      "pass": true,
+      "detail": "query data.id OK"
+    },
+    {
+      "id": "0",
+      "name": "Servidor local staging sobe /health",
+      "pass": true,
+      "detail": "http://127.0.0.1:18981"
+    },
+    {
+      "id": "1",
+      "name": "Depósito inbound sem assinatura → 401",
+      "pass": true,
+      "detail": {
+        "status": 401,
+        "body": {
+          "error": "Invalid signature"
+        }
+      }
+    },
+    {
+      "id": "2",
+      "name": "Depósito inbound assinado → 200",
+      "pass": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "received": true
+        }
+      }
+    },
+    {
+      "id": "3",
+      "name": "Payout webhook sem assinatura → 401",
+      "pass": true,
+      "detail": {
+        "status": 401,
+        "body": {
+          "error": "Invalid signature"
+        }
+      }
+    },
+    {
+      "id": "4",
+      "name": "Payout webhook assinado → 200",
+      "pass": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "received": true
+        }
+      }
+    },
+    {
+      "id": "5a",
+      "name": "Payout webhook assinatura inválida → 401",
+      "pass": true,
+      "detail": {
+        "status": 401,
+        "body": {
+          "error": "Invalid signature"
+        }
+      }
+    },
+    {
+      "id": "5b",
+      "name": "Staging: inválido/forjado não alterou ledger payout/rollback",
+      "pass": true,
+      "detail": {
+        "before": {
+          "payout_confirmado": 0,
+          "falha_payout": 0,
+          "rollback": 0
+        },
+        "after": {
+          "payout_confirmado": 0,
+          "falha_payout": 0,
+          "rollback": 0
+        }
+      }
+    }
+  ],
+  "verdict": "GO"
+}

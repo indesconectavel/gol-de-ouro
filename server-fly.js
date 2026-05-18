@@ -3545,6 +3545,20 @@ app.post('/webhooks/mercadopago', async (req, res) => {
       keys: req.body && typeof req.body === 'object' ? Object.keys(req.body) : []
     });
 
+    const payoutSigValidation = webhookSignatureValidator.validateMercadoPagoPayoutWebhook(req);
+    if (!payoutSigValidation.valid) {
+      financeLog('withdraw_webhook_rejected', {
+        tipo: 'saque',
+        status: 'rejected',
+        reason: payoutSigValidation.error
+      });
+      console.error('❌ [WEBHOOK][MP][PAYOUT] assinatura rejeitada:', payoutSigValidation.error);
+      return res.status(401).json({ error: 'Invalid signature' });
+    }
+    console.log('✅ [WEBHOOK][MP][PAYOUT] assinatura OK', {
+      dataId: payoutSigValidation.dataId
+    });
+
     res.status(200).json({ received: true });
 
     const payload = req.body || {};
