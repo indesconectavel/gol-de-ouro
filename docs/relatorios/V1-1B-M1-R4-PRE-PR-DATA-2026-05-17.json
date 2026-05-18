@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-05-18T16:10:17.882Z",
+  "mission": "V1.1B-M1-R4",
+  "snapshot": {
+    "updated": true,
+    "source": "file_already_real",
+    "length": 7979
+  },
+  "unique_index": {
+    "confirmed": false,
+    "exists": true,
+    "method": "postgrest_heuristic",
+    "details": {
+      "method": "postgrest_heuristic",
+      "deposito_rows": 8,
+      "duplicate_pairs_correlation_tipo": 0,
+      "duplicate_triples_correlation_tipo_referencia": 0,
+      "sample_dup_corr_tipo": [],
+      "inferred_unique_correlation_tipo": true,
+      "inferred_unique_triple": true,
+      "note": "PostgREST não expõe pg_indexes; ausência de duplicatas sugere UNIQUE mas não confirma nome do índice."
+    },
+    "note": "heurística apenas — confirmar em SQL Editor"
+  },
+  "diff": {
+    "functional_only_self_heal": true,
+    "baseline_source": "file_already_real",
+    "patch_source": "V1.1B-M1-R3-claim_and_credit_approved_pix_deposit.sql",
+    "notes": [
+      "Snapshot real já presente no ficheiro (sem novo fetch PG)."
+    ],
+    "rest_equal_normalized": true,
+    "self_heal_changed": true,
+    "baseline_self_heal_credits_saldo": true,
+    "patch_self_heal_credits_saldo": false,
+    "patch_has_ledger_backfill": true,
+    "baseline_has_advisory": true,
+    "patch_has_advisory": true
+  },
+  "verdict": "GO COM RESSALVAS"
+}
