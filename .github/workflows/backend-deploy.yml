@@ -88,7 +88,8 @@ jobs:
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     timeout-minutes: 30
     concurrency:
-      group: fly-production-${{ env.FLY_APP_NAME }}
+      # env.* não é permitido em concurrency.group (GitHub Actions schema)
+      group: fly-production-goldeouro-backend-v2
       cancel-in-progress: false
     env:
       RELEASE_SHA: ${{ github.event.inputs.release_sha || github.sha }}
@@ -185,7 +186,7 @@ jobs:
     if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     timeout-minutes: 30
     concurrency:
-      group: fly-dev-${{ env.FLY_APP_NAME }}
+      group: fly-dev-goldeouro-backend-v2
       cancel-in-progress: false
 
     steps:
