@@ -26,6 +26,7 @@ const {
 } = require('./src/domain/payout/processPendingWithdrawals');
 const adminWithdrawController = require('./controllers/adminWithdrawController');
 const { logAdminAction, getClientIp } = require('./src/utils/adminAuditLogger');
+const { isTechnicalE2EAccount } = require('./src/utils/technicalE2EAccount');
 // Logger opcional - fallback para console se não disponível
 let logger;
 try {
@@ -2667,7 +2668,7 @@ app.get('/api/admin/dashboard/stats', authenticateToken, requireAdministradorDb,
       ledgerVolumeResult
     ] = await Promise.all([
       supabase.from('usuarios').select('*', { count: 'exact', head: true }),
-      supabase.from('usuarios').select('saldo'),
+      supabase.from('usuarios').select('id, email, username, saldo'),
       supabase.from('saques').select('*', { count: 'exact', head: true }).in('status', ['pendente', 'processando']),
       supabase.from('saques').select('*', { count: 'exact', head: true }),
       supabase.from('ledger_financeiro').select('*', { count: 'exact', head: true }),
@@ -2691,7 +2692,13 @@ app.get('/api/admin/dashboard/stats', authenticateToken, requireAdministradorDb,
       });
     }
 
-    const saldo_total = (saldoUsersResult.data || []).reduce((acc, row) => acc + asNumber(row?.saldo), 0);
+    // Exclui contas técnicas E2E/homologação dos indicadores executivos.
+    // Não altera saldo, histórico ou operação.
+    // Baseado nas auditorias H4.1A → H4.1C.2.
+    const saldo_total = (saldoUsersResult.data || []).reduce((acc, row) => {
+      if (isTechnicalE2EAccount(row)) return acc;
+      return acc + asNumber(row?.saldo);
+    }, 0);
     const volume_financeiro_total = (ledgerVolumeResult.data || []).reduce(
       (acc, row) => acc + asNumber(row?.valor),
       0
