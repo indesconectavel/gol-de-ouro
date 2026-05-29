@@ -2804,6 +2804,10 @@ app.post('/api/admin/withdraw/approve', authenticateToken, requireAdministradorD
   return adminWithdrawController.approveManualWithdraw(req, res, supabase);
 });
 
+app.post('/api/admin/withdraw/approve-and-send', authenticateToken, requireAdministradorDb, async (req, res) => {
+  return adminWithdrawController.approveAndSendWithdraw(req, res, supabase);
+});
+
 app.post('/api/admin/withdraw/cancel', authenticateToken, requireAdministradorDb, async (req, res) => {
   return adminWithdrawController.cancelManualWithdraw(req, res, supabase);
 });
