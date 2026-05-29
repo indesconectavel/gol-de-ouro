@@ -281,12 +281,13 @@ const limiter = rateLimit({
   legacyHeaders: false,
   validate: { trustProxy: false }, // ✅ CORRIGIDO: Desabilitar validação de trust proxy para evitar erro
   skip: (req) => {
-    // Pular rate limiting para health check, meta e auth
+    // Pular rate limiting para health check, meta, auth e painel admin autenticado
     return req.path === '/health' ||
            req.path === '/health/workers' ||
            req.path === '/meta' || 
            req.path.startsWith('/auth/') ||
-           req.path.startsWith('/api/auth/');
+           req.path.startsWith('/api/auth/') ||
+           req.path.startsWith('/api/admin/');
   },
   handler: (req, res) => {
     console.log(`🚫 [RATE-LIMIT] IP ${req.ip} bloqueado por excesso de requests (${req.path})`);
@@ -337,7 +338,6 @@ const recoveryLimiter = rateLimit({
 });
 
 app.use(limiter); // Rate limiting global
-app.use('/api/', limiter);
 
 // Body parsing
 app.use(express.json({ 
