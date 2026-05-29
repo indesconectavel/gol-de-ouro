@@ -1,6 +1,11 @@
 'use strict';
 
-const { approveWithdrawManualAdmin, cancelWithdrawManualAdmin } = require('../src/domain/payout/processPendingWithdrawals');
+const { createPixWithdraw } = require('../services/pix-mercado-pago');
+const {
+  approveWithdrawManualAdmin,
+  approveAndSendWithdrawAdmin,
+  cancelWithdrawManualAdmin
+} = require('../src/domain/payout/processPendingWithdrawals');
 const { logAdminAction, getClientIp } = require('../src/utils/adminAuditLogger');
 
 async function approveManualWithdraw(req, res, supabase) {
@@ -213,7 +218,98 @@ async function cancelManualWithdraw(req, res, supabase) {
   }
 }
 
+async function approveAndSendWithdraw(req, res, supabase) {
+  try {
+    if (!supabase) {
+      return res.status(503).json({ success: false, message: 'Sistema temporariamente indisponível' });
+    }
+    const saqueId = req.body?.saqueId ?? req.body?.id;
+    if (!saqueId || typeof saqueId !== 'string') {
+      return res.status(400).json({ success: false, message: 'saqueId é obrigatório (string UUID)' });
+    }
+
+    const adminActorId = req.user?.userId;
+    const payoutEnabled = String(process.env.PAYOUT_PIX_ENABLED || '').toLowerCase() === 'true';
+    const result = await approveAndSendWithdrawAdmin({
+      supabase,
+      saqueId: String(saqueId).trim(),
+      adminActorId,
+      createPixWithdraw,
+      payoutEnabled
+    });
+
+    const trimmedId = String(saqueId).trim();
+
+    if (result.success) {
+      await logAdminAction({
+        supabase,
+        adminId: adminActorId,
+        action: 'withdraw.approve_and_send',
+        targetType: 'withdrawal',
+        targetId: trimmedId,
+        metadata: {
+          status_final: result.statusFinal || 'aguardando_confirmacao',
+          deduped: !!result.deduped,
+          mp_transaction_intent_id: result.mp_transaction_intent_id || null,
+          mp_payout_status: result.mp_payout_status || null
+        },
+        ip: getClientIp(req)
+      });
+      return res.status(200).json({
+        success: true,
+        message: result.deduped
+          ? 'Saque já está aguardando confirmação do provedor'
+          : 'PIX enviado ao provedor; aguardando confirmação',
+        data: {
+          saqueId: trimmedId,
+          status: result.statusFinal || 'aguardando_confirmacao',
+          deduped: !!result.deduped,
+          awaiting_webhook: true,
+          mp_transaction_intent_id: result.mp_transaction_intent_id || null,
+          mp_payout_status: result.mp_payout_status || null,
+          payout_external_reference: result.payout_external_reference || null
+        }
+      });
+    }
+
+    const codeMap = {
+      PAYOUT_DISABLED: [503, 'Payout PIX desativado no ambiente'],
+      MP_NOT_CONFIGURED: [503, 'Provedor de payout não configurado'],
+      NOT_FOUND: [404, 'Saque não encontrado'],
+      MISSING_CORRELATION: [409, 'Saque sem correlation_id'],
+      INVALID_STATUS: [409, 'Somente saques pendentes podem receber PIX automático'],
+      ALREADY_PAID: [409, 'Saque já pago ou finalizado'],
+      IN_FLIGHT: [409, 'PIX já em processamento para este saque — recarregue o painel'],
+      INVARIANT_BROKEN: [
+        409,
+        'Inconsistência ledger/status detectada. Encaminhe para suporte técnico.'
+      ],
+      HAS_ROLLBACK: [409, 'Saque não pode ser pago após rollback'],
+      OK_COMPENSATED: [409, 'Saque compensado; não representa pagamento pendente'],
+      TITULAR_BLOCKED: [409, 'Dados do titular PIX incompletos para envio automático'],
+      INVALID_AMOUNT: [409, 'Valores financeiros inválidos no saque'],
+      LOCK_CONFLICT: [409, 'Outro processo iniciou o payout. Recarregue e tente novamente.'],
+      LEDGER_STATE_READ_FAILED: [503, 'Não foi possível validar o estado financeiro no momento. Tente novamente.'],
+      MP_TERMINAL_FAIL: [502, 'Provedor rejeitou ou falhou no payout PIX'],
+      STATUS_UPDATE_FAILED: [500, 'Falha ao atualizar status do saque após envio ao provedor'],
+      MP_UNEXPECTED: [502, 'Resposta inesperada do provedor de payout']
+    };
+
+    if (result.code && codeMap[result.code]) {
+      const [httpStatus, message] = codeMap[result.code];
+      return res.status(httpStatus).json({ success: false, message });
+    }
+
+    console.error('[ADMIN][WITHDRAW][APPROVE_AND_SEND] falha:', result.error);
+    return res.status(500).json({ success: false, message: 'Erro ao enviar PIX automático' });
+  } catch (e) {
+    console.error('[ADMIN][WITHDRAW][APPROVE_AND_SEND] exceção:', e);
+    return res.status(500).json({ success: false, message: 'Erro interno do servidor' });
+  }
+}
+
 module.exports = {
   approveManualWithdraw,
+  approveAndSendWithdraw,
   cancelManualWithdraw
 };
