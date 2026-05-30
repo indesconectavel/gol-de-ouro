@@ -54,6 +54,80 @@ const maskDocumentDigits = (value) => {
   return `***${digits.slice(-4)}`;
 };
 
+const PIX_OUT_ENDPOINT = '/v1/transaction-intents/process';
+
+const hashUserIdForLog = (userId) => {
+  if (!userId) return null;
+  return crypto.createHash('sha256').update(String(userId)).digest('hex').slice(0, 12);
+};
+
+const extractMpCauseSafe = (cause) => {
+  if (cause == null) return null;
+  const items = Array.isArray(cause) ? cause : [cause];
+  return items.map((item) => {
+    if (item == null) return null;
+    if (typeof item === 'string') return item;
+    if (typeof item !== 'object') return String(item);
+    const code = item.code ?? item.error ?? item.type ?? null;
+    const description = item.description ?? item.message ?? null;
+    const safeDescription =
+      typeof description === 'string' && description.length > 0
+        ? description.replace(/\d{3,}/g, '***')
+        : description;
+    return { code, description: safeDescription };
+  });
+};
+
+/**
+ * Extrai campos seguros da resposta de erro do Mercado Pago (PIX OUT).
+ * Não inclui tokens, headers, chaves PIX, documentos completos nem payload bruto.
+ */
+const sanitizeMercadoPagoError = (error, context = {}) => {
+  const rawData = error?.response?.data ?? null;
+  const httpStatus = error?.response?.status ?? null;
+  const requestId =
+    error?.response?.headers?.['x-request-id'] ||
+    error?.response?.headers?.['X-Request-Id'] ||
+    rawData?.request_id ||
+    rawData?.requestId ||
+    null;
+
+  const {
+    saqueId = null,
+    correlationId = null,
+    userId = null,
+    amount = null,
+    pixKeyType = null,
+    pixKey = null,
+    ownerIdentification = null
+  } = context;
+
+  const normalizedPixType = pixKeyType
+    ? String(pixKeyType).toLowerCase().replace('telefone', 'phone').replace('aleatoria', 'random')
+    : null;
+
+  return {
+    event: 'mp_pix_out_error_sanitized',
+    provider: 'mercado_pago',
+    operation: 'pix_out',
+    endpoint: PIX_OUT_ENDPOINT,
+    http_status: httpStatus,
+    mp_status: rawData?.status ?? null,
+    mp_error: rawData?.error ?? null,
+    mp_message: rawData?.message ?? error?.message ?? null,
+    mp_cause: extractMpCauseSafe(rawData?.cause),
+    mp_code: rawData?.code ?? null,
+    request_id: requestId,
+    correlation_id: correlationId || null,
+    saque_id: saqueId || null,
+    user_id: hashUserIdForLog(userId),
+    amount: amount != null ? parseFloat(amount) : null,
+    pix_key_type: normalizedPixType,
+    has_pix_key: Boolean(pixKey),
+    has_document: Boolean(ownerIdentification?.number)
+  };
+};
+
 const sanitizeForLogs = (input) => {
   const SENSITIVE_KEYS = new Set([
     'authorization',
@@ -519,22 +593,19 @@ const createPixWithdraw = async (amount, pixKey, pixKeyType, userId, saqueId, co
       }
     };
   } catch (error) {
-    const httpStatus = error.response?.status || null;
     const rawData = error.response?.data || null;
     const msg = rawData?.message || error.message;
-    const safeData = sanitizeForLogs(rawData);
-    const safeCause = sanitizeForLogs(rawData?.cause || null);
-
-    console.error('❌ [PIX][MP][PAYOUT][ERRO_BRUTO_SANITIZADO]', {
-      http_status: httpStatus,
-      code: rawData?.code || null,
-      message: msg || null,
-      cause: safeCause,
-      response_data: safeData,
-      payout_external_reference: options?.payoutExternalReference || null,
-      saqueId: saqueId || null,
-      correlation_id: correlationId || null
+    const sanitized = sanitizeMercadoPagoError(error, {
+      saqueId,
+      correlationId,
+      userId,
+      amount,
+      pixKeyType,
+      pixKey,
+      ownerIdentification: options?.ownerIdentification
     });
+
+    console.error('[MP][PIX_OUT][ERROR_SANITIZED]', sanitized);
 
     return {
       success: false,
@@ -549,5 +620,6 @@ module.exports = {
   processWebhook,
   createPixWithdraw,
   getTransactionIntent,
-  isConfigured
+  isConfigured,
+  sanitizeMercadoPagoError
 };
