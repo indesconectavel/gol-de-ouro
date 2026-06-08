@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const { isConfigured: isPixPayoutConfigured } = require('../../../services/pix-mercado-pago');
+const { createPixWithdrawCompat } = require('../../finance/compat/createPixWithdrawCompat');
 
 const payoutCounters = { success: 0, fail: 0 };
 
@@ -1374,7 +1375,7 @@ const processSingleWithdrawalPayout = async ({ supabase, saque, createPixWithdra
     payoutExternalReference
   });
 
-  const payoutResult = await createPixWithdraw(netAmount, pixKey, pixType, userId, saqueId, correlationId, {
+  const payoutResult = await createPixWithdrawCompat(netAmount, pixKey, pixType, userId, saqueId, correlationId, {
     payoutExternalReference,
     idempotencyKey,
     notificationUrl: notificationUrl || undefined,
