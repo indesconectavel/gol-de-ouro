@@ -18,6 +18,13 @@ const axios = require('axios');
 const http = require('http');
 const crypto = require('crypto'); // ✅ Adicionado para geração segura de números aleatórios
 const { createPixWithdraw, getTransactionIntent } = require('./services/pix-mercado-pago');
+const { createPixDepositCompat, isPixDepositConfigured } = require('./src/finance/compat/createPixDepositCompat');
+const {
+  processPaymentWebhookCompat,
+  isPaymentWebhookEngineEnabled,
+  isAsaasWebhookRouteAllowed
+} = require('./src/finance/compat/processPaymentWebhookCompat');
+const { processPaymentWebhook } = require('./src/finance/webhooks/processPaymentWebhook');
 const {
   payoutCounters,
   createLedgerEntry,
@@ -3053,16 +3060,8 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
       });
     }
 
-    // APENAS MERCADO PAGO REAL - SEM FALLBACK
-    if (!mercadoPagoAccessToken) {
-      console.log('⚠️ [PIX][DEPOSIT] Token de depósito não configurado');
-      return res.status(503).json({
-        success: false,
-        message: 'Sistema de pagamento temporariamente indisponível. Tente novamente em alguns minutos.'
-      });
-    }
-
-    if (!mercadoPagoConnected) {
+    if (!isPixDepositConfigured({ mercadoPagoConnected: mercadoPagoConnected })) {
+      console.log('⚠️ [PIX][DEPOSIT] Provider PIX IN não configurado');
       return res.status(503).json({
         success: false,
         message: 'Sistema de pagamento temporariamente indisponível. Tente novamente em alguns minutos.'
@@ -3088,71 +3087,56 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
       const userName = userData?.username || '';
       const userEmail = userData?.email || req.user.email;
 
-      // Preparar nome do comprador
-      const names = userName.split(' ');
-      const firstName = names[0] || '';
-      const lastName = names.slice(1).join(' ') || '';
-
-      // CPF opcional vindo do cliente; fallback seguro
-      const payerCpf = (req.body && req.body.cpf) ? String(req.body.cpf).replace(/\\D/g, '') : '52998224725';
-
-      const paymentData = {
-        transaction_amount: parseFloat(amount),
-        description: 'Depósito Gol de Ouro',
-        payment_method_id: 'pix',
-        payer: {
-          email: userEmail,
-          first_name: firstName,
-          last_name: lastName,
-          identification: {
-            type: 'CPF',
-            number: payerCpf // CPF obrigatório para produção
-          }
-        },
-        external_reference: `goldeouro_${req.user.userId}_${Date.now()}`,
-        statement_descriptor: 'GOL DE OURO',
-        notification_url: `${process.env.BACKEND_URL || 'https://goldeouro-backend-v2.fly.dev'}/api/payments/webhook`
-      };
-
-      // Gerar X-Idempotency-Key único
-      // ✅ CORREÇÃO INSECURE RANDOMNESS: Usar crypto.randomBytes ao invés de Math.random()
+      const payerCpf = (req.body && req.body.cpf) ? String(req.body.cpf).replace(/\D/g, '') : '52998224725';
       const randomBytes = crypto.randomBytes(6).toString('hex');
       const idempotencyKey = `pix_${req.user.userId}_${Date.now()}_${randomBytes}`;
-      
-      const response = await axios.post(
-        'https://api.mercadopago.com/v1/payments',
-        paymentData,
-        {
-          headers: {
-            'Authorization': `Bearer ${mercadoPagoAccessToken}`,
-            'Content-Type': 'application/json',
-            'X-Idempotency-Key': idempotencyKey,
-            'Accept': 'application/json',
-            'User-Agent': 'GolDeOuro/1.2.0'
-          },
-          timeout: 8000,
-          maxRedirects: 3,
-          validateStatus: (status) => status < 500
-        }
-      );
+      const externalReference = `goldeouro_${req.user.userId}_${Date.now()}`;
 
-      const payment = response.data;
-      if (!payment || !payment.id || !payment.point_of_interaction?.transaction_data?.qr_code) {
-        throw new Error(`Resposta inválida do Mercado Pago: ${JSON.stringify(response.data || {})}`);
+      const depositResult = await createPixDepositCompat({
+        amount: parseFloat(amount),
+        userId: req.user.userId,
+        userEmail,
+        userName,
+        payerCpf,
+        idempotencyKey,
+        externalReference,
+        notificationUrl: `${process.env.BACKEND_URL || 'https://goldeouro-backend-v2.fly.dev'}/api/payments/webhook`,
+        mercadoPagoConnected
+      });
+
+      if (!depositResult.success) {
+        console.error('❌ [PIX] Erro Payment Engine:', {
+          provider: depositResult.provider,
+          error: depositResult.error,
+          message: depositResult.message
+        });
+        if (req.query?.debug === '1' || req.body?.debug === true) {
+          return res.status(500).json({
+            success: false,
+            message: 'Erro ao criar PIX (diagnóstico)',
+            detalhe: depositResult
+          });
+        }
+        return res.status(500).json({
+          success: false,
+          message: 'Erro ao criar PIX. Tente novamente em alguns minutos.'
+        });
       }
+
+      const paymentId = depositResult.providerRef;
       
       const { data: pixRecord, error: insertError } = await supabase
         .from('pagamentos_pix')
         .insert({
           usuario_id: req.user.userId,
-          external_id: String(payment.id),
-          payment_id: String(payment.id),
+          external_id: String(paymentId),
+          payment_id: String(paymentId),
           amount: parseFloat(amount),
           valor: parseFloat(amount),
           status: 'pending',
-          qr_code: payment.point_of_interaction?.transaction_data?.qr_code || null,
-          qr_code_base64: payment.point_of_interaction?.transaction_data?.qr_code_base64 || null,
-          pix_copy_paste: payment.point_of_interaction?.transaction_data?.qr_code || null
+          qr_code: depositResult.qrCode || null,
+          qr_code_base64: depositResult.qrCodeBase64 || null,
+          pix_copy_paste: depositResult.pixCopyPaste || depositResult.qrCode || null
         })
         .select()
         .single();
@@ -3174,33 +3158,36 @@ app.post('/api/payments/pix/criar', authenticateToken, async (req, res) => {
         });
       }
 
-      console.log(`💰 [PIX] PIX real criado: R$ ${amount} para usuário ${req.user.userId}`);
+      console.log(`💰 [PIX] PIX criado via ${depositResult.provider}: R$ ${amount} para usuário ${req.user.userId}`);
       financeLog('deposit_created', {
-        payment_id: String(payment.id),
+        payment_id: String(paymentId),
         user_id: req.user.userId,
         tipo: 'deposito',
         status: 'pending',
-        valor: Number(amount)
+        valor: Number(amount),
+        provider: depositResult.provider
       });
 
       res.json({
         success: true,
         message: 'PIX criado com sucesso!',
         data: {
-          id: payment.id,
+          id: paymentId,
           amount: parseFloat(amount),
-          qr_code: payment.point_of_interaction?.transaction_data?.qr_code,
-          qr_code_base64: payment.point_of_interaction?.transaction_data?.qr_code_base64,
-          pix_copy_paste: payment.point_of_interaction?.transaction_data?.qr_code,
-          pix_code: payment.point_of_interaction?.transaction_data?.qr_code,
-          status: 'pending',
+          qr_code: depositResult.qrCode,
+          qr_code_base64: depositResult.qrCodeBase64,
+          pix_copy_paste: depositResult.pixCopyPaste,
+          pix_code: depositResult.pixCopyPaste,
+          status: depositResult.status || 'pending',
+          provider: depositResult.provider,
+          external_reference: depositResult.externalReference,
           created_at: new Date().toISOString()
         }
       });
 
     } catch (mpError) {
       const mpDetail = mpError?.response?.data || { message: mpError.message };
-      console.error('❌ [PIX] Erro Mercado Pago:', mpDetail);
+      console.error('❌ [PIX] Erro ao criar depósito:', mpDetail);
       // Modo diagnóstico opcional e temporário
       if (req.query?.debug === '1' || req.body?.debug === true) {
         return res.status(500).json({
@@ -3463,8 +3450,24 @@ app.post('/api/payments/webhook', async (req, res, next) => {
 }, async (req, res) => {
   try {
     const { type, data } = req.body;
-    console.log('📨 [WEBHOOK] PIX recebido:', { type, data });
-    
+    console.log('📨 [WEBHOOK] PIX recebido:', { type, data, engine: isPaymentWebhookEngineEnabled() });
+
+    if (isPaymentWebhookEngineEnabled()) {
+      res.status(200).json({ received: true, engine: true, provider: 'mercadopago' });
+      await processPaymentWebhook({
+        provider: 'mercadopago',
+        req,
+        signatureValidation: req.webhookValidation,
+        deps: {
+          supabase,
+          mercadoPagoAccessToken,
+          claimAndCreditApprovedPixDeposit,
+          financeLog
+        }
+      });
+      return;
+    }
+
     res.status(200).json({ received: true }); // Responder imediatamente
     
     if (type === 'payment' && data != null) {
@@ -3541,6 +3544,36 @@ app.post('/api/payments/webhook', async (req, res, next) => {
     }
   } catch (error) {
     console.error('❌ [WEBHOOK] Erro:', error);
+  }
+});
+
+// Webhook Asaas — Payment Engine (F4.5 / P1.0 produção gated)
+app.post('/webhooks/asaas', async (req, res) => {
+  if (!isPaymentWebhookEngineEnabled()) {
+    return res.status(404).json({ error: 'payment_webhook_engine_disabled' });
+  }
+  if (!isAsaasWebhookRouteAllowed()) {
+    return res.status(403).json({
+      error: 'asaas_webhook_blocked',
+      message: 'Rota Asaas bloqueada por flags ou produção sem ASAAS_PRODUCTION_ENABLED'
+    });
+  }
+  try {
+    await processPaymentWebhookCompat({
+      provider: 'asaas',
+      req,
+      res,
+      deps: {
+        financeLog,
+        supabase,
+        claimAndCreditApprovedPixDeposit
+      }
+    });
+  } catch (error) {
+    console.error('❌ [WEBHOOK][ASAAS] Erro:', error);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'internal_error' });
+    }
   }
 });
 
