@@ -14,6 +14,10 @@ const {
 } = require('../providers/mercadopago/mercadopago-webhook-normalizer');
 const { validateAsaasWebhook, DECISION } = require('../providers/asaas/asaas-webhook-validator');
 const { normalizeAsaasPaymentWebhook } = require('../providers/asaas/asaas-webhook-normalizer');
+const {
+  processAsaasTransferWebhook,
+  isAsaasTransferWebhookEvent
+} = require('./processAsaasTransferWebhook');
 const { checkSupabaseDepositIdempotency } = require('./paymentWebhookIdempotency');
 const { defaultStore } = require('./paymentWebhookDryRunStore');
 const {
@@ -22,11 +26,17 @@ const {
   getControlledCreditBlockReason
 } = require('../config/payment-webhook-config');
 
+/**
+ * P1.6W — Ingresso HTTP do webhook financeiro Asaas.
+ * Depende apenas de ASAAS_WEBHOOK_ENABLED (+ ALLOW_ASAAS_SANDBOX_WEBHOOK em não-produção).
+ * Não acopla ASAAS_PRODUCTION_ENABLED nem gates PIX OUT.
+ */
 function isAsaasWebhookRouteAllowed() {
   if (!isAsaasWebhookEnabled()) return false;
-  if (!isAsaasSandboxWebhookAllowed() && !isAsaasProductionEnabled()) return false;
-  if (isProductionRuntime() && !isAsaasProductionEnabled()) return false;
-  return true;
+  if (isProductionRuntime()) {
+    return true;
+  }
+  return isAsaasSandboxWebhookAllowed();
 }
 
 async function fetchMercadoPagoPayment(paymentIdNum, accessToken) {
@@ -210,13 +220,17 @@ async function processPaymentWebhook(input = {}) {
       String(process.env.ASAAS_CONTROLLED_CREDIT_ENABLED || '').trim().toLowerCase() === 'true';
 
     if (controlledCreditRequested && isProductionRuntime() && !isAsaasProductionEnabled()) {
-      return {
-        success: false,
+      financeLog('deposit_webhook_event_ignored', {
         provider,
-        rejected: true,
-        httpStatus: 403,
-        error: 'CONTROLLED_CREDIT_BLOCKED_PROD',
+        reason: 'controlled_credit_blocked_prod',
+        tipo: 'deposito'
+      });
+      return {
+        success: true,
+        provider,
+        ignored: true,
         creditDecision: 'blocked_prod',
+        reason: 'controlled_credit_blocked_prod',
         financialEffect: false
       };
     }
@@ -228,12 +242,46 @@ async function processPaymentWebhook(input = {}) {
         rejected: true,
         httpStatus: 403,
         error: 'ASAAS_WEBHOOK_ROUTE_BLOCKED',
-        message: 'Rota Asaas bloqueada por flags ou produção sem gate',
+        message: 'Rota Asaas bloqueada: ASAAS_WEBHOOK_ENABLED=false ou sandbox sem ALLOW_ASAAS_SANDBOX_WEBHOOK',
         financialEffect: false
       };
     }
 
     const validation = validateAsaasWebhook({ headers, body });
+
+    if (isAsaasTransferWebhookEvent(body)) {
+      const transferResult = await processAsaasTransferWebhook({
+        validation,
+        body,
+        supabase: deps.supabase,
+        financeLog
+      });
+
+      if (transferResult.rejected) {
+        return {
+          ...transferResult,
+          httpStatus: transferResult.httpStatus || 401
+        };
+      }
+
+      if (transferResult.error === 'WITHDRAWAL_NOT_FOUND') {
+        return {
+          ...transferResult,
+          httpStatus: 404
+        };
+      }
+
+      if (transferResult.error && transferResult.httpStatus) {
+        return transferResult;
+      }
+
+      if (!transferResult.success && transferResult.error) {
+        return transferResult;
+      }
+
+      return transferResult;
+    }
+
     const normalized = normalizeAsaasPaymentWebhook({ body, validation });
 
     if (normalized.rejected) {
@@ -263,13 +311,17 @@ async function processPaymentWebhook(input = {}) {
 
     if (isAsaasControlledCreditEnabled()) {
       if (isProductionRuntime()) {
-        return {
-          success: false,
+        financeLog('deposit_webhook_event_ignored', {
           provider,
-          rejected: true,
-          httpStatus: 403,
-          error: 'CONTROLLED_CREDIT_BLOCKED_PROD',
+          reason: 'controlled_credit_blocked_prod',
+          tipo: 'deposito'
+        });
+        return {
+          success: true,
+          provider,
+          ignored: true,
           creditDecision: 'blocked_prod',
+          reason: 'controlled_credit_blocked_prod',
           financialEffect: false
         };
       }
@@ -386,12 +438,17 @@ async function processPaymentWebhook(input = {}) {
 
     const blockReason = getControlledCreditBlockReason();
     if (blockReason === 'blocked_prod') {
-      return {
-        success: false,
+      financeLog('deposit_webhook_event_ignored', {
         provider,
-        rejected: true,
-        httpStatus: 403,
-        creditDecision: 'blocked_prod',
+        reason: 'production_credit_gate_closed',
+        tipo: 'deposito'
+      });
+      return {
+        success: true,
+        provider,
+        ignored: true,
+        creditDecision: 'production_credit_gate_closed',
+        reason: blockReason,
         financialEffect: false
       };
     }

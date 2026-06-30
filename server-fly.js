@@ -17,14 +17,19 @@ const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
 const http = require('http');
 const crypto = require('crypto'); // ✅ Adicionado para geração segura de números aleatórios
-const { createPixWithdraw, getTransactionIntent } = require('./services/pix-mercado-pago');
+const { getTransactionIntent } = require('./services/pix-mercado-pago');
 const { createPixDepositCompat, isPixDepositConfigured } = require('./src/finance/compat/createPixDepositCompat');
+const { claimApprovedPixDeposit } = require('./src/finance/deposit/claimApprovedPixDeposit');
 const {
   processPaymentWebhookCompat,
   isPaymentWebhookEngineEnabled,
   isAsaasWebhookRouteAllowed
 } = require('./src/finance/compat/processPaymentWebhookCompat');
 const { processPaymentWebhook } = require('./src/finance/webhooks/processPaymentWebhook');
+const {
+  handleAsaasTransferAuthorization
+} = require('./src/finance/webhooks/asaasTransferAuthorization');
+const { isAsaasTransferAuthWebhookEnabled } = require('./src/finance/config/asaas-transfer-auth-config');
 const {
   payoutCounters,
   createLedgerEntry,
@@ -143,8 +148,7 @@ const runProcessPendingWithdrawals = async () => {
   return processPendingWithdrawals({
     supabase,
     isDbConnected: dbConnected,
-    payoutEnabled,
-    createPixWithdraw
+    payoutEnabled
   });
 };
 
@@ -2907,129 +2911,25 @@ function pickMercadoPagoPaymentIdForReconcile(row) {
 }
 
 /**
- * Claim idempotente + crédito de saldo quando o MP já está em approved.
- * @param {string} idStr — payment_id / external_id como string só dígitos
- * @returns {Promise<boolean>} true se este fluxo aplicou crédito ou já estava consistente com claim ganho
+ * Claim idempotente + crédito de saldo (MP via RPC; Asaas pay_* via fallback P1.4F).
+ * @param {string} idStr — payment_id / external_id
+ * @returns {Promise<boolean>}
  */
 async function claimAndCreditApprovedPixDeposit(idStr) {
   if (!supabase) return false;
   const paymentId = String(idStr || '').trim();
   if (!paymentId) return false;
-  financeLog('deposit_claim_start', {
-    payment_id: paymentId,
-    tipo: 'deposito',
-    status: 'starting'
-  });
 
   try {
-    // Caminho canônico: função SQL atômica (se disponível no runtime)
-    const { data: rpcResult, error: rpcError } = await supabase.rpc(
-      'claim_and_credit_approved_pix_deposit',
-      { p_mercadopago_id: paymentId }
+    const result = await claimApprovedPixDeposit(
+      {
+        supabase,
+        createLedgerEntry,
+        log: (event, payload = {}) => financeLog(event, { ...payload, tipo: 'deposito' })
+      },
+      paymentId
     );
-
-    if (!rpcError && rpcResult && typeof rpcResult === 'object') {
-      const ok = !!rpcResult.ok;
-      const credited = !!rpcResult.credited;
-      financeLog('deposit_claim_sql', {
-        payment_id: paymentId,
-        tipo: 'deposito',
-        status: ok ? (credited ? 'credited' : 'idempotent') : 'not_credited',
-        payload: rpcResult
-      });
-      return ok;
-    }
-
-    // Se a função não existir no ambiente, usar fallback legado sem quebrar contrato
-    if (rpcError && !/claim_and_credit_approved_pix_deposit|does not exist|PGRST202/i.test(String(rpcError.message || ''))) {
-      financeLog('deposit_claim_sql_error', {
-        payment_id: paymentId,
-        tipo: 'deposito',
-        status: 'error',
-        error: rpcError.message || String(rpcError)
-      });
-      return false;
-    }
-
-    let claimed = null;
-    const { data: claimByPaymentId, error: claimErr1 } = await supabase
-      .from('pagamentos_pix')
-      .update({ status: 'approved', updated_at: new Date().toISOString() })
-      .eq('payment_id', paymentId)
-      .neq('status', 'approved')
-      .select('id, usuario_id, amount, valor, payment_id, external_id');
-
-    if (!claimErr1 && claimByPaymentId && claimByPaymentId.length === 1) {
-      claimed = claimByPaymentId[0];
-    }
-
-    if (!claimed) {
-      const { data: claimByExternalId, error: claimErr2 } = await supabase
-        .from('pagamentos_pix')
-        .update({ status: 'approved', updated_at: new Date().toISOString() })
-        .eq('external_id', paymentId)
-        .neq('status', 'approved')
-        .select('id, usuario_id, amount, valor, payment_id, external_id');
-      if (!claimErr2 && claimByExternalId && claimByExternalId.length === 1) {
-        claimed = claimByExternalId[0];
-      }
-    }
-
-    if (!claimed) {
-      financeLog('deposit_claim_idempotent_or_missing', {
-        payment_id: paymentId,
-        tipo: 'deposito',
-        status: 'idempotent_or_missing'
-      });
-      return false;
-    }
-
-    const pixRecord = claimed;
-    const userId = pixRecord.usuario_id;
-    const credit = Number(pixRecord.amount ?? pixRecord.valor ?? 0);
-
-    const { data: user, error: userError } = await supabase
-      .from('usuarios')
-      .select('saldo')
-      .eq('id', userId)
-      .single();
-    if (userError || !user) {
-      financeLog('deposit_claim_user_error', {
-        payment_id: paymentId,
-        user_id: userId,
-        tipo: 'deposito',
-        status: 'error',
-        error: userError?.message || 'user_not_found'
-      });
-      return false;
-    }
-
-    const saldoAnterior = Number(user.saldo || 0);
-    const novoSaldo = saldoAnterior + credit;
-    const { error: saldoError } = await supabase
-      .from('usuarios')
-      .update({ saldo: novoSaldo })
-      .eq('id', userId);
-    if (saldoError) {
-      financeLog('deposit_claim_balance_error', {
-        payment_id: paymentId,
-        user_id: userId,
-        tipo: 'deposito',
-        status: 'error',
-        valor: credit,
-        error: saldoError.message
-      });
-      return false;
-    }
-
-    financeLog('deposit_claim_credited_fallback', {
-      payment_id: paymentId,
-      user_id: userId,
-      tipo: 'deposito',
-      status: 'approved',
-      valor: credit
-    });
-    return true;
+    return !!result.ok;
   } catch (error) {
     financeLog('deposit_claim_unexpected_error', {
       payment_id: paymentId,
@@ -3555,7 +3455,7 @@ app.post('/webhooks/asaas', async (req, res) => {
   if (!isAsaasWebhookRouteAllowed()) {
     return res.status(403).json({
       error: 'asaas_webhook_blocked',
-      message: 'Rota Asaas bloqueada por flags ou produção sem ASAAS_PRODUCTION_ENABLED'
+      message: 'Rota Asaas bloqueada: ASAAS_WEBHOOK_ENABLED=false ou sandbox sem ALLOW_ASAAS_SANDBOX_WEBHOOK'
     });
   }
   try {
@@ -3574,6 +3474,32 @@ app.post('/webhooks/asaas', async (req, res) => {
     if (!res.headersSent) {
       res.status(500).json({ error: 'internal_error' });
     }
+  }
+});
+
+// P1.6A — Webhook de autorização de transferência Asaas (separado do webhook financeiro)
+app.post('/webhooks/asaas/transfer-validation', async (req, res) => {
+  if (!isAsaasTransferAuthWebhookEnabled()) {
+    console.warn('[ASAAS][TRANSFER_AUTH] gate_disabled — endpoint inativo');
+    return res.status(404).json({ error: 'asaas_transfer_auth_webhook_disabled' });
+  }
+  try {
+    const requestId = req.headers['x-request-id'] || req.id || `auth_${Date.now()}`;
+    const result = await handleAsaasTransferAuthorization({
+      headers: req.headers,
+      body: req.body,
+      ip: req.ip,
+      supabase: dbConnected ? supabase : null,
+      requestId,
+      financeLog
+    });
+    return res.status(result.httpStatus).json(result.body);
+  } catch (error) {
+    console.error('[ASAAS][TRANSFER_AUTH] erro interno:', error.message);
+    return res.status(200).json({
+      status: 'REFUSED',
+      refuseReason: 'Internal processing error'
+    });
   }
 });
 

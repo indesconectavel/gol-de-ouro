@@ -70,10 +70,14 @@ async function processPaymentWebhookCompat(input = {}) {
       received: true,
       engine: true,
       provider: 'asaas',
+      category: result.category ?? (result.event?.category === 'transfer' ? 'transfer' : 'payment'),
       dryRun: result.dryRun === true,
       productionCredit: result.productionCredit === true,
       credited: result.credited === true,
       idempotent: result.idempotent === true,
+      replay: result.replay === true,
+      transferStatus: result.transferStatus ?? null,
+      saqueId: result.saqueId ?? null,
       creditDecision: result.creditDecision ?? null
     });
   }

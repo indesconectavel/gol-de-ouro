@@ -7,9 +7,7 @@ import {
   snapshotEnvironment,
   restoreEnvironment,
   resetAsaasEnvironment,
-  clearAsaasModuleCache,
-  applyEnvironment,
-  applyPaymentWebhookEngineProfile
+  applyEnvironment
 } from './helpers/asaas-test-env.mjs';
 
 const require = createRequire(import.meta.url);
@@ -51,9 +49,30 @@ function asaasHeaders() {
   return { [ASAAS_WEBHOOK_AUTH_HEADER]: process.env.ASAAS_WEBHOOK_TOKEN };
 }
 
+function reloadWebhookModules() {
+  delete require.cache[require.resolve('../src/finance/config/payment-webhook-config.js')];
+  delete require.cache[require.resolve('../src/finance/config/primary-psp.js')];
+  delete require.cache[require.resolve('../src/finance/webhooks/processPaymentWebhook.js')];
+}
+
+function applyProductionWebhookBase() {
+  applyEnvironment({
+    NODE_ENV: 'production',
+    ASAAS_ENV: 'production',
+    ASAAS_ENABLED: 'true',
+    ASAAS_API_KEY: '$aact_prod_test_key_placeholder',
+    PAYMENT_WEBHOOK_ENGINE_ENABLED: 'true',
+    ASAAS_WEBHOOK_ENABLED: 'true',
+    ASAAS_WEBHOOK_STRICT_MODE: 'false',
+    ASAAS_WEBHOOK_TOKEN: 'whsec_goldeouro_p10_wire_token_min32',
+    PAYMENT_PROVIDER: null,
+    PAYOUT_PROVIDER: null
+  });
+}
+
 try {
   resetAsaasEnvironment();
-  clearAsaasModuleCache(require);
+  applyEnvironment({ PAYMENT_PROVIDER: null, PAYOUT_PROVIDER: null });
 
   test('ASAAS_PRODUCTION_ENABLED default is OFF', () => {
     const { isAsaasProductionEnabled } = require('../src/finance/config/primary-psp');
@@ -62,30 +81,23 @@ try {
     }
   });
 
-  clearAsaasModuleCache(require);
-  applyPaymentWebhookEngineProfile();
-  delete require.cache[require.resolve('../src/finance/webhooks/processPaymentWebhook.js')];
+  applyProductionWebhookBase();
+  applyEnvironment({ ASAAS_PRODUCTION_ENABLED: 'false' });
+  reloadWebhookModules();
   const { processPaymentWebhook } = require('../src/finance/webhooks/processPaymentWebhook');
-  const { isAsaasProductionWebhookCreditEnabled } = require('../src/finance/config/payment-webhook-config');
 
   test('production credit path disabled without gate', () => {
     applyEnvironment({ NODE_ENV: 'production', ASAAS_PRODUCTION_ENABLED: 'false' });
-    clearAsaasModuleCache(require);
+    reloadWebhookModules();
     const cfg = require('../src/finance/config/payment-webhook-config');
     if (cfg.isAsaasProductionWebhookCreditEnabled()) {
       throw new Error('production credit should require ASAAS_PRODUCTION_ENABLED');
     }
   });
 
-  clearAsaasModuleCache(require);
-  applyEnvironment({
-    NODE_ENV: 'production',
-    ASAAS_PRODUCTION_ENABLED: 'true',
-    ASAAS_WEBHOOK_ENABLED: 'true',
-    ASAAS_ENV: 'production',
-    PAYMENT_WEBHOOK_ENGINE_ENABLED: 'true'
-  });
-  delete require.cache[require.resolve('../src/finance/webhooks/processPaymentWebhook.js')];
+  applyProductionWebhookBase();
+  applyEnvironment({ ASAAS_PRODUCTION_ENABLED: 'true' });
+  reloadWebhookModules();
   const processProd = require('../src/finance/webhooks/processPaymentWebhook');
   const cfgProd = require('../src/finance/config/payment-webhook-config');
 
@@ -167,18 +179,22 @@ try {
     }
   });
 
-  clearAsaasModuleCache(require);
-  applyEnvironment({ NODE_ENV: 'production', ASAAS_PRODUCTION_ENABLED: 'false', PAYMENT_WEBHOOK_ENGINE_ENABLED: 'true' });
+  applyProductionWebhookBase();
+  applyEnvironment({ ASAAS_PRODUCTION_ENABLED: 'false' });
+  reloadWebhookModules();
   const processBlocked = require('../src/finance/webhooks/processPaymentWebhook');
 
-  await runAsync('production without gate remains blocked', async () => {
+  await runAsync('production without financial gate returns 200 ignored (P1.6W)', async () => {
     const result = await processBlocked.processPaymentWebhook({
       provider: 'asaas',
       body: ASAAS_BODY,
       headers: asaasHeaders()
     });
-    if (!result.rejected || result.httpStatus !== 403) {
-      throw new Error('expected 403 when gate OFF in production');
+    if (result.rejected || result.httpStatus === 403) {
+      throw new Error('expected HTTP 200 path when ASAAS_WEBHOOK_ENABLED without ASAAS_PRODUCTION_ENABLED');
+    }
+    if (!result.ignored && result.creditDecision !== 'production_credit_gate_closed') {
+      throw new Error(`expected ignored/production_credit_gate_closed, got ${result.creditDecision}`);
     }
   });
 
@@ -190,5 +206,5 @@ try {
   console.log('\nVerification PASSED (P1.0 Asaas production webhook wire)');
 } finally {
   restoreEnvironment(envSnapshot);
-  clearAsaasModuleCache(require);
+  reloadWebhookModules();
 }
