@@ -263,3 +263,19 @@ release-evidence-*/
 *.log
 *.temp
 *.tmp
+
+# F4.3B — wallet/ledger controlado E2E Asaas (local temporário)
+scripts/.controlled-db/
+
+# PE.PATRIMÔNIO.2B — proteções patrimoniais
+secrets/
+backup/
+_agent_*
+_health*.json
+_p15y_*
+_where_*
+P15Y-R1-*.txt
+p15y-r1-report*.json
+scripts-p15y-*.txt
+spike-f5-0c-*
+0
