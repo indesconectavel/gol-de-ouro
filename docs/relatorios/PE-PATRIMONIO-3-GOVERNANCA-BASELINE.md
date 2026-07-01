@@ -66,7 +66,7 @@ a4ca37a docs(payment-engine): preserve F4.x payment engine formation reports
 b56584e docs(payment-engine): preserve valuation and operational certification docs
 5706d1b chore(scripts): preserve payment engine verification and certification tooling
 4cd55b2 docs(payment-engine): preserve curated homologation evidence snapshots
-7a04eff docs(payment-engine): PE.PATRIMONIO.3 governance and baseline report
+be3a28b docs(payment-engine): PE.PATRIMONIO.3 governance and baseline report
 ```
 
 ---
