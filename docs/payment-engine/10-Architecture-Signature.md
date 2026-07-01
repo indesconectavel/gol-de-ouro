@@ -201,6 +201,7 @@ Wallet, ledger, webhooks e recovery permanecem inalterados.
 │  Version: V1 CERTIFICADA                                   │
 │  Status:  Production Certified                             │
 │  Tag:     payment-engine-v1-certified                      │
+│  Commit:  eab1d74                                          │
 │  Date:    2026-07-01                                       │
 │                                                            │
 │  Certified: P1.9 PASS                                      │
