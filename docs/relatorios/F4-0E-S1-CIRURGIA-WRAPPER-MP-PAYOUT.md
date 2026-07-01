@@ -212,4 +212,23 @@ VEREDITO: PASS
 GO PARA COMMIT? SIM
 ```
 
-**Commit:** não criado automaticamente — aguardando aprovação humana.
+## Commit F4.0F (2026-06-08)
+
+| Campo | Valor |
+|-------|-------|
+| **SHA** | `750d0a69e7df6baa4dcc60de8f91403e374c103a` |
+| **Branch** | `chore/f2-4e-2-mp-log` |
+| **Mensagem** | `feat(finance): add payout provider abstraction wrapper` |
+| **Arquivos** | 9 (504 insertions, 1 deletion) |
+| **Deploy** | NÃO executado |
+
+**Arquivos commitados:**
+- `docs/relatorios/F4-0E-S1-CIRURGIA-WRAPPER-MP-PAYOUT.md`
+- `src/domain/payout/processPendingWithdrawals.js`
+- `src/finance/compat/createPixWithdrawCompat.js`
+- `src/finance/contracts/PaymentProvider.js`
+- `src/finance/contracts/PayoutProvider.js`
+- `src/finance/factory/FinanceProviderFactory.js`
+- `src/finance/providers/mercadopago/MercadoPagoPayoutProvider.js`
+- `src/finance/providers/mock/MockPaymentProvider.js`
+- `src/finance/providers/mock/MockPayoutProvider.js`
