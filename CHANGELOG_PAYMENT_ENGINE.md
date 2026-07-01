@@ -1,5 +1,8 @@
 # Changelog — Indesconectável Payment Engine™
 
+© 2026 Indesconectável™. Todos os direitos reservados.  
+Licença: `LICENSE-PAYMENT-ENGINE.md`
+
 Todas as mudanças notáveis deste produto são documentadas neste arquivo.
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/).

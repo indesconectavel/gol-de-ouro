@@ -1,0 +1,8 @@
+Indesconectável Payment Engine™ V1 — Fachada e Adapters (P2.2)
+© 2026 Indesconectável™. Todos os direitos reservados.
+
+Licença: LICENSE-PAYMENT-ENGINE.md (repositório raiz)
+Escopo: docs/governance/PROPRIETARY-SCOPE.md
+
+Namespace introduzido em P2.2 — desacoplamento do core.
+Tag: payment-engine-p2.2 (commit d188ca6).

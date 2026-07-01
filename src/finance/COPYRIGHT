@@ -1,0 +1,10 @@
+Indesconectável Payment Engine™ V1 — Core Financeiro Certificado
+© 2026 Indesconectável™. Todos os direitos reservados.
+
+Licença: LICENSE-PAYMENT-ENGINE.md (repositório raiz)
+Escopo: docs/governance/PROPRIETARY-SCOPE.md
+
+Este diretório contém o núcleo financeiro certificado P1.9.
+Baseline imutável: tag payment-engine-p2.2 (commit d188ca6).
+
+Não remover este arquivo sem gate PE governança.

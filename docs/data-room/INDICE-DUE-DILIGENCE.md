@@ -35,6 +35,8 @@
 | CHANGELOG | `CHANGELOG_PAYMENT_ENGINE.md` |
 | Manifesto | `docs/payment-engine/08-Version-Manifest.md` |
 | Política baseline | `docs/governance/BASELINE-PROTECTION-POLICY.md` |
+| Licença proprietária | `LICENSE-PAYMENT-ENGINE.md` |
+| README institucional PE | `README-PAYMENT-ENGINE.md` |
 | Auditoria timeline | `docs/relatorios/GIT-AUDIT-PAYMENT-ENGINE-TIMELINE.md` |
 
 ---
@@ -140,6 +142,12 @@ Pasta: `docs/data-room/`
 | Documento | Função |
 |-----------|--------|
 | `BASELINE-PROTECTION-POLICY.md` | Proteção da baseline V1 |
+| `LICENSE-PAYMENT-ENGINE.md` | Licença proprietária (raiz) |
+| `COPYRIGHT-AND-LICENSE-POLICY.md` | Dual-license monorepo |
+| `PROPRIETARY-SCOPE.md` | Escopo paths proprietários |
+| `DECLARACAO-CESAO-AUTORAL-INSTITUCIONAL.md` | Titularidade institucional |
+| `BRAND-AND-TRADEMARK-GUIDELINES.md` | Uso de marca |
+| `INPI-PLANO-REGISTRO-MARCA.md` | Registro INPI (preparado) |
 | `CONTINUOUS-CERTIFICATION-MODEL.md` | CERTIFIED / DEGRADED / INVALID |
 | `RELIABILITY-MATURITY-MODEL.md` | Níveis 1–5 |
 | `OPERATIONAL-GOVERNANCE-DASHBOARD.md` | Painel executivo |
@@ -169,6 +177,9 @@ Pasta: `docs/data-room/`
 | PE.PATRIMÔNIO.2A | `PE-PATRIMONIO-2A-PUBLICACAO-CONTROLADA.md` |
 | PE.PATRIMÔNIO.2B | `PE-PATRIMONIO-2B-CURADORIA-DOCUMENTAL.md` |
 | PE.PATRIMÔNIO.3 | `PE-PATRIMONIO-3-GOVERNANCA-BASELINE.md` |
+| PE.BRAND.1 | `PE-BRAND-1-CONSOLIDACAO-PROPRIEDADE-INTELECTUAL.md` |
+| PE.BRAND.2 | `PE-BRAND-2-FORMALIZACAO-PROPRIETARIA.md` |
+| PE.BRAND.3 | `PE-BRAND-3-REGISTRO-MARCA-INPI.md` · `INPI-PLANO-REGISTRO-MARCA.md` |
 | Auditoria estratégica | `A1.0-AUDITORIA-ESTRATEGICA-PAYMENT-ENGINE.md` |
 
 ---

@@ -99,6 +99,8 @@ git clone <repo> && git checkout payment-engine-v1-certified
 
 A baseline V1 é patrimônio da **Indesconectável™**. Qualquer evolução funcional (PE.V1.2+) deve partir de tag oficial, nunca de working tree com WIP não certificado.
 
+**Propriedade intelectual (PE.BRAND.2):** `LICENSE-PAYMENT-ENGINE.md` · `docs/governance/PROPRIETARY-SCOPE.md` · `DECLARACAO-CESAO-AUTORAL-INSTITUCIONAL.md`
+
 ---
 
 *Política estabelecida em PE.PATRIMÔNIO.3 — 2026-07-01*
