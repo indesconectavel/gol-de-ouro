@@ -1,0 +1,668 @@
+{
+  "ref": "gayopagjdrkcmkirmfvy",
+  "captured_at": "2026-06-10T21:43:07.167Z",
+  "tables": [
+    {
+      "table": "",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "admin_logs",
+      "anon_count": 0,
+      "svc_count": 3,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": true,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "auditoria_eventos",
+      "anon_count": 500,
+      "svc_count": 500,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": [
+        "id",
+        "tipo_evento",
+        "user_id",
+        "lote_id",
+        "shot_id",
+        "valor",
+        "payload",
+        "created_at"
+      ]
+    },
+    {
+      "table": "chutes",
+      "anon_count": 0,
+      "svc_count": 224,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": true,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "configuracoes",
+      "anon_count": 0,
+      "svc_count": 9,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": true,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "conquistas",
+      "anon_count": 9,
+      "svc_count": 9,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": [
+        "id",
+        "nome",
+        "descricao",
+        "icone",
+        "tipo",
+        "meta",
+        "recompensa",
+        "ativa",
+        "created_at"
+      ]
+    },
+    {
+      "table": "fila_jogadores",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "idempotency_keys",
+      "anon_count": 216,
+      "svc_count": 216,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": [
+        "id",
+        "user_id",
+        "endpoint",
+        "idempotency_key",
+        "response_body",
+        "created_at"
+      ]
+    },
+    {
+      "table": "jogos",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "ledger_financeiro",
+      "anon_count": 79,
+      "svc_count": 79,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": [
+        "id",
+        "user_id",
+        "saque_id",
+        "tipo",
+        "valor",
+        "referencia",
+        "correlation_id",
+        "created_at",
+        "usuario_id"
+      ]
+    },
+    {
+      "table": "logs_sistema",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "lotes",
+      "anon_count": 50,
+      "svc_count": 50,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": [
+        "id",
+        "tamanho",
+        "chutes_coletados",
+        "ganhador_id",
+        "status",
+        "created_at",
+        "finished_at",
+        "valor_aposta",
+        "completed_at",
+        "total_arrecadado",
+        "indice_vencedor",
+        "premio_total",
+        "posicao_atual",
+        "updated_at"
+      ]
+    },
+    {
+      "table": "match_events",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "match_players",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "matches",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "metricas_globais",
+      "anon_count": 18,
+      "svc_count": 18,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": [
+        "id",
+        "contador_chutes_global",
+        "ultimo_gol_de_ouro",
+        "total_usuarios",
+        "total_jogos",
+        "total_receita",
+        "created_at",
+        "updated_at",
+        "ultimo_gol_de_ouro_arrecadacao"
+      ]
+    },
+    {
+      "table": "notificacoes",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "pagamentos_pix",
+      "anon_count": 0,
+      "svc_count": 367,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": true,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "partida_jogadores",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "partidas",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "password_reset_tokens",
+      "anon_count": 14,
+      "svc_count": 14,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": [
+        "id",
+        "user_id",
+        "token",
+        "expires_at",
+        "used",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    {
+      "table": "queue_board",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "ranking",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "rewards",
+      "anon_count": 0,
+      "svc_count": 19,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": true,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/claim_and_credit_approved_pix_deposit",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/cleanup_expired_password_tokens",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/creditar_pix_aprovado_mp",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/expire_stale_pix",
+      "anon_count": 1,
+      "svc_count": 1,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_add_balance",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_add_to_queue",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_check_webhook_event_processed",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_deduct_balance",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_get_active_lote_with_lock",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_get_active_lotes",
+      "anon_count": 1,
+      "svc_count": 1,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_get_balance",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_get_next_players_from_queue",
+      "anon_count": 1,
+      "svc_count": 1,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_get_or_create_lote",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_get_user_rewards",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_mark_players_matched",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_mark_reward_credited",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_mark_webhook_event_processed",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_register_reward",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_register_webhook_event",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_remove_from_queue",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_transfer_balance",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_update_lote_after_shot",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/rpc_update_queue_heartbeat",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/shoot_apply",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "rpc/solicitar_saque_pix_atomico",
+      "anon_count": null,
+      "svc_count": null,
+      "anon_error": null,
+      "anon_readable": null,
+      "rls_blocks_read": false,
+      "full_data_leak": null,
+      "sample_cols": []
+    },
+    {
+      "table": "saques",
+      "anon_count": 27,
+      "svc_count": 27,
+      "anon_error": null,
+      "anon_readable": true,
+      "rls_blocks_read": false,
+      "full_data_leak": true,
+      "sample_cols": [
+        "id",
+        "usuario_id",
+        "transacao_id",
+        "valor",
+        "chave_pix",
+        "tipo_chave",
+        "status",
+        "motivo_rejeicao",
+        "processed_at",
+        "created_at",
+        "updated_at",
+        "amount",
+        "pix_key",
+        "pix_type",
+        "correlation_id",
+        "fee",
+        "net_amount",
+        "mp_transaction_intent_id",
+        "payout_external_reference",
+        "mp_payout_status",
+        "mp_payout_raw",
+        "last_mp_sync_at"
+      ]
+    },
+    {
+      "table": "sessoes",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "shoot_idempotency",
+      "anon_count": 0,
+      "svc_count": 185,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": true,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "system_heartbeat",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "transacoes",
+      "anon_count": 0,
+      "svc_count": 40,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": true,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "usuario_conquistas",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": false,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "usuarios",
+      "anon_count": 0,
+      "svc_count": 468,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": true,
+      "full_data_leak": false,
+      "sample_cols": []
+    },
+    {
+      "table": "webhook_events",
+      "anon_count": 0,
+      "svc_count": 218,
+      "anon_error": null,
+      "anon_readable": false,
+      "rls_blocks_read": true,
+      "full_data_leak": false,
+      "sample_cols": []
+    }
+  ]
+}

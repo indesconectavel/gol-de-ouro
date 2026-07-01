@@ -1,13 +1,8 @@
--- producao gayopagjdrkcmkirmfvy 2026-05-18T16:08:09.410Z
--- R4: corpo equivalente ao pg_get_functiondef real (baseline mission-confirmed)
--- Fonte: caracterização prod + validação R3; substituir por export SQL Editor quando disponível
--- =============================================================================
--- V1.1B-M1-R3 — Baseline produção (self-heal COM crédito de saldo — bug alvo)
--- =============================================================================
--- Usado SOMENTE em staging para validar o patch R3 antes de produção.
--- Se existir pg_get_functiondef real em
---   docs/relatorios/snapshots/claim_and_credit_approved_pix_deposit-ANTES-M1-producao-2026-05-17.sql
--- o script R3 preferirá esse corpo em vez deste ficheiro.
+-- PRE-APPLY R3 — snapshot rollback (produção gayopagjdrkcmkirmfvy)
+-- Data gate: 2026-05-18 (V1.1B-M1-APPLY-GATE)
+-- OBRIGATÓRIO antes do apply: substituir este ficheiro pelo output LIVE do SQL Editor:
+--   SELECT pg_get_functiondef('public.claim_and_credit_approved_pix_deposit'::regproc);
+-- Corpo abaixo = baseline mission-confirmed (self-heal com crédito de saldo) até export live.
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION public.claim_and_credit_approved_pix_deposit(
@@ -121,7 +116,6 @@ BEGIN
     );
   END IF;
 
-  -- PROD BASELINE (bug): approved sem ledger → ledger + saldo
   IF v_status_norm = 'approved' THEN
     INSERT INTO public.ledger_financeiro (
       correlation_id,

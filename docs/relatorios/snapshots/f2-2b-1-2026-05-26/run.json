@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-05-26T14:35:22.985Z",
+  "phase1": {
+    "staging_ref": "uatszaqzdqcwnfbipoxg",
+    "prod_ref_blocked": "gayopagjdrkcmkirmfvy",
+    "resolved": null,
+    "env_refs": {
+      "SUPABASE_URL": "gayopagjdrkcmkirmfvy",
+      "SUPABASE_URL_PROD": "gayopagjdrkcmkirmfvy",
+      "STAGING_SUPABASE_URL": null
+    },
+    "blocked": true,
+    "block_reason": "Apenas credenciais de produção detectadas (gayopagjdrkcmkirmfvy)"
+  },
+  "phase2": {},
+  "phase3": {},
+  "phase4": {},
+  "phase5": {},
+  "ac": {},
+  "verdict": "NO-GO_SEM_STAGING"
+}

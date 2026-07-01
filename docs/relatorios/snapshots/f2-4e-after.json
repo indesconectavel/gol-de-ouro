@@ -1,0 +1,56 @@
+{
+  "phase": "F2.4E_AFTER",
+  "captured_at": "2026-05-29T21:06:00.000Z",
+  "execution": {
+    "performed": false,
+    "reason": "Clique em 'Aprovar e Enviar PIX' requer sessão admin no painel — não executado por este agente (sem credenciais; proibido inventar).",
+    "operator_action_required": true
+  },
+  "saque_id_testado": "8b36078d-c485-4f57-8592-2ea3ab2fee29",
+  "panel": {
+    "click_at": null,
+    "message_exibida": null,
+    "endpoint_esperado": "POST /api/admin/withdraw/approve-and-send"
+  },
+  "saque": {
+    "id": "8b36078d-c485-4f57-8592-2ea3ab2fee29",
+    "status": "pendente",
+    "mp_transaction_intent_id": null,
+    "mp_payout_status": null,
+    "payout_external_reference": null,
+    "processed_at": null,
+    "unchanged_from_before": true
+  },
+  "ledger": [
+    {
+      "tipo": "saque",
+      "valor": 10,
+      "correlation_id": "7425e37e-f2c6-4551-a4eb-aacd9cfe76f8"
+    },
+    {
+      "tipo": "taxa",
+      "valor": 2,
+      "correlation_id": "7425e37e-f2c6-4551-a4eb-aacd9cfe76f8"
+    }
+  ],
+  "user_balance": {
+    "saldo": 0
+  },
+  "fly_logs": {
+    "collected": false,
+    "reason": "flyctl auth não disponível nesta sessão",
+    "patterns_to_search_after_operator_click": [
+      "[ADMIN][WITHDRAW][APPROVE_AND_SEND]",
+      "withdraw.approve_and_send",
+      "processSingleWithdrawalPayout",
+      "createPixWithdraw",
+      "aguardando_confirmacao",
+      "payout_confirmado",
+      "falha_payout",
+      "MP_TERMINAL_FAIL"
+    ]
+  },
+  "mercado_pago": {
+    "conferencia": "PENDENTE_OPERADOR"
+  }
+}

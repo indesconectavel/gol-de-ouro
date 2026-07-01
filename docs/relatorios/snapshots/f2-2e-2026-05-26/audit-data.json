@@ -1,0 +1,938 @@
+{
+  "captured_at": "2026-05-26T22:56:11.141Z",
+  "supabase_url_ref": "gayopagjdrkcmkirmfvy",
+  "database_url_ref": "uatszaqzdqcwnfbipoxg",
+  "env_mismatch": true,
+  "f2_2c_t0": "2026-05-26T17:05:00+00",
+  "lotes_ativos": [
+    {
+      "id": "lote_2_1768572033571_8e2b2816df8d",
+      "valor_aposta": 2,
+      "tamanho": 5,
+      "indice_vencedor": -1,
+      "posicao_atual": 3,
+      "status": "ativo",
+      "created_at": "2026-01-16T14:00:33.593038+00:00",
+      "total_arrecadado": 6,
+      "premio_total": 0
+    },
+    {
+      "id": "lote_1_1779827981279_46d1489dc4ea",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "posicao_atual": 5,
+      "status": "ativo",
+      "created_at": "2026-05-26T20:39:41.27852+00:00",
+      "total_arrecadado": 5,
+      "premio_total": 0
+    }
+  ],
+  "lote_orfao_r2": {
+    "id": "lote_2_1768572033571_8e2b2816df8d",
+    "valor_aposta": 2,
+    "tamanho": 5,
+    "indice_vencedor": -1,
+    "posicao_atual": 3,
+    "status": "ativo",
+    "created_at": "2026-01-16T14:00:33.593038+00:00",
+    "total_arrecadado": 6,
+    "premio_total": 0
+  },
+  "chutes_pos_fix": [
+    {
+      "id": "be64c06b-32df-45ce-9251-96473f1630e0",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 1,
+      "created_at": "2026-05-26T20:39:13.899017+00:00"
+    },
+    {
+      "id": "16b2982b-8aee-46ac-b18a-d80ea2d71262",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 2,
+      "created_at": "2026-05-26T20:39:16.160383+00:00"
+    },
+    {
+      "id": "11d337ec-e57f-46b6-bbff-3dd93f239750",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 3,
+      "created_at": "2026-05-26T20:39:18.297635+00:00"
+    },
+    {
+      "id": "ea7d1890-c76c-4a9b-a16c-0d8cc42f6cb3",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 4,
+      "created_at": "2026-05-26T20:39:20.329391+00:00"
+    },
+    {
+      "id": "ec62bdfd-76b5-4d5a-bc2a-2ebe6a1b6126",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 5,
+      "created_at": "2026-05-26T20:39:22.526248+00:00"
+    },
+    {
+      "id": "078917bf-51ee-4432-a2f0-e25d0ca7be8e",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 6,
+      "created_at": "2026-05-26T20:39:25.146564+00:00"
+    },
+    {
+      "id": "ae2392e1-a104-4e0c-a806-a6e7a794fc80",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 7,
+      "created_at": "2026-05-26T20:39:27.260154+00:00"
+    },
+    {
+      "id": "1b08939e-b2e8-44a7-a44c-adbe2ff8cd60",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 8,
+      "created_at": "2026-05-26T20:39:29.305199+00:00"
+    },
+    {
+      "id": "8131c66c-b3c9-46ba-94ab-241cc12b02fd",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 9,
+      "created_at": "2026-05-26T20:39:31.668933+00:00"
+    },
+    {
+      "id": "314c1341-d981-49e4-baf2-8d1d39465c77",
+      "lote_id": "lote_1_1779827953908_b06452488d88",
+      "resultado": "goal",
+      "premio": 5,
+      "shot_index": 10,
+      "created_at": "2026-05-26T20:39:33.802894+00:00"
+    },
+    {
+      "id": "5970478e-bae6-4b53-a7bc-634924d1f592",
+      "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 1,
+      "created_at": "2026-05-26T20:39:41.27852+00:00"
+    },
+    {
+      "id": "4f210784-cc4c-43d2-a817-729b26fda780",
+      "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 2,
+      "created_at": "2026-05-26T20:39:43.315206+00:00"
+    },
+    {
+      "id": "a75e75d1-55e6-4f19-b171-17365710937c",
+      "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 3,
+      "created_at": "2026-05-26T20:39:45.166124+00:00"
+    },
+    {
+      "id": "3558cb06-d6d5-43af-ba53-2c07ca0fd2dd",
+      "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 4,
+      "created_at": "2026-05-26T20:39:47.347226+00:00"
+    },
+    {
+      "id": "c512b524-376f-4d1f-846b-8118b0fb39f8",
+      "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+      "resultado": "miss",
+      "premio": 0,
+      "shot_index": 5,
+      "created_at": "2026-05-26T20:39:50.072769+00:00"
+    }
+  ],
+  "early_goals_pos_fix": [],
+  "lotes_pos_t0": [
+    {
+      "id": "lote_1_1779827981279_46d1489dc4ea",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "ativo",
+      "created_at": "2026-05-26T20:39:41.27852+00:00",
+      "total_arrecadado": 5,
+      "premio_total": 0,
+      "_audit": {
+        "chutes": 5,
+        "early_goal": false,
+        "goal_at_10_only": true,
+        "indice_ok": true
+      }
+    },
+    {
+      "id": "lote_1_1779827953908_b06452488d88",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "finalizado",
+      "created_at": "2026-05-26T20:39:13.899017+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 10,
+        "early_goal": false,
+        "goal_at_10_only": true,
+        "indice_ok": true
+      }
+    },
+    {
+      "id": "lote_1_1779817022805_7f28eb9d9d2f",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 6,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:37:02.803989+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 10,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    },
+    {
+      "id": "lote_1_1779817013839_c0318f65e248",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 0,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:36:53.838034+00:00",
+      "total_arrecadado": 1,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 1,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    },
+    {
+      "id": "lote_1_1779817004366_f9c578415e4b",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 0,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:36:44.364995+00:00",
+      "total_arrecadado": 1,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 1,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    },
+    {
+      "id": "lote_1_1779816989160_1f8dd799168a",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 1,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:36:29.158484+00:00",
+      "total_arrecadado": 2,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 2,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    },
+    {
+      "id": "lote_1_1779816813895_74b88b0765be",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 8,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:33:33.872152+00:00",
+      "total_arrecadado": 9,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 9,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    }
+  ],
+  "lotes_pos_t0_violations": [
+    {
+      "id": "lote_1_1779817022805_7f28eb9d9d2f",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 6,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:37:02.803989+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 10,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    },
+    {
+      "id": "lote_1_1779817013839_c0318f65e248",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 0,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:36:53.838034+00:00",
+      "total_arrecadado": 1,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 1,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    },
+    {
+      "id": "lote_1_1779817004366_f9c578415e4b",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 0,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:36:44.364995+00:00",
+      "total_arrecadado": 1,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 1,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    },
+    {
+      "id": "lote_1_1779816989160_1f8dd799168a",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 1,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:36:29.158484+00:00",
+      "total_arrecadado": 2,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 2,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    },
+    {
+      "id": "lote_1_1779816813895_74b88b0765be",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 8,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:33:33.872152+00:00",
+      "total_arrecadado": 9,
+      "premio_total": 5,
+      "_audit": {
+        "chutes": 9,
+        "early_goal": true,
+        "goal_at_10_only": false,
+        "indice_ok": false
+      }
+    }
+  ],
+  "usuarios_sample": [
+    {
+      "id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+      "saldo": 1,
+      "total_ganhos": 90,
+      "total_apostas": 135
+    },
+    {
+      "id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+      "saldo": 8,
+      "total_ganhos": 25,
+      "total_apostas": 12
+    },
+    {
+      "id": "d80a6c32-4d87-4cd1-9163-07a5c887f94c",
+      "saldo": 18,
+      "total_ganhos": 0,
+      "total_apostas": 2
+    }
+  ],
+  "usuarios_error": null,
+  "ledger_recent": [
+    {
+      "id": "4d12f2fa-4ea6-492d-8105-8227f17562ff",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "94480975-0051-4ede-968c-275abff07a19:fee",
+      "created_at": "2026-05-25T20:21:38.144+00:00"
+    },
+    {
+      "id": "7d5f5276-daa8-4d4c-b94f-f14148b08736",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "94480975-0051-4ede-968c-275abff07a19",
+      "created_at": "2026-05-25T20:21:38.035+00:00"
+    },
+    {
+      "id": "c62012b1-155a-4b88-9943-8349f09d2601",
+      "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+      "tipo": "deposito",
+      "valor": 5,
+      "referencia": "511d1abc-c23e-4b44-a48d-75e7a2bcb08d",
+      "created_at": "2026-05-25T20:18:24.934002+00:00"
+    },
+    {
+      "id": "01797ee7-5662-46d6-89a4-7c211b3b02d8",
+      "usuario_id": null,
+      "tipo": "rollback_manual",
+      "valor": 8,
+      "referencia": "371ed41a-5053-411f-b7cc-414a2ee798ec:estorno_f63765b0-3998-4549-87e4-9c3e42d80cba",
+      "created_at": "2026-05-05T18:43:13.016135+00:00"
+    },
+    {
+      "id": "f63765b0-3998-4549-87e4-9c3e42d80cba",
+      "usuario_id": null,
+      "tipo": "payout_manual_confirmado",
+      "valor": 8,
+      "referencia": "371ed41a-5053-411f-b7cc-414a2ee798ec",
+      "created_at": "2026-05-04T13:29:42.912+00:00"
+    },
+    {
+      "id": "20f44152-c35a-4da0-b587-f8bfc12a0196",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "371ed41a-5053-411f-b7cc-414a2ee798ec:fee",
+      "created_at": "2026-05-04T13:29:42.446+00:00"
+    },
+    {
+      "id": "e404f94c-d75d-45ef-b494-f6105be34842",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "371ed41a-5053-411f-b7cc-414a2ee798ec",
+      "created_at": "2026-05-04T13:29:42.392+00:00"
+    },
+    {
+      "id": "d6298e50-14e1-4196-9ac0-1ea47e6a2509",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "5936d217-623e-4c18-8b69-31749936ed6f",
+      "created_at": "2026-05-02T14:30:17.965+00:00"
+    },
+    {
+      "id": "91ce7ea5-3f7a-4b4f-a410-280a5bff733f",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "5936d217-623e-4c18-8b69-31749936ed6f",
+      "created_at": "2026-05-02T14:30:17.853+00:00"
+    },
+    {
+      "id": "20eefc2f-0ef1-4c53-830d-c06184f2d8f6",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "5936d217-623e-4c18-8b69-31749936ed6f:fee",
+      "created_at": "2026-05-02T14:30:08.669+00:00"
+    },
+    {
+      "id": "a6870638-b3b2-43b6-b459-9175a1576852",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "5936d217-623e-4c18-8b69-31749936ed6f",
+      "created_at": "2026-05-02T14:30:08.609+00:00"
+    },
+    {
+      "id": "3fb5578e-7c27-4c6a-9093-c89df0221520",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "bb7d341d-cb02-4c0a-99f2-97c3175cff2e",
+      "created_at": "2026-05-02T13:32:54.872+00:00"
+    },
+    {
+      "id": "85b3817c-ab59-4ce2-a744-606095b061d8",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "bb7d341d-cb02-4c0a-99f2-97c3175cff2e",
+      "created_at": "2026-05-02T13:32:54.739+00:00"
+    },
+    {
+      "id": "9f83ec65-a173-403c-b5a9-92a347745cfe",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "bb7d341d-cb02-4c0a-99f2-97c3175cff2e:fee",
+      "created_at": "2026-05-02T13:32:29.49+00:00"
+    },
+    {
+      "id": "ca2db65e-112c-4c39-a244-5e9977c4b123",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "bb7d341d-cb02-4c0a-99f2-97c3175cff2e",
+      "created_at": "2026-05-02T13:32:29.415+00:00"
+    },
+    {
+      "id": "4f2ee3ee-d7d8-4534-8800-9fbb696a1f0f",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "b217228c-feb4-48e9-9893-97065cfd4c7e",
+      "created_at": "2026-05-02T12:50:15.102+00:00"
+    },
+    {
+      "id": "fe308a3e-08fd-4054-8220-215a8d40bc01",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "b217228c-feb4-48e9-9893-97065cfd4c7e",
+      "created_at": "2026-05-02T12:50:14.975+00:00"
+    },
+    {
+      "id": "13fdbd10-82f0-4781-b36e-61290fa0f2b7",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "b217228c-feb4-48e9-9893-97065cfd4c7e:fee",
+      "created_at": "2026-05-02T12:49:54.808+00:00"
+    },
+    {
+      "id": "e6129fe7-1419-4a3d-9631-b2bed89f78fe",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "b217228c-feb4-48e9-9893-97065cfd4c7e",
+      "created_at": "2026-05-02T12:49:54.755+00:00"
+    },
+    {
+      "id": "2deeecf6-29b4-4f24-b255-81238ca74ef7",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "71613da6-853e-4746-a53b-f681f13cca3c",
+      "created_at": "2026-04-29T17:46:02.151+00:00"
+    },
+    {
+      "id": "f85846f0-ace8-4028-9244-784405cd00e5",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "71613da6-853e-4746-a53b-f681f13cca3c",
+      "created_at": "2026-04-29T17:46:02.029+00:00"
+    },
+    {
+      "id": "4ec1a453-570f-4069-b953-1b19580ee1e2",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "71613da6-853e-4746-a53b-f681f13cca3c:fee",
+      "created_at": "2026-04-29T17:45:39.593+00:00"
+    },
+    {
+      "id": "5cdfabc3-1df5-4c33-9795-9419352fbf7b",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "71613da6-853e-4746-a53b-f681f13cca3c",
+      "created_at": "2026-04-29T17:45:39.528+00:00"
+    },
+    {
+      "id": "5a8c0118-21ab-4ca5-a21d-be29d113a97c",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "c16ced3d-1b83-4cc3-87b4-5af4741a89e7",
+      "created_at": "2026-04-29T15:38:41.671+00:00"
+    },
+    {
+      "id": "3e14edb4-a6be-4c52-a083-671c240f6b6a",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "c16ced3d-1b83-4cc3-87b4-5af4741a89e7",
+      "created_at": "2026-04-29T15:38:41.58+00:00"
+    },
+    {
+      "id": "efd35507-7276-43c1-a0b9-8e84ccc80d48",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "c16ced3d-1b83-4cc3-87b4-5af4741a89e7:fee",
+      "created_at": "2026-04-29T15:38:21.536+00:00"
+    },
+    {
+      "id": "e6d865d0-9245-415a-bf59-887626f63055",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "c16ced3d-1b83-4cc3-87b4-5af4741a89e7",
+      "created_at": "2026-04-29T15:38:21.484+00:00"
+    },
+    {
+      "id": "cfb3472d-c55a-4454-83ec-37e547f99171",
+      "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+      "tipo": "deposito",
+      "valor": 1,
+      "referencia": "156174759679",
+      "created_at": "2026-04-29T15:37:23.131361+00:00"
+    },
+    {
+      "id": "277b552d-2fd2-4c34-9fe6-35d58fc9570f",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "9612c3c7-0b88-4de1-8617-4de66a3096eb",
+      "created_at": "2026-04-28T17:28:57.433+00:00"
+    },
+    {
+      "id": "396eb0e6-7461-43e0-b3e9-724f862412f9",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "9612c3c7-0b88-4de1-8617-4de66a3096eb",
+      "created_at": "2026-04-28T17:28:57.33+00:00"
+    },
+    {
+      "id": "4061135d-f105-484c-ba66-f01fe8fe6d71",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "9612c3c7-0b88-4de1-8617-4de66a3096eb:fee",
+      "created_at": "2026-04-28T16:14:54.244+00:00"
+    },
+    {
+      "id": "b6df0097-c1da-43a6-b72f-509c19d878f0",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "9612c3c7-0b88-4de1-8617-4de66a3096eb",
+      "created_at": "2026-04-28T16:14:54.192+00:00"
+    },
+    {
+      "id": "6da1b809-9702-488c-87ab-923251786137",
+      "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+      "tipo": "deposito",
+      "valor": 1,
+      "referencia": "156032971347",
+      "created_at": "2026-04-28T16:11:37.933794+00:00"
+    },
+    {
+      "id": "4be76302-b5f7-4288-950d-8f0a053ef158",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "866e9e59-cad8-4f77-99e3-01494cd28a87:fee",
+      "created_at": "2026-04-27T18:03:55.389+00:00"
+    },
+    {
+      "id": "61e35ab8-f4bb-4110-943c-accf722e1f44",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "866e9e59-cad8-4f77-99e3-01494cd28a87",
+      "created_at": "2026-04-27T18:03:55.241+00:00"
+    },
+    {
+      "id": "25626ff6-8200-4e74-b325-5ec3604ecd5b",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "528fec20-b88c-410b-9dd7-400bf306dfd2",
+      "created_at": "2026-04-25T16:32:55.14+00:00"
+    },
+    {
+      "id": "80f9d8a1-03db-4b17-8c47-5a610a4ec902",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "528fec20-b88c-410b-9dd7-400bf306dfd2",
+      "created_at": "2026-04-25T16:32:55.002+00:00"
+    },
+    {
+      "id": "0fae5260-e5be-4118-9dd7-94f1bbc82042",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "528fec20-b88c-410b-9dd7-400bf306dfd2:fee",
+      "created_at": "2026-04-25T16:18:54.769+00:00"
+    },
+    {
+      "id": "333f2186-2f59-4ce5-b6d8-89b7ab0aadca",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "528fec20-b88c-410b-9dd7-400bf306dfd2",
+      "created_at": "2026-04-25T16:18:54.716+00:00"
+    },
+    {
+      "id": "afaa61d9-ad90-4cf7-8333-d9fd302b0298",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "6d96d99e-d4c5-4c1a-b825-44d66d7ea7bf:fee",
+      "created_at": "2026-04-25T13:55:31.622+00:00"
+    },
+    {
+      "id": "2ad39f73-fcbd-43be-8fa0-55d0f1d536e9",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "6d96d99e-d4c5-4c1a-b825-44d66d7ea7bf",
+      "created_at": "2026-04-25T13:55:31.575+00:00"
+    },
+    {
+      "id": "9ea6d42f-5e62-420b-b5e8-71199e0706ab",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "b035e4f0-2b61-4821-9213-3208185d06be",
+      "created_at": "2026-04-24T23:08:22.306+00:00"
+    },
+    {
+      "id": "6e31af11-6a3f-43e3-b94a-87b413638f64",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "b035e4f0-2b61-4821-9213-3208185d06be",
+      "created_at": "2026-04-24T23:08:22.169+00:00"
+    },
+    {
+      "id": "a49fdb93-0d6d-43ef-a724-8d6001d0b8e4",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "b035e4f0-2b61-4821-9213-3208185d06be:fee",
+      "created_at": "2026-04-24T23:01:35.939+00:00"
+    },
+    {
+      "id": "7208bc59-21ac-48d6-9295-4d14b8c1cde1",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "b035e4f0-2b61-4821-9213-3208185d06be",
+      "created_at": "2026-04-24T23:01:35.886+00:00"
+    },
+    {
+      "id": "34ff615d-271a-400d-b177-beb525237531",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "864077d1-4162-485f-aa11-dd85d08cb68a:rollback_estorno_bruto",
+      "created_at": "2026-04-24T22:55:29.585+00:00"
+    },
+    {
+      "id": "f1e5425e-9b37-42e6-8e91-c422aa14366c",
+      "usuario_id": null,
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "864077d1-4162-485f-aa11-dd85d08cb68a:fee",
+      "created_at": "2026-04-24T18:24:32.41+00:00"
+    },
+    {
+      "id": "4b6dab97-6f08-4b61-9669-39eea7ae486d",
+      "usuario_id": null,
+      "tipo": "saque",
+      "valor": 10,
+      "referencia": "864077d1-4162-485f-aa11-dd85d08cb68a",
+      "created_at": "2026-04-24T18:24:32.356+00:00"
+    },
+    {
+      "id": "3e8f5adf-6eab-4f8d-a399-9d4c17b6fbb9",
+      "usuario_id": "4f3e0ab1-e2a5-4a65-8ee2-1cca316f65a4",
+      "tipo": "deposito",
+      "valor": 10,
+      "referencia": "155310549809",
+      "created_at": "2026-04-23T21:15:19.082656+00:00"
+    },
+    {
+      "id": "8687bc0e-97e6-4862-a0bd-49af2deec8b8",
+      "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+      "tipo": "deposito",
+      "valor": 1,
+      "referencia": "155350634947",
+      "created_at": "2026-04-23T19:31:44.709351+00:00"
+    },
+    {
+      "id": "015acc68-95ea-4be2-918a-136504d4c204",
+      "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+      "tipo": "deposito",
+      "valor": 1,
+      "referencia": "155353515523",
+      "created_at": "2026-04-23T19:09:53.588558+00:00"
+    },
+    {
+      "id": "07757700-c375-45b3-818d-6d3a0f439636",
+      "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+      "tipo": "deposito",
+      "valor": 5,
+      "referencia": "155966895232",
+      "created_at": "2026-04-22T23:38:47.852004+00:00"
+    },
+    {
+      "id": "5462c079-40d5-458f-8079-cf8a990b1b8b",
+      "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+      "tipo": "deposito",
+      "valor": 5,
+      "referencia": "155968652886",
+      "created_at": "2026-04-22T23:38:47.800349+00:00"
+    },
+    {
+      "id": "eeb36683-410b-49a1-a33e-d99a904bf0f3",
+      "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+      "tipo": "deposito",
+      "valor": 5,
+      "referencia": "155214835025",
+      "created_at": "2026-04-22T23:38:47.726804+00:00"
+    },
+    {
+      "id": "75734747-34d5-44d2-bd52-72fe111b64fa",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd",
+      "created_at": "2026-03-06T11:58:23.27+00:00"
+    },
+    {
+      "id": "f285e4dc-bfce-47c1-8106-1db8800a9755",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "8d11c1a2-0533-4172-bf6b-ceebe1f62bdd",
+      "created_at": "2026-03-06T11:58:23.142+00:00"
+    },
+    {
+      "id": "e9e6cd33-eeab-49df-ba1e-d668d85e88b5",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "ed46001f-26fe-4301-b784-d972a7aa1807",
+      "created_at": "2026-03-06T11:57:53.288+00:00"
+    },
+    {
+      "id": "9dad214e-523f-407a-88f2-72654722f4f0",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "ed46001f-26fe-4301-b784-d972a7aa1807",
+      "created_at": "2026-03-06T11:57:53.16+00:00"
+    },
+    {
+      "id": "43e54daf-92f1-4bb6-a578-be6dbf10e6ac",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+      "created_at": "2026-03-06T11:57:23.283+00:00"
+    },
+    {
+      "id": "000ca37b-9157-4e7f-bd54-54f1ef5ca514",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "da70665c-5202-46ab-ac86-7cf16ff3be6a",
+      "created_at": "2026-03-06T11:57:23.13+00:00"
+    },
+    {
+      "id": "b8932213-b745-4421-927d-6d826bd50416",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "ecd0045f-9e80-425c-b2a3-810977351d6f",
+      "created_at": "2026-03-06T11:56:53.255+00:00"
+    },
+    {
+      "id": "94dcd400-13b5-4433-94f2-d9c7ff9252a8",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "ecd0045f-9e80-425c-b2a3-810977351d6f",
+      "created_at": "2026-03-06T11:56:53.112+00:00"
+    },
+    {
+      "id": "309c2429-087f-4160-9885-36edc0162842",
+      "usuario_id": null,
+      "tipo": "rollback",
+      "valor": 10,
+      "referencia": "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+      "created_at": "2026-03-06T11:56:23.517+00:00"
+    },
+    {
+      "id": "042b94d8-f039-4b5b-8119-b1b780f9bcab",
+      "usuario_id": null,
+      "tipo": "falha_payout",
+      "valor": 8,
+      "referencia": "ea3e4dec-d3e2-4b49-82b2-61e8fe3f4f2c",
+      "created_at": "2026-03-06T11:56:23.342+00:00"
+    }
+  ],
+  "ledger_error": null,
+  "ledger_tipos": {
+    "taxa": 13,
+    "saque": 13,
+    "deposito": 9,
+    "rollback_manual": 1,
+    "payout_manual_confirmado": 1,
+    "rollback": 14,
+    "falha_payout": 13
+  },
+  "runtime_meta": {
+    "success": true,
+    "data": {
+      "version": "1.2.1",
+      "build": "2025-10-21",
+      "gitCommit": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634",
+      "environment": "production",
+      "compatibility": {
+        "minVersion": "1.0.0",
+        "supported": true
+      },
+      "features": {
+        "pix": true,
+        "goldenGoal": true,
+        "monitoring": true
+      }
+    }
+  },
+  "runtime_health": {
+    "status": "ok",
+    "timestamp": "2026-05-26T22:56:10.604Z",
+    "version": "1.2.1",
+    "database": "connected",
+    "mercadoPago": "connected",
+    "contadorChutes": 497,
+    "ultimoGolDeOuro": 0
+  },
+  "count_lotes": 46,
+  "count_chutes": 186,
+  "count_saques": 23,
+  "count_pagamentos_pix": 364,
+  "count_shoot_idempotency": 147
+}

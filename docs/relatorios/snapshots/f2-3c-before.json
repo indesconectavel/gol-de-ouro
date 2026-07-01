@@ -1,0 +1,57 @@
+{
+  "captured_at": "2026-05-29T13:55:02.128Z",
+  "status_distribution": [
+    {
+      "status_norm": "pendente",
+      "n": 3
+    },
+    {
+      "status_norm": "rejeitado",
+      "n": 7
+    },
+    {
+      "status_norm": "cancelado",
+      "n": 15
+    }
+  ],
+  "pending_count": 3,
+  "table_counts": {
+    "saques": 25,
+    "ledger_financeiro": 69
+  },
+  "saldo_total_usuarios_rounded": 169064.5,
+  "pending_saques": [
+    {
+      "id": "94480975-0051-4ede-968c-275abff07a19",
+      "status": "pendente",
+      "amount": 10,
+      "valor": 10,
+      "fee": 2,
+      "net_amount": 8,
+      "correlation_id": "10d0f3af-7f00-4a93-83a8-bc491d8f2fc8",
+      "created_at": "2026-05-25T20:21:37.885+00:00"
+    },
+    {
+      "id": "b11e81de-010c-421b-aed0-7aff4b85185b",
+      "status": "pendente",
+      "amount": 13,
+      "valor": 13,
+      "fee": 2,
+      "net_amount": 11,
+      "correlation_id": "819ed785-cf69-44ec-acbe-0f9947a88369",
+      "created_at": "2026-05-29T12:51:21.694+00:00"
+    },
+    {
+      "id": "021698a4-2153-4631-9f31-15bea0678ffa",
+      "status": "pendente",
+      "amount": 12,
+      "valor": 12,
+      "fee": 2,
+      "net_amount": 10,
+      "correlation_id": "7d8e706f-bedf-48b8-9102-21b89ffd475a",
+      "created_at": "2026-05-29T13:18:50.478+00:00"
+    }
+  ],
+  "label": "before_rest_only",
+  "pg_unavailable": true
+}

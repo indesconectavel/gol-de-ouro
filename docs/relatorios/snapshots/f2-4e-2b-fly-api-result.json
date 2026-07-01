@@ -1,0 +1,7 @@
+﻿node : {"ok":false,"error":"HTTP 401: "}
+No C:\Users\indes\AppData\Local\Temp\ps-script-25605e32-b14f-44f8-b740-ed17504c6b79.ps1:7 caractere:52
++ ... uro-backend"; node scripts/f2-4e-2b-recover-fly-logs.mjs 2>&1 | Out-F ...
++                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ({"ok":false,"error":"HTTP 401: "}:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

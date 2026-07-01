@@ -1,0 +1,470 @@
+{
+  "mission": "F6.1B",
+  "captured_at": "2026-06-12T00:28:51.526Z",
+  "ref": "gayopagjdrkcmkirmfvy",
+  "mode": "READ-ONLY — sem INSERT/UPDATE/DELETE no banco",
+  "authenticated_context": {
+    "ok": false,
+    "method": "supabase_auth_signInWithPassword",
+    "note": "App usa JWT custom via backend (usuarios.senha_hash), não Supabase Auth — role authenticated PostgREST indisponível sem sessão GoTrue",
+    "last_error": "signIn falhou para credenciais test conhecidas"
+  },
+  "openapi_http_methods": {
+    "password_reset_tokens": [
+      "GET",
+      "POST",
+      "DELETE",
+      "PATCH"
+    ],
+    "saques": [
+      "GET",
+      "POST",
+      "DELETE",
+      "PATCH"
+    ],
+    "ledger_financeiro": [
+      "GET",
+      "POST",
+      "DELETE",
+      "PATCH"
+    ],
+    "auditoria_eventos": [
+      "GET",
+      "POST",
+      "DELETE",
+      "PATCH"
+    ],
+    "idempotency_keys": [
+      "GET",
+      "POST",
+      "DELETE",
+      "PATCH"
+    ]
+  },
+  "tables": {
+    "password_reset_tokens": {
+      "anon": {
+        "role": "anon",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 14,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "has_token": true,
+            "token_masked": "eyJh…zGKA (len=272)",
+            "user_id_masked": "…487b1c35",
+            "used": false,
+            "expires_at": "2025-11-08T20:24:16.3+00:00"
+          },
+          {
+            "has_token": true,
+            "token_masked": "eyJh…OgsY (len=269)",
+            "user_id_masked": "…7d3f81df",
+            "used": false,
+            "expires_at": "2026-01-22T02:39:08.171+00:00"
+          },
+          {
+            "has_token": true,
+            "token_masked": "eyJh…EAns (len=269)",
+            "user_id_masked": "…7d3f81df",
+            "used": false,
+            "expires_at": "2026-01-27T16:34:25.289+00:00"
+          }
+        ]
+      },
+      "authenticated": {
+        "role": "authenticated",
+        "select_permitted": null,
+        "note": "Sessão Supabase Auth não obtida — app autentica via JWT backend custom",
+        "row_count": null
+      },
+      "service_role": {
+        "role": "service_role",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 14,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "has_token": true,
+            "token_masked": "eyJh…zGKA (len=272)",
+            "user_id_masked": "…487b1c35",
+            "used": false,
+            "expires_at": "2025-11-08T20:24:16.3+00:00"
+          },
+          {
+            "has_token": true,
+            "token_masked": "eyJh…OgsY (len=269)",
+            "user_id_masked": "…7d3f81df",
+            "used": false,
+            "expires_at": "2026-01-22T02:39:08.171+00:00"
+          },
+          {
+            "has_token": true,
+            "token_masked": "eyJh…EAns (len=269)",
+            "user_id_masked": "…7d3f81df",
+            "used": false,
+            "expires_at": "2026-01-27T16:34:25.289+00:00"
+          }
+        ]
+      },
+      "options_anon": {
+        "http_status": 200,
+        "allow_header": "GET, HEAD, POST, OPTIONS"
+      },
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ],
+      "full_leak_anon": true,
+      "f61a_confirmed": true
+    },
+    "saques": {
+      "anon": {
+        "role": "anon",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 27,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "chave_pix_masked": "111…606 (len=11)",
+            "valor": 10,
+            "status": "pendente",
+            "usuario_id_masked": "…eeceac56",
+            "mp_payout_status": null
+          },
+          {
+            "chave_pix_masked": "fre…com (len=22)",
+            "valor": 10,
+            "status": "rejeitado",
+            "usuario_id_masked": "…fa254ad5",
+            "mp_payout_status": null
+          },
+          {
+            "chave_pix_masked": "529…725 (len=11)",
+            "valor": 5,
+            "status": "cancelado",
+            "usuario_id_masked": "…487b1c35",
+            "mp_payout_status": null
+          }
+        ]
+      },
+      "authenticated": {
+        "role": "authenticated",
+        "select_permitted": null,
+        "note": "Sessão Supabase Auth não obtida — app autentica via JWT backend custom",
+        "row_count": null
+      },
+      "service_role": {
+        "role": "service_role",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 27,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "chave_pix_masked": "111…606 (len=11)",
+            "valor": 10,
+            "status": "pendente",
+            "usuario_id_masked": "…eeceac56",
+            "mp_payout_status": null
+          },
+          {
+            "chave_pix_masked": "fre…com (len=22)",
+            "valor": 10,
+            "status": "rejeitado",
+            "usuario_id_masked": "…fa254ad5",
+            "mp_payout_status": null
+          },
+          {
+            "chave_pix_masked": "529…725 (len=11)",
+            "valor": 5,
+            "status": "cancelado",
+            "usuario_id_masked": "…487b1c35",
+            "mp_payout_status": null
+          }
+        ]
+      },
+      "options_anon": {
+        "http_status": 200,
+        "allow_header": "GET, HEAD, POST, OPTIONS"
+      },
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ],
+      "full_leak_anon": true,
+      "f61a_confirmed": true
+    },
+    "ledger_financeiro": {
+      "anon": {
+        "role": "anon",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 79,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "tipo": "falha_payout",
+            "valor": 8,
+            "user_id_masked": "…fa254ad5",
+            "correlation_id": "651bb9…"
+          },
+          {
+            "tipo": "rollback",
+            "valor": 10,
+            "user_id_masked": "…fa254ad5",
+            "correlation_id": "651bb9…"
+          },
+          {
+            "tipo": "falha_payout",
+            "valor": 8,
+            "user_id_masked": "…fa254ad5",
+            "correlation_id": "1633b8…"
+          }
+        ]
+      },
+      "authenticated": {
+        "role": "authenticated",
+        "select_permitted": null,
+        "note": "Sessão Supabase Auth não obtida — app autentica via JWT backend custom",
+        "row_count": null
+      },
+      "service_role": {
+        "role": "service_role",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 79,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "tipo": "falha_payout",
+            "valor": 8,
+            "user_id_masked": "…fa254ad5",
+            "correlation_id": "651bb9…"
+          },
+          {
+            "tipo": "rollback",
+            "valor": 10,
+            "user_id_masked": "…fa254ad5",
+            "correlation_id": "651bb9…"
+          },
+          {
+            "tipo": "falha_payout",
+            "valor": 8,
+            "user_id_masked": "…fa254ad5",
+            "correlation_id": "1633b8…"
+          }
+        ]
+      },
+      "options_anon": {
+        "http_status": 200,
+        "allow_header": "GET, HEAD, POST, OPTIONS"
+      },
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ],
+      "full_leak_anon": true,
+      "f61a_confirmed": true
+    },
+    "auditoria_eventos": {
+      "anon": {
+        "role": "anon",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 500,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "tipo_evento": "ERRO_FINANCEIRO",
+            "user_id_masked": "…fa254ad5",
+            "valor": 1,
+            "payload_keys": [
+              "erro",
+              "amount",
+              "result",
+              "detalhes",
+              "direction"
+            ]
+          },
+          {
+            "tipo_evento": "SHOOT_PROCESSED",
+            "user_id_masked": "…fa254ad5",
+            "valor": 1,
+            "payload_keys": [
+              "premio",
+              "result",
+              "direction",
+              "shotIndex",
+              "isGolDeOuro",
+              "contadorGlobal",
+              "arrecadacaoLote",
+              "premioGolDeOuro"
+            ]
+          },
+          {
+            "tipo_evento": "ERRO_FINANCEIRO",
+            "user_id_masked": "…fa254ad5",
+            "valor": 1,
+            "payload_keys": [
+              "erro",
+              "amount",
+              "result",
+              "detalhes",
+              "direction"
+            ]
+          }
+        ]
+      },
+      "authenticated": {
+        "role": "authenticated",
+        "select_permitted": null,
+        "note": "Sessão Supabase Auth não obtida — app autentica via JWT backend custom",
+        "row_count": null
+      },
+      "service_role": {
+        "role": "service_role",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 500,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "tipo_evento": "ERRO_FINANCEIRO",
+            "user_id_masked": "…fa254ad5",
+            "valor": 1,
+            "payload_keys": [
+              "erro",
+              "amount",
+              "result",
+              "detalhes",
+              "direction"
+            ]
+          },
+          {
+            "tipo_evento": "SHOOT_PROCESSED",
+            "user_id_masked": "…fa254ad5",
+            "valor": 1,
+            "payload_keys": [
+              "premio",
+              "result",
+              "direction",
+              "shotIndex",
+              "isGolDeOuro",
+              "contadorGlobal",
+              "arrecadacaoLote",
+              "premioGolDeOuro"
+            ]
+          },
+          {
+            "tipo_evento": "ERRO_FINANCEIRO",
+            "user_id_masked": "…fa254ad5",
+            "valor": 1,
+            "payload_keys": [
+              "erro",
+              "amount",
+              "result",
+              "detalhes",
+              "direction"
+            ]
+          }
+        ]
+      },
+      "options_anon": {
+        "http_status": 200,
+        "allow_header": "GET, HEAD, POST, OPTIONS"
+      },
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ],
+      "full_leak_anon": true,
+      "f61a_confirmed": true
+    },
+    "idempotency_keys": {
+      "anon": {
+        "role": "anon",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 216,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "endpoint": "/api/games/shoot",
+            "user_id_masked": "…fa254ad5",
+            "idempotency_key_masked": "shot-1…",
+            "response_body_type": "object"
+          },
+          {
+            "endpoint": "/api/games/shoot",
+            "user_id_masked": "…fa254ad5",
+            "idempotency_key_masked": "shot-1…",
+            "response_body_type": "object"
+          },
+          {
+            "endpoint": "/api/games/shoot",
+            "user_id_masked": "…fa254ad5",
+            "idempotency_key_masked": "shot-1…",
+            "response_body_type": "object"
+          }
+        ]
+      },
+      "authenticated": {
+        "role": "authenticated",
+        "select_permitted": null,
+        "note": "Sessão Supabase Auth não obtida — app autentica via JWT backend custom",
+        "row_count": null
+      },
+      "service_role": {
+        "role": "service_role",
+        "select_permitted": true,
+        "select_error": null,
+        "row_count": 216,
+        "sample_count": 3,
+        "samples_masked": [
+          {
+            "endpoint": "/api/games/shoot",
+            "user_id_masked": "…fa254ad5",
+            "idempotency_key_masked": "shot-1…",
+            "response_body_type": "object"
+          },
+          {
+            "endpoint": "/api/games/shoot",
+            "user_id_masked": "…fa254ad5",
+            "idempotency_key_masked": "shot-1…",
+            "response_body_type": "object"
+          },
+          {
+            "endpoint": "/api/games/shoot",
+            "user_id_masked": "…fa254ad5",
+            "idempotency_key_masked": "shot-1…",
+            "response_body_type": "object"
+          }
+        ]
+      },
+      "options_anon": {
+        "http_status": 200,
+        "allow_header": "GET, HEAD, POST, OPTIONS"
+      },
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ],
+      "full_leak_anon": true,
+      "f61a_confirmed": true
+    }
+  }
+}

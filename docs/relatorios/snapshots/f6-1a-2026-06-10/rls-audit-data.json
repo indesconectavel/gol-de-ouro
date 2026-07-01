@@ -1,0 +1,30 @@
+[
+  {
+    "project": "goldeouro-db",
+    "ref": "uatszaqzdqcwnfbipoxg",
+    "url": "https://uatszaqzdqcwnfbipoxg.supabase.co",
+    "captured_at": "2026-06-10T21:33:48.929Z",
+    "catalog": null,
+    "catalog_error": "getaddrinfo ENOTFOUND db.uatszaqzdqcwnfbipoxg.supabase.co",
+    "openapi": {
+      "ok": false,
+      "status": 401,
+      "error": "Unauthorized"
+    },
+    "anon_probes": []
+  },
+  {
+    "project": "goldeouro-production",
+    "ref": "gayopagjdrkcmkirmfvy",
+    "url": "https://gayopagjdrkcmkirmfvy.supabase.co",
+    "captured_at": "2026-06-10T21:33:49.679Z",
+    "catalog": null,
+    "catalog_error": null,
+    "openapi": {
+      "ok": false,
+      "status": 401,
+      "error": "Unauthorized"
+    },
+    "anon_probes": []
+  }
+]

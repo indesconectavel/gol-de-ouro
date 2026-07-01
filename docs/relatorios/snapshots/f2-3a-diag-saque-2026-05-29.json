@@ -1,0 +1,76 @@
+﻿node : (node:19964) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as 
+aliases for 'verify-full'.
+No C:\Users\indes\AppData\Local\Temp\ps-script-dc59e9ef-978c-4ef3-9ded-0bcc07b3bd56.ps1:76 caractere:42
++ ... o-backend"; node scripts/f2-3a-diag-saque-readonly-temp.mjs 2>&1 | Ou ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:19964) Wa... 'verify-full'.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq 
+semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "captured_at": "2026-05-29T13:23:38.873Z",
+  "supabase_ref": "gayopagjdrkcmkirmfvy",
+  "pendentes": [
+    {
+      "id": "94480975-0051-4ede-968c-275abff07a19",
+      "status": "pendente",
+      "amount": 10,
+      "valor": 10,
+      "fee": 2,
+      "net_amount": 8,
+      "correlation_id": "present",
+      "correlation_id_null": false,
+      "net_calc": {
+        "amount": 10,
+        "fee": 2,
+        "net": 8,
+        "invalid": false
+      },
+      "created_at": "2026-05-25T20:21:37.885+00:00"
+    },
+    {
+      "id": "b11e81de-010c-421b-aed0-7aff4b85185b",
+      "status": "pendente",
+      "amount": 13,
+      "valor": 13,
+      "fee": 2,
+      "net_amount": 11,
+      "correlation_id": "present",
+      "correlation_id_null": false,
+      "net_calc": {
+        "amount": 13,
+        "fee": 2,
+        "net": 11,
+        "invalid": false
+      },
+      "created_at": "2026-05-29T12:51:21.694+00:00"
+    },
+    {
+      "id": "021698a4-2153-4631-9f31-15bea0678ffa",
+      "status": "pendente",
+      "amount": 12,
+      "valor": 12,
+      "fee": 2,
+      "net_amount": 10,
+      "correlation_id": "present",
+      "correlation_id_null": false,
+      "net_calc": {
+        "amount": 12,
+        "fee": 2,
+        "net": 10,
+        "invalid": false
+      },
+      "created_at": "2026-05-29T13:18:50.478+00:00"
+    }
+  ],
+  "pendentes_count": 3,
+  "fatal": "getaddrinfo ENOTFOUND db.uatszaqzdqcwnfbipoxg.supabase.co"
+}

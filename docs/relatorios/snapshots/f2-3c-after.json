@@ -1,0 +1,13 @@
+{
+  "captured_at": "2026-05-29T14:04:27.950Z",
+  "label": "after_rest",
+  "table_counts": {
+    "saques": 25,
+    "ledger_financeiro": 69
+  },
+  "saldo_total_usuarios_rounded": 169064.5,
+  "pending_count": 3,
+  "counts_unchanged": true,
+  "saldo_unchanged": true,
+  "pending_unchanged": true
+}

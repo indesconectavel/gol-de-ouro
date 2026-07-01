@@ -1,0 +1,776 @@
+{
+  "mission": "F6-1C-DIAGNOSTICO-PRE-REMEDIACAO",
+  "captured_at": "2026-06-12T03:22:31.608Z",
+  "ref": "gayopagjdrkcmkirmfvy",
+  "mode": "READ-ONLY",
+  "table_count": 31,
+  "rpc_count": 25,
+  "tables": [
+    {
+      "table": "admin_logs",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 3,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": true,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "auditoria_eventos",
+      "kind": "table",
+      "anon_count": 500,
+      "svc_count": 500,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": true,
+      "rls_blocks_anon_read": false,
+      "full_leak": true,
+      "insert_probe": "23502",
+      "rls_inferred": "OFF",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "chutes",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 224,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": true,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "configuracoes",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 9,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": true,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "conquistas",
+      "kind": "table",
+      "anon_count": 9,
+      "svc_count": 9,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": true,
+      "rls_blocks_anon_read": false,
+      "full_leak": true,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "fila_jogadores",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "idempotency_keys",
+      "kind": "table",
+      "anon_count": 216,
+      "svc_count": 216,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": true,
+      "rls_blocks_anon_read": false,
+      "full_leak": true,
+      "insert_probe": "23502",
+      "rls_inferred": "OFF",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "jogos",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "ledger_financeiro",
+      "kind": "table",
+      "anon_count": 79,
+      "svc_count": 79,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": true,
+      "rls_blocks_anon_read": false,
+      "full_leak": true,
+      "insert_probe": "23502",
+      "rls_inferred": "OFF",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "logs_sistema",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "lotes",
+      "kind": "table",
+      "anon_count": 50,
+      "svc_count": 50,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": true,
+      "rls_blocks_anon_read": false,
+      "full_leak": true,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "match_events",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "match_players",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "matches",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "metricas_globais",
+      "kind": "table",
+      "anon_count": 18,
+      "svc_count": 18,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": true,
+      "rls_blocks_anon_read": false,
+      "full_leak": true,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "notificacoes",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "pagamentos_pix",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 367,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": true,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "partida_jogadores",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "partidas",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "password_reset_tokens",
+      "kind": "table",
+      "anon_count": 14,
+      "svc_count": 14,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": true,
+      "rls_blocks_anon_read": false,
+      "full_leak": true,
+      "insert_probe": "23502",
+      "rls_inferred": "OFF",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "queue_board",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "ranking",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "rewards",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 19,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": true,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "saques",
+      "kind": "table",
+      "anon_count": 27,
+      "svc_count": 27,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": true,
+      "rls_blocks_anon_read": false,
+      "full_leak": true,
+      "insert_probe": "23502",
+      "rls_inferred": "OFF",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "sessoes",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "shoot_idempotency",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 185,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": true,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "system_heartbeat",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "transacoes",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 40,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": true,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "usuario_conquistas",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 0,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": false,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "usuarios",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 468,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": true,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    },
+    {
+      "table": "webhook_events",
+      "kind": "table",
+      "anon_count": 0,
+      "svc_count": 218,
+      "anon_error": null,
+      "svc_error": null,
+      "anon_readable": false,
+      "rls_blocks_anon_read": true,
+      "full_leak": false,
+      "insert_probe": "42501",
+      "rls_inferred": "ON",
+      "openapi_methods": [
+        "GET",
+        "POST",
+        "DELETE",
+        "PATCH"
+      ]
+    }
+  ],
+  "rpcs": [
+    {
+      "name": "claim_and_credit_approved_pix_deposit",
+      "path": "/rpc/claim_and_credit_approved_pix_deposit",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "cleanup_expired_password_tokens",
+      "path": "/rpc/cleanup_expired_password_tokens",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "creditar_pix_aprovado_mp",
+      "path": "/rpc/creditar_pix_aprovado_mp",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "expire_stale_pix",
+      "path": "/rpc/expire_stale_pix",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_add_balance",
+      "path": "/rpc/rpc_add_balance",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_add_to_queue",
+      "path": "/rpc/rpc_add_to_queue",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_check_webhook_event_processed",
+      "path": "/rpc/rpc_check_webhook_event_processed",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_deduct_balance",
+      "path": "/rpc/rpc_deduct_balance",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_get_active_lote_with_lock",
+      "path": "/rpc/rpc_get_active_lote_with_lock",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_get_active_lotes",
+      "path": "/rpc/rpc_get_active_lotes",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_get_balance",
+      "path": "/rpc/rpc_get_balance",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_get_next_players_from_queue",
+      "path": "/rpc/rpc_get_next_players_from_queue",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_get_or_create_lote",
+      "path": "/rpc/rpc_get_or_create_lote",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_get_user_rewards",
+      "path": "/rpc/rpc_get_user_rewards",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_mark_players_matched",
+      "path": "/rpc/rpc_mark_players_matched",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_mark_reward_credited",
+      "path": "/rpc/rpc_mark_reward_credited",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_mark_webhook_event_processed",
+      "path": "/rpc/rpc_mark_webhook_event_processed",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_register_reward",
+      "path": "/rpc/rpc_register_reward",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_register_webhook_event",
+      "path": "/rpc/rpc_register_webhook_event",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_remove_from_queue",
+      "path": "/rpc/rpc_remove_from_queue",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_transfer_balance",
+      "path": "/rpc/rpc_transfer_balance",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_update_lote_after_shot",
+      "path": "/rpc/rpc_update_lote_after_shot",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "rpc_update_queue_heartbeat",
+      "path": "/rpc/rpc_update_queue_heartbeat",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "shoot_apply",
+      "path": "/rpc/shoot_apply",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "name": "solicitar_saque_pix_atomico",
+      "path": "/rpc/solicitar_saque_pix_atomico",
+      "methods": [
+        "POST"
+      ]
+    }
+  ]
+}

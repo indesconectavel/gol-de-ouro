@@ -1,23 +1,10 @@
--- producao gayopagjdrkcmkirmfvy 2026-05-18T16:08:09.410Z
--- R4: corpo equivalente ao pg_get_functiondef real (baseline mission-confirmed)
--- Fonte: caracterização prod + validação R3; substituir por export SQL Editor quando disponível
--- =============================================================================
--- V1.1B-M1-R3 — Baseline produção (self-heal COM crédito de saldo — bug alvo)
--- =============================================================================
--- Usado SOMENTE em staging para validar o patch R3 antes de produção.
--- Se existir pg_get_functiondef real em
---   docs/relatorios/snapshots/claim_and_credit_approved_pix_deposit-ANTES-M1-producao-2026-05-17.sql
--- o script R3 preferirá esse corpo em vez deste ficheiro.
--- =============================================================================
-
-CREATE OR REPLACE FUNCTION public.claim_and_credit_approved_pix_deposit(
-  p_mercadopago_id text
-)
-RETURNS jsonb
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
+-- staging aws-0-sa-east-1.pooler.supabase.com
+CREATE OR REPLACE FUNCTION public.claim_and_credit_approved_pix_deposit(p_mercadopago_id text)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
 DECLARE
   v_mp_id           text;
   v_pix             public.pagamentos_pix%ROWTYPE;
@@ -29,7 +16,6 @@ DECLARE
   v_rows_claimed    integer;
   v_status_norm     text;
   v_ledger_ref      text;
-  v_lock_key        bigint;
 BEGIN
   v_mp_id := nullif(trim(p_mercadopago_id), '');
   IF v_mp_id IS NULL OR v_mp_id !~ '^\d+$' THEN
@@ -42,9 +28,7 @@ BEGIN
     );
   END IF;
 
-  v_lock_key := hashtextextended('claim_pix_deposit:' || v_mp_id, 0);
-  PERFORM pg_advisory_xact_lock(v_lock_key);
-
+  -- Localizar e travar o PIX (payment_id preferencial; fallback external_id)
   SELECT p.*
   INTO v_pix
   FROM public.pagamentos_pix AS p
@@ -102,11 +86,14 @@ BEGIN
     );
   END IF;
 
+  -- Ledger já existe? (canónico pagamentos_pix.id OU legado payment_id)
   SELECT l.id
   INTO v_ledger_id
   FROM public.ledger_financeiro AS l
   WHERE l.correlation_id = v_mp_id
     AND l.tipo = 'deposito'
+    AND l.referencia IN (v_ledger_ref, v_mp_id)
+  ORDER BY CASE WHEN l.referencia = v_ledger_ref THEN 0 ELSE 1 END
   LIMIT 1;
 
   IF v_ledger_id IS NOT NULL THEN
@@ -121,7 +108,10 @@ BEGIN
     );
   END IF;
 
-  -- PROD BASELINE (bug): approved sem ledger → ledger + saldo
+  -- -------------------------------------------------------------------------
+  -- Ramo A: já approved (legado V1 sem ledger) — backfill só de ledger
+  -- Não altera saldo (assume crédito já aplicado pelo fluxo anterior).
+  -- -------------------------------------------------------------------------
   IF v_status_norm = 'approved' THEN
     INSERT INTO public.ledger_financeiro (
       correlation_id,
@@ -141,7 +131,7 @@ BEGIN
       v_user_id,
       timezone('utc', now())
     )
-    ON CONFLICT (correlation_id, tipo) DO NOTHING
+    ON CONFLICT (correlation_id, tipo, referencia) DO NOTHING
     RETURNING id INTO v_ledger_id;
 
     IF v_ledger_id IS NULL THEN
@@ -150,37 +140,25 @@ BEGIN
       FROM public.ledger_financeiro AS l
       WHERE l.correlation_id = v_mp_id
         AND l.tipo = 'deposito'
+        AND l.referencia IN (v_ledger_ref, v_mp_id)
+      ORDER BY CASE WHEN l.referencia = v_ledger_ref THEN 0 ELSE 1 END
       LIMIT 1;
     END IF;
 
-    SELECT u.saldo
-    INTO v_saldo_before
-    FROM public.usuarios AS u
-    WHERE u.id = v_user_id
-    FOR UPDATE;
-
-    v_saldo_after := round(COALESCE(v_saldo_before, 0)::numeric + v_credit, 2);
-
-    UPDATE public.usuarios
-    SET
-      saldo = v_saldo_after,
-      updated_at = timezone('utc', now())
-    WHERE id = v_user_id;
-
     RETURN jsonb_build_object(
       'ok', true,
-      'credited', true,
-      'idempotent', false,
-      'reason', 'credited_now',
+      'credited', false,
+      'idempotent', true,
+      'reason', 'ledger_backfill',
       'payment_id', v_mp_id,
       'pagamentos_pix_id', v_pix.id,
-      'ledger_id', v_ledger_id,
-      'saldo_before', v_saldo_before,
-      'saldo_after', v_saldo_after,
-      'valor', v_credit
+      'ledger_id', v_ledger_id
     );
   END IF;
 
+  -- -------------------------------------------------------------------------
+  -- Ramo B: claim + saldo + ledger (transação única; falha = rollback total)
+  -- -------------------------------------------------------------------------
   UPDATE public.pagamentos_pix
   SET
     status = 'approved',
@@ -192,6 +170,7 @@ BEGIN
   GET DIAGNOSTICS v_rows_claimed = ROW_COUNT;
 
   IF v_rows_claimed = 0 THEN
+    -- Concorrência: outro worker aprovou entre o SELECT e o UPDATE
     SELECT lower(trim(COALESCE(status::text, '')))
     INTO v_status_norm
     FROM public.pagamentos_pix
@@ -216,7 +195,7 @@ BEGIN
         v_user_id,
         timezone('utc', now())
       )
-      ON CONFLICT (correlation_id, tipo) DO NOTHING
+      ON CONFLICT DO NOTHING
       RETURNING id INTO v_ledger_id;
 
       IF v_ledger_id IS NULL THEN
@@ -225,6 +204,8 @@ BEGIN
         FROM public.ledger_financeiro AS l
         WHERE l.correlation_id = v_mp_id
           AND l.tipo = 'deposito'
+          AND l.referencia IN (v_ledger_ref, v_mp_id)
+        ORDER BY CASE WHEN l.referencia = v_ledger_ref THEN 0 ELSE 1 END
         LIMIT 1;
       END IF;
 
@@ -250,6 +231,7 @@ BEGIN
     );
   END IF;
 
+  -- Travar utilizador e creditar saldo
   SELECT u.saldo
   INTO v_saldo_before
   FROM public.usuarios AS u
@@ -261,6 +243,7 @@ BEGIN
       USING ERRCODE = 'P0001';
   END IF;
 
+  -- Ledger antes do saldo: falha no insert aborta sem crédito; ON CONFLICT = outro worker ganhou
   INSERT INTO public.ledger_financeiro (
     correlation_id,
     tipo,
@@ -279,7 +262,7 @@ BEGIN
     v_user_id,
     timezone('utc', now())
   )
-  ON CONFLICT (correlation_id, tipo) DO NOTHING
+  ON CONFLICT (correlation_id, tipo, referencia) DO NOTHING
   RETURNING id INTO v_ledger_id;
 
   IF v_ledger_id IS NULL THEN
@@ -288,6 +271,8 @@ BEGIN
     FROM public.ledger_financeiro AS l
     WHERE l.correlation_id = v_mp_id
       AND l.tipo = 'deposito'
+      AND l.referencia IN (v_ledger_ref, v_mp_id)
+    ORDER BY CASE WHEN l.referencia = v_ledger_ref THEN 0 ELSE 1 END
     LIMIT 1;
 
     RETURN jsonb_build_object(
@@ -325,13 +310,14 @@ BEGIN
 EXCEPTION
   WHEN OTHERS THEN
     RETURN jsonb_build_object(
-      'ok', false,
-      'credited', false,
-      'idempotent', false,
-      'reason', 'error',
-      'payment_id', v_mp_id,
-      'pagamentos_pix_id', COALESCE(v_pix.id::text, null),
-      'error', left(SQLERRM, 500)
-    );
+    'ok', false,
+    'credited', false,
+    'idempotent', false,
+    'reason', 'error',
+    'payment_id', v_mp_id,
+    'pagamentos_pix_id', COALESCE(v_pix.id::text, null),
+    'error', left(SQLERRM, 500)
+  );
 END;
-$$;
+$function$
+

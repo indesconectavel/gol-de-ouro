@@ -1,0 +1,35 @@
+{
+  "captured_at": "2026-05-27T04:15:09.791Z",
+  "chutes_total": 187,
+  "chutes_por_resultado": {
+    "miss": 159,
+    "goal": 28
+  },
+  "chutes_valor_aposta_nao_1": 0,
+  "chutes_valor_aposta_zero": 0,
+  "samples_aposta_anomala": [],
+  "lotes_valor_aposta_distinto": [
+    1,
+    2
+  ],
+  "transacoes_por_tipo": {
+    "deposito": 2,
+    "debito": 38
+  },
+  "saque_pendente": {
+    "count": 1,
+    "sum": 10,
+    "users": [
+      {
+        "uid": "ceac56",
+        "valor": 10,
+        "saldo": 8
+      }
+    ]
+  },
+  "respostas": {
+    "cada_chute_debitou_1": "SIM",
+    "chutes_sem_debito": "NAO",
+    "debitos_sem_chute": "NAO_RASTREAVEL_SEM_LEDGER_APOSTA"
+  }
+}

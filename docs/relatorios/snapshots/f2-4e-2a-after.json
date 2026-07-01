@@ -1,0 +1,56 @@
+{
+  "phase": "F2.4E.2A_AFTER",
+  "captured_at": "2026-05-30T02:16:26.654Z",
+  "saque": {
+    "id": "021698a4-2153-4631-9f31-15bea0678ffa",
+    "usuario_id_masked": "u_3aa9…7df6",
+    "status": "falhou",
+    "amount": 12,
+    "fee": 2,
+    "net_amount": 10,
+    "correlation_id": "7d8e706f-bedf-48b8-9102-21b89ffd475a",
+    "pix": {
+      "has_key": true,
+      "type": "cpf",
+      "masked": "***3648"
+    },
+    "mp_transaction_intent_id": null,
+    "mp_payout_status": "failed",
+    "motivo_rejeicao": "payout_mp_erro",
+    "payout_external_reference": "wd_dd5db609c41f8c1f80ecd13b",
+    "processed_at": "2026-05-30T02:12:50.39+00:00",
+    "created_at": "2026-05-29T13:18:50.478+00:00",
+    "updated_at": "2026-05-30T02:12:50.455209+00:00"
+  },
+  "ledger": [
+    {
+      "tipo": "saque",
+      "valor": 12,
+      "referencia": "021698a4-2153-4631-9f31-15bea0678ffa",
+      "created_at": "2026-05-29T13:18:50.613+00:00"
+    },
+    {
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "021698a4-2153-4631-9f31-15bea0678ffa:fee",
+      "created_at": "2026-05-29T13:18:50.678+00:00"
+    },
+    {
+      "tipo": "falha_payout",
+      "valor": 10,
+      "referencia": "021698a4-2153-4631-9f31-15bea0678ffa",
+      "created_at": "2026-05-30T02:12:50.147+00:00"
+    },
+    {
+      "tipo": "rollback",
+      "valor": 12,
+      "referencia": "021698a4-2153-4631-9f31-15bea0678ffa",
+      "created_at": "2026-05-30T02:12:50.284+00:00"
+    }
+  ],
+  "usuario": {
+    "id_masked": "u_3aa9…7df6",
+    "saldo": 15,
+    "updated_at": "2026-05-30T02:12:50.294688+00:00"
+  }
+}

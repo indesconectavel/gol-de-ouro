@@ -1,0 +1,53 @@
+﻿{
+  "pass": true,
+  "results": [
+    {
+      "table": "password_reset_tokens",
+      "anon_count": null,
+      "anon_blocked": true,
+      "svc_count": 16,
+      "svc_ok": true
+    },
+    {
+      "table": "saques",
+      "anon_count": null,
+      "anon_blocked": true,
+      "svc_count": 27,
+      "svc_ok": true
+    },
+    {
+      "table": "ledger_financeiro",
+      "anon_count": null,
+      "anon_blocked": true,
+      "svc_count": 79,
+      "svc_ok": true
+    },
+    {
+      "table": "auditoria_eventos",
+      "anon_count": null,
+      "anon_blocked": true,
+      "svc_count": 500,
+      "svc_ok": true
+    },
+    {
+      "table": "idempotency_keys",
+      "anon_count": null,
+      "anon_blocked": true,
+      "svc_count": 216,
+      "svc_ok": true
+    }
+  ],
+  "health": {
+    "status": 200,
+    "ok": true,
+    "body": {
+      "status": "ok",
+      "timestamp": "2026-06-12T19:45:51.229Z",
+      "version": "1.2.1",
+      "database": "connected",
+      "mercadoPago": "connected",
+      "contadorChutes": 535,
+      "ultimoGolDeOuro": 0
+    }
+  }
+}

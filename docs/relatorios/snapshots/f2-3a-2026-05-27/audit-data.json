@@ -1,0 +1,901 @@
+{
+  "captured_at": "2026-05-29T13:21:39.929Z",
+  "supabase_ref": "gayopagjdrkcmkirmfvy",
+  "etapa1_inventario": {
+    "counts": {
+      "usuarios": 468,
+      "pagamentos_pix": 366,
+      "saques": 25,
+      "ledger_financeiro": 69,
+      "transacoes": 40,
+      "chutes": 204,
+      "lotes": 48
+    },
+    "usuarios": {
+      "total": 468,
+      "com_saldo_positivo": 37,
+      "saldo_agregado": 169064.5,
+      "total_apostas_agregado": 167,
+      "total_ganhos_agregado": 125
+    },
+    "usuarios_cols": [
+      "id",
+      "email",
+      "senha_hash",
+      "saldo",
+      "tipo",
+      "ativo",
+      "email_verificado",
+      "telefone",
+      "data_nascimento",
+      "avatar_url",
+      "created_at",
+      "updated_at",
+      "last_login",
+      "total_apostas",
+      "total_ganhos",
+      "total_partidas",
+      "total_gols",
+      "ranking",
+      "username",
+      "senha",
+      "password_hash",
+      "account_status",
+      "accepted_terms",
+      "accepted_terms_at",
+      "accepted_terms_ip",
+      "accepted_terms_version",
+      "is_adult_confirmed",
+      "total_gols_de_ouro",
+      "cpf_cnpj"
+    ]
+  },
+  "etapa2_pix": {
+    "por_status": [
+      {
+        "status": "approved",
+        "count": 44,
+        "sum": 231
+      },
+      {
+        "status": "expired",
+        "count": 258,
+        "sum": 489
+      },
+      {
+        "status": "pending",
+        "count": 64,
+        "sum": 583
+      }
+    ],
+    "sum_approved": 231,
+    "approved_count": 44,
+    "pix_aprovado_sem_credito_proxy": [],
+    "credito_sem_pix_usuarios_com_saldo_sem_pix": 31,
+    "pix_duplicado_payment_id": 0,
+    "pix_duplicado_external_id": 0,
+    "dup_payment_samples": [],
+    "respostas": {
+      "pix_aprovado_sem_credito": "NAO_DETERMINAVEL_SEM_LEDGER_DEPOSITO",
+      "credito_sem_pix": "SIM_HISTORICO",
+      "pix_duplicado": "NAO"
+    }
+  },
+  "etapa3_premios": {
+    "total_goals": 30,
+    "sum_premios_goals": 150,
+    "sum_premio_gol_de_ouro": 0,
+    "goals_premio_diferente_5": 0,
+    "goals_sem_premio": 0,
+    "premio_5_sem_goal": 0,
+    "gols_duplicados_mesmo_lote_usuario": 0,
+    "samples_goals_bad_premio": [],
+    "respostas": {
+      "gol_sem_premio": "NAO",
+      "premio_sem_gol": "NAO",
+      "premio_duplicado": "NAO"
+    }
+  },
+  "etapa4_saques": {
+    "por_status": {
+      "pendente": {
+        "count": 3,
+        "sum": 35
+      },
+      "rejeitado": {
+        "count": 7,
+        "sum": 70
+      },
+      "cancelado": {
+        "count": 15,
+        "sum": 135
+      }
+    },
+    "saques_pagos_count": 0,
+    "saques_pagos_sum": 0,
+    "ledger_saque_count": 15,
+    "ledger_payout_count": 0,
+    "saque_pago_sem_ledger_ref": 0,
+    "ledger_saque_orfao": 0,
+    "correlation_id_duplicado": 0,
+    "respostas": {
+      "saque_pago_sem_debito": "NAO",
+      "debito_sem_saque": "NAO",
+      "saque_duplicado": "NAO"
+    }
+  },
+  "etapa5_saldos": {
+    "usuarios_com_divergencia": 40,
+    "valor_total_divergente_abs": 169047.5,
+    "top20_divergencias": [
+      {
+        "usuario_id": "u_f5cb00",
+        "saldo_atual": 166545,
+        "saldo_teorico": 0,
+        "diferenca": 166545,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_765aec",
+        "saldo_atual": 1000,
+        "saldo_teorico": 0,
+        "diferenca": 1000,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_254ad5",
+        "saldo_atual": 338,
+        "saldo_teorico": 72,
+        "diferenca": 266,
+        "pix": 82,
+        "jogo_delta": -10,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_7b1c35",
+        "saldo_atual": 122,
+        "saldo_teorico": 6,
+        "diferenca": 116,
+        "pix": 6,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_7ccb19",
+        "saldo_atual": 100,
+        "saldo_teorico": 0,
+        "diferenca": 100,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_753c89",
+        "saldo_atual": 100,
+        "saldo_teorico": 0,
+        "diferenca": 100,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_0062ee",
+        "saldo_atual": 60,
+        "saldo_teorico": 0,
+        "diferenca": 60,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_9d7f47",
+        "saldo_atual": 50,
+        "saldo_teorico": 0,
+        "diferenca": 50,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_f6c05f",
+        "saldo_atual": 50,
+        "saldo_teorico": 0,
+        "diferenca": 50,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_5bbb8c",
+        "saldo_atual": 50,
+        "saldo_teorico": 0,
+        "diferenca": 50,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_eaff11",
+        "saldo_atual": 50,
+        "saldo_teorico": 0,
+        "diferenca": 50,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_23b802",
+        "saldo_atual": 50,
+        "saldo_teorico": 0,
+        "diferenca": 50,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_f92415",
+        "saldo_atual": 50,
+        "saldo_teorico": 0,
+        "diferenca": 50,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_07d33c",
+        "saldo_atual": 50,
+        "saldo_teorico": 0,
+        "diferenca": 50,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_c7afc7",
+        "saldo_atual": 50,
+        "saldo_teorico": 0,
+        "diferenca": 50,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_7fe2cf",
+        "saldo_atual": 50,
+        "saldo_teorico": 0,
+        "diferenca": 50,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_0048e0",
+        "saldo_atual": 47,
+        "saldo_teorico": 0,
+        "diferenca": 47,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_a3dce8",
+        "saldo_atual": 46,
+        "saldo_teorico": 0,
+        "diferenca": 46,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_eadf37",
+        "saldo_atual": 45,
+        "saldo_teorico": 0,
+        "diferenca": 45,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      },
+      {
+        "usuario_id": "u_3acdb6",
+        "saldo_atual": 30,
+        "saldo_teorico": 0,
+        "diferenca": 30,
+        "pix": 0,
+        "jogo_delta": 0,
+        "saques_confirmados": 0
+      }
+    ],
+    "faixas": {
+      "0-10": 9,
+      "10-50": 15,
+      "50-200": 13,
+      "200+": 3
+    },
+    "resposta_saldo_consistente": "NAO"
+  },
+  "etapa6_ledger": {
+    "por_tipo": {
+      "falha_payout": {
+        "count": 13,
+        "sum": 104
+      },
+      "rollback": {
+        "count": 14,
+        "sum": 140
+      },
+      "deposito": {
+        "count": 10,
+        "sum": 54
+      },
+      "saque": {
+        "count": 15,
+        "sum": 155
+      },
+      "taxa": {
+        "count": 15,
+        "sum": 30
+      },
+      "payout_manual_confirmado": {
+        "count": 1,
+        "sum": 8
+      },
+      "rollback_manual": {
+        "count": 1,
+        "sum": 8
+      }
+    },
+    "duplicados_correlation_tipo_ref": 0,
+    "orfaos_sem_usuario": 59,
+    "resposta_ledger_confiavel": "NAO"
+  },
+  "etapa7_amostragem": {
+    "janela_30d": "2026-04-29T13:21:42.277Z",
+    "pix_approved_30d": 3,
+    "chutes_30d": 136,
+    "saques_30d": 9,
+    "ledger_30d": 33,
+    "ultimos_100_eventos": [
+      {
+        "tipo": "ledger_taxa",
+        "at": "2026-05-29T13:18:50.678+00:00",
+        "id": "28ad4d78-db73-47ba-8867-f1764181b87d"
+      },
+      {
+        "tipo": "ledger_saque",
+        "at": "2026-05-29T13:18:50.613+00:00",
+        "id": "6e654711-968c-464a-9c03-429af22a255b"
+      },
+      {
+        "tipo": "saque",
+        "at": "2026-05-29T13:18:50.478+00:00",
+        "id": "021698a4-2153-4631-9f31-15bea0678ffa"
+      },
+      {
+        "tipo": "ledger_taxa",
+        "at": "2026-05-29T12:51:21.885+00:00",
+        "id": "ddaf8667-5501-4452-814d-3c57d7f1b243"
+      },
+      {
+        "tipo": "ledger_saque",
+        "at": "2026-05-29T12:51:21.825+00:00",
+        "id": "6812d925-552e-4f05-b666-f4557b638870"
+      },
+      {
+        "tipo": "saque",
+        "at": "2026-05-29T12:51:21.694+00:00",
+        "id": "b11e81de-010c-421b-aed0-7aff4b85185b"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:44:31.737259+00:00",
+        "id": "3bfca971-24fd-466b-874a-28df0b19b208"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:44:29.325203+00:00",
+        "id": "c255d33e-8200-4644-8f85-b4000aa5320f"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:44:27.841683+00:00",
+        "id": "bc822519-6b92-4684-977c-c101aee90ec1"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:44:18.205345+00:00",
+        "id": "59b9d589-d938-4852-a3fc-b8e530054c39"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:44:16.018154+00:00",
+        "id": "344ac554-c2fa-4b03-a27b-935d836eb90f"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:44:13.599812+00:00",
+        "id": "7a9892a0-01ae-43ff-8fba-1dd021a21755"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:44:12.03122+00:00",
+        "id": "b2ab7140-eb12-4dfa-96cd-f88563720622"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:42:37.727515+00:00",
+        "id": "eafd639a-f76f-4125-b4fa-f1c88aebdc74"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:42:34.837355+00:00",
+        "id": "18066185-7f49-4b34-8f1c-8a3085f3cc06"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:42:32.981648+00:00",
+        "id": "5ec1952e-469f-42e3-8f70-cb86296cf6c3"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:42:31.141079+00:00",
+        "id": "f7cfd91f-4484-4a8a-a3c9-db3d870eaf56"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:42:29.32862+00:00",
+        "id": "1323be39-6097-4bc1-8d15-f611828ec1d7"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:42:25.796208+00:00",
+        "id": "3487e3dc-ac82-465a-85c7-9745493c70ac"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:42:05.983897+00:00",
+        "id": "2f68b833-f40b-437c-a0a0-8e89abb028e9"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:42:03.77874+00:00",
+        "id": "ebfe29fc-0c3b-4616-a3a9-393a302311c9"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:42:02.22221+00:00",
+        "id": "bcdaa63d-371a-4e35-926b-8242ce0e013d"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-29T12:41:59.645227+00:00",
+        "id": "e8d7b1be-5fed-4b9c-a7fd-ac57b735bddb"
+      },
+      {
+        "tipo": "pix_approved",
+        "at": "2026-05-29T12:41:32.263844+00:00",
+        "id": "3292400e-a1ca-4532-9d20-7663fd79952f"
+      },
+      {
+        "tipo": "ledger_deposito",
+        "at": "2026-05-29T12:41:32.263844+00:00",
+        "id": "f2b08f14-0566-4784-9ab4-67313ce8567b"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-27T03:57:28.088908+00:00",
+        "id": "48a41b38-ef07-4d6e-a22a-65d4132bfe95"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:50.072769+00:00",
+        "id": "c512b524-376f-4d1f-846b-8118b0fb39f8"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:47.347226+00:00",
+        "id": "3558cb06-d6d5-43af-ba53-2c07ca0fd2dd"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:45.166124+00:00",
+        "id": "a75e75d1-55e6-4f19-b171-17365710937c"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:43.315206+00:00",
+        "id": "4f210784-cc4c-43d2-a817-729b26fda780"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:41.27852+00:00",
+        "id": "5970478e-bae6-4b53-a7bc-634924d1f592"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:33.802894+00:00",
+        "id": "314c1341-d981-49e4-baf2-8d1d39465c77"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:31.668933+00:00",
+        "id": "8131c66c-b3c9-46ba-94ab-241cc12b02fd"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:29.305199+00:00",
+        "id": "1b08939e-b2e8-44a7-a44c-adbe2ff8cd60"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:27.260154+00:00",
+        "id": "ae2392e1-a104-4e0c-a806-a6e7a794fc80"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:25.146564+00:00",
+        "id": "078917bf-51ee-4432-a2f0-e25d0ca7be8e"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:22.526248+00:00",
+        "id": "ec62bdfd-76b5-4d5a-bc2a-2ebe6a1b6126"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:20.329391+00:00",
+        "id": "ea7d1890-c76c-4a9b-a16c-0d8cc42f6cb3"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:18.297635+00:00",
+        "id": "11d337ec-e57f-46b6-bbff-3dd93f239750"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:16.160383+00:00",
+        "id": "16b2982b-8aee-46ac-b18a-d80ea2d71262"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T20:39:13.899017+00:00",
+        "id": "be64c06b-32df-45ce-9251-96473f1630e0"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T19:08:53.994055+00:00",
+        "id": "a50a7392-281f-4288-8a3d-172fe4e128cc"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T19:08:52.317825+00:00",
+        "id": "31850177-1ff2-42b9-b7ee-a45ed1cbb777"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T19:08:50.464201+00:00",
+        "id": "b345966f-03c0-4fc8-8300-969f65111fc2"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T19:08:42.931211+00:00",
+        "id": "93a1e4c9-2341-407b-b606-05a265049372"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T19:08:41.020964+00:00",
+        "id": "64175777-63ea-4891-9e14-5a357761a092"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T19:08:39.283566+00:00",
+        "id": "bd20e39c-81c8-4b27-ba3b-c1fa62a833b6"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T19:08:37.348296+00:00",
+        "id": "654227c5-4075-4912-87ce-c8806615ff03"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:37:13.519517+00:00",
+        "id": "80089aca-b592-4b46-adf5-6d190ecd148c"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:37:09.346902+00:00",
+        "id": "456dab32-acde-4d10-9bc4-a125cc8562a7"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:37:02.803989+00:00",
+        "id": "bb9372c0-cca9-425b-a555-f124053cb7d7"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:36:53.838034+00:00",
+        "id": "a81689a9-7da9-4ada-9015-2201e39392d2"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:36:44.364995+00:00",
+        "id": "98a7541e-41e4-494f-bb53-7bca9ad74472"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:36:30.748432+00:00",
+        "id": "942a89ca-04c1-4629-a28e-32077704f028"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:36:29.158484+00:00",
+        "id": "847bb37b-e8f8-4e03-a69e-79ee23bd19cf"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:36:21.891672+00:00",
+        "id": "8bdc071c-9600-4425-a8a7-0489f528619b"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:36:19.877005+00:00",
+        "id": "788b0f9f-01c6-4ed2-8eb9-7970542fcda1"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:36:18.24458+00:00",
+        "id": "b12dcbdb-2695-45b8-be35-2bfaa98eb390"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:36:16.50116+00:00",
+        "id": "d398670e-a569-45b1-8766-b2f8085dbcf7"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:41.279785+00:00",
+        "id": "0d75cb30-342e-43a0-a8bf-61eedd1599f8"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:39.019264+00:00",
+        "id": "c945ca6b-7ecc-4bc0-b0ff-3cb5581b05c7"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:37.411251+00:00",
+        "id": "50505a2d-ec44-4ed7-812c-0aa07a65f516"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:35.746871+00:00",
+        "id": "aefb0e1a-e118-4ed8-99e0-4ce509a03e96"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:33.872152+00:00",
+        "id": "2ef93634-95ef-43ca-95f8-6ed03483dab0"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:26.36763+00:00",
+        "id": "5f64403c-8ba2-42a7-9405-964a0c367626"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:24.564449+00:00",
+        "id": "8e408d62-1f06-4043-8548-7a58e62d5169"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:22.558478+00:00",
+        "id": "ef151eff-a216-4327-90f6-f12714f5290d"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:20.568249+00:00",
+        "id": "f14986d4-7783-41c9-9c92-fe1576970f1a"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:18.191569+00:00",
+        "id": "2a00085f-4e45-49f8-9f75-d767b54324a1"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-26T17:33:15.431273+00:00",
+        "id": "ca447b17-00c4-44d4-b013-a48e6f5c2658"
+      },
+      {
+        "tipo": "ledger_taxa",
+        "at": "2026-05-25T20:21:38.144+00:00",
+        "id": "4d12f2fa-4ea6-492d-8105-8227f17562ff"
+      },
+      {
+        "tipo": "ledger_saque",
+        "at": "2026-05-25T20:21:38.035+00:00",
+        "id": "7d5f5276-daa8-4d4c-b94f-f14148b08736"
+      },
+      {
+        "tipo": "saque",
+        "at": "2026-05-25T20:21:37.885+00:00",
+        "id": "94480975-0051-4ede-968c-275abff07a19"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:20:15.803255+00:00",
+        "id": "02ebf842-b37c-44aa-9f67-9b6b1e69a460"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:20:12.706611+00:00",
+        "id": "1067a946-f374-44a5-b82a-05ec7081f09a"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:20:04.645205+00:00",
+        "id": "4a8db756-586c-4454-8445-379c655b8e15"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:19:56.228399+00:00",
+        "id": "adf3c6fa-64bb-4785-8738-8a0cff7042fd"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:19:46.326914+00:00",
+        "id": "3df5bb08-cc48-4c29-a65f-8f36e097a3d3"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:19:44.600954+00:00",
+        "id": "1875efe9-f47e-4135-847b-cc09e45aee90"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:19:41.117551+00:00",
+        "id": "954d5851-45fb-4734-8e55-fdc1e34b1827"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:19:32.510835+00:00",
+        "id": "7e1bc152-b3c9-4a54-b926-7bea0e61f02d"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:19:27.36901+00:00",
+        "id": "29ce233b-9bc2-4b8e-9a0b-fefc93e37b5b"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:19:14.096586+00:00",
+        "id": "08bda00f-dee5-4ec8-baf3-b9fdcd849c0d"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:19:06.254842+00:00",
+        "id": "61c0f462-4c05-446b-b2b4-8910f83c5f40"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-25T20:19:00.093217+00:00",
+        "id": "afb8fd26-f3fc-404a-a0e2-17c0936745f7"
+      },
+      {
+        "tipo": "pix_approved",
+        "at": "2026-05-25T20:18:24.934002+00:00",
+        "id": "511d1abc-c23e-4b44-a48d-75e7a2bcb08d"
+      },
+      {
+        "tipo": "ledger_deposito",
+        "at": "2026-05-25T20:18:24.934002+00:00",
+        "id": "c62012b1-155a-4b88-9943-8349f09d2601"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-23T23:13:42.34769+00:00",
+        "id": "dd15e3c8-50b9-4e9c-8a6e-70db63ea7588"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-19T23:38:13.712406+00:00",
+        "id": "51601fe8-0d30-4764-a7de-98452db48d84"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-19T13:11:21.944423+00:00",
+        "id": "eacec8ba-7c00-40c3-8d46-e504a57895a1"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-19T13:11:19.749376+00:00",
+        "id": "dc942c1b-9869-4bfc-b705-3f5b76184728"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-19T13:11:08.847421+00:00",
+        "id": "bbfab6e4-be80-452e-9415-eabd1d3a71cc"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-18T18:08:42.901103+00:00",
+        "id": "298f15bd-1460-4fcc-bd30-b7174e1f6a8e"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-17T07:21:17.225027+00:00",
+        "id": "f9d075fe-0412-42a5-bbc2-26d9ef01d6be"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-17T05:42:13.623982+00:00",
+        "id": "0f5554aa-fb84-445f-ac19-34675be15d19"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-17T05:35:27.528853+00:00",
+        "id": "736e51bd-8135-4a6f-bed5-7d62ef69a526"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-17T05:23:31.415814+00:00",
+        "id": "86035e8e-2ec3-4ca4-b5ec-43e7ece723a2"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-17T05:15:18.839457+00:00",
+        "id": "078caec2-983c-4950-9eec-8e8aff5d7966"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-17T04:29:25.470546+00:00",
+        "id": "bc66b7ec-c27c-4dab-bc4d-055eaa045f07"
+      },
+      {
+        "tipo": "chute",
+        "at": "2026-05-17T04:15:38.009581+00:00",
+        "id": "e16841bc-f9b5-44dc-a289-c66215af8968"
+      }
+    ]
+  },
+  "etapa8_exposicao": {
+    "entradas_pix_aprovadas": 231,
+    "volume_apostas_chutes": 204,
+    "premios_pagos_chutes": 150,
+    "saques_pagos": 0,
+    "saldo_agregado_usuarios": 169064.5,
+    "margem_operacional_proxy": 81,
+    "posicao_financeira": "Entradas PIX R$231 | Prêmios R$150 | Saques R$0 | Saldo carteiras R$169064.5"
+  },
+  "erros": [],
+  "runtime_meta": {
+    "success": true,
+    "data": {
+      "version": "1.2.1",
+      "build": "2025-10-21",
+      "gitCommit": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634",
+      "environment": "production",
+      "compatibility": {
+        "minVersion": "1.0.0",
+        "supported": true
+      },
+      "features": {
+        "pix": true,
+        "goldenGoal": true,
+        "monitoring": true
+      }
+    }
+  },
+  "runtime_health": {
+    "status": "ok",
+    "timestamp": "2026-05-29T13:21:41.575Z",
+    "version": "1.2.1",
+    "database": "connected",
+    "mercadoPago": "connected",
+    "contadorChutes": 515,
+    "ultimoGolDeOuro": 0
+  }
+}

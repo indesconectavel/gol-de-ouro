@@ -1,0 +1,3186 @@
+{
+  "captured_at": "2026-05-26T21:40:17.865Z",
+  "supabase_url_ref": "gayopagjdrkcmkirmfvy",
+  "database_url_ref": "uatszaqzdqcwnfbipoxg",
+  "env_mismatch": true,
+  "lotes": {
+    "ativos": [
+      {
+        "id": "lote_2_1768572033571_8e2b2816df8d",
+        "valor_aposta": 2,
+        "tamanho": 5,
+        "indice_vencedor": -1,
+        "posicao_atual": 3,
+        "status": "ativo",
+        "created_at": "2026-01-16T14:00:33.593038+00:00",
+        "total_arrecadado": 6,
+        "premio_total": 0
+      },
+      {
+        "id": "lote_1_1779827981279_46d1489dc4ea",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 9,
+        "posicao_atual": 5,
+        "status": "ativo",
+        "created_at": "2026-05-26T20:39:41.27852+00:00",
+        "total_arrecadado": 5,
+        "premio_total": 0
+      }
+    ],
+    "ativos_indice_diff9": [],
+    "ativos_tamanho_diff10": [],
+    "recent_violations": [
+      {
+        "id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 6,
+        "status": "finalizado",
+        "created_at": "2026-05-26T17:37:02.803989+00:00",
+        "total_arrecadado": 10,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 10,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1779817013839_c0318f65e248",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 0,
+        "status": "finalizado",
+        "created_at": "2026-05-26T17:36:53.838034+00:00",
+        "total_arrecadado": 1,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 1,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1779817004366_f9c578415e4b",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 0,
+        "status": "finalizado",
+        "created_at": "2026-05-26T17:36:44.364995+00:00",
+        "total_arrecadado": 1,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 1,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1779816989160_1f8dd799168a",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 1,
+        "status": "finalizado",
+        "created_at": "2026-05-26T17:36:29.158484+00:00",
+        "total_arrecadado": 2,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 2,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1779816813895_74b88b0765be",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 8,
+        "status": "finalizado",
+        "created_at": "2026-05-26T17:33:33.872152+00:00",
+        "total_arrecadado": 9,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 9,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1779740412708_517e9b975246",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 7,
+        "status": "finalizado",
+        "created_at": "2026-05-25T20:20:12.706611+00:00",
+        "total_arrecadado": 8,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 8,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1779740404647_f25eb97ec216",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 0,
+        "status": "finalizado",
+        "created_at": "2026-05-25T20:20:04.645205+00:00",
+        "total_arrecadado": 1,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 1,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1779740396234_66a407009b50",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 0,
+        "status": "finalizado",
+        "created_at": "2026-05-25T20:19:56.228399+00:00",
+        "total_arrecadado": 1,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 1,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1779740381119_bebfe1e857fa",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 2,
+        "status": "finalizado",
+        "created_at": "2026-05-25T20:19:41.117551+00:00",
+        "total_arrecadado": 3,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 3,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1779740367390_4f1e572d9c21",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 1,
+        "status": "finalizado",
+        "created_at": "2026-05-25T20:19:27.36901+00:00",
+        "total_arrecadado": 2,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 2,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1778989214273_51107c9f1393",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 7,
+        "status": "finalizado",
+        "created_at": "2026-05-17T03:40:14.149053+00:00",
+        "total_arrecadado": 8,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 8,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      },
+      {
+        "id": "lote_1_1778979569749_543c9625371d",
+        "valor_aposta": 1,
+        "tamanho": 10,
+        "indice_vencedor": 8,
+        "status": "finalizado",
+        "created_at": "2026-05-17T00:59:29.726917+00:00",
+        "total_arrecadado": 9,
+        "premio_total": 5,
+        "_audit": {
+          "chute_count": 9,
+          "goal_count": 1,
+          "premio_sum": 5,
+          "early_goal": true,
+          "violates_v1": true
+        }
+      }
+    ]
+  },
+  "chutes": {
+    "recent": [
+      {
+        "id": "c512b524-376f-4d1f-846b-8118b0fb39f8",
+        "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-26T20:39:50.072769+00:00"
+      },
+      {
+        "id": "3558cb06-d6d5-43af-ba53-2c07ca0fd2dd",
+        "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-26T20:39:47.347226+00:00"
+      },
+      {
+        "id": "a75e75d1-55e6-4f19-b171-17365710937c",
+        "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-26T20:39:45.166124+00:00"
+      },
+      {
+        "id": "4f210784-cc4c-43d2-a817-729b26fda780",
+        "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-26T20:39:43.315206+00:00"
+      },
+      {
+        "id": "5970478e-bae6-4b53-a7bc-634924d1f592",
+        "lote_id": "lote_1_1779827981279_46d1489dc4ea",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-26T20:39:41.27852+00:00"
+      },
+      {
+        "id": "314c1341-d981-49e4-baf2-8d1d39465c77",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 10,
+        "created_at": "2026-05-26T20:39:33.802894+00:00"
+      },
+      {
+        "id": "8131c66c-b3c9-46ba-94ab-241cc12b02fd",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 9,
+        "created_at": "2026-05-26T20:39:31.668933+00:00"
+      },
+      {
+        "id": "1b08939e-b2e8-44a7-a44c-adbe2ff8cd60",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-05-26T20:39:29.305199+00:00"
+      },
+      {
+        "id": "ae2392e1-a104-4e0c-a806-a6e7a794fc80",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-05-26T20:39:27.260154+00:00"
+      },
+      {
+        "id": "078917bf-51ee-4432-a2f0-e25d0ca7be8e",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-26T20:39:25.146564+00:00"
+      },
+      {
+        "id": "ec62bdfd-76b5-4d5a-bc2a-2ebe6a1b6126",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-26T20:39:22.526248+00:00"
+      },
+      {
+        "id": "ea7d1890-c76c-4a9b-a16c-0d8cc42f6cb3",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-26T20:39:20.329391+00:00"
+      },
+      {
+        "id": "11d337ec-e57f-46b6-bbff-3dd93f239750",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-26T20:39:18.297635+00:00"
+      },
+      {
+        "id": "16b2982b-8aee-46ac-b18a-d80ea2d71262",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-26T20:39:16.160383+00:00"
+      },
+      {
+        "id": "be64c06b-32df-45ce-9251-96473f1630e0",
+        "lote_id": "lote_1_1779827953908_b06452488d88",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-26T20:39:13.899017+00:00"
+      },
+      {
+        "id": "a50a7392-281f-4288-8a3d-172fe4e128cc",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 10,
+        "created_at": "2026-05-26T19:08:53.994055+00:00"
+      },
+      {
+        "id": "31850177-1ff2-42b9-b7ee-a45ed1cbb777",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 9,
+        "created_at": "2026-05-26T19:08:52.317825+00:00"
+      },
+      {
+        "id": "b345966f-03c0-4fc8-8300-969f65111fc2",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-05-26T19:08:50.464201+00:00"
+      },
+      {
+        "id": "93a1e4c9-2341-407b-b606-05a265049372",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 7,
+        "created_at": "2026-05-26T19:08:42.931211+00:00"
+      },
+      {
+        "id": "64175777-63ea-4891-9e14-5a357761a092",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-26T19:08:41.020964+00:00"
+      },
+      {
+        "id": "bd20e39c-81c8-4b27-ba3b-c1fa62a833b6",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-26T19:08:39.283566+00:00"
+      },
+      {
+        "id": "654227c5-4075-4912-87ce-c8806615ff03",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-26T19:08:37.348296+00:00"
+      },
+      {
+        "id": "80089aca-b592-4b46-adf5-6d190ecd148c",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-26T17:37:13.519517+00:00"
+      },
+      {
+        "id": "456dab32-acde-4d10-9bc4-a125cc8562a7",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-26T17:37:09.346902+00:00"
+      },
+      {
+        "id": "bb9372c0-cca9-425b-a555-f124053cb7d7",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-26T17:37:02.803989+00:00"
+      },
+      {
+        "id": "a81689a9-7da9-4ada-9015-2201e39392d2",
+        "lote_id": "lote_1_1779817013839_c0318f65e248",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-26T17:36:53.838034+00:00"
+      },
+      {
+        "id": "98a7541e-41e4-494f-bb53-7bca9ad74472",
+        "lote_id": "lote_1_1779817004366_f9c578415e4b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-26T17:36:44.364995+00:00"
+      },
+      {
+        "id": "942a89ca-04c1-4629-a28e-32077704f028",
+        "lote_id": "lote_1_1779816989160_1f8dd799168a",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 2,
+        "created_at": "2026-05-26T17:36:30.748432+00:00"
+      },
+      {
+        "id": "847bb37b-e8f8-4e03-a69e-79ee23bd19cf",
+        "lote_id": "lote_1_1779816989160_1f8dd799168a",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-26T17:36:29.158484+00:00"
+      },
+      {
+        "id": "8bdc071c-9600-4425-a8a7-0489f528619b",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-05-26T17:36:21.891672+00:00"
+      },
+      {
+        "id": "788b0f9f-01c6-4ed2-8eb9-7970542fcda1",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-05-26T17:36:19.877005+00:00"
+      },
+      {
+        "id": "b12dcbdb-2695-45b8-be35-2bfaa98eb390",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-05-26T17:36:18.24458+00:00"
+      },
+      {
+        "id": "d398670e-a569-45b1-8766-b2f8085dbcf7",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-26T17:36:16.50116+00:00"
+      },
+      {
+        "id": "0d75cb30-342e-43a0-a8bf-61eedd1599f8",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-26T17:33:41.279785+00:00"
+      },
+      {
+        "id": "c945ca6b-7ecc-4bc0-b0ff-3cb5581b05c7",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-26T17:33:39.019264+00:00"
+      },
+      {
+        "id": "50505a2d-ec44-4ed7-812c-0aa07a65f516",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-26T17:33:37.411251+00:00"
+      },
+      {
+        "id": "aefb0e1a-e118-4ed8-99e0-4ce509a03e96",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-26T17:33:35.746871+00:00"
+      },
+      {
+        "id": "2ef93634-95ef-43ca-95f8-6ed03483dab0",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-26T17:33:33.872152+00:00"
+      },
+      {
+        "id": "5f64403c-8ba2-42a7-9405-964a0c367626",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-05-26T17:33:26.36763+00:00"
+      },
+      {
+        "id": "8e408d62-1f06-4043-8548-7a58e62d5169",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-05-26T17:33:24.564449+00:00"
+      },
+      {
+        "id": "ef151eff-a216-4327-90f6-f12714f5290d",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-26T17:33:22.558478+00:00"
+      },
+      {
+        "id": "f14986d4-7783-41c9-9c92-fe1576970f1a",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-26T17:33:20.568249+00:00"
+      },
+      {
+        "id": "2a00085f-4e45-49f8-9f75-d767b54324a1",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-26T17:33:18.191569+00:00"
+      },
+      {
+        "id": "ca447b17-00c4-44d4-b013-a48e6f5c2658",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-26T17:33:15.431273+00:00"
+      },
+      {
+        "id": "02ebf842-b37c-44aa-9f67-9b6b1e69a460",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-25T20:20:15.803255+00:00"
+      },
+      {
+        "id": "1067a946-f374-44a5-b82a-05ec7081f09a",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-25T20:20:12.706611+00:00"
+      },
+      {
+        "id": "4a8db756-586c-4454-8445-379c655b8e15",
+        "lote_id": "lote_1_1779740404647_f25eb97ec216",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-25T20:20:04.645205+00:00"
+      },
+      {
+        "id": "adf3c6fa-64bb-4785-8738-8a0cff7042fd",
+        "lote_id": "lote_1_1779740396234_66a407009b50",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-25T20:19:56.228399+00:00"
+      },
+      {
+        "id": "3df5bb08-cc48-4c29-a65f-8f36e097a3d3",
+        "lote_id": "lote_1_1779740381119_bebfe1e857fa",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 3,
+        "created_at": "2026-05-25T20:19:46.326914+00:00"
+      },
+      {
+        "id": "1875efe9-f47e-4135-847b-cc09e45aee90",
+        "lote_id": "lote_1_1779740381119_bebfe1e857fa",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-25T20:19:44.600954+00:00"
+      },
+      {
+        "id": "954d5851-45fb-4734-8e55-fdc1e34b1827",
+        "lote_id": "lote_1_1779740381119_bebfe1e857fa",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-25T20:19:41.117551+00:00"
+      },
+      {
+        "id": "7e1bc152-b3c9-4a54-b926-7bea0e61f02d",
+        "lote_id": "lote_1_1779740367390_4f1e572d9c21",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 2,
+        "created_at": "2026-05-25T20:19:32.510835+00:00"
+      },
+      {
+        "id": "29ce233b-9bc2-4b8e-9a0b-fefc93e37b5b",
+        "lote_id": "lote_1_1779740367390_4f1e572d9c21",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-25T20:19:27.36901+00:00"
+      },
+      {
+        "id": "08bda00f-dee5-4ec8-baf3-b9fdcd849c0d",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 10,
+        "created_at": "2026-05-25T20:19:14.096586+00:00"
+      },
+      {
+        "id": "61c0f462-4c05-446b-b2b4-8910f83c5f40",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 9,
+        "created_at": "2026-05-25T20:19:06.254842+00:00"
+      },
+      {
+        "id": "afb8fd26-f3fc-404a-a0e2-17c0936745f7",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-05-25T20:19:00.093217+00:00"
+      },
+      {
+        "id": "dd15e3c8-50b9-4e9c-8a6e-70db63ea7588",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-05-23T23:13:42.34769+00:00"
+      },
+      {
+        "id": "51601fe8-0d30-4764-a7de-98452db48d84",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-19T23:38:13.712406+00:00"
+      },
+      {
+        "id": "eacec8ba-7c00-40c3-8d46-e504a57895a1",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-19T13:11:21.944423+00:00"
+      },
+      {
+        "id": "dc942c1b-9869-4bfc-b705-3f5b76184728",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-19T13:11:19.749376+00:00"
+      },
+      {
+        "id": "bbfab6e4-be80-452e-9415-eabd1d3a71cc",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-19T13:11:08.847421+00:00"
+      },
+      {
+        "id": "298f15bd-1460-4fcc-bd30-b7174e1f6a8e",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-18T18:08:42.901103+00:00"
+      },
+      {
+        "id": "f9d075fe-0412-42a5-bbc2-26d9ef01d6be",
+        "lote_id": "lote_1_1779002477328_e74e2be249b9",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-17T07:21:17.225027+00:00"
+      },
+      {
+        "id": "0f5554aa-fb84-445f-ac19-34675be15d19",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-05-17T05:42:13.623982+00:00"
+      },
+      {
+        "id": "736e51bd-8135-4a6f-bed5-7d62ef69a526",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-05-17T05:35:27.528853+00:00"
+      },
+      {
+        "id": "86035e8e-2ec3-4ca4-b5ec-43e7ece723a2",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-17T05:23:31.415814+00:00"
+      },
+      {
+        "id": "078caec2-983c-4950-9eec-8e8aff5d7966",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-17T05:15:18.839457+00:00"
+      },
+      {
+        "id": "bc66b7ec-c27c-4dab-bc4d-055eaa045f07",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-17T04:29:25.470546+00:00"
+      },
+      {
+        "id": "e16841bc-f9b5-44dc-a289-c66215af8968",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-17T04:15:38.009581+00:00"
+      },
+      {
+        "id": "0e0f1575-4d45-49cc-ba94-574298150681",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-17T04:06:13.918377+00:00"
+      },
+      {
+        "id": "2a37aa9f-7c84-46ff-bf38-7a89d3a05ac8",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-17T03:40:14.149053+00:00"
+      },
+      {
+        "id": "d6d41968-4025-473f-b75c-b28c4e68c7ff",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-05-17T01:00:01.739756+00:00"
+      },
+      {
+        "id": "40d8da65-f0ee-4923-bbd9-76a1ed0015e7",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-05-17T00:59:45.693966+00:00"
+      },
+      {
+        "id": "e771523c-6330-423a-8b39-9f819e104759",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-05-17T00:59:43.579608+00:00"
+      },
+      {
+        "id": "f7f33574-3ad8-4c2f-b9cd-b953a40b0066",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-17T00:59:40.699414+00:00"
+      },
+      {
+        "id": "233ba25b-c07c-447c-972f-e36d96633cc1",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-17T00:59:38.317007+00:00"
+      },
+      {
+        "id": "45589e5c-3440-4d85-aaa6-c56a4a1b9c86",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-17T00:59:36.261243+00:00"
+      },
+      {
+        "id": "febe8667-2036-44a4-b8be-19d40cfce38a",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-17T00:59:34.034886+00:00"
+      },
+      {
+        "id": "87600e03-2247-4089-8e69-ffd2178095a5",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-17T00:59:32.111787+00:00"
+      },
+      {
+        "id": "04146069-29e7-49e9-b434-428b433c7afb",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-17T00:59:29.726917+00:00"
+      },
+      {
+        "id": "aebd983c-6f29-4685-9d28-17d4108717e4",
+        "lote_id": "lote_1_1778971180592_92814c0ede2e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 3,
+        "created_at": "2026-05-17T00:59:21.262569+00:00"
+      },
+      {
+        "id": "54e49447-8688-4cd1-b465-6111efc8c440",
+        "lote_id": "lote_1_1778971180592_92814c0ede2e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-16T22:58:00.11319+00:00"
+      },
+      {
+        "id": "b05d1084-abfd-4aff-b89a-dcba4e31227c",
+        "lote_id": "lote_1_1778971180592_92814c0ede2e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-16T22:39:40.573565+00:00"
+      },
+      {
+        "id": "17422919-6340-4ac1-9204-00a34ec3a8db",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 10,
+        "created_at": "2026-05-16T22:39:32.266138+00:00"
+      },
+      {
+        "id": "5e11e364-f7b0-40f7-b92f-543df3eba95a",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 9,
+        "created_at": "2026-05-16T22:39:30.108724+00:00"
+      },
+      {
+        "id": "5254dea5-e881-4f3d-bb7b-f73ec11c9400",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-05-16T22:39:27.257054+00:00"
+      },
+      {
+        "id": "962fcf05-d717-4012-ad32-b2bd6d26d2bb",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-05-16T20:35:26.336947+00:00"
+      },
+      {
+        "id": "2d9c3987-950c-4820-a306-b52b80161a4f",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-16T20:35:24.067759+00:00"
+      },
+      {
+        "id": "a97f8c9c-5572-400e-b010-f379b3398ca1",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-16T20:35:21.589178+00:00"
+      },
+      {
+        "id": "726260c1-58a9-4782-8d88-1c1a580b8107",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-16T20:35:19.075876+00:00"
+      },
+      {
+        "id": "74004590-9a9e-4a3f-aaaf-c82d87527d07",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-16T18:11:31.055764+00:00"
+      },
+      {
+        "id": "3b66249c-1c68-470b-952e-1298d7fcd597",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-16T18:11:22.549161+00:00"
+      },
+      {
+        "id": "6b12af61-36f6-4b14-812f-7860ab02946e",
+        "lote_id": "lote_1_1778955073863_8202fd62f64b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-16T18:11:13.822291+00:00"
+      },
+      {
+        "id": "dea10691-6b67-46d8-80e1-6e297cf560fe",
+        "lote_id": "lote_1_1778944572887_2f78b040bd5e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 7,
+        "created_at": "2026-05-16T18:10:51.301062+00:00"
+      },
+      {
+        "id": "d56dd0bf-d96b-4077-b502-0649d2017282",
+        "lote_id": "lote_1_1778944572887_2f78b040bd5e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-16T18:10:03.830608+00:00"
+      },
+      {
+        "id": "819208d6-07ff-4f59-a4ee-7ec0b85bbb72",
+        "lote_id": "lote_1_1778944572887_2f78b040bd5e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-16T16:11:48.844035+00:00"
+      },
+      {
+        "id": "fcb25b47-079c-45ed-8921-12b61e4e8844",
+        "lote_id": "lote_1_1778944572887_2f78b040bd5e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-16T16:11:42.801769+00:00"
+      },
+      {
+        "id": "5bb56350-5c86-48eb-94e8-a26ffb0ec560",
+        "lote_id": "lote_1_1778944572887_2f78b040bd5e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-16T15:16:21.594611+00:00"
+      },
+      {
+        "id": "7021ec2f-3c09-43c2-bc81-91e086d01902",
+        "lote_id": "lote_1_1778944572887_2f78b040bd5e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-16T15:16:18.932963+00:00"
+      },
+      {
+        "id": "9c35e1dd-44d2-4cd2-a711-9b6647369609",
+        "lote_id": "lote_1_1778944572887_2f78b040bd5e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-16T15:16:12.865554+00:00"
+      },
+      {
+        "id": "f6ce4249-c3a1-4868-9e84-fd398b45f16f",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 10,
+        "created_at": "2026-05-16T15:16:04.038901+00:00"
+      },
+      {
+        "id": "61e756f2-fa7d-40a6-9bf9-88506cd890e7",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 9,
+        "created_at": "2026-05-16T14:55:29.850054+00:00"
+      },
+      {
+        "id": "2aeca0f3-35b6-4d2b-a041-2ed61c4e7f07",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-05-16T14:55:27.553982+00:00"
+      },
+      {
+        "id": "62fa17b7-4be2-4c60-ab8a-c4be23c4084b",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-05-16T14:55:25.298991+00:00"
+      },
+      {
+        "id": "5d12c410-adae-4fac-9b9b-39b4d4003c1f",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-16T14:55:22.366438+00:00"
+      },
+      {
+        "id": "7af8434b-ff3f-4821-a28a-2bc7b4240e50",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-05-15T22:40:43.932651+00:00"
+      },
+      {
+        "id": "2303594d-5c78-4e85-a667-1d0ab56888d3",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-05-15T22:40:37.71558+00:00"
+      },
+      {
+        "id": "14303301-d206-4caa-8529-b62f679e8551",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-05-15T22:40:31.675795+00:00"
+      },
+      {
+        "id": "4da229cd-3152-4a64-9692-d3d1e73973bc",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-05-15T21:45:38.33882+00:00"
+      },
+      {
+        "id": "358521e7-7e4e-4f7a-b4ed-205a740aca72",
+        "lote_id": "lote_1_1778879864177_945ecd83866c",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-05-15T21:17:44.080357+00:00"
+      },
+      {
+        "id": "69a89c08-1869-4e82-ad5c-f129d2751263",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-05-15T18:24:28.971839+00:00"
+      },
+      {
+        "id": "57ea5004-aa4f-4a7f-89bf-410ecc3611ed",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-05-15T18:24:25.093959+00:00"
+      },
+      {
+        "id": "843406f6-ce4c-475c-81a4-193389bf490e",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-05-15T15:31:44.9049+00:00"
+      },
+      {
+        "id": "4457fc09-55ea-41f3-bdec-19974dc8ed91",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-05-06T16:58:12.994104+00:00"
+      },
+      {
+        "id": "d976b9c8-1f7c-4bc1-b7e4-4ebe072bf96b",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-04-29T17:38:07.711483+00:00"
+      },
+      {
+        "id": "e8ccbb1e-6ede-41aa-b794-695866ba9eae",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-04-29T17:38:05.443105+00:00"
+      },
+      {
+        "id": "e81c943c-a358-485d-b080-16f0aafe90ee",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-29T17:38:02.451514+00:00"
+      },
+      {
+        "id": "e161cec9-516e-4ed2-a18c-a9cb6ca95b03",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-29T15:38:09.079807+00:00"
+      },
+      {
+        "id": "77c422a6-9392-4cf4-a58c-c1fec170c4b1",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-29T11:11:57.165839+00:00"
+      },
+      {
+        "id": "e6fb79d6-b0f7-4ac9-9323-bed9dde8133b",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-04-28T23:32:47.165122+00:00"
+      },
+      {
+        "id": "c483db74-9ba8-4dcf-9151-3e76215974e8",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-04-28T23:32:40.12712+00:00"
+      },
+      {
+        "id": "9074cb70-0d6e-487d-9e1d-08b4fa8addb6",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-04-24T16:20:03.085096+00:00"
+      },
+      {
+        "id": "c9b24978-efe5-46fd-ab61-7c9fc23f2530",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-04-24T16:20:01.235582+00:00"
+      },
+      {
+        "id": "f8ec2005-a0d9-4500-875c-1070d4cac96f",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-04-24T16:19:59.480641+00:00"
+      },
+      {
+        "id": "080fb895-4634-4b7d-ab97-9746312e0ca7",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-04-24T16:19:57.421849+00:00"
+      },
+      {
+        "id": "8b31f7be-ec72-43e8-a30e-d22779b900da",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-24T16:19:55.294765+00:00"
+      },
+      {
+        "id": "89857c19-20b6-44fa-bcdd-4de96d25ceda",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-24T16:19:53.052841+00:00"
+      },
+      {
+        "id": "3c058d5d-29a9-48ad-aa6a-084a5d5f3142",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-24T16:19:50.685612+00:00"
+      },
+      {
+        "id": "f913a79b-8d81-4615-8bc0-f6dc82ff66a5",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-04-24T16:19:39.027083+00:00"
+      },
+      {
+        "id": "ac68ca72-5926-430d-9fc3-9920f5948a5e",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-04-24T15:31:33.832248+00:00"
+      },
+      {
+        "id": "9062c577-f4ca-48b7-a010-bbd0326e426e",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-04-24T14:40:30.963103+00:00"
+      },
+      {
+        "id": "a76a9646-60cc-4487-b7f0-7eb49f464576",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-04-23T22:23:53.844183+00:00"
+      },
+      {
+        "id": "e03ba2d1-2168-4bb0-afd5-5c42a6a0a2f8",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-04-23T22:23:46.77266+00:00"
+      },
+      {
+        "id": "6af02a31-d34f-41b0-862d-eb25c0a6b86f",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-23T21:16:35.201432+00:00"
+      },
+      {
+        "id": "5503b809-039d-41bd-8eae-c41101091719",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-23T21:16:32.805022+00:00"
+      },
+      {
+        "id": "f880fa71-a8ed-4e2d-8107-bd84f0857470",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-23T21:16:29.571514+00:00"
+      },
+      {
+        "id": "19e76495-2a27-440e-9948-d9a6c2052936",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-04-22T18:24:42.409066+00:00"
+      },
+      {
+        "id": "5d9c28a9-705d-458e-8189-2be182f26376",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-04-21T11:43:00.439892+00:00"
+      },
+      {
+        "id": "a6a12768-ffee-46d9-b7bb-9b15d04d3103",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-04-21T11:42:53.048337+00:00"
+      },
+      {
+        "id": "3cabcb61-a3b2-45c1-bd4a-2c5ea8ca2b01",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-04-21T09:08:37.850829+00:00"
+      },
+      {
+        "id": "978cb77a-b948-4cb4-93c5-0392466d13eb",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-04-21T09:08:34.588804+00:00"
+      },
+      {
+        "id": "07e53f2e-957c-4b66-b934-ca8b2ef7025c",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-21T09:08:28.40752+00:00"
+      },
+      {
+        "id": "0369dd85-c7a0-4fef-a196-e5388bf97644",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-21T08:54:18.901934+00:00"
+      },
+      {
+        "id": "ea3d2a5b-3738-4e40-87a0-ca16335a4021",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-21T08:51:22.569665+00:00"
+      },
+      {
+        "id": "8429c30f-206d-4e3b-b346-a944a28ac714",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-04-20T17:54:37.347109+00:00"
+      },
+      {
+        "id": "8065c86c-5df5-450a-b0a1-1b6009adc5f9",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-04-20T17:13:51.150326+00:00"
+      },
+      {
+        "id": "efb62ccf-8286-492b-888d-1e545af17420",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-04-20T17:03:17.577913+00:00"
+      },
+      {
+        "id": "00aaa762-0af7-4a81-b0bb-00e32ac34f28",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "d80a6c32-4d87-4cd1-9163-07a5c887f94c",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-04-17T00:28:05.827198+00:00"
+      },
+      {
+        "id": "ae7dd909-4ed9-473c-a689-b2d0e2460ee8",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "d80a6c32-4d87-4cd1-9163-07a5c887f94c",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-04-17T00:28:05.53956+00:00"
+      },
+      {
+        "id": "ad7227f6-efc4-4881-b66a-9e027cc3f3d5",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-04-16T14:19:33.14939+00:00"
+      },
+      {
+        "id": "4d70fe9c-acf7-4e89-8184-49dbf389cdb3",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-16T14:19:29.8457+00:00"
+      },
+      {
+        "id": "4002f6ca-d3d0-4241-8b0f-fff6ba0c2e93",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-16T14:19:26.321292+00:00"
+      },
+      {
+        "id": "a861d5c5-ae57-4a30-a01d-6666e8682067",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-16T14:19:21.876623+00:00"
+      },
+      {
+        "id": "36633d5e-0420-4c56-bf4d-1dab3583221b",
+        "lote_id": "lote_1_1776340114402_3ee40d76cf71",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 5,
+        "created_at": "2026-04-16T14:19:13.169874+00:00"
+      },
+      {
+        "id": "64fb8f63-73d0-4c31-80fd-5dd5a682149e",
+        "lote_id": "lote_1_1776340114402_3ee40d76cf71",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-04-16T12:21:52.30888+00:00"
+      },
+      {
+        "id": "c7ba5746-a11c-4e73-a606-918afea135e3",
+        "lote_id": "lote_1_1776340114402_3ee40d76cf71",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-16T11:49:13.822134+00:00"
+      },
+      {
+        "id": "a5acc19b-9fc4-4c76-92af-e1eb8680ffdb",
+        "lote_id": "lote_1_1776340114402_3ee40d76cf71",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-16T11:48:55.821685+00:00"
+      },
+      {
+        "id": "734c2714-90e6-4a30-bc59-fdc40417309a",
+        "lote_id": "lote_1_1776340114402_3ee40d76cf71",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-16T11:48:34.396966+00:00"
+      },
+      {
+        "id": "f4a54ce8-5045-4328-9f64-a0e1434d9bb1",
+        "lote_id": "lote_1_1776340090592_8f796465fa7a",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-04-16T11:48:10.513372+00:00"
+      },
+      {
+        "id": "1b4f0cd3-d0a8-494a-9867-5be4c4aaa2ea",
+        "lote_id": "lote_1_1776312800044_95d9b7300a54",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 5,
+        "created_at": "2026-04-16T11:36:27.646408+00:00"
+      },
+      {
+        "id": "4ad718e7-095f-4823-a45d-e62eb0dc9df4",
+        "lote_id": "lote_1_1776312800044_95d9b7300a54",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-04-16T04:25:44.890029+00:00"
+      },
+      {
+        "id": "a6cd957e-5ea3-4720-bc85-023988b26577",
+        "lote_id": "lote_1_1776312800044_95d9b7300a54",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-16T04:25:18.120028+00:00"
+      },
+      {
+        "id": "ed756075-e236-44cc-8f9d-06198d45c64e",
+        "lote_id": "lote_1_1776312800044_95d9b7300a54",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-16T04:25:11.713032+00:00"
+      },
+      {
+        "id": "22643f58-5e00-4ab5-8860-b66068af7586",
+        "lote_id": "lote_1_1776312800044_95d9b7300a54",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-16T04:13:20.003399+00:00"
+      },
+      {
+        "id": "06ccfcf9-892d-4078-8be1-1abbc27d80d6",
+        "lote_id": "lote_1_1775759005890_72e1d1051bf3",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 8,
+        "created_at": "2026-04-09T20:35:33.610823+00:00"
+      },
+      {
+        "id": "862dea9d-1c10-4dc0-b7c0-8ea71a959713",
+        "lote_id": "lote_1_1775759005890_72e1d1051bf3",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 7,
+        "created_at": "2026-04-09T20:35:31.442337+00:00"
+      },
+      {
+        "id": "a6a30249-a05a-437a-9d13-5850f8297e99",
+        "lote_id": "lote_1_1775759005890_72e1d1051bf3",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 6,
+        "created_at": "2026-04-09T20:35:26.92075+00:00"
+      },
+      {
+        "id": "19c6bfa6-8c20-4816-b7ac-6f3488d9f060",
+        "lote_id": "lote_1_1775759005890_72e1d1051bf3",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 5,
+        "created_at": "2026-04-09T18:23:34.615658+00:00"
+      },
+      {
+        "id": "49522b64-788b-4c7d-8555-2a2599afc153",
+        "lote_id": "lote_1_1775759005890_72e1d1051bf3",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-04-09T18:23:32.574053+00:00"
+      },
+      {
+        "id": "e70eb0fc-d46e-424a-8da3-59e9773669e0",
+        "lote_id": "lote_1_1775759005890_72e1d1051bf3",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-09T18:23:30.318288+00:00"
+      },
+      {
+        "id": "d60295b6-4ccb-4a58-82c3-942c4f01e183",
+        "lote_id": "lote_1_1775759005890_72e1d1051bf3",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-09T18:23:28.302095+00:00"
+      },
+      {
+        "id": "3029a630-69d8-4434-bd05-be45b22d7cf5",
+        "lote_id": "lote_1_1775759005890_72e1d1051bf3",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-09T18:23:25.978866+00:00"
+      },
+      {
+        "id": "f50fe1e9-4b41-4083-9f93-71c6c2c03a22",
+        "lote_id": "lote_1_1775758987677_ced709225d5f",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 2,
+        "created_at": "2026-04-09T18:23:17.322181+00:00"
+      },
+      {
+        "id": "17a09fe5-77fd-4c54-91da-b6548f9967eb",
+        "lote_id": "lote_1_1775758987677_ced709225d5f",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-09T18:23:07.742398+00:00"
+      },
+      {
+        "id": "7eabbcf5-5998-45a7-a829-036df8a0aadf",
+        "lote_id": "lote_1_1775758971944_a3c0ed4ec9e5",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 3,
+        "created_at": "2026-04-09T18:22:56.710262+00:00"
+      },
+      {
+        "id": "1de7304c-2e37-44c7-bf0f-f3d2b49efb97",
+        "lote_id": "lote_1_1775758971944_a3c0ed4ec9e5",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-09T18:22:54.789492+00:00"
+      },
+      {
+        "id": "34ba4ced-b6b1-4cac-a50d-f442482aad7e",
+        "lote_id": "lote_1_1775758971944_a3c0ed4ec9e5",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-09T18:22:52.02257+00:00"
+      },
+      {
+        "id": "641b834c-b50e-4994-a56b-e913e908e41e",
+        "lote_id": "lote_1_1775688889042_8c9b075fdd2d",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 4,
+        "created_at": "2026-04-08T22:54:57.317848+00:00"
+      },
+      {
+        "id": "050b5738-d044-45f2-83d0-b154795ed7b0",
+        "lote_id": "lote_1_1775688889042_8c9b075fdd2d",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-08T22:54:55.147577+00:00"
+      },
+      {
+        "id": "229c60a4-9767-491f-9e36-116a28195f05",
+        "lote_id": "lote_1_1775688889042_8c9b075fdd2d",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-08T22:54:52.662776+00:00"
+      },
+      {
+        "id": "bf6a623d-db0d-4752-808a-bb7788396c2e",
+        "lote_id": "lote_1_1775688889042_8c9b075fdd2d",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-08T22:54:49.134644+00:00"
+      },
+      {
+        "id": "be109f73-0c4a-40b4-927f-d2b1c2d69549",
+        "lote_id": "lote_1_1775134335956_a3cbbf20143c",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 3,
+        "created_at": "2026-04-02T12:52:22.223676+00:00"
+      },
+      {
+        "id": "91a98d24-b506-4b34-af6e-09b4bea3dfef",
+        "lote_id": "lote_1_1775134335956_a3cbbf20143c",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-02T12:52:19.342695+00:00"
+      },
+      {
+        "id": "dc80dd6c-dc38-43b6-8866-f3c60dc687fd",
+        "lote_id": "lote_1_1775134335956_a3cbbf20143c",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-02T12:52:16.153379+00:00"
+      },
+      {
+        "id": "d0c718bb-065a-4a7d-9134-235372276449",
+        "lote_id": "lote_1_1775006323332_df2979bc554a",
+        "usuario_id": "4f4c16cb-262d-4a3a-9cac-e04e715966ea",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 2,
+        "created_at": "2026-04-01T20:36:18.362774+00:00"
+      },
+      {
+        "id": "1d50b0f6-4efc-4e76-9903-0ba18729f6cd",
+        "lote_id": "lote_1_1775006323332_df2979bc554a",
+        "usuario_id": "9238076f-8ec0-448a-8bc3-ef835691e9a4",
+        "resultado": "miss",
+        "premio": 0,
+        "shot_index": 1,
+        "created_at": "2026-04-01T01:47:48.50057+00:00"
+      }
+    ],
+    "early_goals": [
+      {
+        "id": "93a1e4c9-2341-407b-b606-05a265049372",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 7,
+        "created_at": "2026-05-26T19:08:42.931211+00:00"
+      },
+      {
+        "id": "a81689a9-7da9-4ada-9015-2201e39392d2",
+        "lote_id": "lote_1_1779817013839_c0318f65e248",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-26T17:36:53.838034+00:00"
+      },
+      {
+        "id": "98a7541e-41e4-494f-bb53-7bca9ad74472",
+        "lote_id": "lote_1_1779817004366_f9c578415e4b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-26T17:36:44.364995+00:00"
+      },
+      {
+        "id": "942a89ca-04c1-4629-a28e-32077704f028",
+        "lote_id": "lote_1_1779816989160_1f8dd799168a",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 2,
+        "created_at": "2026-05-26T17:36:30.748432+00:00"
+      },
+      {
+        "id": "8bdc071c-9600-4425-a8a7-0489f528619b",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-05-26T17:36:21.891672+00:00"
+      },
+      {
+        "id": "5f64403c-8ba2-42a7-9405-964a0c367626",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-05-26T17:33:26.36763+00:00"
+      },
+      {
+        "id": "4a8db756-586c-4454-8445-379c655b8e15",
+        "lote_id": "lote_1_1779740404647_f25eb97ec216",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-25T20:20:04.645205+00:00"
+      },
+      {
+        "id": "adf3c6fa-64bb-4785-8738-8a0cff7042fd",
+        "lote_id": "lote_1_1779740396234_66a407009b50",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-25T20:19:56.228399+00:00"
+      },
+      {
+        "id": "3df5bb08-cc48-4c29-a65f-8f36e097a3d3",
+        "lote_id": "lote_1_1779740381119_bebfe1e857fa",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 3,
+        "created_at": "2026-05-25T20:19:46.326914+00:00"
+      },
+      {
+        "id": "7e1bc152-b3c9-4a54-b926-7bea0e61f02d",
+        "lote_id": "lote_1_1779740367390_4f1e572d9c21",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 2,
+        "created_at": "2026-05-25T20:19:32.510835+00:00"
+      },
+      {
+        "id": "0f5554aa-fb84-445f-ac19-34675be15d19",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-05-17T05:42:13.623982+00:00"
+      },
+      {
+        "id": "d6d41968-4025-473f-b75c-b28c4e68c7ff",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-05-17T01:00:01.739756+00:00"
+      },
+      {
+        "id": "aebd983c-6f29-4685-9d28-17d4108717e4",
+        "lote_id": "lote_1_1778971180592_92814c0ede2e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 3,
+        "created_at": "2026-05-17T00:59:21.262569+00:00"
+      },
+      {
+        "id": "dea10691-6b67-46d8-80e1-6e297cf560fe",
+        "lote_id": "lote_1_1778944572887_2f78b040bd5e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 7,
+        "created_at": "2026-05-16T18:10:51.301062+00:00"
+      },
+      {
+        "id": "69a89c08-1869-4e82-ad5c-f129d2751263",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-05-15T18:24:28.971839+00:00"
+      },
+      {
+        "id": "e6fb79d6-b0f7-4ac9-9323-bed9dde8133b",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-04-28T23:32:47.165122+00:00"
+      },
+      {
+        "id": "f913a79b-8d81-4615-8bc0-f6dc82ff66a5",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-04-24T16:19:39.027083+00:00"
+      },
+      {
+        "id": "19e76495-2a27-440e-9948-d9a6c2052936",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-04-22T18:24:42.409066+00:00"
+      },
+      {
+        "id": "8429c30f-206d-4e3b-b346-a944a28ac714",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-04-20T17:54:37.347109+00:00"
+      },
+      {
+        "id": "36633d5e-0420-4c56-bf4d-1dab3583221b",
+        "lote_id": "lote_1_1776340114402_3ee40d76cf71",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 5,
+        "created_at": "2026-04-16T14:19:13.169874+00:00"
+      },
+      {
+        "id": "f4a54ce8-5045-4328-9f64-a0e1434d9bb1",
+        "lote_id": "lote_1_1776340090592_8f796465fa7a",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-04-16T11:48:10.513372+00:00"
+      },
+      {
+        "id": "1b4f0cd3-d0a8-494a-9867-5be4c4aaa2ea",
+        "lote_id": "lote_1_1776312800044_95d9b7300a54",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 5,
+        "created_at": "2026-04-16T11:36:27.646408+00:00"
+      },
+      {
+        "id": "f50fe1e9-4b41-4083-9f93-71c6c2c03a22",
+        "lote_id": "lote_1_1775758987677_ced709225d5f",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 2,
+        "created_at": "2026-04-09T18:23:17.322181+00:00"
+      },
+      {
+        "id": "7eabbcf5-5998-45a7-a829-036df8a0aadf",
+        "lote_id": "lote_1_1775758971944_a3c0ed4ec9e5",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 3,
+        "created_at": "2026-04-09T18:22:56.710262+00:00"
+      }
+    ],
+    "premio_before_10": [
+      {
+        "id": "93a1e4c9-2341-407b-b606-05a265049372",
+        "lote_id": "lote_1_1779817022805_7f28eb9d9d2f",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 7,
+        "created_at": "2026-05-26T19:08:42.931211+00:00"
+      },
+      {
+        "id": "a81689a9-7da9-4ada-9015-2201e39392d2",
+        "lote_id": "lote_1_1779817013839_c0318f65e248",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-26T17:36:53.838034+00:00"
+      },
+      {
+        "id": "98a7541e-41e4-494f-bb53-7bca9ad74472",
+        "lote_id": "lote_1_1779817004366_f9c578415e4b",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-26T17:36:44.364995+00:00"
+      },
+      {
+        "id": "942a89ca-04c1-4629-a28e-32077704f028",
+        "lote_id": "lote_1_1779816989160_1f8dd799168a",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 2,
+        "created_at": "2026-05-26T17:36:30.748432+00:00"
+      },
+      {
+        "id": "8bdc071c-9600-4425-a8a7-0489f528619b",
+        "lote_id": "lote_1_1779816813895_74b88b0765be",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-05-26T17:36:21.891672+00:00"
+      },
+      {
+        "id": "5f64403c-8ba2-42a7-9405-964a0c367626",
+        "lote_id": "lote_1_1779740412708_517e9b975246",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-05-26T17:33:26.36763+00:00"
+      },
+      {
+        "id": "4a8db756-586c-4454-8445-379c655b8e15",
+        "lote_id": "lote_1_1779740404647_f25eb97ec216",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-25T20:20:04.645205+00:00"
+      },
+      {
+        "id": "adf3c6fa-64bb-4785-8738-8a0cff7042fd",
+        "lote_id": "lote_1_1779740396234_66a407009b50",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-05-25T20:19:56.228399+00:00"
+      },
+      {
+        "id": "3df5bb08-cc48-4c29-a65f-8f36e097a3d3",
+        "lote_id": "lote_1_1779740381119_bebfe1e857fa",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 3,
+        "created_at": "2026-05-25T20:19:46.326914+00:00"
+      },
+      {
+        "id": "7e1bc152-b3c9-4a54-b926-7bea0e61f02d",
+        "lote_id": "lote_1_1779740367390_4f1e572d9c21",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 2,
+        "created_at": "2026-05-25T20:19:32.510835+00:00"
+      },
+      {
+        "id": "0f5554aa-fb84-445f-ac19-34675be15d19",
+        "lote_id": "lote_1_1778989214273_51107c9f1393",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-05-17T05:42:13.623982+00:00"
+      },
+      {
+        "id": "d6d41968-4025-473f-b75c-b28c4e68c7ff",
+        "lote_id": "lote_1_1778979569749_543c9625371d",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-05-17T01:00:01.739756+00:00"
+      },
+      {
+        "id": "aebd983c-6f29-4685-9d28-17d4108717e4",
+        "lote_id": "lote_1_1778971180592_92814c0ede2e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 3,
+        "created_at": "2026-05-17T00:59:21.262569+00:00"
+      },
+      {
+        "id": "dea10691-6b67-46d8-80e1-6e297cf560fe",
+        "lote_id": "lote_1_1778944572887_2f78b040bd5e",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 7,
+        "created_at": "2026-05-16T18:10:51.301062+00:00"
+      },
+      {
+        "id": "69a89c08-1869-4e82-ad5c-f129d2751263",
+        "lote_id": "lote_1_1777461117353_42f98f137426",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-05-15T18:24:28.971839+00:00"
+      },
+      {
+        "id": "e6fb79d6-b0f7-4ac9-9323-bed9dde8133b",
+        "lote_id": "lote_1_1777047590712_551a58e77b93",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-04-28T23:32:47.165122+00:00"
+      },
+      {
+        "id": "f913a79b-8d81-4615-8bc0-f6dc82ff66a5",
+        "lote_id": "lote_1_1776978989720_3f476f1e6696",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-04-24T16:19:39.027083+00:00"
+      },
+      {
+        "id": "19e76495-2a27-440e-9948-d9a6c2052936",
+        "lote_id": "lote_1_1776761482582_938ad700d016",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 8,
+        "created_at": "2026-04-22T18:24:42.409066+00:00"
+      },
+      {
+        "id": "8429c30f-206d-4e3b-b346-a944a28ac714",
+        "lote_id": "lote_1_1776349161894_03fcf76f6667",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 9,
+        "created_at": "2026-04-20T17:54:37.347109+00:00"
+      },
+      {
+        "id": "36633d5e-0420-4c56-bf4d-1dab3583221b",
+        "lote_id": "lote_1_1776340114402_3ee40d76cf71",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 5,
+        "created_at": "2026-04-16T14:19:13.169874+00:00"
+      },
+      {
+        "id": "f4a54ce8-5045-4328-9f64-a0e1434d9bb1",
+        "lote_id": "lote_1_1776340090592_8f796465fa7a",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 1,
+        "created_at": "2026-04-16T11:48:10.513372+00:00"
+      },
+      {
+        "id": "1b4f0cd3-d0a8-494a-9867-5be4c4aaa2ea",
+        "lote_id": "lote_1_1776312800044_95d9b7300a54",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 5,
+        "created_at": "2026-04-16T11:36:27.646408+00:00"
+      },
+      {
+        "id": "f50fe1e9-4b41-4083-9f93-71c6c2c03a22",
+        "lote_id": "lote_1_1775758987677_ced709225d5f",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 2,
+        "created_at": "2026-04-09T18:23:17.322181+00:00"
+      },
+      {
+        "id": "7eabbcf5-5998-45a7-a829-036df8a0aadf",
+        "lote_id": "lote_1_1775758971944_a3c0ed4ec9e5",
+        "usuario_id": "4ddf8330-ae94-4e92-a010-bdc7fa254ad5",
+        "resultado": "goal",
+        "premio": 5,
+        "shot_index": 3,
+        "created_at": "2026-04-09T18:22:56.710262+00:00"
+      }
+    ]
+  },
+  "idempotency": {
+    "total_rows": 147
+  },
+  "ledger": {
+    "sample": [
+      {
+        "id": "4d12f2fa-4ea6-492d-8105-8227f17562ff",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "94480975-0051-4ede-968c-275abff07a19:fee",
+        "created_at": "2026-05-25T20:21:38.144+00:00"
+      },
+      {
+        "id": "7d5f5276-daa8-4d4c-b94f-f14148b08736",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "94480975-0051-4ede-968c-275abff07a19",
+        "created_at": "2026-05-25T20:21:38.035+00:00"
+      },
+      {
+        "id": "c62012b1-155a-4b88-9943-8349f09d2601",
+        "usuario_id": "bc04fcbf-d3fc-4201-9369-e53aeeceac56",
+        "tipo": "deposito",
+        "valor": 5,
+        "referencia": "511d1abc-c23e-4b44-a48d-75e7a2bcb08d",
+        "created_at": "2026-05-25T20:18:24.934002+00:00"
+      },
+      {
+        "id": "01797ee7-5662-46d6-89a4-7c211b3b02d8",
+        "usuario_id": null,
+        "tipo": "rollback_manual",
+        "valor": 8,
+        "referencia": "371ed41a-5053-411f-b7cc-414a2ee798ec:estorno_f63765b0-3998-4549-87e4-9c3e42d80cba",
+        "created_at": "2026-05-05T18:43:13.016135+00:00"
+      },
+      {
+        "id": "f63765b0-3998-4549-87e4-9c3e42d80cba",
+        "usuario_id": null,
+        "tipo": "payout_manual_confirmado",
+        "valor": 8,
+        "referencia": "371ed41a-5053-411f-b7cc-414a2ee798ec",
+        "created_at": "2026-05-04T13:29:42.912+00:00"
+      },
+      {
+        "id": "20f44152-c35a-4da0-b587-f8bfc12a0196",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "371ed41a-5053-411f-b7cc-414a2ee798ec:fee",
+        "created_at": "2026-05-04T13:29:42.446+00:00"
+      },
+      {
+        "id": "e404f94c-d75d-45ef-b494-f6105be34842",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "371ed41a-5053-411f-b7cc-414a2ee798ec",
+        "created_at": "2026-05-04T13:29:42.392+00:00"
+      },
+      {
+        "id": "d6298e50-14e1-4196-9ac0-1ea47e6a2509",
+        "usuario_id": null,
+        "tipo": "rollback",
+        "valor": 10,
+        "referencia": "5936d217-623e-4c18-8b69-31749936ed6f",
+        "created_at": "2026-05-02T14:30:17.965+00:00"
+      },
+      {
+        "id": "91ce7ea5-3f7a-4b4f-a410-280a5bff733f",
+        "usuario_id": null,
+        "tipo": "falha_payout",
+        "valor": 8,
+        "referencia": "5936d217-623e-4c18-8b69-31749936ed6f",
+        "created_at": "2026-05-02T14:30:17.853+00:00"
+      },
+      {
+        "id": "20eefc2f-0ef1-4c53-830d-c06184f2d8f6",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "5936d217-623e-4c18-8b69-31749936ed6f:fee",
+        "created_at": "2026-05-02T14:30:08.669+00:00"
+      },
+      {
+        "id": "a6870638-b3b2-43b6-b459-9175a1576852",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "5936d217-623e-4c18-8b69-31749936ed6f",
+        "created_at": "2026-05-02T14:30:08.609+00:00"
+      },
+      {
+        "id": "3fb5578e-7c27-4c6a-9093-c89df0221520",
+        "usuario_id": null,
+        "tipo": "rollback",
+        "valor": 10,
+        "referencia": "bb7d341d-cb02-4c0a-99f2-97c3175cff2e",
+        "created_at": "2026-05-02T13:32:54.872+00:00"
+      },
+      {
+        "id": "85b3817c-ab59-4ce2-a744-606095b061d8",
+        "usuario_id": null,
+        "tipo": "falha_payout",
+        "valor": 8,
+        "referencia": "bb7d341d-cb02-4c0a-99f2-97c3175cff2e",
+        "created_at": "2026-05-02T13:32:54.739+00:00"
+      },
+      {
+        "id": "9f83ec65-a173-403c-b5a9-92a347745cfe",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "bb7d341d-cb02-4c0a-99f2-97c3175cff2e:fee",
+        "created_at": "2026-05-02T13:32:29.49+00:00"
+      },
+      {
+        "id": "ca2db65e-112c-4c39-a244-5e9977c4b123",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "bb7d341d-cb02-4c0a-99f2-97c3175cff2e",
+        "created_at": "2026-05-02T13:32:29.415+00:00"
+      },
+      {
+        "id": "4f2ee3ee-d7d8-4534-8800-9fbb696a1f0f",
+        "usuario_id": null,
+        "tipo": "rollback",
+        "valor": 10,
+        "referencia": "b217228c-feb4-48e9-9893-97065cfd4c7e",
+        "created_at": "2026-05-02T12:50:15.102+00:00"
+      },
+      {
+        "id": "fe308a3e-08fd-4054-8220-215a8d40bc01",
+        "usuario_id": null,
+        "tipo": "falha_payout",
+        "valor": 8,
+        "referencia": "b217228c-feb4-48e9-9893-97065cfd4c7e",
+        "created_at": "2026-05-02T12:50:14.975+00:00"
+      },
+      {
+        "id": "13fdbd10-82f0-4781-b36e-61290fa0f2b7",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "b217228c-feb4-48e9-9893-97065cfd4c7e:fee",
+        "created_at": "2026-05-02T12:49:54.808+00:00"
+      },
+      {
+        "id": "e6129fe7-1419-4a3d-9631-b2bed89f78fe",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "b217228c-feb4-48e9-9893-97065cfd4c7e",
+        "created_at": "2026-05-02T12:49:54.755+00:00"
+      },
+      {
+        "id": "2deeecf6-29b4-4f24-b255-81238ca74ef7",
+        "usuario_id": null,
+        "tipo": "rollback",
+        "valor": 10,
+        "referencia": "71613da6-853e-4746-a53b-f681f13cca3c",
+        "created_at": "2026-04-29T17:46:02.151+00:00"
+      },
+      {
+        "id": "f85846f0-ace8-4028-9244-784405cd00e5",
+        "usuario_id": null,
+        "tipo": "falha_payout",
+        "valor": 8,
+        "referencia": "71613da6-853e-4746-a53b-f681f13cca3c",
+        "created_at": "2026-04-29T17:46:02.029+00:00"
+      },
+      {
+        "id": "4ec1a453-570f-4069-b953-1b19580ee1e2",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "71613da6-853e-4746-a53b-f681f13cca3c:fee",
+        "created_at": "2026-04-29T17:45:39.593+00:00"
+      },
+      {
+        "id": "5cdfabc3-1df5-4c33-9795-9419352fbf7b",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "71613da6-853e-4746-a53b-f681f13cca3c",
+        "created_at": "2026-04-29T17:45:39.528+00:00"
+      },
+      {
+        "id": "5a8c0118-21ab-4ca5-a21d-be29d113a97c",
+        "usuario_id": null,
+        "tipo": "rollback",
+        "valor": 10,
+        "referencia": "c16ced3d-1b83-4cc3-87b4-5af4741a89e7",
+        "created_at": "2026-04-29T15:38:41.671+00:00"
+      },
+      {
+        "id": "3e14edb4-a6be-4c52-a083-671c240f6b6a",
+        "usuario_id": null,
+        "tipo": "falha_payout",
+        "valor": 8,
+        "referencia": "c16ced3d-1b83-4cc3-87b4-5af4741a89e7",
+        "created_at": "2026-04-29T15:38:41.58+00:00"
+      },
+      {
+        "id": "efd35507-7276-43c1-a0b9-8e84ccc80d48",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "c16ced3d-1b83-4cc3-87b4-5af4741a89e7:fee",
+        "created_at": "2026-04-29T15:38:21.536+00:00"
+      },
+      {
+        "id": "e6d865d0-9245-415a-bf59-887626f63055",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "c16ced3d-1b83-4cc3-87b4-5af4741a89e7",
+        "created_at": "2026-04-29T15:38:21.484+00:00"
+      },
+      {
+        "id": "cfb3472d-c55a-4454-83ec-37e547f99171",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "tipo": "deposito",
+        "valor": 1,
+        "referencia": "156174759679",
+        "created_at": "2026-04-29T15:37:23.131361+00:00"
+      },
+      {
+        "id": "277b552d-2fd2-4c34-9fe6-35d58fc9570f",
+        "usuario_id": null,
+        "tipo": "rollback",
+        "valor": 10,
+        "referencia": "9612c3c7-0b88-4de1-8617-4de66a3096eb",
+        "created_at": "2026-04-28T17:28:57.433+00:00"
+      },
+      {
+        "id": "396eb0e6-7461-43e0-b3e9-724f862412f9",
+        "usuario_id": null,
+        "tipo": "falha_payout",
+        "valor": 8,
+        "referencia": "9612c3c7-0b88-4de1-8617-4de66a3096eb",
+        "created_at": "2026-04-28T17:28:57.33+00:00"
+      },
+      {
+        "id": "4061135d-f105-484c-ba66-f01fe8fe6d71",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "9612c3c7-0b88-4de1-8617-4de66a3096eb:fee",
+        "created_at": "2026-04-28T16:14:54.244+00:00"
+      },
+      {
+        "id": "b6df0097-c1da-43a6-b72f-509c19d878f0",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "9612c3c7-0b88-4de1-8617-4de66a3096eb",
+        "created_at": "2026-04-28T16:14:54.192+00:00"
+      },
+      {
+        "id": "6da1b809-9702-488c-87ab-923251786137",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "tipo": "deposito",
+        "valor": 1,
+        "referencia": "156032971347",
+        "created_at": "2026-04-28T16:11:37.933794+00:00"
+      },
+      {
+        "id": "4be76302-b5f7-4288-950d-8f0a053ef158",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "866e9e59-cad8-4f77-99e3-01494cd28a87:fee",
+        "created_at": "2026-04-27T18:03:55.389+00:00"
+      },
+      {
+        "id": "61e35ab8-f4bb-4110-943c-accf722e1f44",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "866e9e59-cad8-4f77-99e3-01494cd28a87",
+        "created_at": "2026-04-27T18:03:55.241+00:00"
+      },
+      {
+        "id": "25626ff6-8200-4e74-b325-5ec3604ecd5b",
+        "usuario_id": null,
+        "tipo": "rollback",
+        "valor": 10,
+        "referencia": "528fec20-b88c-410b-9dd7-400bf306dfd2",
+        "created_at": "2026-04-25T16:32:55.14+00:00"
+      },
+      {
+        "id": "80f9d8a1-03db-4b17-8c47-5a610a4ec902",
+        "usuario_id": null,
+        "tipo": "falha_payout",
+        "valor": 8,
+        "referencia": "528fec20-b88c-410b-9dd7-400bf306dfd2",
+        "created_at": "2026-04-25T16:32:55.002+00:00"
+      },
+      {
+        "id": "0fae5260-e5be-4118-9dd7-94f1bbc82042",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "528fec20-b88c-410b-9dd7-400bf306dfd2:fee",
+        "created_at": "2026-04-25T16:18:54.769+00:00"
+      },
+      {
+        "id": "333f2186-2f59-4ce5-b6d8-89b7ab0aadca",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "528fec20-b88c-410b-9dd7-400bf306dfd2",
+        "created_at": "2026-04-25T16:18:54.716+00:00"
+      },
+      {
+        "id": "afaa61d9-ad90-4cf7-8333-d9fd302b0298",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "6d96d99e-d4c5-4c1a-b825-44d66d7ea7bf:fee",
+        "created_at": "2026-04-25T13:55:31.622+00:00"
+      },
+      {
+        "id": "2ad39f73-fcbd-43be-8fa0-55d0f1d536e9",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "6d96d99e-d4c5-4c1a-b825-44d66d7ea7bf",
+        "created_at": "2026-04-25T13:55:31.575+00:00"
+      },
+      {
+        "id": "9ea6d42f-5e62-420b-b5e8-71199e0706ab",
+        "usuario_id": null,
+        "tipo": "rollback",
+        "valor": 10,
+        "referencia": "b035e4f0-2b61-4821-9213-3208185d06be",
+        "created_at": "2026-04-24T23:08:22.306+00:00"
+      },
+      {
+        "id": "6e31af11-6a3f-43e3-b94a-87b413638f64",
+        "usuario_id": null,
+        "tipo": "falha_payout",
+        "valor": 8,
+        "referencia": "b035e4f0-2b61-4821-9213-3208185d06be",
+        "created_at": "2026-04-24T23:08:22.169+00:00"
+      },
+      {
+        "id": "a49fdb93-0d6d-43ef-a724-8d6001d0b8e4",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "b035e4f0-2b61-4821-9213-3208185d06be:fee",
+        "created_at": "2026-04-24T23:01:35.939+00:00"
+      },
+      {
+        "id": "7208bc59-21ac-48d6-9295-4d14b8c1cde1",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "b035e4f0-2b61-4821-9213-3208185d06be",
+        "created_at": "2026-04-24T23:01:35.886+00:00"
+      },
+      {
+        "id": "34ff615d-271a-400d-b177-beb525237531",
+        "usuario_id": null,
+        "tipo": "rollback",
+        "valor": 10,
+        "referencia": "864077d1-4162-485f-aa11-dd85d08cb68a:rollback_estorno_bruto",
+        "created_at": "2026-04-24T22:55:29.585+00:00"
+      },
+      {
+        "id": "f1e5425e-9b37-42e6-8e91-c422aa14366c",
+        "usuario_id": null,
+        "tipo": "taxa",
+        "valor": 2,
+        "referencia": "864077d1-4162-485f-aa11-dd85d08cb68a:fee",
+        "created_at": "2026-04-24T18:24:32.41+00:00"
+      },
+      {
+        "id": "4b6dab97-6f08-4b61-9669-39eea7ae486d",
+        "usuario_id": null,
+        "tipo": "saque",
+        "valor": 10,
+        "referencia": "864077d1-4162-485f-aa11-dd85d08cb68a",
+        "created_at": "2026-04-24T18:24:32.356+00:00"
+      },
+      {
+        "id": "3e8f5adf-6eab-4f8d-a399-9d4c17b6fbb9",
+        "usuario_id": "4f3e0ab1-e2a5-4a65-8ee2-1cca316f65a4",
+        "tipo": "deposito",
+        "valor": 10,
+        "referencia": "155310549809",
+        "created_at": "2026-04-23T21:15:19.082656+00:00"
+      },
+      {
+        "id": "8687bc0e-97e6-4862-a0bd-49af2deec8b8",
+        "usuario_id": "4c3b3b02-592c-4183-a53e-b05b1d9a4426",
+        "tipo": "deposito",
+        "valor": 1,
+        "referencia": "155350634947",
+        "created_at": "2026-04-23T19:31:44.709351+00:00"
+      }
+    ],
+    "error": null,
+    "table_exists": true
+  },
+  "usuarios": {},
+  "recent_lotes": [
+    {
+      "id": "lote_1_1779827981279_46d1489dc4ea",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "ativo",
+      "created_at": "2026-05-26T20:39:41.27852+00:00",
+      "total_arrecadado": 5,
+      "premio_total": 0,
+      "_audit": {
+        "chute_count": 5,
+        "goal_count": 0,
+        "premio_sum": 0,
+        "early_goal": false,
+        "violates_v1": false
+      }
+    },
+    {
+      "id": "lote_1_1779827953908_b06452488d88",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "finalizado",
+      "created_at": "2026-05-26T20:39:13.899017+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 10,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": false,
+        "violates_v1": false
+      }
+    },
+    {
+      "id": "lote_1_1779817022805_7f28eb9d9d2f",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 6,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:37:02.803989+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 10,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779817013839_c0318f65e248",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 0,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:36:53.838034+00:00",
+      "total_arrecadado": 1,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 1,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779817004366_f9c578415e4b",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 0,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:36:44.364995+00:00",
+      "total_arrecadado": 1,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 1,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779816989160_1f8dd799168a",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 1,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:36:29.158484+00:00",
+      "total_arrecadado": 2,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 2,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779816813895_74b88b0765be",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 8,
+      "status": "finalizado",
+      "created_at": "2026-05-26T17:33:33.872152+00:00",
+      "total_arrecadado": 9,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 9,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779740412708_517e9b975246",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 7,
+      "status": "finalizado",
+      "created_at": "2026-05-25T20:20:12.706611+00:00",
+      "total_arrecadado": 8,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 8,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779740404647_f25eb97ec216",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 0,
+      "status": "finalizado",
+      "created_at": "2026-05-25T20:20:04.645205+00:00",
+      "total_arrecadado": 1,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 1,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779740396234_66a407009b50",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 0,
+      "status": "finalizado",
+      "created_at": "2026-05-25T20:19:56.228399+00:00",
+      "total_arrecadado": 1,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 1,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779740381119_bebfe1e857fa",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 2,
+      "status": "finalizado",
+      "created_at": "2026-05-25T20:19:41.117551+00:00",
+      "total_arrecadado": 3,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 3,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779740367390_4f1e572d9c21",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 1,
+      "status": "finalizado",
+      "created_at": "2026-05-25T20:19:27.36901+00:00",
+      "total_arrecadado": 2,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 2,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1779002477328_e74e2be249b9",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "finalizado",
+      "created_at": "2026-05-17T07:21:17.225027+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 10,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": false,
+        "violates_v1": false
+      }
+    },
+    {
+      "id": "lote_1_1778989214273_51107c9f1393",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 7,
+      "status": "finalizado",
+      "created_at": "2026-05-17T03:40:14.149053+00:00",
+      "total_arrecadado": 8,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 8,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1778979569749_543c9625371d",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 8,
+      "status": "finalizado",
+      "created_at": "2026-05-17T00:59:29.726917+00:00",
+      "total_arrecadado": 9,
+      "premio_total": 5,
+      "_audit": {
+        "chute_count": 9,
+        "goal_count": 1,
+        "premio_sum": 5,
+        "early_goal": true,
+        "violates_v1": true
+      }
+    },
+    {
+      "id": "lote_1_1778971180592_92814c0ede2e",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 2,
+      "status": "finalizado",
+      "created_at": "2026-05-16T22:39:40.573565+00:00",
+      "total_arrecadado": 3,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1778955073863_8202fd62f64b",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "finalizado",
+      "created_at": "2026-05-16T18:11:13.822291+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1778944572887_2f78b040bd5e",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 6,
+      "status": "finalizado",
+      "created_at": "2026-05-16T15:16:12.865554+00:00",
+      "total_arrecadado": 7,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1778879864177_945ecd83866c",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "finalizado",
+      "created_at": "2026-05-15T21:17:44.080357+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1777461117353_42f98f137426",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 8,
+      "status": "finalizado",
+      "created_at": "2026-04-29T11:11:57.165839+00:00",
+      "total_arrecadado": 9,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1777047590712_551a58e77b93",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 8,
+      "status": "finalizado",
+      "created_at": "2026-04-24T16:19:50.685612+00:00",
+      "total_arrecadado": 9,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1776978989720_3f476f1e6696",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 7,
+      "status": "finalizado",
+      "created_at": "2026-04-23T21:16:29.571514+00:00",
+      "total_arrecadado": 8,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1776761482582_938ad700d016",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 7,
+      "status": "finalizado",
+      "created_at": "2026-04-21T08:51:22.569665+00:00",
+      "total_arrecadado": 8,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1776349161894_03fcf76f6667",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 8,
+      "status": "finalizado",
+      "created_at": "2026-04-16T14:19:21.876623+00:00",
+      "total_arrecadado": 9,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1776340114402_3ee40d76cf71",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 4,
+      "status": "finalizado",
+      "created_at": "2026-04-16T11:48:34.396966+00:00",
+      "total_arrecadado": 5,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1776340090592_8f796465fa7a",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 0,
+      "status": "finalizado",
+      "created_at": "2026-04-16T11:48:10.513372+00:00",
+      "total_arrecadado": 1,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1776312800044_95d9b7300a54",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 4,
+      "status": "finalizado",
+      "created_at": "2026-04-16T04:13:20.003399+00:00",
+      "total_arrecadado": 5,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1769526670055_7b82db87ef9f",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "completed",
+      "created_at": "2026-01-27T15:11:10.103455+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1769092989263_dab276f45f78",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "completed",
+      "created_at": "2026-01-22T14:43:09.278066+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5
+    },
+    {
+      "id": "lote_1_1769092939285_066ab57ed84d",
+      "valor_aposta": 1,
+      "tamanho": 10,
+      "indice_vencedor": 9,
+      "status": "completed",
+      "created_at": "2026-01-22T14:42:19.301792+00:00",
+      "total_arrecadado": 10,
+      "premio_total": 5
+    }
+  ],
+  "runtime_meta": {
+    "version": "1.2.1",
+    "build": "2025-10-21",
+    "gitCommit": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634",
+    "environment": "production",
+    "compatibility": {
+      "minVersion": "1.0.0",
+      "supported": true
+    },
+    "features": {
+      "pix": true,
+      "goldenGoal": true,
+      "monitoring": true
+    }
+  }
+}

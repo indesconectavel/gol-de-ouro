@@ -1,0 +1,10 @@
+{
+  "started_at": "2026-05-30T02:12:49.451Z",
+  "finished_at": "2026-05-30T02:12:50.650Z",
+  "saque_id": "021698a4-2153-4631-9f31-15bea0678ffa",
+  "http_status": 502,
+  "response": {
+    "success": false,
+    "message": "Provedor rejeitou ou falhou no payout PIX"
+  }
+}

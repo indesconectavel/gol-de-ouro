@@ -1,0 +1,96 @@
+{
+  "phase": "F2.4E_BEFORE",
+  "captured_at": "2026-05-29T21:02:08.127Z",
+  "preconditions": {
+    "backend_meta": {
+      "url": "https://goldeouro-backend-v2.fly.dev/meta",
+      "gitCommit": "98d4285dfe5dde987a31dc0467c9e537bb7f3b43",
+      "note": "Merge PR #101 (H4.1C rate limit) sobre baseline F2.4C (839b93a)"
+    },
+    "backend_health": {
+      "database": "connected"
+    },
+    "workers": {
+      "payoutWorker_enabledByEnv": true,
+      "payoutPixProcessingEnabled": true
+    },
+    "admin_vercel": {
+      "bundle": "index-490acf3c.js",
+      "labels": {
+        "Aprovar e Enviar PIX": true,
+        "Confirmar PIX manual": true,
+        "approve-and-send_endpoint": true
+      }
+    },
+    "route_probe": {
+      "POST /api/admin/withdraw/approve-and-send_without_jwt": 401
+    },
+    "rate_limit_admin": "H4.1C deployed (skip /api/admin/)",
+    "pendentes_count": 3
+  },
+  "chosen_control_withdrawal": {
+    "id": "8b36078d-c485-4f57-8592-2ea3ab2fee29",
+    "usuario_id": "e2df506e-af41-4b33-a179-88e1938970da",
+    "status": "pendente",
+    "amount": 10,
+    "valor": 10,
+    "fee": 2,
+    "net_amount": 8,
+    "correlation_id": "7425e37e-f2c6-4551-a4eb-aacd9cfe76f8",
+    "payout_external_reference": null,
+    "mp_transaction_intent_id": null,
+    "mp_payout_status": null,
+    "ledger_state_expected_in_panel": "NONE",
+    "created_at": "2026-05-29T19:43:30.288+00:00",
+    "updated_at": "2026-05-29T19:43:30.308256+00:00",
+    "processed_at": null,
+    "selection_reason": "Mais recente entre pendentes; net_amount=R$8; correlation_id presente"
+  },
+  "pendentes_resumo": [
+    {
+      "id": "8b36078d-c485-4f57-8592-2ea3ab2fee29",
+      "status": "pendente",
+      "net_amount": 8,
+      "amount": 10,
+      "created_at": "2026-05-29T19:43:30.288+00:00"
+    },
+    {
+      "id": "021698a4-2153-4631-9f31-15bea0678ffa",
+      "status": "pendente",
+      "net_amount": 10,
+      "amount": 12,
+      "created_at": "2026-05-29T13:18:50.478+00:00"
+    },
+    {
+      "id": "94480975-0051-4ede-968c-275abff07a19",
+      "status": "pendente",
+      "net_amount": 8,
+      "amount": 10,
+      "created_at": "2026-05-25T20:21:37.885+00:00"
+    }
+  ],
+  "ledger_for_chosen": [
+    {
+      "id": "cc1eb7dd-0bdc-4919-beee-8f83e27defdb",
+      "tipo": "saque",
+      "valor": 10,
+      "correlation_id": "7425e37e-f2c6-4551-a4eb-aacd9cfe76f8",
+      "referencia": "8b36078d-c485-4f57-8592-2ea3ab2fee29",
+      "created_at": "2026-05-29T19:43:30.379+00:00"
+    },
+    {
+      "id": "4c2612c7-dffe-4b8c-a97d-7c7b700018f0",
+      "tipo": "taxa",
+      "valor": 2,
+      "correlation_id": "7425e37e-f2c6-4551-a4eb-aacd9cfe76f8",
+      "referencia": "8b36078d-c485-4f57-8592-2ea3ab2fee29:fee",
+      "created_at": "2026-05-29T19:43:30.461+00:00"
+    }
+  ],
+  "user_balance": {
+    "usuario_id": "e2df506e-af41-4b33-a179-88e1938970da",
+    "saldo": 0,
+    "updated_at": "2026-05-29T19:43:30.266622+00:00"
+  },
+  "transaction_intents": []
+}

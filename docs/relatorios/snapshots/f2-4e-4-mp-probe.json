@@ -1,0 +1,16 @@
+﻿{
+  "timestamp": "2026-06-02T17:42:06.714Z",
+  "mode": "read_only_get_only",
+  "tokens": {
+    "deposit": {
+      "present": false
+    },
+    "payout": {
+      "present": false
+    },
+    "legacy": {
+      "present": false
+    }
+  },
+  "results": []
+}

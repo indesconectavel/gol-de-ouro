@@ -1,0 +1,48 @@
+{
+  "phase": "F2.4E.2A_BEFORE",
+  "captured_at": "2026-05-30T01:04:48.127Z",
+  "saque": {
+    "id": "021698a4-2153-4631-9f31-15bea0678ffa",
+    "usuario_id_masked": "u_3aa9…7df6",
+    "status": "pendente",
+    "amount": 12,
+    "fee": 2,
+    "net_amount": 10,
+    "correlation_id": "7d8e706f-bedf-48b8-9102-21b89ffd475a",
+    "pix": {
+      "has_key": true,
+      "type": "cpf",
+      "masked": "***3648"
+    },
+    "mp_transaction_intent_id": null,
+    "mp_payout_status": null,
+    "motivo_rejeicao": null,
+    "payout_external_reference": null,
+    "processed_at": null,
+    "created_at": "2026-05-29T13:18:50.478+00:00",
+    "updated_at": "2026-05-29T13:18:50.496334+00:00"
+  },
+  "ledger": [
+    {
+      "tipo": "saque",
+      "valor": 12,
+      "referencia": "021698a4-2153-4631-9f31-15bea0678ffa",
+      "created_at": "2026-05-29T13:18:50.613+00:00"
+    },
+    {
+      "tipo": "taxa",
+      "valor": 2,
+      "referencia": "021698a4-2153-4631-9f31-15bea0678ffa:fee",
+      "created_at": "2026-05-29T13:18:50.678+00:00"
+    }
+  ],
+  "usuario": {
+    "id_masked": "u_3aa9…7df6",
+    "saldo": 3,
+    "updated_at": "2026-05-29T13:18:50.434618+00:00"
+  },
+  "chosen_control_withdrawal": {
+    "id": "021698a4-2153-4631-9f31-15bea0678ffa",
+    "correlation_id": "7d8e706f-bedf-48b8-9102-21b89ffd475a"
+  }
+}

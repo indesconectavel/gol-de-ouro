@@ -1,0 +1,17 @@
+{
+  "project_ref": "gayopagjdrkcmkirmfvy",
+  "captured_at": "2026-05-26",
+  "tables": [
+    { "t": "usuarios", "n": 467 },
+    { "t": "lotes", "n": 39 },
+    { "t": "chutes", "n": 142 },
+    { "t": "saques", "n": 23 },
+    { "t": "pagamentos_pix", "n": 364 },
+    { "t": "metricas_globais", "n": 18 }
+  ],
+  "saques_by_status": [
+    { "status": "rejeitado", "count": 7 },
+    { "status": "cancelado", "count": 15 },
+    { "status": "pendente", "count": 1 }
+  ]
+}
