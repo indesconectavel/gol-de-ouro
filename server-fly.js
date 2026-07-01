@@ -18,17 +18,7 @@ const axios = require('axios');
 const http = require('http');
 const crypto = require('crypto'); // ✅ Adicionado para geração segura de números aleatórios
 const { getTransactionIntent } = require('./services/pix-mercado-pago');
-const { createPixDepositCompat, isPixDepositConfigured } = require('./src/finance/compat/createPixDepositCompat');
-const { claimApprovedPixDeposit } = require('./src/finance/deposit/claimApprovedPixDeposit');
-const {
-  processPaymentWebhookCompat,
-  isPaymentWebhookEngineEnabled,
-  isAsaasWebhookRouteAllowed
-} = require('./src/finance/compat/processPaymentWebhookCompat');
-const { processPaymentWebhook } = require('./src/finance/webhooks/processPaymentWebhook');
-const {
-  handleAsaasTransferAuthorization
-} = require('./src/finance/webhooks/asaasTransferAuthorization');
+const { PaymentEngine } = require('./src/payment-engine');
 const { isAsaasTransferAuthWebhookEnabled } = require('./src/finance/config/asaas-transfer-auth-config');
 const {
   payoutCounters,
@@ -36,6 +26,18 @@ const {
   rollbackWithdraw,
   processPendingWithdrawals
 } = require('./src/domain/payout/processPendingWithdrawals');
+
+// P2.2 — aliases de compatibilidade (delegação → PaymentEngine, sem alteração de comportamento)
+const createPixDepositCompat = (input) => PaymentEngine.deposit.createCompat(input);
+const isPixDepositConfigured = (opts) => PaymentEngine.deposit.isConfigured(opts);
+const processPaymentWebhookCompat = (input) => PaymentEngine.webhooks.processCompat(input);
+const processPaymentWebhook = (input) => PaymentEngine.webhooks.process(input);
+const isPaymentWebhookEngineEnabled = () => PaymentEngine.webhooks.isEngineEnabled();
+const isAsaasWebhookRouteAllowed = () => PaymentEngine.webhooks.isAsaasRouteAllowed();
+const handleAsaasTransferAuthorization = (input) =>
+  PaymentEngine.webhooks.handleAsaasTransferAuthorization(input);
+const reconcileAsaasPendingPayouts = (input) => PaymentEngine.reconcile.asaasPendingPayouts(input);
+const isAsaasPayoutRecoveryEnabled = () => PaymentEngine.reconcile.isAsaasRecoveryEnabled();
 const adminWithdrawController = require('./controllers/adminWithdrawController');
 const { logAdminAction, getClientIp } = require('./src/utils/adminAuditLogger');
 const { isTechnicalE2EAccount } = require('./src/utils/technicalE2EAccount');
@@ -192,6 +194,17 @@ async function connectSupabase() {
 
 const mercadoPagoAccessToken = process.env.MERCADOPAGO_DEPOSIT_ACCESS_TOKEN;
 let mercadoPagoConnected = false;
+
+// P2.2 — runtime da Payment Engine™ (delegação; regras financeiras inalteradas)
+PaymentEngine.configure({
+  getSupabase: () => supabase,
+  financeLog,
+  getDbConnected: () => dbConnected,
+  getMercadoPagoConnected: () => mercadoPagoConnected,
+  getMercadoPagoAccessToken: () => mercadoPagoAccessToken,
+  createLedgerEntry,
+  productId: 'gol-de-ouro'
+});
 
 // Testar Mercado Pago
 async function testMercadoPago() {
@@ -2898,47 +2911,13 @@ function normalizeMercadoPagoPaymentResourceId(raw) {
 }
 
 /**
- * Reconcile: escolhe o ID numérico do Mercado Pago para GET /v1/payments/{id}.
- * Preferência a payment_id quando só dígitos; senão external_id se só dígitos.
- * Evita external_id legado (ex.: deposito_...) bloquear o uso de payment_id numérico.
- */
-function pickMercadoPagoPaymentIdForReconcile(row) {
-  const pid = row?.payment_id != null ? String(row.payment_id).trim() : '';
-  const ext = row?.external_id != null ? String(row.external_id).trim() : '';
-  if (/^\d+$/.test(pid)) return pid;
-  if (/^\d+$/.test(ext)) return ext;
-  return null;
-}
-
-/**
  * Claim idempotente + crédito de saldo (MP via RPC; Asaas pay_* via fallback P1.4F).
+ * P2.2 — delegação para PaymentEngine.deposit.claimAndCredit (comportamento idêntico).
  * @param {string} idStr — payment_id / external_id
  * @returns {Promise<boolean>}
  */
 async function claimAndCreditApprovedPixDeposit(idStr) {
-  if (!supabase) return false;
-  const paymentId = String(idStr || '').trim();
-  if (!paymentId) return false;
-
-  try {
-    const result = await claimApprovedPixDeposit(
-      {
-        supabase,
-        createLedgerEntry,
-        log: (event, payload = {}) => financeLog(event, { ...payload, tipo: 'deposito' })
-      },
-      paymentId
-    );
-    return !!result.ok;
-  } catch (error) {
-    financeLog('deposit_claim_unexpected_error', {
-      payment_id: paymentId,
-      tipo: 'deposito',
-      status: 'error',
-      error: error.message
-    });
-    return false;
-  }
+  return PaymentEngine.deposit.claimAndCredit(idStr);
 }
 
 // Criar pagamento PIX
@@ -3813,110 +3792,8 @@ async function saveGlobalCounter() {
   }
 }
 
-// Reconciliação automática de PIX pendentes (fallback ao webhook)
-let reconciling = false;
-async function reconcilePendingPayments() {
-  if (reconciling) return;
-  if (!dbConnected || !supabase || !mercadoPagoConnected) return;
-  if (!mercadoPagoAccessToken) {
-    console.log('⚠️ [RECON][DEPOSIT] Token de depósito não configurado');
-    return;
-  }
-  try {
-    reconciling = true;
-    const maxAgeRaw = parseInt(process.env.MP_RECONCILE_MIN_AGE_MIN || '2', 10);
-    const limitRaw = parseInt(process.env.MP_RECONCILE_LIMIT || '10', 10);
-    const maxAgeMin = Number.isFinite(maxAgeRaw) && maxAgeRaw > 0 ? Math.min(maxAgeRaw, 120) : 2;
-    const limit = Number.isFinite(limitRaw) && limitRaw > 0 ? Math.min(limitRaw, 200) : 10;
-    const sinceIso = new Date(Date.now() - maxAgeMin * 60 * 1000).toISOString();
-    financeLog('deposit_reconcile_cycle_start', {
-      tipo: 'deposito',
-      status: 'running',
-      max_age_min: maxAgeMin,
-      limit
-    });
-
-    const { data: pendings, error: listError } = await supabase
-      .from('pagamentos_pix')
-      .select('id, usuario_id, external_id, payment_id, status, amount, valor, created_at')
-      .eq('status', 'pending')
-      .lt('created_at', sinceIso)
-      .order('created_at', { ascending: true })
-      .limit(limit);
-
-    if (listError) {
-      console.error('❌ [RECON] Erro ao listar pendentes:', listError.message);
-      return;
-    }
-    if (!pendings || pendings.length === 0) {
-      financeLog('deposit_reconcile_cycle_empty', {
-        tipo: 'deposito',
-        status: 'empty'
-      });
-      return;
-    }
-
-    for (const p of pendings) {
-      const mpId = pickMercadoPagoPaymentIdForReconcile(p);
-      if (!mpId) {
-        console.warn('⚠️ [RECON] Pendente sem ID MP numérico (reconcile ignorado):', {
-          localId: p.id,
-          usuario_id: p.usuario_id
-        });
-        continue;
-      }
-
-      const paymentId = parseInt(mpId, 10);
-      if (isNaN(paymentId) || paymentId <= 0) {
-        console.error('❌ [RECON] ID de pagamento inválido (não é número positivo):', mpId);
-        continue;
-      }
-
-      try {
-        const resp = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-          headers: { Authorization: `Bearer ${mercadoPagoAccessToken}` },
-          timeout: 5000
-        });
-        const status = resp?.data?.status;
-        if (status === 'approved') {
-          const credited = await claimAndCreditApprovedPixDeposit(mpId);
-          financeLog('deposit_reconcile_claim', {
-            payment_id: mpId,
-            user_id: p.usuario_id,
-            tipo: 'deposito',
-            status: credited ? 'approved' : 'idempotent',
-            valor: Number(p.amount ?? p.valor ?? 0)
-          });
-          if (credited) console.log(`✅ [RECON] Pagamento ${mpId} reconciliado e saldo creditado (usuário pendente ${p.usuario_id})`);
-        } else {
-          financeLog('deposit_reconcile_skip_non_approved', {
-            payment_id: mpId,
-            user_id: p.usuario_id,
-            tipo: 'deposito',
-            status: String(status || 'unknown')
-          });
-        }
-      } catch (mpErr) {
-        console.log(`⚠️ [RECON] Erro consultando MP ${mpId}:`, mpErr.response?.data || mpErr.message);
-      }
-    }
-  } catch (err) {
-    console.error('❌ [RECON] Erro geral:', err.message);
-  } finally {
-    financeLog('deposit_reconcile_cycle_end', {
-      tipo: 'deposito',
-      status: 'done'
-    });
-    reconciling = false;
-  }
-}
-
-// Agendar reconciliação (habilitado por padrão)
-if (process.env.MP_RECONCILE_ENABLED !== 'false') {
-  const intervalMs = parseInt(process.env.MP_RECONCILE_INTERVAL_MS || '60000', 10);
-  setInterval(reconcilePendingPayments, Math.max(30000, intervalMs));
-  console.log(`🕒 [RECON] Reconciliação de PIX pendentes ativa a cada ${Math.round(intervalMs / 1000)}s`);
-}
+// P2.2 — Schedulers financeiros via PaymentEngine (MP reconcile + Asaas recovery)
+PaymentEngine.start();
 
 // =====================================================
 // ROTAS DE SAÚDE E MONITORAMENTO
