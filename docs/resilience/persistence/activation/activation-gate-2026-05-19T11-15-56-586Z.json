@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-05-19T11:15:56.585Z",
+  "mission": "V1.5-ACTIVATION-GATE-ENGINE",
+  "mode": "dry-run",
+  "decision": "BLOCK",
+  "gates_evaluated": {
+    "G1_RUNTIME_SCORE": {
+      "min": 85,
+      "weight": "critical"
+    },
+    "G2_FINANCIAL_PROOF": {
+      "required": "VALID",
+      "weight": "critical"
+    },
+    "G3_EXTERNAL_CERT": {
+      "required": "EXTERNALLY_CERTIFIED",
+      "weight": "critical"
+    },
+    "G4_ANOMALY": {
+      "max": 35,
+      "weight": "high"
+    },
+    "G5_AVAILABILITY": {
+      "min": 95,
+      "weight": "high"
+    },
+    "G6_NO_P0": {
+      "max_p0": 0,
+      "weight": "critical"
+    },
+    "G7_DRIFT_RUNTIME": {
+      "runtime_cert": "CERTIFIED",
+      "weight": "high"
+    }
+  },
+  "blockers": [
+    "G1_RUNTIME_SCORE",
+    "G3_EXTERNAL_CERT",
+    "G5_AVAILABILITY"
+  ],
+  "warnings": [
+    "G7: runtime INVALID",
+    "Tendência de degradação detectada"
+  ],
+  "reasons": [
+    "Score operacional 76 < 85",
+    "Certificação: INVALID",
+    "Availability 60% < 95"
+  ],
+  "required_actions": [
+    "Executar autonomous-reliability-check e resolver issues",
+    "Revisar reliability-trend-analysis"
+  ],
+  "certification_impact": "invalidate_pending_deploy",
+  "inputs_summary": {
+    "operational_score": 76,
+    "external_certification": "INVALID",
+    "financial_proof": "VALID",
+    "anomaly_score": 17,
+    "availability": 60,
+    "p0_count": 0
+  },
+  "deploy_simulation": {
+    "allow_deploy": false,
+    "allow_payout_changes": false,
+    "freeze_recommended": true
+  }
+}

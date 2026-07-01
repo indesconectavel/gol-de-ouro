@@ -1,0 +1,72 @@
+{
+  "timestamp": "2026-05-19T11:09:49.079Z",
+  "mission": "V1.5-ACTIVATION-GATE-ENGINE",
+  "mode": "dry-run",
+  "decision": "BLOCK",
+  "gates_evaluated": {
+    "G1_RUNTIME_SCORE": {
+      "min": 85,
+      "weight": "critical"
+    },
+    "G2_FINANCIAL_PROOF": {
+      "required": "VALID",
+      "weight": "critical"
+    },
+    "G3_EXTERNAL_CERT": {
+      "required": "EXTERNALLY_CERTIFIED",
+      "weight": "critical"
+    },
+    "G4_ANOMALY": {
+      "max": 35,
+      "weight": "high"
+    },
+    "G5_AVAILABILITY": {
+      "min": 95,
+      "weight": "high"
+    },
+    "G6_NO_P0": {
+      "max_p0": 0,
+      "weight": "critical"
+    },
+    "G7_DRIFT_RUNTIME": {
+      "runtime_cert": "CERTIFIED",
+      "weight": "high"
+    }
+  },
+  "blockers": [
+    "G1_RUNTIME_SCORE",
+    "G3_EXTERNAL_CERT",
+    "G5_AVAILABILITY",
+    "G6_NO_P0"
+  ],
+  "warnings": [
+    "G7: runtime INVALID",
+    "Tendência de degradação detectada"
+  ],
+  "reasons": [
+    "Score operacional 83 < 85",
+    "Certificação: INVALID",
+    "Availability 60% < 95",
+    "2 alerta(s) P0 ativos"
+  ],
+  "required_actions": [
+    "Executar autonomous-reliability-check e resolver issues",
+    "Contenção P0 antes de deploy",
+    "Revisar reliability-trend-analysis",
+    "rollback_recommended: Fly v461 + bundle certificado (simulado)"
+  ],
+  "certification_impact": "invalidate_pending_deploy",
+  "inputs_summary": {
+    "operational_score": 83,
+    "external_certification": "INVALID",
+    "financial_proof": "VALID",
+    "anomaly_score": 17,
+    "availability": 60,
+    "p0_count": 2
+  },
+  "deploy_simulation": {
+    "allow_deploy": false,
+    "allow_payout_changes": false,
+    "freeze_recommended": true
+  }
+}

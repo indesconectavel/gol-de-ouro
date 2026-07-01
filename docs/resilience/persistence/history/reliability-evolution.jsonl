@@ -1,0 +1,2 @@
+{"timestamp":"2026-05-19T11:15:57.398Z","operational_score":76,"resilience_score":76,"resilience_class":"STABLE","external_certification":"INVALID","activation_decision":"BLOCK","anomaly_score":17,"availability":60,"trend_direction":"stable"}
+{"timestamp":"2026-05-19T11:16:58.217Z","operational_score":90,"resilience_score":94,"resilience_class":"HARDENED","external_certification":"EXTERNALLY_CERTIFIED","activation_decision":"REVIEW","anomaly_score":17,"availability":100,"trend_direction":"stable"}

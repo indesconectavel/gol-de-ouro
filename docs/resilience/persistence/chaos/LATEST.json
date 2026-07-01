@@ -1,0 +1,130 @@
+{
+  "timestamp": "2026-05-19T11:13:02.235Z",
+  "mission": "V1.5-CONTROLLED-CHAOS-READINESS",
+  "mode": "documental",
+  "overall_readiness": "NOT_READY",
+  "prerequisites": {
+    "runbooks": true,
+    "watchdogs": true,
+    "freeze_policy": true,
+    "externally_certified": false
+  },
+  "scenarios": [
+    {
+      "id": "CC-01",
+      "name": "runtime_drift",
+      "drill": "DRILL-runtime-corruption.md",
+      "runbook": "RUNBOOK-runtime-drift",
+      "readiness": "PARTIAL",
+      "gaps": [
+        "not_externally_certified"
+      ],
+      "detection_scripts": [
+        "scripts/operational/watchdog-runtime-health.js",
+        "scripts/analytics/runtime-anomaly-detector.js"
+      ],
+      "abort_conditions": [
+        "P0 unresolved",
+        "financial_proof INVALID",
+        "manual abort"
+      ]
+    },
+    {
+      "id": "CC-02",
+      "name": "worker_outage",
+      "drill": "DRILL-payout-worker-down.md",
+      "runbook": "RUNBOOK-payout-worker-offline",
+      "readiness": "PARTIAL",
+      "gaps": [
+        "not_externally_certified"
+      ],
+      "detection_scripts": [
+        "scripts/operational/watchdog-runtime-health.js",
+        "scripts/analytics/runtime-anomaly-detector.js"
+      ],
+      "abort_conditions": [
+        "P0 unresolved",
+        "financial_proof INVALID",
+        "manual abort"
+      ]
+    },
+    {
+      "id": "CC-03",
+      "name": "webhook_flood",
+      "drill": "DRILL-webhook-flood.md",
+      "runbook": "RUNBOOK-flood-payout-webhook",
+      "readiness": "PARTIAL",
+      "gaps": [
+        "not_externally_certified"
+      ],
+      "detection_scripts": [
+        "scripts/operational/watchdog-runtime-health.js",
+        "scripts/analytics/runtime-anomaly-detector.js"
+      ],
+      "abort_conditions": [
+        "P0 unresolved",
+        "financial_proof INVALID",
+        "manual abort"
+      ]
+    },
+    {
+      "id": "CC-04",
+      "name": "payout_freeze",
+      "drill": "DRILL-ledger-duplicate.md",
+      "runbook": "FREEZE-GOVERNANCE-POLICY",
+      "readiness": "PARTIAL",
+      "gaps": [
+        "not_externally_certified"
+      ],
+      "detection_scripts": [
+        "scripts/operational/watchdog-runtime-health.js",
+        "scripts/analytics/runtime-anomaly-detector.js"
+      ],
+      "abort_conditions": [
+        "P0 unresolved",
+        "financial_proof INVALID",
+        "manual abort"
+      ]
+    },
+    {
+      "id": "CC-05",
+      "name": "backlog_explosion",
+      "drill": "DRILL-reconcile-stuck.md",
+      "runbook": "RUNBOOK-backlog-growth",
+      "readiness": "PARTIAL",
+      "gaps": [
+        "not_externally_certified"
+      ],
+      "detection_scripts": [
+        "scripts/operational/watchdog-runtime-health.js",
+        "scripts/analytics/runtime-anomaly-detector.js"
+      ],
+      "abort_conditions": [
+        "P0 unresolved",
+        "financial_proof INVALID",
+        "manual abort"
+      ]
+    },
+    {
+      "id": "CC-06",
+      "name": "deploy_corruption",
+      "drill": "DRILL-deploy-drift.md",
+      "runbook": "RUNBOOK-bundle-divergente",
+      "readiness": "PARTIAL",
+      "gaps": [
+        "not_externally_certified"
+      ],
+      "detection_scripts": [
+        "scripts/operational/watchdog-runtime-health.js",
+        "scripts/analytics/runtime-anomaly-detector.js"
+      ],
+      "abort_conditions": [
+        "P0 unresolved",
+        "financial_proof INVALID",
+        "manual abort"
+      ]
+    }
+  ],
+  "ready_count": 0,
+  "total": 6
+}

@@ -1,0 +1,82 @@
+{
+  "timestamp": "2026-05-19T11:12:15.466Z",
+  "mission": "V1.5-LIVE-CERTIFICATION-READINESS",
+  "mode": "readiness-assessment",
+  "overall_readiness": "READY",
+  "readiness_pct": 100,
+  "checklist": [
+    {
+      "id": "LC-01",
+      "name": "continuous_certification_script",
+      "path": "scripts/autonomous/external-certification-engine.js",
+      "pass": true,
+      "blocking": false
+    },
+    {
+      "id": "LC-02",
+      "name": "external_probes",
+      "path": "scripts/autonomous/external-monitoring-probe.js",
+      "pass": true,
+      "blocking": false
+    },
+    {
+      "id": "LC-03",
+      "name": "alert_routing_simulator",
+      "path": "scripts/autonomous/alert-routing-simulator.js",
+      "pass": true,
+      "blocking": false
+    },
+    {
+      "id": "LC-04",
+      "name": "ci_example_continuous",
+      "path": ".github/examples/continuous-verification-example.yml",
+      "pass": true,
+      "blocking": false
+    },
+    {
+      "id": "LC-05",
+      "name": "activation_gates",
+      "path": "scripts/activation/activation-gate-engine.js",
+      "pass": true,
+      "blocking": false
+    },
+    {
+      "id": "LC-06",
+      "name": "persistence_engine",
+      "path": "scripts/resilience/reliability-persistence-engine.js",
+      "pass": true,
+      "blocking": false
+    },
+    {
+      "id": "LC-07",
+      "name": "live_cert_model",
+      "path": "docs/resilience/certification/LIVE-CERTIFICATION-MODEL.md",
+      "pass": true,
+      "blocking": false
+    },
+    {
+      "id": "LC-08",
+      "name": "governance_snapshots",
+      "path": "docs/governance/snapshots/LATEST.json",
+      "optional": true,
+      "pass": true,
+      "blocking": false
+    }
+  ],
+  "blocking_count": 0,
+  "live_checks": {
+    "certification_runnable": true,
+    "probes_ok": false,
+    "financial_valid": true,
+    "ci_active": false,
+    "alert_routing_active": false,
+    "orchestration_active": false
+  },
+  "gaps": [
+    "CI workflows em .github/examples apenas — não ativos",
+    "Alert routing dry-run apenas",
+    "Orchestrator simulado"
+  ],
+  "revalidation_interval_recommended": "6h",
+  "expiry_policy": "certification invalidada se score < 85 ou P0"
+}

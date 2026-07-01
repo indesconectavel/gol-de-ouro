@@ -1,0 +1,67 @@
+{
+  "timestamp": "2026-05-19T11:16:58.221Z",
+  "mission": "V1.5-RELIABILITY-PERSISTENCE-ENGINE",
+  "mode": "local-files-only",
+  "entry_appended": {
+    "timestamp": "2026-05-19T11:16:58.217Z",
+    "operational_score": 90,
+    "resilience_score": 94,
+    "resilience_class": "HARDENED",
+    "external_certification": "EXTERNALLY_CERTIFIED",
+    "activation_decision": "REVIEW",
+    "anomaly_score": 17,
+    "availability": 100,
+    "trend_direction": "stable"
+  },
+  "history_path": "E:\\Chute de Ouro\\goldeouro-backend\\docs\\resilience\\persistence\\history\\reliability-evolution.jsonl",
+  "history_count": 2,
+  "statistics": {
+    "resilience": {
+      "avg": 85,
+      "latest": 94,
+      "first": 76,
+      "delta": 18,
+      "points": 2
+    },
+    "operational": {
+      "avg": 83,
+      "latest": 90,
+      "first": 76,
+      "delta": 14,
+      "points": 2
+    }
+  },
+  "trends": {
+    "degradation_trend": false,
+    "stabilization_trend": false,
+    "forecast": "insufficient_data"
+  },
+  "evolution_graph_data": [
+    {
+      "index": 0,
+      "t": "2026-05-19T11:15:57.398Z",
+      "resilience": 76,
+      "operational": 76,
+      "decision": "BLOCK"
+    },
+    {
+      "index": 1,
+      "t": "2026-05-19T11:16:58.217Z",
+      "resilience": 94,
+      "operational": 90,
+      "decision": "REVIEW"
+    }
+  ],
+  "certification_history": [
+    {
+      "t": "2026-05-19T11:15:57.398Z",
+      "cert": "INVALID",
+      "decision": "BLOCK"
+    },
+    {
+      "t": "2026-05-19T11:16:58.217Z",
+      "cert": "EXTERNALLY_CERTIFIED",
+      "decision": "REVIEW"
+    }
+  ]
+}

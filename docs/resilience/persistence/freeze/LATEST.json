@@ -1,0 +1,79 @@
+{
+  "timestamp": "2026-05-19T11:15:57.012Z",
+  "mission": "V1.5-FREEZE-GOVERNANCE-SIMULATOR",
+  "mode": "simulation-only",
+  "freeze_active_simulated": true,
+  "freeze_triggers": [
+    {
+      "reason": "BLOCK",
+      "gates": [
+        "G1_RUNTIME_SCORE",
+        "G3_EXTERNAL_CERT",
+        "G5_AVAILABILITY",
+        "G7: runtime INVALID",
+        "Tendência de degradação detectada"
+      ]
+    }
+  ],
+  "freeze_plan": {
+    "deploy": {
+      "frozen": true,
+      "simulated": true,
+      "until": "human_signoff + gates ALLOW"
+    },
+    "payout": {
+      "frozen": false,
+      "simulated": true,
+      "note": "Não altera env produção"
+    },
+    "workers": {
+      "frozen": false,
+      "pause_recommended": false
+    },
+    "reconcile": {
+      "frozen": false,
+      "monitor_only": true
+    },
+    "runtime_changes": {
+      "frozen": true,
+      "includes": [
+        "fly deploy",
+        "vercel promote",
+        "sql apply"
+      ]
+    }
+  },
+  "escalation": {
+    "P0": [
+      "ops-oncall",
+      "finance",
+      "incident-commander"
+    ],
+    "P1": [
+      "ops-oncall"
+    ],
+    "freeze_review": [
+      "ops-lead",
+      "deploy-owner"
+    ]
+  },
+  "rollback_strategy": {
+    "recommended": true,
+    "targets": {
+      "fly": "v461",
+      "sha": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634",
+      "bundle": "index-B6M2smS9.js"
+    },
+    "runbook": "docs/operational/templates/ROLLBACK-CHECKLIST.md",
+    "auto_execute": false
+  },
+  "recovery_conditions": [
+    "activation-gate decision === ALLOW",
+    "external_certification === EXTERNALLY_CERTIFIED",
+    "financial_proof === VALID",
+    "zero P0 alerts",
+    "post-freeze certification re-run"
+  ],
+  "gate_decision": "BLOCK",
+  "certification_invalidation": "invalidate_pending_deploy"
+}

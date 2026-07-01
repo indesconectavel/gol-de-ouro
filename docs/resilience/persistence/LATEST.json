@@ -1,0 +1,373 @@
+{
+  "timestamp": "2026-05-19T11:16:58.224Z",
+  "mission": "V1.5-CONSOLIDATED-RUN",
+  "mode": "read-only-dry-run",
+  "operational_state": "DEGRADED",
+  "resilience_state": "HARDENED",
+  "resilience_score": 94,
+  "activation_decision": "REVIEW",
+  "freeze_simulated": false,
+  "chaos_readiness": "READY",
+  "live_cert_readiness": "READY",
+  "live_readiness_pct": 100,
+  "external_certification": "EXTERNALLY_CERTIFIED",
+  "operational_score": 90,
+  "verdict": "PASS COM RESSALVAS",
+  "gates": {
+    "timestamp": "2026-05-19T11:16:58.110Z",
+    "mission": "V1.5-ACTIVATION-GATE-ENGINE",
+    "mode": "dry-run",
+    "decision": "REVIEW",
+    "gates_evaluated": {
+      "G1_RUNTIME_SCORE": {
+        "min": 85,
+        "weight": "critical"
+      },
+      "G2_FINANCIAL_PROOF": {
+        "required": "VALID",
+        "weight": "critical"
+      },
+      "G3_EXTERNAL_CERT": {
+        "required": "EXTERNALLY_CERTIFIED",
+        "weight": "critical"
+      },
+      "G4_ANOMALY": {
+        "max": 35,
+        "weight": "high"
+      },
+      "G5_AVAILABILITY": {
+        "min": 95,
+        "weight": "high"
+      },
+      "G6_NO_P0": {
+        "max_p0": 0,
+        "weight": "critical"
+      },
+      "G7_DRIFT_RUNTIME": {
+        "runtime_cert": "CERTIFIED",
+        "weight": "high"
+      }
+    },
+    "blockers": [],
+    "warnings": [
+      "Tendência de degradação detectada"
+    ],
+    "reasons": [],
+    "required_actions": [
+      "Revisar reliability-trend-analysis",
+      "Revisão humana ops + finance"
+    ],
+    "certification_impact": "human_signoff_required",
+    "inputs_summary": {
+      "operational_score": 90,
+      "external_certification": "EXTERNALLY_CERTIFIED",
+      "financial_proof": "VALID",
+      "anomaly_score": 17,
+      "availability": 100,
+      "p0_count": 0
+    },
+    "deploy_simulation": {
+      "allow_deploy": false,
+      "allow_payout_changes": true,
+      "freeze_recommended": false
+    }
+  },
+  "resilience": {
+    "timestamp": "2026-05-19T11:16:58.192Z",
+    "mission": "V1.5-PRODUCTION-RESILIENCE-ENGINE",
+    "mode": "read-only",
+    "resilience_score": 94,
+    "classification": "HARDENED",
+    "domains": {
+      "runtime_resilience": 97,
+      "financial_resilience": 95,
+      "operational_resilience": 90,
+      "recovery_readiness": 93,
+      "rollback_readiness": 90
+    },
+    "recovery": {
+      "mttr_estimate": "<1h",
+      "blast_radius": "low",
+      "rollback_capability": "documented"
+    },
+    "operational_state": "HEALTHY",
+    "external_certification": "EXTERNALLY_CERTIFIED"
+  },
+  "freeze": {
+    "timestamp": "2026-05-19T11:16:58.217Z",
+    "mission": "V1.5-FREEZE-GOVERNANCE-SIMULATOR",
+    "mode": "simulation-only",
+    "freeze_active_simulated": false,
+    "freeze_triggers": [],
+    "freeze_plan": {
+      "deploy": {
+        "frozen": false,
+        "simulated": true,
+        "until": "human_signoff + gates ALLOW"
+      },
+      "payout": {
+        "frozen": false,
+        "simulated": true,
+        "note": "Não altera env produção"
+      },
+      "workers": {
+        "frozen": false,
+        "pause_recommended": false
+      },
+      "reconcile": {
+        "frozen": false,
+        "monitor_only": true
+      },
+      "runtime_changes": {
+        "frozen": true,
+        "includes": [
+          "fly deploy",
+          "vercel promote",
+          "sql apply"
+        ]
+      }
+    },
+    "escalation": {
+      "P0": [
+        "ops-oncall",
+        "finance",
+        "incident-commander"
+      ],
+      "P1": [
+        "ops-oncall"
+      ],
+      "freeze_review": [
+        "ops-lead",
+        "deploy-owner"
+      ]
+    },
+    "rollback_strategy": {
+      "recommended": false,
+      "targets": {
+        "fly": "v461",
+        "sha": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634",
+        "bundle": "index-B6M2smS9.js"
+      },
+      "runbook": "docs/operational/templates/ROLLBACK-CHECKLIST.md",
+      "auto_execute": false
+    },
+    "recovery_conditions": [
+      "activation-gate decision === ALLOW",
+      "external_certification === EXTERNALLY_CERTIFIED",
+      "financial_proof === VALID",
+      "zero P0 alerts",
+      "post-freeze certification re-run"
+    ],
+    "gate_decision": "REVIEW",
+    "certification_invalidation": "human_signoff_required"
+  },
+  "persistence_summary": {
+    "history_count": 2,
+    "trends": {
+      "degradation_trend": false,
+      "stabilization_trend": false,
+      "forecast": "insufficient_data"
+    }
+  },
+  "chaos": {
+    "timestamp": "2026-05-19T11:16:58.216Z",
+    "mission": "V1.5-CONTROLLED-CHAOS-READINESS",
+    "mode": "documental",
+    "overall_readiness": "READY",
+    "prerequisites": {
+      "runbooks": true,
+      "watchdogs": true,
+      "freeze_policy": true,
+      "externally_certified": true
+    },
+    "scenarios": [
+      {
+        "id": "CC-01",
+        "name": "runtime_drift",
+        "drill": "DRILL-runtime-corruption.md",
+        "runbook": "RUNBOOK-runtime-drift",
+        "readiness": "READY",
+        "gaps": [],
+        "detection_scripts": [
+          "scripts/operational/watchdog-runtime-health.js",
+          "scripts/analytics/runtime-anomaly-detector.js"
+        ],
+        "abort_conditions": [
+          "P0 unresolved",
+          "financial_proof INVALID",
+          "manual abort"
+        ]
+      },
+      {
+        "id": "CC-02",
+        "name": "worker_outage",
+        "drill": "DRILL-payout-worker-down.md",
+        "runbook": "RUNBOOK-payout-worker-offline",
+        "readiness": "READY",
+        "gaps": [],
+        "detection_scripts": [
+          "scripts/operational/watchdog-runtime-health.js",
+          "scripts/analytics/runtime-anomaly-detector.js"
+        ],
+        "abort_conditions": [
+          "P0 unresolved",
+          "financial_proof INVALID",
+          "manual abort"
+        ]
+      },
+      {
+        "id": "CC-03",
+        "name": "webhook_flood",
+        "drill": "DRILL-webhook-flood.md",
+        "runbook": "RUNBOOK-flood-payout-webhook",
+        "readiness": "READY",
+        "gaps": [],
+        "detection_scripts": [
+          "scripts/operational/watchdog-runtime-health.js",
+          "scripts/analytics/runtime-anomaly-detector.js"
+        ],
+        "abort_conditions": [
+          "P0 unresolved",
+          "financial_proof INVALID",
+          "manual abort"
+        ]
+      },
+      {
+        "id": "CC-04",
+        "name": "payout_freeze",
+        "drill": "DRILL-ledger-duplicate.md",
+        "runbook": "FREEZE-GOVERNANCE-POLICY",
+        "readiness": "READY",
+        "gaps": [],
+        "detection_scripts": [
+          "scripts/operational/watchdog-runtime-health.js",
+          "scripts/analytics/runtime-anomaly-detector.js"
+        ],
+        "abort_conditions": [
+          "P0 unresolved",
+          "financial_proof INVALID",
+          "manual abort"
+        ]
+      },
+      {
+        "id": "CC-05",
+        "name": "backlog_explosion",
+        "drill": "DRILL-reconcile-stuck.md",
+        "runbook": "RUNBOOK-backlog-growth",
+        "readiness": "READY",
+        "gaps": [],
+        "detection_scripts": [
+          "scripts/operational/watchdog-runtime-health.js",
+          "scripts/analytics/runtime-anomaly-detector.js"
+        ],
+        "abort_conditions": [
+          "P0 unresolved",
+          "financial_proof INVALID",
+          "manual abort"
+        ]
+      },
+      {
+        "id": "CC-06",
+        "name": "deploy_corruption",
+        "drill": "DRILL-deploy-drift.md",
+        "runbook": "RUNBOOK-bundle-divergente",
+        "readiness": "READY",
+        "gaps": [],
+        "detection_scripts": [
+          "scripts/operational/watchdog-runtime-health.js",
+          "scripts/analytics/runtime-anomaly-detector.js"
+        ],
+        "abort_conditions": [
+          "P0 unresolved",
+          "financial_proof INVALID",
+          "manual abort"
+        ]
+      }
+    ],
+    "ready_count": 6,
+    "total": 6
+  },
+  "live": {
+    "timestamp": "2026-05-19T11:16:58.217Z",
+    "mission": "V1.5-LIVE-CERTIFICATION-READINESS",
+    "mode": "readiness-assessment",
+    "overall_readiness": "READY",
+    "readiness_pct": 100,
+    "checklist": [
+      {
+        "id": "LC-01",
+        "name": "continuous_certification_script",
+        "path": "scripts/autonomous/external-certification-engine.js",
+        "pass": true,
+        "blocking": false
+      },
+      {
+        "id": "LC-02",
+        "name": "external_probes",
+        "path": "scripts/autonomous/external-monitoring-probe.js",
+        "pass": true,
+        "blocking": false
+      },
+      {
+        "id": "LC-03",
+        "name": "alert_routing_simulator",
+        "path": "scripts/autonomous/alert-routing-simulator.js",
+        "pass": true,
+        "blocking": false
+      },
+      {
+        "id": "LC-04",
+        "name": "ci_example_continuous",
+        "path": ".github/examples/continuous-verification-example.yml",
+        "pass": true,
+        "blocking": false
+      },
+      {
+        "id": "LC-05",
+        "name": "activation_gates",
+        "path": "scripts/activation/activation-gate-engine.js",
+        "pass": true,
+        "blocking": false
+      },
+      {
+        "id": "LC-06",
+        "name": "persistence_engine",
+        "path": "scripts/resilience/reliability-persistence-engine.js",
+        "pass": true,
+        "blocking": false
+      },
+      {
+        "id": "LC-07",
+        "name": "live_cert_model",
+        "path": "docs/resilience/certification/LIVE-CERTIFICATION-MODEL.md",
+        "pass": true,
+        "blocking": false
+      },
+      {
+        "id": "LC-08",
+        "name": "governance_snapshots",
+        "path": "docs/governance/snapshots/LATEST.json",
+        "optional": true,
+        "pass": true,
+        "blocking": false
+      }
+    ],
+    "blocking_count": 0,
+    "live_checks": {
+      "certification_runnable": true,
+      "probes_ok": true,
+      "financial_valid": true,
+      "ci_active": false,
+      "alert_routing_active": false,
+      "orchestration_active": false
+    },
+    "gaps": [
+      "CI workflows em .github/examples apenas — não ativos",
+      "Alert routing dry-run apenas",
+      "Orchestrator simulado"
+    ],
+    "revalidation_interval_recommended": "6h",
+    "expiry_policy": "certification invalidada se score < 85 ou P0"
+  },
+  "resilience_hash": "004420232f97a07d44d057275af01308ec3e660e4e3f1793676f0fc5b0b15980"
+}
