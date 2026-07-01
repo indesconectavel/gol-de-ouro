@@ -12,7 +12,7 @@
 | **Data de congelamento** | 2026-07-01 |
 | **Tag Git** | `payment-engine-v1-certified` |
 | **Alias** | `ipe-v1-certified` |
-| **Commit** | `eb299d5` |
+| **Commit** | `eab1d74` |
 | **Branch** | `chore/f2-4e-2-mp-log` |
 | **Base de certificação** | P1.9 PASS |
 | **Base de productização** | P2.0A PASS |

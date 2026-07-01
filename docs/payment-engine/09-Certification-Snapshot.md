@@ -18,7 +18,7 @@
 | Congelamento | P2.0B |
 | App produção | `goldeouro-backend-v2` (Fly.io) |
 | Release Fly | v536 |
-| Commit | `eb299d5` |
+| Commit | `eab1d74` |
 | Branch | `chore/f2-4e-2-mp-log` |
 | Tag | `payment-engine-v1-certified` / `ipe-v1-certified` |
 

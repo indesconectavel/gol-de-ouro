@@ -14,7 +14,7 @@
 | Versão | V1 CERTIFICADA |
 | Status | Production Certified |
 | Tag Git | `payment-engine-v1-certified` |
-| Commit | `eb299d5` |
+| Commit | `eab1d74` |
 | Módulo | `src/finance/` |
 | Runtime | `server-fly.js` + `src/workers/payout-worker.js` |
 
