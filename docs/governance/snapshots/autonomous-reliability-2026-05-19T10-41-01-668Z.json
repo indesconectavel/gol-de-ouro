@@ -1,0 +1,749 @@
+{
+  "timestamp": "2026-05-19T10:41:01.667Z",
+  "mission": "V1.3-AUTONOMOUS-RELIABILITY-CHECK",
+  "mode": "read-only",
+  "reliability_state": "DEGRADED",
+  "continuous_certification": "CERTIFIED",
+  "operational_score": 97,
+  "verdict": "PASS COM RESSALVAS",
+  "scores": {
+    "timestamp": "2026-05-19T10:40:58.423Z",
+    "mission": "V1.3-RELIABILITY-SCORE-ENGINE",
+    "mode": "read-only",
+    "domain_scores": {
+      "operational_runtime": 100,
+      "operational_financial": 100,
+      "operational_security": 100,
+      "deploy_runtime": 86,
+      "workers": 100,
+      "backlog": 100,
+      "drift": 86
+    },
+    "consolidated": {
+      "reliability_score": 97,
+      "classification": "GREEN",
+      "weights": {
+        "runtime": 0.2,
+        "financial": 0.25,
+        "security": 0.2,
+        "drift": 0.15,
+        "workers": 0.1,
+        "backlog": 0.05,
+        "deploy_integrity": 0.05
+      }
+    },
+    "aggregated_risk": 28,
+    "trend": {
+      "history": [
+        {
+          "file": "verification-2026-05-19T10-24-23-526Z.json",
+          "timestamp": "2026-05-19T10:24:23.524Z",
+          "operational_score": 87,
+          "status": "YELLOW"
+        }
+      ],
+      "analysis": {
+        "direction": "stable",
+        "delta": 0,
+        "samples": 1
+      }
+    },
+    "issues_count": 2,
+    "top_issues": [
+      {
+        "severity": "medium",
+        "id": "DR-03",
+        "message": "Repo local diverge do runtime live"
+      },
+      {
+        "severity": "high",
+        "worker": "payout",
+        "message": "Heartbeats payout: 0 (mín 1)"
+      }
+    ],
+    "reliability_hash": "610837e70eff8fb442ffeca40f7637305f83682d6184313f3c87c710a2337d95"
+  },
+  "verification": {
+    "timestamp": "2026-05-19T10:40:55.337Z",
+    "mission": "V1.2E-CONTINUOUS-VERIFICATION",
+    "mode": "read-only",
+    "domains": {
+      "runtime": {
+        "timestamp": "2026-05-19T10:40:45.510Z",
+        "mission": "V1.2E-WATCHDOG-RUNTIME-HEALTH",
+        "mode": "read-only",
+        "baseline": {
+          "certRef": "V1.1G+V1.2A+V1.2B+V1.2C",
+          "gitCommit": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634",
+          "gitCommitShort": "a83c3cf",
+          "flyVersion": 461,
+          "playerBundle": "index-B6M2smS9.js"
+        },
+        "runtime": {
+          "checks": [
+            {
+              "id": "RT-01",
+              "name": "/meta",
+              "pass": true,
+              "weight": 10
+            },
+            {
+              "id": "RT-02",
+              "name": "SHA runtime vs certificado",
+              "pass": true,
+              "weight": 15
+            },
+            {
+              "id": "RT-03",
+              "name": "/health",
+              "pass": true,
+              "weight": 20
+            },
+            {
+              "id": "RT-04",
+              "name": "/health/workers",
+              "pass": true,
+              "weight": 10
+            },
+            {
+              "id": "RT-05",
+              "name": "Fly release certificada",
+              "pass": true,
+              "weight": 15
+            },
+            {
+              "id": "RT-06",
+              "name": "Bundle player",
+              "pass": true,
+              "weight": 10
+            }
+          ],
+          "issues": [],
+          "meta": {
+            "status": 200,
+            "gitCommit": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634"
+          },
+          "health": {
+            "status": 200,
+            "ok": true,
+            "body": {
+              "status": "ok",
+              "timestamp": "2026-05-19T10:40:56.684Z",
+              "version": "1.2.1",
+              "database": "connected",
+              "mercadoPago": "connected",
+              "contadorChutes": 436,
+              "ultimoGolDeOuro": 0
+            }
+          },
+          "workers": {
+            "status": 200,
+            "data": {
+              "payoutWorker": {
+                "enabledByEnv": true,
+                "payoutPixProcessingEnabled": true,
+                "note": "Flags do ambiente. Liveness real do processo payout_worker: filtrar fly logs por [PAYOUT][WORKER][HEARTBEAT] ou ciclos do worker."
+              }
+            }
+          },
+          "fly": {
+            "latest_version": 461,
+            "status": "complete",
+            "created_at": "2026-05-18T23:12:47Z"
+          },
+          "player": {
+            "https://www.goldeouro.lol": {
+              "status": 200,
+              "bundle": "index-B6M2smS9.js",
+              "baseline_match": true
+            },
+            "https://app.goldeouro.lol": {
+              "status": 200,
+              "bundle": "index-B6M2smS9.js",
+              "baseline_match": true
+            }
+          },
+          "score": 100,
+          "status": "GREEN"
+        },
+        "status": "GREEN",
+        "score": 100,
+        "issues": []
+      },
+      "financial": {
+        "timestamp": "2026-05-19T10:40:45.464Z",
+        "mission": "V1.2E-WATCHDOG-FINANCIAL-INTEGRITY",
+        "mode": "read-only",
+        "financial": {
+          "baseline": {
+            "approved_without_ledger": 34,
+            "pix_pending_old": 54,
+            "payout_confirmado": 0,
+            "dups_corr_tipo": 0,
+            "saldo_negativo": 0,
+            "falha_payout": 13,
+            "rollback": 14,
+            "reconcile_backlog_pending": 54,
+            "certRef": "V1.1G+V1.2A+V1.2B+V1.2C",
+            "gitCommit": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634",
+            "gitCommitShort": "a83c3cf",
+            "flyVersion": 461,
+            "playerBundle": "index-B6M2smS9.js",
+            "source": "V1-2A-RUNTIME-FINANCIAL-HEALTH-DATA-2026-05-18.json"
+          },
+          "metrics": {
+            "dups_corr_tipo": 0,
+            "saldo_negativo": 0,
+            "approved_without_ledger": 34,
+            "pix_pending_old": 54,
+            "payout_confirmado": 0,
+            "falha_payout": 13,
+            "rollback": 14,
+            "rollback_manual": 1,
+            "reconcile_backlog_pending": 54,
+            "saques_stuck": 0
+          },
+          "diff": {
+            "approved_without_ledger": 0,
+            "pix_pending_old": 0,
+            "falha_payout": 0,
+            "rollback": 0,
+            "dups_corr_tipo": 0,
+            "saldo_negativo": 0
+          },
+          "issues": [],
+          "checks": [
+            {
+              "id": "FIN-C01",
+              "pass": true,
+              "weight": 20
+            },
+            {
+              "id": "FIN-C02",
+              "pass": true,
+              "weight": 20
+            },
+            {
+              "id": "FIN-A01",
+              "pass": true,
+              "weight": 10
+            },
+            {
+              "id": "FIN-A02",
+              "pass": true,
+              "weight": 10
+            },
+            {
+              "id": "FIN-A03",
+              "pass": true,
+              "weight": 10
+            },
+            {
+              "id": "FIN-A04",
+              "pass": true,
+              "weight": 10
+            },
+            {
+              "id": "FIN-A05",
+              "pass": true,
+              "weight": 10
+            },
+            {
+              "id": "FIN-M01",
+              "pass": true,
+              "weight": 10
+            }
+          ],
+          "complete": true,
+          "score": 100,
+          "status": "GREEN",
+          "thresholds": {
+            "rollback_spike_delta": 2,
+            "falha_payout_spike_delta": 3,
+            "pending_old_days": 7
+          }
+        },
+        "status": "GREEN",
+        "score": 100,
+        "metrics": {
+          "dups_corr_tipo": 0,
+          "saldo_negativo": 0,
+          "approved_without_ledger": 34,
+          "pix_pending_old": 54,
+          "payout_confirmado": 0,
+          "falha_payout": 13,
+          "rollback": 14,
+          "rollback_manual": 1,
+          "reconcile_backlog_pending": 54,
+          "saques_stuck": 0
+        },
+        "diff_vs_baseline": {
+          "approved_without_ledger": 0,
+          "pix_pending_old": 0,
+          "falha_payout": 0,
+          "rollback": 0,
+          "dups_corr_tipo": 0,
+          "saldo_negativo": 0
+        },
+        "thresholds": {
+          "rollback_spike_delta": 2,
+          "falha_payout_spike_delta": 3,
+          "pending_old_days": 7
+        },
+        "issues": []
+      },
+      "security": {
+        "timestamp": "2026-05-19T10:40:41.196Z",
+        "mission": "V1.2E-WATCHDOG-SECURITY-SURFACE",
+        "mode": "read-only",
+        "security": {
+          "probes": [
+            {
+              "id": "SEC-01",
+              "route": "POST /api/payments/webhook",
+              "url": "https://goldeouro-backend-v2.fly.dev/api/payments/webhook",
+              "body": {
+                "action": "payment.updated",
+                "data": {
+                  "id": "000000000000000"
+                }
+              },
+              "status": 401,
+              "pass": true
+            },
+            {
+              "id": "SEC-02",
+              "route": "POST /webhooks/mercadopago",
+              "url": "https://goldeouro-backend-v2.fly.dev/webhooks/mercadopago",
+              "body": {
+                "type": "payment",
+                "data": {
+                  "id": "000000000000000"
+                }
+              },
+              "status": 401,
+              "pass": true
+            }
+          ],
+          "issues": [],
+          "checks": [
+            {
+              "id": "SEC-01",
+              "name": "POST /api/payments/webhook",
+              "pass": true,
+              "weight": 25
+            },
+            {
+              "id": "SEC-02",
+              "name": "POST /webhooks/mercadopago",
+              "pass": true,
+              "weight": 25
+            },
+            {
+              "id": "SEC-03",
+              "name": "Flood webhook rejected",
+              "pass": true,
+              "weight": 15
+            },
+            {
+              "id": "SEC-04",
+              "name": "Replay indicators",
+              "pass": true,
+              "weight": 10
+            },
+            {
+              "id": "SEC-05",
+              "name": "Endpoint inesperado não exposto",
+              "pass": true,
+              "weight": 5
+            }
+          ],
+          "fly_logs": {
+            "available": true,
+            "lines_sampled": 100,
+            "deposit_webhook_rejected": 4,
+            "withdraw_webhook_rejected": 4,
+            "payout_worker_heartbeat": 0,
+            "reconcile_worker_signals": 0,
+            "replay_indicators": 0,
+            "stuck_loop_hints": 0,
+            "error": null,
+            "webhook_rejected_total": 8
+          },
+          "headers_minimal": {
+            "note": "Probes usam apenas Content-Type; HMAC ausente deve resultar 401",
+            "hmac_drift": "Comparar taxa rejected vs baseline V1.2B em execução contínua"
+          },
+          "unexpected_endpoint_probe": {
+            "path": "/api/internal/nonexistent-probe-v12e",
+            "status": 404,
+            "pass": true
+          },
+          "score": 100,
+          "status": "GREEN"
+        },
+        "status": "GREEN",
+        "score": 100,
+        "probes": [
+          {
+            "id": "SEC-01",
+            "route": "POST /api/payments/webhook",
+            "url": "https://goldeouro-backend-v2.fly.dev/api/payments/webhook",
+            "body": {
+              "action": "payment.updated",
+              "data": {
+                "id": "000000000000000"
+              }
+            },
+            "status": 401,
+            "pass": true
+          },
+          {
+            "id": "SEC-02",
+            "route": "POST /webhooks/mercadopago",
+            "url": "https://goldeouro-backend-v2.fly.dev/webhooks/mercadopago",
+            "body": {
+              "type": "payment",
+              "data": {
+                "id": "000000000000000"
+              }
+            },
+            "status": 401,
+            "pass": true
+          }
+        ],
+        "issues": []
+      },
+      "drift": {
+        "source": "inline-v12e",
+        "issues": [
+          {
+            "severity": "medium",
+            "id": "DR-03",
+            "message": "Repo local diverge do runtime live"
+          }
+        ],
+        "checks": [
+          {
+            "id": "DR-01",
+            "pass": true,
+            "weight": 30
+          },
+          {
+            "id": "DR-02",
+            "pass": true,
+            "weight": 30
+          },
+          {
+            "id": "DR-03",
+            "pass": false,
+            "weight": 10
+          }
+        ],
+        "runtime_sha": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634",
+        "fly_version": 461,
+        "local_git_head": "d11906de8ae469d35aef2beec8306f7db65f4c2a",
+        "score": 86,
+        "status": "GREEN"
+      },
+      "workers": {
+        "fly_logs": {
+          "available": true,
+          "lines_sampled": 100,
+          "deposit_webhook_rejected": 6,
+          "withdraw_webhook_rejected": 6,
+          "payout_worker_heartbeat": 0,
+          "reconcile_worker_signals": 0,
+          "replay_indicators": 0,
+          "stuck_loop_hints": 0,
+          "error": null,
+          "webhook_rejected_total": 12
+        },
+        "payout_heartbeats": 0,
+        "reconcile_signals": 0,
+        "enabled": true,
+        "issues": [
+          {
+            "severity": "high",
+            "id": "WK-01",
+            "message": "Payout worker sem heartbeat na amostra Fly"
+          },
+          {
+            "severity": "medium",
+            "id": "WK-02",
+            "message": "Sem sinais reconcile worker na amostra (pode ser janela curta)"
+          }
+        ],
+        "checks": [
+          {
+            "id": "WK-01",
+            "pass": false,
+            "weight": 50
+          },
+          {
+            "id": "WK-02",
+            "pass": false,
+            "weight": 30
+          }
+        ],
+        "score": 0,
+        "status": "YELLOW"
+      },
+      "backlog": {
+        "reconcile_pending": 54,
+        "score": 100,
+        "status": "GREEN"
+      }
+    },
+    "consolidated": {
+      "operational_score": 87,
+      "status": "YELLOW",
+      "domain_scores": {
+        "runtime": 100,
+        "financial": 100,
+        "security": 100,
+        "drift": 86,
+        "workers": 0,
+        "backlog": 100,
+        "deploy_integrity": 86
+      },
+      "weights": {
+        "runtime": 0.2,
+        "financial": 0.25,
+        "security": 0.2,
+        "drift": 0.15,
+        "workers": 0.1,
+        "backlog": 0.05,
+        "deploy_integrity": 0.05
+      }
+    },
+    "operational_score": 87,
+    "status": "YELLOW",
+    "overall_severity": "YELLOW",
+    "verdict": "PASS COM RESSALVAS",
+    "top_issues": [
+      {
+        "severity": "high",
+        "id": "WK-01",
+        "message": "Payout worker sem heartbeat na amostra Fly"
+      },
+      {
+        "severity": "medium",
+        "id": "DR-03",
+        "message": "Repo local diverge do runtime live"
+      },
+      {
+        "severity": "medium",
+        "id": "WK-02",
+        "message": "Sem sinais reconcile worker na amostra (pode ser janela curta)"
+      }
+    ],
+    "issue_count": 3,
+    "v12c_integration": {
+      "source": "v1-2c",
+      "raw_tail": "}"
+    }
+  },
+  "certification": {
+    "timestamp": "2026-05-19T10:41:01.667Z",
+    "mission": "V1.3-RUNTIME-CERTIFICATION",
+    "mode": "read-only",
+    "baseline": {
+      "certRef": "V1.1G+V1.2A+V1.2B+V1.2C",
+      "gitCommit": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634",
+      "gitCommitShort": "a83c3cf",
+      "flyVersion": 461,
+      "playerBundle": "index-B6M2smS9.js"
+    },
+    "certification": "CERTIFIED",
+    "checks": {
+      "sha_runtime": true,
+      "fly_release": true,
+      "health_ok": true,
+      "workers_endpoint": true,
+      "bundle_player": true,
+      "webhooks_401": true,
+      "webhooks_hardened": true,
+      "drift_runtime_vs_cert": true,
+      "no_critical_runtime_issues": true
+    },
+    "failed_checks": [],
+    "fingerprint": {
+      "sha": "a83c3cffcc99",
+      "fly": 461,
+      "bundle": "index-B6M2smS9.js",
+      "health_version": "1.2.1",
+      "worker_flags": {
+        "payoutWorker": {
+          "enabledByEnv": true,
+          "payoutPixProcessingEnabled": true,
+          "note": "Flags do ambiente. Liveness real do processo payout_worker: filtrar fly logs por [PAYOUT][WORKER][HEARTBEAT] ou ciclos do worker."
+        }
+      },
+      "log_sample_lines": 100
+    },
+    "fingerprint_hash": "367e450b0db065c9",
+    "runtime_summary": {
+      "meta": {
+        "status": 200,
+        "gitCommit": "a83c3cffcc998ed3d1bd8d2e88619a9b03afb634"
+      },
+      "health": {
+        "ok": true,
+        "status": 200
+      },
+      "fly": {
+        "latest_version": 461,
+        "status": "complete",
+        "created_at": "2026-05-18T23:12:47Z"
+      },
+      "player": {
+        "https://www.goldeouro.lol": {
+          "status": 200,
+          "bundle": "index-B6M2smS9.js",
+          "baseline_match": true
+        },
+        "https://app.goldeouro.lol": {
+          "status": 200,
+          "bundle": "index-B6M2smS9.js",
+          "baseline_match": true
+        }
+      }
+    },
+    "drift_issues": [
+      {
+        "severity": "medium",
+        "id": "DR-03",
+        "message": "Repo local diverge do runtime live"
+      }
+    ],
+    "score": 100
+  },
+  "proof": {
+    "timestamp": "2026-05-19T10:40:45.464Z",
+    "mission": "V1.3-FINANCIAL-PROOF-ENGINE",
+    "mode": "read-only",
+    "proof_status": "VALID",
+    "financial_score": 100,
+    "proof_hash": "39ebf258a8ce7c33",
+    "snapshot_hash": "12b13db505b2f954b177df1c096d8997b39040c2b5183df5975b8069cab8183d",
+    "baseline_ref": "V1-2A-RUNTIME-FINANCIAL-HEALTH-DATA-2026-05-18.json",
+    "metrics": {
+      "dups_corr_tipo": 0,
+      "saldo_negativo": 0,
+      "approved_without_ledger": 34,
+      "pix_pending_old": 54,
+      "payout_confirmado": 0,
+      "falha_payout": 13,
+      "rollback": 14,
+      "rollback_manual": 1,
+      "reconcile_backlog_pending": 54,
+      "saques_stuck": 0
+    },
+    "delta_vs_baseline": {
+      "approved_without_ledger": 0,
+      "pix_pending_old": 0,
+      "falha_payout": 0,
+      "rollback": 0,
+      "dups_corr_tipo": 0,
+      "saldo_negativo": 0
+    },
+    "validations": [
+      {
+        "id": "FP-01",
+        "name": "duplicatas",
+        "pass": true,
+        "value": 0
+      },
+      {
+        "id": "FP-02",
+        "name": "saldo_negativo",
+        "pass": true,
+        "value": 0
+      },
+      {
+        "id": "FP-03",
+        "name": "approved_sem_ledger_stable",
+        "pass": true,
+        "value": 34,
+        "baseline": 34
+      },
+      {
+        "id": "FP-04",
+        "name": "pending_old_stable",
+        "pass": true,
+        "value": 54,
+        "baseline": 54
+      },
+      {
+        "id": "FP-05",
+        "name": "rollback_no_spike",
+        "pass": true,
+        "value": 14,
+        "delta": 0
+      },
+      {
+        "id": "FP-06",
+        "name": "falha_payout_no_spike",
+        "pass": true,
+        "value": 13,
+        "delta": 0
+      },
+      {
+        "id": "FP-07",
+        "name": "reconcile_backlog",
+        "pass": true,
+        "value": 54
+      },
+      {
+        "id": "FP-08",
+        "name": "saques_stuck",
+        "pass": true,
+        "value": 0
+      },
+      {
+        "id": "FP-09",
+        "name": "payout_anomaly",
+        "pass": true,
+        "note": "payout_confirmado histórico 0 documentado V1.2A"
+      }
+    ],
+    "failed_count": 0,
+    "ledger_consistency": {
+      "approved_without_ledger": 34,
+      "dups": 0,
+      "orphan_note": "validação completa órfãos via V1.2A PG quando disponível"
+    }
+  },
+  "incident_heuristics": [
+    {
+      "id": "IH-WK",
+      "severity": "P2",
+      "message": "Worker liveness inconclusivo",
+      "runbook": "docs/runbooks/workers/RUNBOOK-payout-worker-offline.md"
+    }
+  ],
+  "evidence_pack": {
+    "verification_summary": {
+      "score": 87,
+      "status": "YELLOW",
+      "verdict": "PASS COM RESSALVAS",
+      "issues": 3
+    },
+    "runtime_certification": "CERTIFIED",
+    "financial_proof": "VALID",
+    "proof_hash": "39ebf258a8ce7c33",
+    "snapshot_hash": "12b13db505b2f954b177df1c096d8997b39040c2b5183df5975b8069cab8183d",
+    "fingerprint_hash": "367e450b0db065c9",
+    "domain_scores": {
+      "operational_runtime": 100,
+      "operational_financial": 100,
+      "operational_security": 100,
+      "deploy_runtime": 86,
+      "workers": 100,
+      "backlog": 100,
+      "drift": 86
+    }
+  },
+  "reliability_hash": "93d45bd08a3e3d4aa80dfbc5b84e568065c27fdea0b2f5793f688a7ff572a097"
+}
