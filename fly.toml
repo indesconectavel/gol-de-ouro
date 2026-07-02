@@ -13,6 +13,12 @@ primary_region = "gru"
 app = "npm start"
 payout_worker = "node src/workers/payout-worker.js"
 
+# Worker PIX OUT: processo background sem HTTP — deve permanecer residente após deploy
+[[restart]]
+  policy = "always"
+  retries = 10
+  processes = ["payout_worker"]
+
 # ✅ ADICIONADO: Configuração de recursos (CPU/RAM)
 [compute]
   cpu_kind = "shared"
