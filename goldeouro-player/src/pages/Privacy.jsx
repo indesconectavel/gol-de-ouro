@@ -75,7 +75,7 @@ const Privacy = () => {
             Não vendemos suas informações pessoais. Podemos compartilhar dados apenas com:
           </p>
           <ul className="text-white/80 mb-4 list-disc list-inside space-y-2">
-            <li>Parceiros de pagamento (Mercado Pago)</li>
+            <li>Parceiros de pagamento autorizados</li>
             <li>Prestadores de serviços essenciais</li>
             <li>Autoridades competentes (quando exigido por lei)</li>
           </ul>

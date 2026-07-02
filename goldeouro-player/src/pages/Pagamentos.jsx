@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import InternalPageLayout from '../components/InternalPageLayout';
 import VersionBanner from '../components/VersionBanner';
 import apiClient from '../services/apiClient';
 import { API_ENDPOINTS } from '../config/api';
+
+const PAYMENT_STATUS_POLLING_INTERVAL_MS = 15000;
+const VALOR_POR_CHUTE = 1;
 
 const Pagamentos = () => {
   const navigate = useNavigate();
@@ -13,6 +16,13 @@ const Pagamentos = () => {
   const [pagamentos, setPagamentos] = useState([]);
   const [pagamentoAtual, setPagamentoAtual] = useState(null);
   const [copiado, setCopiado] = useState(false);
+  const qrSectionRef = useRef(null);
+
+  const scrollToQrSection = () => {
+    requestAnimationFrame(() => {
+      qrSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
 
   const valoresRecarga = [5, 10, 20, 50, 100, 200];
 
@@ -34,6 +44,46 @@ const Pagamentos = () => {
     carregarDados();
   }, [carregarDados]);
 
+  const consultarStatusPagamento = async (paymentId) => {
+    try {
+      if (!paymentId) return null;
+
+      const response = await apiClient.get(`${API_ENDPOINTS.PIX_STATUS}?paymentId=${paymentId}`, {
+        skipCache: true,
+      });
+
+      if (response.data?.data) {
+        if (response.data.data.status === 'approved') {
+          toast.success('Pagamento confirmado! Saldo atualizado.');
+          if (typeof apiClient.invalidateCache === 'function') {
+            apiClient.invalidateCache(API_ENDPOINTS.PROFILE);
+          }
+          carregarDados();
+        }
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error('Erro ao consultar status:', error);
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (!pagamentoAtual?.id) return undefined;
+    const status = String(pagamentoAtual.status || 'pending').toLowerCase();
+    if (status === 'approved') return undefined;
+
+    const paymentId = pagamentoAtual.payment_id || pagamentoAtual.id;
+    const interval = setInterval(async () => {
+      const updated = await consultarStatusPagamento(paymentId);
+      if (updated?.status === 'approved') {
+        setPagamentoAtual((prev) => (prev ? { ...prev, status: 'approved' } : prev));
+      }
+    }, PAYMENT_STATUS_POLLING_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [pagamentoAtual?.id, pagamentoAtual?.status]);
+
   const criarPagamentoPix = async () => {
     if (valorRecarga < 1) {
       toast.error('Valor mínimo de recarga é R$ 1,00');
@@ -50,11 +100,10 @@ const Pagamentos = () => {
       });
 
       if (response.data.success) {
-        // O backend retorna os dados em .data
-        console.log('🔍 [PIX] Dados recebidos do backend:', response.data.data);
         setPagamentoAtual(response.data.data);
-        toast.success('Pagamento PIX criado com sucesso!');
-        carregarDados(); // Recarregar dados
+        toast.success('Pagamento PIX criado! Escaneie o QR Code ou copie o código abaixo.');
+        carregarDados();
+        scrollToQrSection();
       } else {
         toast.error(response.data.message || 'Erro ao criar pagamento PIX');
       }
@@ -63,34 +112,6 @@ const Pagamentos = () => {
       toast.error('Erro ao criar pagamento PIX');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const consultarStatusPagamento = async (paymentId) => {
-    try {
-      if (!paymentId) {
-        console.error('ID do pagamento não fornecido');
-        toast.error('ID do pagamento não encontrado');
-        return;
-      }
-      
-      const token = localStorage.getItem('authToken');
-      const response = await apiClient.get(`${API_ENDPOINTS.PIX_STATUS}?paymentId=${paymentId}`, {
-        skipCache: true,
-      });
-
-      if (response.data) {
-        if (response.data.data.status === 'approved') {
-          toast.success('Pagamento aprovado! Saldo atualizado.');
-          if (typeof apiClient.invalidateCache === 'function') {
-            apiClient.invalidateCache(API_ENDPOINTS.PROFILE)
-          }
-          carregarDados();
-        }
-        return response.data.data;
-      }
-    } catch (error) {
-      console.error('Erro ao consultar status:', error);
     }
   };
 
@@ -109,11 +130,108 @@ const Pagamentos = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'approved': return '✓ Aprovado';
+      case 'approved': return '✓ Confirmado';
       case 'pending': return '⏳ Pendente';
       case 'rejected': return 'Rejeitado';
       default: return 'Desconhecido';
     }
+  };
+
+  const getPixPayload = (pagamento) =>
+    pagamento?.pix_copy_paste || pagamento?.pix_code || pagamento?.qr_code || '';
+
+  const renderPagamentoAtual = () => {
+    if (!pagamentoAtual) return null;
+
+    const pixPayload = getPixPayload(pagamentoAtual);
+    const qrImage = pagamentoAtual.qr_code_base64
+      ? `data:image/png;base64,${pagamentoAtual.qr_code_base64}`
+      : null;
+    const isApproved = String(pagamentoAtual.status || 'pending').toLowerCase() === 'approved';
+
+    return (
+      <div
+        ref={qrSectionRef}
+        className="bg-white/5 backdrop-blur-xl rounded-2xl border border-emerald-400/30 shadow-xl p-6 mb-6"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-white">Conclua seu pagamento PIX</h2>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${
+              isApproved
+                ? 'text-emerald-400 bg-emerald-500/20 border border-emerald-400/40'
+                : 'text-amber-400 bg-amber-500/20 border border-amber-400/40'
+            }`}
+          >
+            {isApproved ? '✓ Pagamento confirmado' : '⏳ Aguardando pagamento'}
+          </span>
+        </div>
+
+        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+          <div className="text-center mb-4">
+            <p className="text-3xl font-bold text-white mb-1">R$ {valorRecarga.toFixed(2)}</p>
+            <p className="text-sm text-white/50">Pagamento instantâneo · crédito automático após confirmação</p>
+          </div>
+
+          {!isApproved && qrImage && (
+            <div className="flex flex-col items-center mb-6">
+              <p className="text-sm text-white/80 mb-3 font-medium">Escaneie o QR Code no app do seu banco</p>
+              <img
+                src={qrImage}
+                alt="QR Code PIX para pagamento"
+                className="w-56 h-56 max-w-full rounded-xl border-4 border-white/20 bg-white p-2"
+              />
+            </div>
+          )}
+
+          {!isApproved && pixPayload && (
+            <div className="text-center mb-4">
+              <p className="text-sm text-white/80 mb-3 font-medium">Ou copie o código PIX Copia e Cola</p>
+              <div className="bg-white/10 p-4 rounded-xl border border-white/20">
+                <code className="text-xs sm:text-sm font-mono break-all text-white/90 block mb-4 bg-black/20 p-3 rounded-lg text-left">
+                  {pixPayload}
+                </code>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(pixPayload);
+                    setCopiado(true);
+                    setTimeout(() => setCopiado(false), 3000);
+                  }}
+                  className={`px-6 py-3 rounded-xl transition-all duration-200 font-semibold ${
+                    copiado
+                      ? 'bg-green-600/90 text-white'
+                      : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+                  }`}
+                >
+                  {copiado ? '✓ Código copiado!' : 'Copiar código PIX'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!isApproved && !pixPayload && pagamentoAtual.init_point && (
+            <div className="text-center">
+              <p className="text-sm text-white/80 mb-4">Continue o pagamento na página segura de pagamento PIX</p>
+              <a
+                href={pagamentoAtual.init_point}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold px-6 py-3 rounded-xl transition-all duration-200"
+              >
+                Continuar pagamento PIX
+              </a>
+            </div>
+          )}
+
+          {!isApproved && (
+            <p className="text-center text-xs text-white/50 mt-3">
+              O saldo será creditado automaticamente após a confirmação do pagamento.
+            </p>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -137,6 +255,8 @@ const Pagamentos = () => {
               </button>
             </div>
           </div>
+
+          {renderPagamentoAtual()}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recarga PIX - glass */}
@@ -191,7 +311,11 @@ const Pagamentos = () => {
                 disabled={loading || valorRecarga < 1}
                 className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
               >
-                {loading ? 'Criando Pagamento...' : `Garantir ${valorRecarga} chutes`}
+                {loading
+                  ? 'Gerando pagamento...'
+                  : `Garantir ${Math.floor(valorRecarga / VALOR_POR_CHUTE)} chute${
+                      Math.floor(valorRecarga / VALOR_POR_CHUTE) === 1 ? '' : 's'
+                    }`}
               </button>
             </div>
 
@@ -218,99 +342,6 @@ const Pagamentos = () => {
               </div>
             </div>
           </div>
-
-          {/* Pagamento Atual - glass */}
-          {pagamentoAtual && (
-            <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-xl p-6 mt-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-white">Pagamento PIX Criado</h2>
-                <span className="px-3 py-1 rounded-full text-xs font-medium text-amber-400 bg-amber-500/20 border border-amber-400/40">
-                  ⏳ Pendente
-                </span>
-              </div>
-              
-              <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                <div className="text-center mb-6">
-                  <p className="text-2xl font-bold text-white mb-1">
-                    R$ {valorRecarga.toFixed(2)}
-                  </p>
-                  <p className="text-sm text-white/50">
-                    ID: {pagamentoAtual.id}
-                  </p>
-                </div>
-
-                {(pagamentoAtual?.pix_code || pagamentoAtual?.qr_code || pagamentoAtual?.pix_copy_paste) && (
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg font-bold text-emerald-400 mb-4">
-                      ✅ Código PIX Gerado com Sucesso!
-                    </h3>
-                    <p className="text-sm text-white/80 mb-4 font-medium">
-                      Copie o código abaixo e cole no seu app bancário:
-                    </p>
-                    <div className="bg-white/10 p-4 rounded-xl border border-white/20">
-                      <code className="text-sm font-mono break-all text-white/90 block mb-4 bg-black/20 p-3 rounded-lg">
-                        {pagamentoAtual.pix_code || pagamentoAtual.qr_code || pagamentoAtual.pix_copy_paste}
-                      </code>
-                      <button
-                        onClick={() => {
-                          const pixCode = pagamentoAtual.pix_code || pagamentoAtual.qr_code || pagamentoAtual.pix_copy_paste;
-                          navigator.clipboard.writeText(pixCode);
-                          setCopiado(true);
-                          setTimeout(() => setCopiado(false), 3000);
-                        }}
-                        className={`px-6 py-3 rounded-xl transition-all duration-200 font-semibold ${
-                          copiado
-                            ? 'bg-green-600/90 text-white'
-                            : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
-                        }`}
-                      >
-                        {copiado ? '✅ Código copiado!' : '📋 Copiar código PIX'}
-                      </button>
-                    </div>
-                    <p className="text-sm text-white/60 mt-3">
-                      Abra o app do seu banco e cole o código PIX.
-                    </p>
-                  </div>
-                )}
-
-                {!pagamentoAtual.pix_code && !pagamentoAtual.qr_code && !pagamentoAtual.pix_copy_paste && (
-                  <div className="text-center mb-6">
-                    <h3 className="text-lg font-bold text-sky-400 mb-4">
-                      📧 PIX Enviado por Email!
-                    </h3>
-                    <p className="text-sm text-white/80 mb-4 font-medium">
-                      O código PIX foi enviado para seu email. Verifique sua caixa de entrada.
-                    </p>
-                    <div className="bg-white/10 p-4 rounded-xl border border-white/20">
-                      <p className="text-sm text-white/70">
-                        💡 Se não recebeu o email, verifique a pasta de spam ou lixeira.
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-              {/* Fallback - Link Mercado Pago (se não tiver QR Code) */}
-              {!pagamentoAtual.pix_code && !pagamentoAtual.qr_code_base64 && pagamentoAtual.init_point && (
-                <div className="text-center">
-                  <p className="text-sm text-white/80 mb-4">
-                    Clique no botão abaixo para realizar o pagamento PIX:
-                  </p>
-                  <a
-                    href={pagamentoAtual.init_point}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold px-6 py-3 rounded-xl transition-all duration-200"
-                  >
-                    🏦 Pagar com PIX - Mercado Pago
-                  </a>
-                  <p className="text-xs text-white/50 mt-2">
-                    Você será redirecionado para o Mercado Pago
-                  </p>
-                </div>
-              )}
-              </div>
-            </div>
-          )}
 
           {/* Histórico de Pagamentos - glass */}
           <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-xl p-6 mt-6">

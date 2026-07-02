@@ -15,8 +15,7 @@ const Withdraw = () => {
   const [formData, setFormData] = useState({
     amount: '',
     pixKey: '',
-    pixType: 'cpf',
-    cpfCnpj: ''
+    pixType: 'cpf'
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
@@ -92,10 +91,6 @@ const Withdraw = () => {
           email: data.email || '',
           cpf_cnpj: sanitizeDoc(data.cpf_cnpj)
         })
-        setFormData((prev) => ({
-          ...prev,
-          cpfCnpj: sanitizeDoc(data.cpf_cnpj)
-        }))
       } else {
              setBalance(0) // Fallback
       }
@@ -171,28 +166,10 @@ const Withdraw = () => {
       }
 
       const needsDoc = requiresDocByPixType(formData.pixType)
-      if (needsDoc) {
-        if (!docLooksValid(formData.cpfCnpj)) {
-          throw new Error('Para solicitar saque com essa chave Pix, cadastre seu CPF ou CNPJ.')
-        }
-
-        const nextDoc = sanitizeDoc(formData.cpfCnpj)
-        const currentDoc = sanitizeDoc(profileData.cpf_cnpj)
-        if (nextDoc !== currentDoc) {
-          if (!profileData.nome || !profileData.email) {
-            throw new Error('Não foi possível atualizar CPF/CNPJ no perfil. Atualize seu perfil e tente novamente.')
-          }
-          const profilePayload = {
-            nome: profileData.nome,
-            email: profileData.email,
-            cpf_cnpj: nextDoc
-          }
-          const profileRes = await apiClient.put(API_ENDPOINTS.PROFILE, profilePayload)
-          if (!profileRes.data?.success) {
-            throw new Error(profileRes.data?.message || 'Falha ao atualizar CPF/CNPJ no perfil.')
-          }
-          setProfileData((prev) => ({ ...prev, cpf_cnpj: nextDoc }))
-        }
+      if (needsDoc && !docLooksValid(profileData.cpf_cnpj)) {
+        throw new Error(
+          'Para solicitar saques, complete seus dados cadastrais antes de continuar.'
+        )
       }
 
       const payload = {
@@ -425,22 +402,18 @@ const Withdraw = () => {
               </div>
             </div>
 
-            {requiresDocByPixType(formData.pixType) && (
-              <div>
-                <label className="block text-white/80 text-sm font-medium mb-2">
-                  CPF ou CNPJ do Titular
-                </label>
-                <input
-                  type="text"
-                  value={formData.cpfCnpj}
-                  onChange={(e) => setFormData({ ...formData, cpfCnpj: sanitizeDoc(e.target.value) })}
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent backdrop-blur-lg"
-                  placeholder="Somente números (11 ou 14 dígitos)"
-                  required
-                />
-                <p className="text-white/60 text-xs mt-1">
-                  Obrigatório para saque com chave Pix e-mail, telefone ou aleatória.
+            {requiresDocByPixType(formData.pixType) && !docLooksValid(profileData.cpf_cnpj) && (
+              <div className="bg-amber-500/20 border border-amber-500/40 rounded-lg p-4 backdrop-blur-lg">
+                <p className="text-amber-200 text-sm">
+                  Para solicitar saques, complete seus dados cadastrais antes de continuar.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => navigate('/profile')}
+                  className="mt-3 text-sm font-semibold text-amber-300 hover:text-amber-200 underline"
+                >
+                  Ir para Meu Perfil
+                </button>
               </div>
             )}
 
@@ -485,7 +458,12 @@ const Withdraw = () => {
             {/* Botão de Envio */}
             <button
               type="submit"
-              disabled={isSubmitting || !formData.amount || !formData.pixKey || (requiresDocByPixType(formData.pixType) && !docLooksValid(formData.cpfCnpj))}
+              disabled={
+                isSubmitting ||
+                !formData.amount ||
+                !formData.pixKey ||
+                (requiresDocByPixType(formData.pixType) && !docLooksValid(profileData.cpf_cnpj))
+              }
               className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? (
