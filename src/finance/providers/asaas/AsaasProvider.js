@@ -6,16 +6,19 @@ const {
   isAsaasHttpEnabled,
   isAsaasConfigured,
   isAsaasPrimarySandboxMode,
+  isProductionNodeEnv,
   maskApiKeyPreview,
   maskPixKeyPreview,
   asaasLog
 } = require('./asaas-config');
+const { guardAsaasPixOutProduction } = require('../../config/asaas-pix-out-config');
 const { fetchMyAccount, createPixTransfer, getTransfer } = require('./asaas-http-client');
 const { handleAsaasWebhook } = require('./asaas-webhook-handler');
 const { validateAsaasWebhook, DECISION } = require('./asaas-webhook-validator');
 
 const STUB_PHASE = 'preparatory_stub_v1';
 const PRIMARY_SANDBOX_PAYOUT_PHASE = 'primary_sandbox_payout_v1';
+const PRIMARY_PRODUCTION_PAYOUT_PHASE = 'pix_out_production_http_v1';
 
 /**
  * Provider Asaas unificado (PIX IN + OUT + webhooks) — F4.2B stub.
@@ -180,6 +183,76 @@ const AsaasProvider = {
     if (guard) return guard;
 
     if (!isAsaasPrimarySandboxMode()) {
+      if (isProductionNodeEnv()) {
+        const productionGuard = guardAsaasPixOutProduction();
+        if (productionGuard) {
+          asaasLog('create_pix_withdraw_production_blocked', {
+            netAmount: input.netAmount ?? input.amount ?? null,
+            saqueId: input.saqueId ?? null,
+            error: productionGuard.error
+          });
+          return productionGuard;
+        }
+
+        const netAmount = Number(input.netAmount ?? input.amount);
+        const pixKey = input.pixKey;
+        const pixType = String(input.pixType || 'EMAIL').trim().toUpperCase();
+
+        if (!Number.isFinite(netAmount) || netAmount <= 0) {
+          return {
+            success: false,
+            error: 'ASAAS_PIX_OUT_INVALID_VALUE',
+            message: 'Valor líquido de saque inválido',
+            phase: PRIMARY_PRODUCTION_PAYOUT_PHASE
+          };
+        }
+
+        if (!pixKey) {
+          return {
+            success: false,
+            error: 'ASAAS_PIX_OUT_KEY_REQUIRED',
+            message: 'Chave Pix obrigatória',
+            phase: PRIMARY_PRODUCTION_PAYOUT_PHASE
+          };
+        }
+
+        const transferResult = await createPixTransfer({
+          value: netAmount,
+          pixAddressKey: pixKey,
+          pixAddressKeyType: pixType,
+          description: input.description || `Gol de Ouro saque ${input.saqueId || 'prod'}`,
+          externalReference: input.payoutExternalReference || input.saqueId || input.correlationId,
+          httpGate: 'pixOutProduction'
+        });
+
+        if (!transferResult.success) {
+          return {
+            ...transferResult,
+            phase: PRIMARY_PRODUCTION_PAYOUT_PHASE,
+            integratedInGolDeOuro: true,
+            provider: 'asaas'
+          };
+        }
+
+        asaasLog('production_pix_withdraw_http_sent', {
+          saqueId: input.saqueId ? String(input.saqueId).slice(0, 36) : null,
+          transferId: transferResult.transfer?.id
+            ? String(transferResult.transfer.id).slice(0, 24)
+            : null,
+          status: transferResult.transfer?.status ?? null,
+          pixKeyPreview: maskPixKeyPreview(pixKey)
+        });
+
+        return {
+          success: true,
+          provider: 'asaas',
+          providerRef: transferResult.transfer?.id ?? null,
+          transfer: transferResult.transfer,
+          httpStatus: transferResult.httpStatus,
+          phase: PRIMARY_PRODUCTION_PAYOUT_PHASE,
+          integratedInGolDeOuro: true
+        };
+      }
       asaasLog('create_pix_withdraw_blocked_stub', {
         netAmount: input.netAmount ?? input.amount ?? null,
         saqueId: input.saqueId ?? null

@@ -1,6 +1,6 @@
 // Worker dedicado para payout PIX (sem servidor HTTP)
 const { createClient } = require('@supabase/supabase-js');
-const { createPixWithdraw } = require('../../services/pix-mercado-pago');
+const { getHealthSnapshot } = require('../finance/factory/FinanceProviderFactory');
 const { processPendingWithdrawals } = require('../domain/payout/processPendingWithdrawals');
 
 const enabled = String(process.env.ENABLE_PIX_PAYOUT_WORKER || '').toLowerCase() === 'true';
@@ -24,8 +24,16 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
 }
 
 const payoutAccessToken = process.env.MERCADOPAGO_PAYOUT_ACCESS_TOKEN;
-if (!payoutAccessToken) {
-  console.error('❌ [PAYOUT][WORKER] Token de payout não configurado. Encerrando.');
+const health = getHealthSnapshot();
+const usesLegacyPayout = health.payoutProvider === 'mercadopago';
+
+if (usesLegacyPayout && !health.mercadoPagoPayout && !payoutAccessToken) {
+  console.error('❌ [PAYOUT][WORKER] Token de payout Mercado Pago não configurado. Encerrando.');
+  process.exit(1);
+}
+
+if (!usesLegacyPayout && !health.asaasPayoutConfigured && !process.env.ASAAS_API_KEY) {
+  console.error('❌ [PAYOUT][WORKER] ASAAS_API_KEY ausente para provider primário Asaas. Encerrando.');
   process.exit(1);
 }
 
@@ -76,8 +84,7 @@ async function runCycle() {
     const result = await processPendingWithdrawals({
       supabase,
       isDbConnected: !pingError,
-      payoutEnabled,
-      createPixWithdraw
+      payoutEnabled
     });
     if (result?.processed === false) {
       console.log('ℹ️ [PAYOUT][WORKER] Nenhum saque processado neste ciclo');

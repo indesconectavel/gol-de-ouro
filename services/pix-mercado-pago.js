@@ -10,10 +10,14 @@ const MP_CONFIG = {
 };
 
 const isConfigured = () => {
-  return !!(
-    MP_CONFIG.accessToken &&
-    (MP_CONFIG.accessToken.startsWith('APP_USR-') || MP_CONFIG.accessToken.startsWith('APP_USR_'))
-  );
+  const token = MP_CONFIG.accessToken;
+  if (!token || typeof token !== 'string') return false;
+  if (token.startsWith('APP_USR-') || token.startsWith('APP_USR_')) return true;
+  // Credencial de teste Payouts (painel: Test credentials) — válida com X-Test-Token em sandbox
+  if (token.startsWith('TEST-') && String(process.env.MP_PAYOUT_TEST_TOKEN || '').toLowerCase() === 'true') {
+    return true;
+  }
+  return false;
 };
 
 const loadPayoutPrivateKeyPem = () => {
@@ -195,10 +199,12 @@ const getTransactionIntent = async (intentId) => {
     if (!intentId || String(intentId).length > 128) {
       return { success: false, error: 'intentId inválido' };
     }
+    const testToken = String(process.env.MP_PAYOUT_TEST_TOKEN || '').toLowerCase() === 'true';
     const response = await axios.get(`${MP_CONFIG.baseUrl}/v1/transaction-intents/${encodeURIComponent(intentId)}`, {
       headers: {
         Authorization: `Bearer ${MP_CONFIG.accessToken}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        ...(testToken ? { 'X-Test-Token': 'true' } : {})
       },
       timeout: 15000
     });

@@ -19,6 +19,7 @@ const http = require('http');
 const crypto = require('crypto'); // ✅ Adicionado para geração segura de números aleatórios
 const { getTransactionIntent } = require('./services/pix-mercado-pago');
 const { PaymentEngine } = require('./src/payment-engine');
+const { getPublicPspSnapshot } = require('./src/finance/factory/FinanceProviderFactory');
 const { isAsaasTransferAuthWebhookEnabled } = require('./src/finance/config/asaas-transfer-auth-config');
 const {
   payoutCounters,
@@ -3438,6 +3439,10 @@ app.post('/webhooks/asaas', async (req, res) => {
     });
   }
   try {
+    console.log('[ASAAS][PAYMENT_WEBHOOK] ingress', {
+      event: req.body?.event,
+      paymentId: req.body?.payment?.id
+    });
     await processPaymentWebhookCompat({
       provider: 'asaas',
       req,
@@ -3843,6 +3848,7 @@ app.get('/health', async (req, res) => {
     version: '1.2.1',
     database: dbStatus ? 'connected' : 'disconnected',
     mercadoPago: mercadoPagoConnected ? 'connected' : 'disconnected',
+    paymentEngine: getPublicPspSnapshot(),
     contadorChutes: contadorChutesGlobal,
     ultimoGolDeOuro: ultimoGolDeOuro
   });
@@ -4077,6 +4083,7 @@ app.get('/meta', (req, res) => {
         build: '2025-10-21',
         gitCommit,
         environment: 'production',
+        paymentEngine: getPublicPspSnapshot(),
         compatibility: {
           minVersion: '1.0.0',
           supported: true
@@ -4509,6 +4516,11 @@ app.get('/api/fila/entrar', authenticateToken, async (req, res) => {
       console.log(`🌐 [SERVER] Ambiente: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📊 [SERVER] Supabase: ${dbConnected ? 'Conectado' : 'Desconectado'}`);
       console.log(`💳 [SERVER] Mercado Pago: ${mercadoPagoConnected ? 'Conectado' : 'Desconectado'}`);
+      try {
+        console.log('[PSP][BOOT]', JSON.stringify(getPublicPspSnapshot()));
+      } catch (bootPspErr) {
+        console.error('[PSP][BOOT] snapshot indisponível:', bootPspErr.message);
+      }
       console.log('✅ [SERVER] Sistema de monitoramento desabilitado temporariamente');
     });
     

@@ -12,6 +12,7 @@ const { resolvePaymentProvider, getHealthSnapshot } = require('../factory/Financ
  */
 async function createPixDeposit(input = {}) {
   const provider = resolvePaymentProvider();
+  console.log(`[PSP][PIX_IN_CREATE] provider=${provider.name} amount=${input.amount ?? input.value}`);
   const result = await provider.createPixDeposit(input);
   return {
     ...result,

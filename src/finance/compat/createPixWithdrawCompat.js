@@ -14,7 +14,12 @@ assertBootConfig();
  */
 async function createPixWithdrawCompat(amount, pixKey, pixKeyType, userId, saqueId, correlationId, options = {}) {
   const provider = resolvePayoutProvider();
-  return provider.requestPixPayout({
+  console.log('[PSP][PIX_OUT_CREATE]', {
+    provider: provider.name,
+    saqueId,
+    netAmount: amount
+  });
+  const result = await provider.requestPixPayout({
     netAmount: amount,
     pixKey,
     pixType: pixKeyType,
@@ -26,6 +31,10 @@ async function createPixWithdrawCompat(amount, pixKey, pixKeyType, userId, saque
     notificationUrl: options.notificationUrl,
     ownerIdentification: options.ownerIdentification
   });
+  return {
+    ...result,
+    provider: result?.provider || provider.name
+  };
 }
 
 module.exports = { createPixWithdrawCompat };

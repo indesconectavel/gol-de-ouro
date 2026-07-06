@@ -3,6 +3,8 @@
 const {
   isAsaasConfigured,
   isAsaasPixInHttpEnabled,
+  isAsaasPixInProductionHttpEnabled,
+  isAsaasPixInProductionHttpReady,
   isAsaasPixInEnabled,
   isAsaasSandboxPixInAllowed,
   maskApiKeyPreview,
@@ -10,7 +12,9 @@ const {
 } = require('./asaas-config');
 const {
   createSandboxCustomer,
+  createProductionCustomer,
   createPixPayment,
+  createProductionPixPayment,
   getPaymentPixQrCode,
   getPayment,
   SANDBOX_DEFAULT_PIX_VALUE,
@@ -19,10 +23,11 @@ const {
 const AsaasProvider = require('./AsaasProvider');
 
 const PIX_IN_PHASE = 'pix_in_sandbox_v1';
+const PIX_IN_PRODUCTION_PHASE = 'pix_in_production_v1';
 
 /**
  * Adapter Asaas → contrato PaymentProvider (PIX IN).
- * F4.2D: createPixChargeSandbox isolado — não wired na factory como default.
+ * F4.2D sandbox · P1.3F produção HTTP gated.
  */
 const AsaasPaymentProvider = {
   name: 'asaas',
@@ -33,6 +38,10 @@ const AsaasPaymentProvider = {
 
   isPixInSandboxReady() {
     return isAsaasPixInHttpEnabled() && isAsaasConfigured();
+  },
+
+  isPixInProductionReady() {
+    return isAsaasPixInProductionHttpReady();
   },
 
   async createPixChargeSandbox(input = {}) {
@@ -143,6 +152,105 @@ const AsaasPaymentProvider = {
     };
   },
 
+  async createPixChargeProduction(input = {}) {
+    if (!isAsaasPixInEnabled()) {
+      asaasLog('pix_in_blocked_disabled', { method: 'createPixChargeProduction' });
+      return {
+        success: false,
+        error: 'ASAAS_PIX_IN_DISABLED',
+        message: 'PIX IN Asaas bloqueado: ASAAS_PIX_IN_ENABLED=false',
+        financialEffect: false
+      };
+    }
+
+    if (!isAsaasPixInProductionHttpEnabled()) {
+      asaasLog('pix_in_blocked_production_http', {
+        method: 'createPixChargeProduction',
+        ready: isAsaasPixInProductionHttpReady()
+      });
+      return {
+        success: false,
+        error: isAsaasPixInProductionHttpReady()
+          ? 'ASAAS_PIX_IN_PRODUCTION_GATE_CLOSED'
+          : 'ASAAS_PIX_IN_PRODUCTION_HTTP_DISABLED',
+        message: isAsaasPixInProductionHttpReady()
+          ? 'PIX IN Asaas produção bloqueado: ASAAS_PRODUCTION_ENABLED=false'
+          : 'HTTP PIX IN produção indisponível: verifique ASAAS_ENABLED, ASAAS_ENV=production, ASAAS_PIX_IN_ENABLED e ASAAS_API_KEY',
+        financialEffect: false
+      };
+    }
+
+    const value = Number(input.value ?? input.amount);
+    let customerId = input.customerId || null;
+    let customerEphemeral = false;
+
+    if (!customerId) {
+      const customerResult = await createProductionCustomer({
+        userId: input.userId,
+        userName: input.userName,
+        userEmail: input.userEmail,
+        payerCpf: input.payerCpf,
+        externalReference: input.customerExternalReference
+      });
+      if (!customerResult.success) {
+        return { ...customerResult, financialEffect: false, phase: PIX_IN_PRODUCTION_PHASE };
+      }
+      customerId = customerResult.customerId;
+      customerEphemeral = customerResult.ephemeral === true;
+    }
+
+    const paymentResult = await createProductionPixPayment({
+      customerId,
+      value,
+      description: input.description,
+      externalReference: input.externalReference,
+      dueDate: input.dueDate
+    });
+
+    if (!paymentResult.success) {
+      return { ...paymentResult, financialEffect: false, phase: PIX_IN_PRODUCTION_PHASE };
+    }
+
+    const paymentId = paymentResult.payment?.id;
+    let qrResult = null;
+    if (paymentId) {
+      qrResult = await getPaymentPixQrCode(paymentId);
+    }
+
+    let statusResult = null;
+    if (paymentId) {
+      statusResult = await getPayment(paymentId);
+    }
+
+    asaasLog('pix_in_charge_created', {
+      phase: PIX_IN_PRODUCTION_PHASE,
+      paymentId: paymentId ? String(paymentId).slice(0, 24) : null,
+      status: paymentResult.payment?.status ?? null,
+      value,
+      externalReference: paymentResult.payment?.externalReference ?? null,
+      customerEphemeral,
+      qrAvailable: qrResult?.success === true && qrResult?.pixQrCode?.hasPayload === true
+    });
+
+    return {
+      success: true,
+      financialEffect: false,
+      phase: PIX_IN_PRODUCTION_PHASE,
+      customer: {
+        id: customerId,
+        ephemeral: customerEphemeral,
+        persistedInGolDeOuro: false
+      },
+      payment: paymentResult.payment,
+      pixQrCode: qrResult?.success ? qrResult.pixQrCode : null,
+      pixQrCodeRaw: qrResult?.success ? qrResult.data : null,
+      paymentStatus: statusResult?.success ? statusResult.payment : paymentResult.payment,
+      httpStatus: paymentResult.httpStatus,
+      baseUrl: paymentResult.baseUrl,
+      apiKeyPreview: maskApiKeyPreview(process.env.ASAAS_API_KEY)
+    };
+  },
+
   mapAsaasStatus(status) {
     const normalized = String(status || '').toUpperCase();
     if (normalized === 'PENDING' || normalized === 'AWAITING_PAYMENT') {
@@ -154,28 +262,7 @@ const AsaasPaymentProvider = {
     return String(status || 'pending').toLowerCase();
   },
 
-  async createPixDepositCharge(input = {}) {
-    return this.createPixDeposit(input);
-  },
-
-  async createPixDeposit(input = {}) {
-    if (!isAsaasPixInHttpEnabled()) {
-      return AsaasProvider.createPixDeposit(input);
-    }
-
-    const amount = Number(input.amount);
-    const externalReference =
-      input.externalReference || input.idempotencyKey || `goldeouro_${input.userId}_${Date.now()}`;
-
-    const result = await this.createPixChargeSandbox({
-      value: amount,
-      description: input.description || 'Depósito Gol de Ouro',
-      externalReference,
-      customerId: input.customerId,
-      customerExternalReference: input.userId ? `goldeouro_user_${input.userId}` : undefined,
-      dueDate: input.dueDate
-    });
-
+  _mapChargeToDepositResult(result, input, amount) {
     if (!result.success) {
       return {
         success: false,
@@ -209,35 +296,91 @@ const AsaasPaymentProvider = {
       qrCode: payload,
       qrCodeBase64: encodedImage || null,
       pixCopyPaste: payload,
-      externalReference: result.payment.externalReference || externalReference,
-      idempotencyKey: input.idempotencyKey || externalReference,
-      financialEffect: false
+      externalReference: result.payment.externalReference || input.externalReference,
+      idempotencyKey: input.idempotencyKey || input.externalReference,
+      financialEffect: false,
+      phase: result.phase
     };
   },
 
-  async getPixDepositStatus(providerRef) {
-    if (!isAsaasPixInHttpEnabled()) {
-      const result = await AsaasProvider.getTransactionStatus(providerRef, { kind: 'deposit' });
-      if (!result.success) {
-        return { success: false, error: result.error || result.message };
-      }
+  async createPixDepositCharge(input = {}) {
+    return this.createPixDeposit(input);
+  },
+
+  async createPixDeposit(input = {}) {
+    const amount = Number(input.amount);
+    const externalReference =
+      input.externalReference || input.idempotencyKey || `goldeouro_${input.userId}_${Date.now()}`;
+
+    console.log('[ASAAS][PIX_IN_CREATE]', {
+      amount,
+      externalReference,
+      productionHttp: isAsaasPixInProductionHttpEnabled(),
+      sandboxHttp: isAsaasPixInHttpEnabled()
+    });
+
+    const chargeInput = {
+      value: amount,
+      amount,
+      description: input.description || 'Depósito Gol de Ouro',
+      externalReference,
+      customerId: input.customerId,
+      customerExternalReference: input.userId ? `goldeouro_user_${input.userId}` : undefined,
+      userId: input.userId,
+      userName: input.userName,
+      userEmail: input.userEmail,
+      payerCpf: input.payerCpf,
+      dueDate: input.dueDate,
+      idempotencyKey: input.idempotencyKey
+    };
+
+    if (isAsaasPixInHttpEnabled()) {
+      const result = await this.createPixChargeSandbox(chargeInput);
+      return this._mapChargeToDepositResult(result, chargeInput, amount);
+    }
+
+    if (isAsaasPixInProductionHttpEnabled()) {
+      const result = await this.createPixChargeProduction(chargeInput);
+      return this._mapChargeToDepositResult(result, chargeInput, amount);
+    }
+
+    if (isAsaasPixInProductionHttpReady()) {
+      asaasLog('pix_in_blocked_production_gate', { method: 'createPixDeposit' });
       return {
-        success: true,
-        status: result.data?.status,
-        statusDetail: result.data?.statusDetail,
-        amount: result.data?.amount
+        success: false,
+        error: 'ASAAS_PIX_IN_PRODUCTION_GATE_CLOSED',
+        message: 'PIX IN Asaas produção bloqueado: ASAAS_PRODUCTION_ENABLED=false',
+        provider: 'asaas',
+        financialEffect: false
       };
     }
 
-    const result = await getPayment(providerRef);
+    return AsaasProvider.createPixDeposit(input);
+  },
+
+  async getPixDepositStatus(providerRef) {
+    if (isAsaasPixInHttpEnabled() || isAsaasPixInProductionHttpEnabled()) {
+      const result = await getPayment(providerRef);
+      if (!result.success) {
+        return { success: false, error: result.error || result.message };
+      }
+
+      return {
+        success: true,
+        status: result.payment?.status,
+        amount: result.payment?.value
+      };
+    }
+
+    const result = await AsaasProvider.getTransactionStatus(providerRef, { kind: 'deposit' });
     if (!result.success) {
       return { success: false, error: result.error || result.message };
     }
-
     return {
       success: true,
-      status: result.payment?.status,
-      amount: result.payment?.value
+      status: result.data?.status,
+      statusDetail: result.data?.statusDetail,
+      amount: result.data?.amount
     };
   },
 

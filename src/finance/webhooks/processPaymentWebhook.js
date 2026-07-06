@@ -215,6 +215,11 @@ async function processPaymentWebhook(input = {}) {
   }
 
   if (provider === 'asaas') {
+    console.log('[ASAAS][PAYMENT_WEBHOOK]', {
+      event: body?.event,
+      paymentId: body?.payment?.id || body?.id
+    });
+
     const controlledCreditRequested =
       String(process.env.PAYMENT_WEBHOOK_CONTROLLED_CREDIT || '').trim() === '1' ||
       String(process.env.ASAAS_CONTROLLED_CREDIT_ENABLED || '').trim().toLowerCase() === 'true';
@@ -423,6 +428,10 @@ async function processPaymentWebhook(input = {}) {
         status: credited ? 'approved' : 'idempotent',
         provider
       });
+      if (credited) {
+        console.log('[WALLET_CREDIT][ASAAS]', { payment_id: String(lookupId) });
+        console.log('[LEDGER_WRITE][DEPOSITO][ASAAS]', { payment_id: String(lookupId) });
+      }
 
       return {
         success: true,

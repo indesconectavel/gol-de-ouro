@@ -1,6 +1,28 @@
 const crypto = require('crypto');
 const { isConfigured: isPixPayoutConfigured } = require('../../../services/pix-mercado-pago');
 const { createPixWithdrawCompat } = require('../../finance/compat/createPixWithdrawCompat');
+const { getHealthSnapshot } = require('../../finance/factory/FinanceProviderFactory');
+const {
+  normalizePayoutResult,
+  buildProviderPersistencePatch,
+  isPayoutTerminalFailure,
+  buildPayoutRollbackMotivo,
+  buildPayoutSuccessFields
+} = require('./payoutProviderPersistence');
+
+function isPayoutProviderConfigured() {
+  const health = getHealthSnapshot();
+  if (health.payoutProvider === 'mercadopago') {
+    return isPixPayoutConfigured();
+  }
+  if (health.payoutProvider === 'asaas') {
+    return health.asaasPayoutConfigured === true;
+  }
+  if (health.payoutProvider === 'celcoin') {
+    return health.celcoinPayoutConfigured === true;
+  }
+  return false;
+}
 
 const payoutCounters = { success: 0, fail: 0 };
 
@@ -1250,7 +1272,7 @@ const logAdminPayoutSend = (event, payload) => {
 /**
  * Dispara PIX Out para um saque (worker ou admin). Requer saque em `pendente` para o lock.
  */
-const processSingleWithdrawalPayout = async ({ supabase, saque, createPixWithdraw, source = 'worker' }) => {
+const processSingleWithdrawalPayout = async ({ supabase, saque, source = 'worker' }) => {
   const logPrefix = source === 'admin' ? '[PAYOUT][ADMIN]' : '[PAYOUT][WORKER]';
   const saqueId = saque.id;
   const userId = saque.usuario_id;
@@ -1365,6 +1387,7 @@ const processSingleWithdrawalPayout = async ({ supabase, saque, createPixWithdra
   const payoutExternalReference = refRes.ref;
   const idempotencyKey = `idem-saque-${saqueId}`;
   const notificationUrl = process.env.MP_PAYOUT_WEBHOOK_URL || null;
+  const payoutHealth = getHealthSnapshot();
 
   console.log(`🟦 ${logPrefix} Payout iniciado`, {
     saqueId,
@@ -1372,7 +1395,9 @@ const processSingleWithdrawalPayout = async ({ supabase, saque, createPixWithdra
     correlationId,
     amount,
     netAmount,
-    payoutExternalReference
+    payoutExternalReference,
+    provider: payoutHealth.payoutProvider,
+    legacyFallback: payoutHealth.legacyFallbackActive === true
   });
 
   const payoutResult = await createPixWithdrawCompat(netAmount, pixKey, pixType, userId, saqueId, correlationId, {
@@ -1382,22 +1407,11 @@ const processSingleWithdrawalPayout = async ({ supabase, saque, createPixWithdra
     ownerIdentification: ownerRes.owner
   });
 
-  const mpSan = payoutResult?.data?.sanitized ?? null;
-  const mpId = payoutResult?.data?.id ?? null;
-  const mpSt = payoutResult?.data?.status ?? null;
+  const normalized = normalizePayoutResult(payoutResult, payoutHealth.payoutProvider);
+  const providerPatch = buildProviderPersistencePatch(normalized);
+  await supabase.from('saques').update(providerPatch).eq('id', saqueId);
 
-  const mpPatch = {
-    mp_payout_raw: mpSan,
-    last_mp_sync_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
-  if (mpId) mpPatch.mp_transaction_intent_id = mpId;
-  if (mpSt) mpPatch.mp_payout_status = mpSt;
-  await supabase.from('saques').update(mpPatch).eq('id', saqueId);
-
-  const terminalFail =
-    payoutResult?.success === false ||
-    ['rejected', 'cancelled', 'failed', 'error'].includes(String(mpSt || '').toLowerCase());
+  const terminalFail = isPayoutTerminalFailure(normalized, payoutResult);
 
   if (terminalFail) {
     await createLedgerEntry({
@@ -1415,23 +1429,25 @@ const processSingleWithdrawalPayout = async ({ supabase, saque, createPixWithdra
       correlationId,
       amount,
       fee,
-      motivo: payoutResult?.success === false ? 'payout_mp_erro' : `payout_mp_${mpSt}`
+      motivo: buildPayoutRollbackMotivo(normalized, payoutResult)
     });
     payoutCounters.fail++;
     if (!rb.success) {
-      console.error(`❌ ${logPrefix} rollback após falha MP não concluiu`, rb);
+      console.error(`❌ ${logPrefix} rollback após falha payout não concluiu`, rb);
     }
     console.error(`❌ ${logPrefix} payout falhou`, {
       saqueId,
       userId,
       correlationId,
-      mp_status: mpSt,
+      provider: normalized.provider,
+      payout_status: normalized.status,
       erro: payoutResult?.error
     });
     return {
       success: false,
       code: 'MP_TERMINAL_FAIL',
-      error: payoutResult?.error || mpSt || 'payout falhou'
+      error: payoutResult?.error || normalized.status || 'payout falhou',
+      provider: normalized.provider
     };
   }
 
@@ -1450,15 +1466,15 @@ const processSingleWithdrawalPayout = async ({ supabase, saque, createPixWithdra
       saqueId,
       userId,
       correlationId,
-      mp_status: payoutResult?.data?.status || 'unknown'
+      provider: normalized.provider,
+      payout_status: normalized.status || 'unknown'
     });
     return {
       success: true,
       statusFinal: 'aguardando_confirmacao',
       awaiting_confirmation: true,
-      mp_transaction_intent_id: mpId,
-      mp_payout_status: mpSt,
-      payout_external_reference: payoutExternalReference
+      payout_external_reference: payoutExternalReference,
+      ...buildPayoutSuccessFields(normalized)
     };
   }
 
@@ -1474,7 +1490,6 @@ const approveAndSendWithdrawAdmin = async ({
   supabase,
   saqueId,
   adminActorId,
-  createPixWithdraw,
   payoutEnabled
 }) => {
   const w = (payload) => (adminActorId ? { ...payload, admin_actor_id: adminActorId } : payload);
@@ -1483,13 +1498,17 @@ const approveAndSendWithdrawAdmin = async ({
     logAdminPayoutSend('blocked_payout_disabled', w({ withdrawal_id: saqueId, code: 'PAYOUT_DISABLED' }));
     return { success: false, code: 'PAYOUT_DISABLED', error: new Error('PAYOUT_PIX_ENABLED=false') };
   }
-  if (typeof createPixWithdraw !== 'function') {
-    return { success: false, code: 'MP_NOT_CONFIGURED', error: new Error('createPixWithdraw ausente') };
+  if (!isPayoutProviderConfigured()) {
+    logAdminPayoutSend('blocked_payout_not_configured', w({ withdrawal_id: saqueId, code: 'PAYOUT_NOT_CONFIGURED' }));
+    return { success: false, code: 'PAYOUT_NOT_CONFIGURED', error: new Error('Provider de payout não configurado') };
   }
-  if (!isPixPayoutConfigured()) {
-    logAdminPayoutSend('blocked_mp_not_configured', w({ withdrawal_id: saqueId, code: 'MP_NOT_CONFIGURED' }));
-    return { success: false, code: 'MP_NOT_CONFIGURED', error: new Error('Token payout MP não configurado') };
-  }
+
+  const payoutHealth = getHealthSnapshot();
+  logAdminPayoutSend('compat_payout_start', w({
+    withdrawal_id: saqueId,
+    provider: payoutHealth.payoutProvider,
+    legacy_fallback: payoutHealth.legacyFallbackActive === true
+  }));
 
   const { data: saqueRow, error: selErr } = await supabase
     .from('saques')
@@ -1569,7 +1588,6 @@ const approveAndSendWithdrawAdmin = async ({
   const payoutResult = await processSingleWithdrawalPayout({
     supabase,
     saque: saqueRow,
-    createPixWithdraw,
     source: 'admin'
   });
 
@@ -1597,8 +1615,7 @@ const approveAndSendWithdrawAdmin = async ({
 const processPendingWithdrawals = async ({
   supabase,
   isDbConnected,
-  payoutEnabled,
-  createPixWithdraw
+  payoutEnabled
 } = {}) => {
   try {
     console.log('🟦 [PAYOUT][WORKER] Início do ciclo');
@@ -1631,9 +1648,20 @@ const processPendingWithdrawals = async ({
       return { success: false, message: 'Supabase indisponível' };
     }
 
-    if (typeof createPixWithdraw !== 'function') {
-      throw new Error('createPixWithdraw não fornecido');
+    if (!isPayoutProviderConfigured()) {
+      console.warn('⚠️ [PAYOUT][WORKER] Provider de payout não configurado');
+      console.log('🟦 [PAYOUT][WORKER] Resumo', {
+        payouts_sucesso: payoutCounters.success,
+        payouts_falha: payoutCounters.fail
+      });
+      return { success: false, message: 'Provider de payout não configurado' };
     }
+
+    const payoutHealth = getHealthSnapshot();
+    console.log('🟦 [PAYOUT][WORKER] Compat layer ativo', {
+      provider: payoutHealth.payoutProvider,
+      legacy_fallback: payoutHealth.legacyFallbackActive === true
+    });
 
     const heal = await healStuckProcessingWithRollback(supabase);
     console.log('[AUTO-HEAL] Resultado do ciclo', heal);
@@ -1684,7 +1712,6 @@ const processPendingWithdrawals = async ({
     const singleResult = await processSingleWithdrawalPayout({
       supabase,
       saque,
-      createPixWithdraw,
       source: 'worker'
     });
 

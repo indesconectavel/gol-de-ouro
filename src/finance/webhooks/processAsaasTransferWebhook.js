@@ -457,6 +457,33 @@ async function processAsaasTransferWebhook(input = {}) {
     }
   }
 
+  const recoverySource = input.recoverySource || 'webhook';
+  if (transferSt === ASAAS_TRANSFER_STATUSES.DONE) {
+    console.log(
+      `[ASAAS][TRANSFER_DONE] ${JSON.stringify({
+        saqueId: saqueRow.id,
+        transferId: event.transferId,
+        externalReference: event.externalReference,
+        source: recoverySource,
+        idempotent: ledgerResult.ledgerIdempotent === true || ledgerResult.ledgerDeduped === true,
+        financialEffect: ledgerResult.financialEffect === true
+      })}`
+    );
+  }
+  if (TERMINAL_FAIL.has(transferSt)) {
+    console.log(
+      `[ASAAS][TRANSFER_FAILED] ${JSON.stringify({
+        saqueId: saqueRow.id,
+        transferId: event.transferId,
+        externalReference: event.externalReference,
+        transferStatus: transferSt,
+        source: recoverySource,
+        rollbackApplied: ledgerResult.rollbackApplied === true,
+        idempotent: ledgerResult.ledgerIdempotent === true || ledgerResult.ledgerDeduped === true
+      })}`
+    );
+  }
+
   return {
     success: true,
     provider: 'asaas',

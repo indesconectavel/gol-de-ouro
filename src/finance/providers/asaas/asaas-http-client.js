@@ -5,8 +5,11 @@ const {
   getAsaasBaseUrl,
   isAsaasHttpEnabled,
   isAsaasPixInHttpEnabled,
+  isAsaasPixInProductionHttpEnabled,
   isAsaasPixOutHttpEnabled,
   isAsaasTransferAuthHttpEnabled,
+  isAsaasPixOutProductionHttpEnabled,
+  isAsaasPayoutReconcileReadEnabled,
   maskApiKeyPreview,
   maskPixPayloadPreview,
   maskPixKeyPreview,
@@ -23,6 +26,8 @@ const FINANCE_BALANCE_PATH = '/finance/balance';
 const SANDBOX_MAX_PIX_VALUE = 10;
 const SANDBOX_MIN_PIX_VALUE = 5;
 const SANDBOX_DEFAULT_PIX_VALUE = 5;
+const PRODUCTION_MIN_PIX_VALUE = 1;
+const PRODUCTION_MAX_PIX_VALUE = 1000;
 
 function sanitizeApiError(rawData, httpStatus, fallbackMessage) {
   const firstError =
@@ -53,34 +58,52 @@ async function asaasApiRequest({ method, path, body, httpGate = 'read' }) {
   const httpEnabled =
     httpGate === 'pixIn'
       ? isAsaasPixInHttpEnabled()
-        : httpGate === 'pixOut'
-          ? isAsaasPixOutHttpEnabled()
-          : httpGate === 'sandboxFunding'
+      : httpGate === 'pixInProduction'
+        ? isAsaasPixInProductionHttpEnabled()
+        : httpGate === 'pixOutProduction'
+          ? isAsaasPixOutProductionHttpEnabled()
+          : httpGate === 'pixOut'
             ? isAsaasPixOutHttpEnabled()
-            : httpGate === 'transferAuth'
-              ? isAsaasTransferAuthHttpEnabled()
-              : isAsaasHttpEnabled();
+            : httpGate === 'sandboxFunding'
+              ? isAsaasPixOutHttpEnabled()
+              : httpGate === 'transferAuth'
+                ? isAsaasTransferAuthHttpEnabled()
+                : httpGate === 'payoutReconcile'
+                  ? isAsaasPayoutReconcileReadEnabled()
+                  : isAsaasHttpEnabled();
   if (!httpEnabled) {
     const error =
       httpGate === 'pixIn'
         ? 'ASAAS_PIX_IN_HTTP_DISABLED'
-        : httpGate === 'pixOut'
-          ? 'ASAAS_PIX_OUT_HTTP_DISABLED'
-          : httpGate === 'sandboxFunding'
-            ? 'ASAAS_SANDBOX_FUNDING_DISABLED'
-            : httpGate === 'transferAuth'
-              ? 'ASAAS_TRANSFER_AUTH_HTTP_DISABLED'
-              : 'ASAAS_HTTP_DISABLED';
+        : httpGate === 'pixInProduction'
+          ? 'ASAAS_PIX_IN_PRODUCTION_HTTP_DISABLED'
+          : httpGate === 'pixOutProduction'
+            ? 'ASAAS_PIX_OUT_PRODUCTION_HTTP_DISABLED'
+            : httpGate === 'pixOut'
+              ? 'ASAAS_PIX_OUT_HTTP_DISABLED'
+              : httpGate === 'sandboxFunding'
+                ? 'ASAAS_SANDBOX_FUNDING_DISABLED'
+                : httpGate === 'transferAuth'
+                  ? 'ASAAS_TRANSFER_AUTH_HTTP_DISABLED'
+                  : httpGate === 'payoutReconcile'
+                    ? 'ASAAS_PAYOUT_RECONCILE_READ_DISABLED'
+                    : 'ASAAS_HTTP_DISABLED';
     const message =
       httpGate === 'pixIn'
         ? 'HTTP PIX IN bloqueado: verifique ASAAS_PIX_IN_ENABLED, ALLOW_ASAAS_SANDBOX_PIX_IN e guards sandbox'
-        : httpGate === 'pixOut'
-          ? 'HTTP PIX OUT bloqueado: verifique ASAAS_PIX_OUT_ENABLED, ALLOW_ASAAS_SANDBOX_PIX_OUT e guards sandbox'
-          : httpGate === 'sandboxFunding'
-            ? 'Funding sandbox bloqueado: verifique guards PIX OUT sandbox (F4.2G.1)'
-            : httpGate === 'transferAuth'
-              ? 'Investigação auth transfer bloqueada: ASAAS_TRANSFER_AUTH_TEST=1 + guards PIX OUT'
-              : 'HTTP Asaas bloqueado: ASAAS_ENABLED=false, ALLOW_ASAAS_SANDBOX_AUTH=0 ou ASAAS_ENV≠sandbox';
+        : httpGate === 'pixInProduction'
+          ? 'HTTP PIX IN produção bloqueado: verifique ASAAS_ENABLED, ASAAS_ENV=production, ASAAS_PIX_IN_ENABLED, ASAAS_API_KEY e ASAAS_PRODUCTION_ENABLED'
+          : httpGate === 'pixOutProduction'
+            ? 'HTTP PIX OUT produção bloqueado: verifique ASAAS_PIX_OUT_ENABLED, ASAAS_PIX_OUT_PRODUCTION_ENABLED, PAYMENT_ENGINE_PIXOUT_ENABLED, ASAAS_API_KEY e wiring P1.5C'
+            : httpGate === 'pixOut'
+              ? 'HTTP PIX OUT bloqueado: verifique ASAAS_PIX_OUT_ENABLED, ALLOW_ASAAS_SANDBOX_PIX_OUT e guards sandbox'
+              : httpGate === 'sandboxFunding'
+                ? 'Funding sandbox bloqueado: verifique guards PIX OUT sandbox (F4.2G.1)'
+                : httpGate === 'transferAuth'
+                  ? 'Investigação auth transfer bloqueada: ASAAS_TRANSFER_AUTH_TEST=1 + guards PIX OUT'
+                  : httpGate === 'payoutReconcile'
+                    ? 'Recovery PIX OUT bloqueado: ASAAS_ENABLED, ASAAS_API_KEY ou ASAAS_PAYOUT_RECOVERY_ENABLED=false'
+                    : 'HTTP Asaas bloqueado: ASAAS_ENABLED=false, ALLOW_ASAAS_SANDBOX_AUTH=0 ou ASAAS_ENV≠sandbox';
     asaasLog('http_blocked_disabled', { method, path, httpGate });
     return { success: false, error, message };
   }
@@ -337,6 +360,116 @@ async function createPixPayment(input = {}) {
 }
 
 /**
+ * POST /customers — produção (dados do jogador; não persiste customer no Gol de Ouro).
+ */
+async function createProductionCustomer(input = {}) {
+  const cpfCnpj = String(input.cpfCnpj || input.payerCpf || '').replace(/\D/g, '');
+  if (!cpfCnpj || cpfCnpj.length < 11) {
+    return {
+      success: false,
+      error: 'ASAAS_PIX_IN_CUSTOMER_CPF_REQUIRED',
+      message: 'CPF/CNPJ do pagador é obrigatório para PIX IN Asaas produção',
+      financialEffect: false
+    };
+  }
+
+  const body = {
+    name: input.name || input.userName || 'Cliente Gol de Ouro',
+    cpfCnpj,
+    email: input.email || input.userEmail || 'deposito@goldeouro.app',
+    externalReference: input.externalReference || `goldeouro_user_${input.userId || 'unknown'}`
+  };
+
+  const result = await asaasApiRequest({
+    method: 'POST',
+    path: CUSTOMERS_PATH,
+    body,
+    httpGate: 'pixInProduction'
+  });
+
+  if (!result.success) {
+    return result;
+  }
+
+  return {
+    success: true,
+    httpStatus: result.httpStatus,
+    baseUrl: result.baseUrl,
+    customerId: result.data?.id ?? null,
+    customer: {
+      id: result.data?.id ?? null,
+      name: result.data?.name ?? body.name,
+      externalReference: result.data?.externalReference ?? body.externalReference
+    },
+    ephemeral: true,
+    persistedInGolDeOuro: false
+  };
+}
+
+/**
+ * POST /payments — cobrança PIX produção.
+ */
+async function createProductionPixPayment(input = {}) {
+  const value = Number(input.value);
+  if (
+    !Number.isFinite(value) ||
+    value < PRODUCTION_MIN_PIX_VALUE ||
+    value > PRODUCTION_MAX_PIX_VALUE
+  ) {
+    return {
+      success: false,
+      error: 'ASAAS_PIX_IN_INVALID_VALUE',
+      message: `Valor inválido. Produção exige ${PRODUCTION_MIN_PIX_VALUE} <= value <= ${PRODUCTION_MAX_PIX_VALUE}`,
+      financialEffect: false
+    };
+  }
+
+  if (!input.customerId) {
+    return {
+      success: false,
+      error: 'ASAAS_PIX_IN_CUSTOMER_REQUIRED',
+      message: 'customerId é obrigatório para criar cobrança PIX no Asaas',
+      financialEffect: false
+    };
+  }
+
+  const body = {
+    customer: input.customerId,
+    billingType: 'PIX',
+    value,
+    dueDate: input.dueDate || formatDueDate(),
+    description: input.description || 'Depósito Gol de Ouro',
+    externalReference: input.externalReference || `goldeouro_${Date.now()}`
+  };
+
+  const result = await asaasApiRequest({
+    method: 'POST',
+    path: PAYMENTS_PATH,
+    body,
+    httpGate: 'pixInProduction'
+  });
+
+  if (!result.success) {
+    return result;
+  }
+
+  return {
+    success: true,
+    httpStatus: result.httpStatus,
+    baseUrl: result.baseUrl,
+    payment: summarizePayment(result.data),
+    data: result.data
+  };
+}
+
+function resolvePixInHttpGate() {
+  if (isAsaasPixInProductionHttpEnabled()) {
+    return 'pixInProduction';
+  }
+  return 'pixIn';
+}
+
+/**
  * GET /payments/{id}/pixQrCode
  */
 async function getPaymentPixQrCode(paymentId) {
@@ -351,7 +484,7 @@ async function getPaymentPixQrCode(paymentId) {
   const result = await asaasApiRequest({
     method: 'GET',
     path: `${PAYMENTS_PATH}/${encodeURIComponent(String(paymentId))}/pixQrCode`,
-    httpGate: 'pixIn'
+    httpGate: resolvePixInHttpGate()
   });
 
   if (!result.success) {
@@ -382,7 +515,7 @@ async function getPayment(paymentId) {
   const result = await asaasApiRequest({
     method: 'GET',
     path: `${PAYMENTS_PATH}/${encodeURIComponent(String(paymentId))}`,
-    httpGate: 'pixIn'
+    httpGate: resolvePixInHttpGate()
   });
 
   if (!result.success) {
@@ -465,13 +598,26 @@ async function fetchAccountBalance() {
  * @see https://docs.asaas.com/reference/transfer-to-another-institution-account-or-pix-key
  */
 async function createPixTransfer(input = {}) {
+  const httpGate = input.httpGate || 'pixOut';
   const value = Number(input.value);
+  const isProductionGate = httpGate === 'pixOutProduction';
+
   if (!Number.isFinite(value) || value <= 0) {
     return {
       success: false,
       error: 'ASAAS_PIX_OUT_INVALID_VALUE',
       message: 'Valor de transferência inválido'
     };
+  }
+
+  if (isProductionGate) {
+    if (value < PRODUCTION_MIN_PIX_VALUE || value > PRODUCTION_MAX_PIX_VALUE) {
+      return {
+        success: false,
+        error: 'ASAAS_PIX_OUT_INVALID_VALUE',
+        message: `Valor produção inválido. Use ${PRODUCTION_MIN_PIX_VALUE}–${PRODUCTION_MAX_PIX_VALUE}`
+      };
+    }
   }
 
   const pixAddressKey = input.pixAddressKey;
@@ -489,11 +635,19 @@ async function createPixTransfer(input = {}) {
     operationType: 'PIX',
     pixAddressKey: String(pixAddressKey).trim(),
     pixAddressKeyType: String(pixAddressKeyType).trim().toUpperCase(),
-    description: input.description || 'Gol de Ouro F4.2G PIX OUT Sandbox Capability',
-    externalReference: input.externalReference || `goldeouro-f4.2g-${Date.now()}`
+    description:
+      input.description ||
+      (isProductionGate
+        ? 'Gol de Ouro PIX OUT Produção'
+        : 'Gol de Ouro F4.2G PIX OUT Sandbox Capability'),
+    externalReference:
+      input.externalReference ||
+      (isProductionGate
+        ? `goldeouro-pixout-prod-${Date.now()}`
+        : `goldeouro-f4.2g-${Date.now()}`)
   };
 
-  if (input.authToken) {
+  if (input.authToken && !isProductionGate) {
     body.authToken = String(input.authToken);
   }
 
@@ -501,14 +655,15 @@ async function createPixTransfer(input = {}) {
     value,
     pixKeyPreview: maskPixKeyPreview(body.pixAddressKey),
     pixAddressKeyType: body.pixAddressKeyType,
-    externalReference: body.externalReference
+    externalReference: body.externalReference,
+    httpGate
   });
 
   const result = await asaasApiRequest({
     method: 'POST',
     path: TRANSFERS_PATH,
     body,
-    httpGate: 'pixOut'
+    httpGate
   });
 
   if (!result.success) {
@@ -576,7 +731,7 @@ async function getTransfer(transferId, options = {}) {
   const result = await asaasApiRequest({
     method: 'GET',
     path: `${TRANSFERS_PATH}/${encodeURIComponent(String(transferId))}`,
-    httpGate: options.httpGate || 'pixOut'
+    httpGate: options.httpGate || 'payoutReconcile'
   });
 
   if (!result.success) {
@@ -601,11 +756,15 @@ module.exports = {
   SANDBOX_DEFAULT_PIX_VALUE,
   SANDBOX_MIN_PIX_VALUE,
   SANDBOX_MAX_PIX_VALUE,
+  PRODUCTION_MIN_PIX_VALUE,
+  PRODUCTION_MAX_PIX_VALUE,
   maskApiKeyPreview,
   maskPixPayloadPreview,
   fetchMyAccount,
   createSandboxCustomer,
+  createProductionCustomer,
   createPixPayment,
+  createProductionPixPayment,
   getPaymentPixQrCode,
   getPayment,
   fetchAccountBalance,

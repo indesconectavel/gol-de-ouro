@@ -1,11 +1,14 @@
 'use strict';
 
+const crypto = require('node:crypto');
+
 /**
  * Configuração Asaas — F4.2A Payment Engine.
  * Leitura de env, guards e helpers (sem chamadas HTTP).
  */
 
 const DEFAULT_SANDBOX_BASE_URL = 'https://sandbox.asaas.com/api/v3';
+const DEFAULT_PRODUCTION_BASE_URL = 'https://api.asaas.com/v3';
 const USER_AGENT = 'GolDeOuro-Backend/1.0';
 
 function isTruthyEnv(name) {
@@ -43,6 +46,9 @@ function getAsaasBaseUrl() {
   const base = readEnv('ASAAS_BASE_URL');
   if (base) {
     return base.replace(/\/+$/, '');
+  }
+  if (!isAsaasSandboxEnv()) {
+    return DEFAULT_PRODUCTION_BASE_URL;
   }
   return DEFAULT_SANDBOX_BASE_URL;
 }
@@ -94,19 +100,49 @@ function isAsaasPixInHttpEnabled() {
   return isAsaasHttpEnabled() && isAsaasPixInEnabled() && isAsaasSandboxPixInAllowed();
 }
 
-function isAsaasPixOutEnabled() {
-  return isTruthyEnv('ASAAS_PIX_OUT_ENABLED');
+/**
+ * Diagnóstico read-only de ASAAS_API_KEY — sem expor valor.
+ */
+function getAsaasApiKeyDiagnostics() {
+  const raw = process.env.ASAAS_API_KEY;
+  const trimmed = raw == null ? '' : String(raw).trim();
+  return {
+    present: raw != null,
+    length: trimmed.length,
+    empty: trimmed.length === 0,
+    sha256Prefix:
+      trimmed.length > 0 ? crypto.createHash('sha256').update(trimmed).digest('hex').slice(0, 16) : null
+  };
 }
 
-function isAsaasSandboxPixOutAllowed() {
-  return String(process.env.ALLOW_ASAAS_SANDBOX_PIX_OUT || '').trim() === '1';
+function hasValidAsaasApiKey(apiKey = readEnv('ASAAS_API_KEY')) {
+  return Boolean(apiKey && String(apiKey).trim().length > 0);
 }
 
 /**
- * Gate HTTP PIX OUT sandbox — F4.2G capability validation only.
+ * P1.3F — PIX IN produção tecnicamente pronto (config + chave), sem exigir gate financeiro.
  */
-function isAsaasPixOutHttpEnabled() {
-  return isAsaasHttpEnabled() && isAsaasPixOutEnabled() && isAsaasSandboxPixOutAllowed();
+function isAsaasPixInProductionHttpReady() {
+  if (!isProductionNodeEnv()) {
+    return false;
+  }
+  if (isAsaasSandboxEnv()) {
+    return false;
+  }
+  if (!isAsaasEnabled()) {
+    return false;
+  }
+  if (!isAsaasPixInEnabled()) {
+    return false;
+  }
+  return hasValidAsaasApiKey();
+}
+
+/**
+ * P1.3F — PIX IN produção executável: prontidão + ASAAS_PRODUCTION_ENABLED (gate financeiro).
+ */
+function isAsaasPixInProductionHttpEnabled() {
+  return isAsaasPixInProductionHttpReady() && isAsaasProductionEnabled();
 }
 
 function isAsaasTransferAuthTestEnabled() {
@@ -124,6 +160,20 @@ function isProductionNodeEnv() {
   return String(process.env.NODE_ENV || '').trim().toLowerCase() === 'production';
 }
 
+const asaasPixOutConfig = require('../../config/asaas-pix-out-config');
+
+function isAsaasPixOutEnabled() {
+  return asaasPixOutConfig.isAsaasPixOutEnabled();
+}
+
+function isAsaasSandboxPixOutAllowed() {
+  return asaasPixOutConfig.isAsaasSandboxPixOutAllowed();
+}
+
+function isAsaasPixOutHttpEnabled() {
+  return asaasPixOutConfig.isAsaasPixOutHttpEnabled();
+}
+
 function normalizeFinanceProviderEnv(name, fallback = null) {
   if (fallback != null) {
     const raw = process.env[name];
@@ -139,6 +189,24 @@ function normalizeFinanceProviderEnv(name, fallback = null) {
 function isAsaasProductionEnabled() {
   const { isAsaasProductionEnabled: prodEnabled } = require('../../config/primary-psp');
   return prodEnabled();
+}
+
+/**
+ * P1.8 — GET /transfers/{id} para recovery/reconciliação (read-only).
+ * Produção: ASAAS_ENABLED + API key, sem exigir gates PIX OUT de escrita.
+ * Sandbox: mesmo gate HTTP PIX OUT sandbox.
+ */
+function isAsaasPayoutReconcileReadEnabled() {
+  if (String(process.env.ASAAS_PAYOUT_RECOVERY_ENABLED || '').trim().toLowerCase() === 'false') {
+    return false;
+  }
+  if (!isAsaasEnabled() || !hasValidAsaasApiKey()) {
+    return false;
+  }
+  if (!isAsaasSandboxEnv()) {
+    return true;
+  }
+  return isAsaasPixOutHttpEnabled();
 }
 
 /**
@@ -229,9 +297,10 @@ function getAsaasConfig() {
     pixInEnabled: isAsaasPixInEnabled(),
     sandboxPixInAllowed: isAsaasSandboxPixInAllowed(),
     pixInHttpEnabled: isAsaasPixInHttpEnabled(),
-    pixOutEnabled: isAsaasPixOutEnabled(),
-    sandboxPixOutAllowed: isAsaasSandboxPixOutAllowed(),
-    pixOutHttpEnabled: isAsaasPixOutHttpEnabled(),
+    pixInProductionHttpReady: isAsaasPixInProductionHttpReady(),
+    pixInProductionHttpEnabled: isAsaasPixInProductionHttpEnabled(),
+    apiKeyDiagnostics: getAsaasApiKeyDiagnostics(),
+    ...asaasPixOutConfig.getAsaasPixOutGateSnapshot(),
     transferAuthTest: isAsaasTransferAuthTestEnabled(),
     transferAuthHttpEnabled: isAsaasTransferAuthHttpEnabled(),
     primarySandboxMode: isAsaasPrimarySandboxMode(),
@@ -252,7 +321,7 @@ function isAsaasConfigured(config = getAsaasConfig()) {
   if (!config.enabled) {
     return false;
   }
-  return Boolean(config.apiKey);
+  return hasValidAsaasApiKey(config.apiKey);
 }
 
 function maskApiKeyPreview(apiKey) {
@@ -313,9 +382,12 @@ function asaasLog(event, meta = {}) {
 
 module.exports = {
   DEFAULT_SANDBOX_BASE_URL,
+  DEFAULT_PRODUCTION_BASE_URL,
   USER_AGENT,
   getAsaasBaseUrl,
   getAsaasConfig,
+  getAsaasApiKeyDiagnostics,
+  hasValidAsaasApiKey,
   isAsaasConfigured,
   isAsaasEnabled,
   isAsaasHttpEnabled,
@@ -329,9 +401,17 @@ module.exports = {
   isAsaasPixInEnabled,
   isAsaasSandboxPixInAllowed,
   isAsaasPixInHttpEnabled,
+  isAsaasPixInProductionHttpReady,
+  isAsaasPixInProductionHttpEnabled,
   isAsaasPixOutEnabled,
   isAsaasSandboxPixOutAllowed,
   isAsaasPixOutHttpEnabled,
+  isAsaasPixOutProductionHttpReady: asaasPixOutConfig.isAsaasPixOutProductionHttpReady,
+  isAsaasPixOutProductionHttpEnabled: asaasPixOutConfig.isAsaasPixOutProductionHttpEnabled,
+  isAsaasPixOutProductionConfigured: asaasPixOutConfig.isAsaasPixOutProductionConfigured,
+  getAsaasPixOutGateSnapshot: asaasPixOutConfig.getAsaasPixOutGateSnapshot,
+  guardAsaasPixOutProduction: asaasPixOutConfig.guardAsaasPixOutProduction,
+  isAsaasPayoutReconcileReadEnabled,
   isAsaasTransferAuthTestEnabled,
   isAsaasTransferAuthHttpEnabled,
   isProductionNodeEnv,

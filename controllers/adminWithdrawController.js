@@ -1,6 +1,5 @@
 'use strict';
 
-const { createPixWithdraw } = require('../services/pix-mercado-pago');
 const {
   approveWithdrawManualAdmin,
   approveAndSendWithdrawAdmin,
@@ -234,7 +233,6 @@ async function approveAndSendWithdraw(req, res, supabase) {
       supabase,
       saqueId: String(saqueId).trim(),
       adminActorId,
-      createPixWithdraw,
       payoutEnabled
     });
 
