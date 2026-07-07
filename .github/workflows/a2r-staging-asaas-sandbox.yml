@@ -1,0 +1,192 @@
+# D1/A2R — Canal seguro automatizado para habilitar o runtime Asaas Sandbox em STAGING.
+# Executa no runner Ubuntu do GitHub (contorna o shell local quebrado — ver D0).
+# NUNCA toca produção (goldeouro-backend-v2). Somente workflow_dispatch com confirmação.
+# Secrets necessárias no repositório: FLY_API_TOKEN, ASAAS_API_KEY_SANDBOX.
+name: A2R — Runtime Asaas Sandbox (Staging)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Digite STAGING para confirmar (guarda anti-produção)'
+        required: true
+        default: ''
+        type: string
+      release_sha:
+        description: 'SHA Git (default b29d847 baseline PE)'
+        required: false
+        default: 'b29d847'
+        type: string
+      git_tag:
+        description: 'Tag Git para /meta.gitTag'
+        required: false
+        default: 'payment-engine-v1-runtime-baseline'
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+  FLY_APP_NAME: goldeouro-backend-staging
+  PROD_APP_NAME: goldeouro-backend-v2
+  RELEASE_SHA: ${{ github.event.inputs.release_sha || 'b29d847' }}
+  GIT_TAG: ${{ github.event.inputs.git_tag || 'payment-engine-v1-runtime-baseline' }}
+
+jobs:
+  a2r-staging:
+    name: A2R habilitação sandbox (staging)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    concurrency:
+      group: fly-staging-a2r-goldeouro-backend-staging
+      cancel-in-progress: false
+
+    steps:
+      - name: Guard — confirmação e app alvo
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event.inputs.confirm }}" != "STAGING" ]; then
+            echo "Confirmação inválida — digite STAGING. Abortado."
+            exit 1
+          fi
+          if [ "${{ env.FLY_APP_NAME }}" = "${{ env.PROD_APP_NAME }}" ]; then
+            echo "App alvo == produção — ABORTADO."
+            exit 1
+          fi
+          case "${{ env.FLY_APP_NAME }}" in
+            *v2*|*prod*) echo "Nome de app suspeito de produção — ABORTADO."; exit 1 ;;
+          esac
+          echo "Guard OK — alvo=${{ env.FLY_APP_NAME }}"
+
+      - name: Guard — secrets presentes
+        run: |
+          set -euo pipefail
+          if [ -z "${{ secrets.FLY_API_TOKEN }}" ]; then
+            echo "FLY_API_TOKEN ausente no repositório — abortado"; exit 1
+          fi
+          if [ -z "${{ secrets.ASAAS_API_KEY_SANDBOX }}" ]; then
+            echo "ASAAS_API_KEY_SANDBOX ausente no repositório — abortado"; exit 1
+          fi
+          echo "Secrets presentes (valores não exibidos)"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Syntax gate
+        run: node -c server-fly.js
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Guard — ASAAS_API_KEY é sandbox (prefixo homologação)
+        run: |
+          set -euo pipefail
+          KEY='${{ secrets.ASAAS_API_KEY_SANDBOX }}'
+          case "$KEY" in
+            *aact_hmlg*) echo "Chave sandbox (aact_hmlg) OK" ;;
+            *) echo "Chave NÃO parece sandbox (esperado prefixo aact_hmlg) — ABORTADO"; exit 1 ;;
+          esac
+
+      - name: Provisionar gates sandbox (staging)
+        run: |
+          set -euo pipefail
+          flyctl secrets set \
+            PAYMENT_PROVIDER=asaas \
+            ASAAS_ENABLED=true \
+            ASAAS_ENV=sandbox \
+            ASAAS_TEST_LIVE=1 \
+            ALLOW_ASAAS_SANDBOX_AUTH=1 \
+            ASAAS_PIX_IN_ENABLED=1 \
+            ALLOW_ASAAS_SANDBOX_PIX_IN=1 \
+            ASAAS_PRODUCTION_ENABLED=false \
+            ASAAS_API_KEY="${{ secrets.ASAAS_API_KEY_SANDBOX }}" \
+            -a "${{ env.FLY_APP_NAME }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Garantir worker OFF (não alterar)
+        run: |
+          set -euo pipefail
+          flyctl secrets set ENABLE_PIX_PAYOUT_WORKER=false -a "${{ env.FLY_APP_NAME }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Deploy Fly staging
+        run: |
+          set -euo pipefail
+          flyctl deploy --remote-only --no-cache \
+            --config fly.staging.toml \
+            --app "${{ env.FLY_APP_NAME }}" \
+            --build-arg GIT_COMMIT="${RELEASE_SHA}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Set metadata secrets
+        run: |
+          set -euo pipefail
+          flyctl secrets set \
+            GIT_TAG="${{ env.GIT_TAG }}" \
+            NODE_ENV=staging \
+            DATABASE_ENV=staging \
+            -a "${{ env.FLY_APP_NAME }}"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Gate — /health + asaasPaymentProviderResolvable=true
+        run: |
+          set -euo pipefail
+          URL="https://${{ env.FLY_APP_NAME }}.fly.dev/health"
+          BODY=""
+          for i in 1 2 3 4 5 6; do
+            echo "Tentativa $i → $URL"
+            if BODY=$(curl -fsS --max-time 30 "$URL"); then break; fi
+            sleep $((i * 5))
+          done
+          echo "$BODY" | jq .
+          RESOLVABLE=$(echo "$BODY" | jq -r '.paymentEngine.asaasPaymentProviderResolvable')
+          PROVIDER=$(echo "$BODY" | jq -r '.paymentEngine.paymentProvider')
+          PRUNTIME=$(echo "$BODY" | jq -r '.paymentEngine.productionRuntime')
+          AENV=$(echo "$BODY" | jq -r '.paymentEngine.asaasEnv')
+          test "$RESOLVABLE" = "true" || { echo "asaasPaymentProviderResolvable != true (obteve $RESOLVABLE)"; exit 1; }
+          test "$PRUNTIME" = "false" || { echo "productionRuntime deve ser false"; exit 1; }
+          test "$AENV" = "sandbox" || { echo "asaasEnv deve ser sandbox"; exit 1; }
+          echo "OK — resolvable=$RESOLVABLE provider=$PROVIDER env=$AENV"
+
+      - name: Gate — /meta
+        run: |
+          set -euo pipefail
+          META="https://${{ env.FLY_APP_NAME }}.fly.dev/meta"
+          BODY=$(curl -fsS --max-time 30 "$META")
+          echo "$BODY" | jq .
+          test "$(echo "$BODY" | jq -r '.data.environment')" = "staging" || { echo "environment != staging"; exit 1; }
+          test "$(echo "$BODY" | jq -r '.data.gitCommit')" = "${RELEASE_SHA}" || { echo "gitCommit divergente"; exit 1; }
+          test "$(echo "$BODY" | jq -r '.data.gitTag')" = "${GIT_TAG}" || { echo "gitTag divergente"; exit 1; }
+
+      - name: Gate — workers OFF
+        run: |
+          set -euo pipefail
+          URL="https://${{ env.FLY_APP_NAME }}.fly.dev/health/workers"
+          BODY=$(curl -fsS --max-time 30 "$URL")
+          echo "$BODY" | jq .
+          test "$(echo "$BODY" | jq -r '.data.payoutWorker.enabledByEnv')" = "false" || { echo "worker deve estar OFF"; exit 1; }
+
+      - name: Auditoria produção (READ-ONLY — nunca alterar)
+        run: |
+          set -euo pipefail
+          META="https://${{ env.PROD_APP_NAME }}.fly.dev/meta"
+          BODY=$(curl -fsS --max-time 30 "$META")
+          SHA=$(echo "$BODY" | jq -r '.data.gitCommit')
+          echo "Produção gitCommit=$SHA (esperado f21f310-p5pixout, inalterado)"
+          test "$SHA" = "f21f310-p5pixout" || echo "::warning::gitCommit de produção diferente do baseline registrado"
+
+      - name: Resumo
+        run: echo "A2R staging concluído — asaasPaymentProviderResolvable=true. Produção não tocada."
