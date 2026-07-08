@@ -1,0 +1,146 @@
+{
+  "gate": "GIT.1",
+  "title": "Auditoria e Recuperacao Segura do Estado do Repositorio",
+  "project": "Gol de Ouro V1",
+  "mode": "READ-ONLY",
+  "date": "2026-07-07",
+  "method": "Leitura direta de .git/ (shell do agente inoperante - D0.2)",
+  "verdict": "PASS COM RESSALVAS",
+  "repository": {
+    "remote": "https://github.com/indesconectavel/gol-de-ouro.git",
+    "defaultBranch": "main"
+  },
+  "etapa1_estadoGeral": {
+    "branchAtual": "chore/f2-4e-2-mp-log",
+    "head": "b29d847cab5525121fad952ec5db85d6720f95b8",
+    "headShort": "b29d847",
+    "detachedHead": false,
+    "upstreamTracking": "origin/chore/f2-4e-2-mp-log (config)",
+    "indexState": "em uso por merge pendente (mudancas staged presentes)",
+    "workingTree": "sujo (modificados + untracked) com MERGE em andamento",
+    "consistente": "estruturalmente sim, porem em estado transitorio (merge pendente)"
+  },
+  "etapa2_merge": {
+    "MERGE_HEAD": { "exists": true, "value": "22f75f71ce60b60474de8470a4fee7ddfcc5d88f" },
+    "MERGE_MSG": { "exists": true, "hasConflictsSection": false, "value": "Merge branch 'main' of https://github.com/indesconectavel/gol-de-ouro into chore/f2-4e-2-mp-log" },
+    "MERGE_MODE": { "exists": true, "empty": true },
+    "FETCH_HEAD": "22f75f71 branch 'main' of origin",
+    "ORIG_HEAD": "b29d847cab5525121fad952ec5db85d6720f95b8",
+    "mergeIniciado": true,
+    "mergeConcluido": false,
+    "mergeInterrompido": "pausado/pendente (nao abortado)",
+    "mergePendente": true,
+    "commitBaseAtual": "b29d847 (lado chore/f2-4e-2-mp-log)",
+    "branchSendoMesclada": "origin/main (22f75f71)",
+    "commitsParticipantes": ["b29d847 (HEAD/ours)", "22f75f71 (origin/main/theirs)"]
+  },
+  "etapa3_rebase": { "rebaseApply": false, "rebaseMerge": false, "emAndamento": "NAO" },
+  "etapa4_cherryPick": { "CHERRY_PICK_HEAD": false, "resposta": "NAO" },
+  "etapa5_revert": { "REVERT_HEAD": false, "resposta": "NAO" },
+  "etapa6_bisect": { "BISECT_LOG": false, "resposta": "NAO" },
+  "etapa7_worktrees": {
+    "worktreesDir": false,
+    "quantidade": 1,
+    "principal": "E:/Chute de Ouro/goldeouro-backend",
+    "linkedWorktrees": [],
+    "observacao": "goldeouro-admin/.git e SUBMODULO, nao worktree",
+    "bloqueandoCheckout": false
+  },
+  "etapa8_arquivosModificados": {
+    "fonte": "git status inicial da sessao (truncado); shell bloqueado impede reexecucao",
+    "stagedExemplos": [".cursor/mcp.json"],
+    "unstagedExemplos": [".dockerignore", "database/patches/V1.1B-M1-R3-PROD-BASELINE-claim_and_credit_approved_pix_deposit.sql", "database/patches/V1.1B-M1-R3-claim_and_credit_approved_pix_deposit.sql", "database/shoot_apply_atomic_transaction.sql"],
+    "untrackedExemplos": [".github/workflows/a2r-staging-asaas-sandbox.yml", ".github/workflows/backend-deploy-staging.yml", ".env.local.production.example", ".env.local.staging.example", ".vercelignore", "docs/relatorios/*.md (varios)", "database/patches/*.sql (varios)"],
+    "ressalva": "Enumeracao completa requer git status (unmerged/renamed/deleted) - shell inoperante"
+  },
+  "etapa9_conflitos": {
+    "conflictSectionInMergeMsg": false,
+    "codigosConflitoVisiveisNoStatusInicial": "nenhum (UU/AA/DD nao observados na porcao visivel)",
+    "avaliacao": "sem conflitos aparentes (merge limpo pausado antes do commit)",
+    "ressalva": "Confirmacao definitiva de 'unmerged paths' exige git status/ls-files -u (shell bloqueado)"
+  },
+  "etapa10_historico": {
+    "fonte": "reflog .git/logs/HEAD (tail)",
+    "ultimos20Commits": [
+      "b29d847 chore: preserve homologated payment engine runtime baseline",
+      "9a14d4e docs: correct commit hash in P1.6D.1 infrastructure report",
+      "8d68301 (amend) chore: preserve payout worker production infrastructure",
+      "ad3c5a8 chore: preserve payout worker production infrastructure",
+      "d1502f8 docs: DEPLOY.PIPELINE.3 commit push e smoke UX 5B",
+      "f59244b chore: update admin submodule to UX 5B",
+      "a92b9de chore: preserve UX financeira 5B do player",
+      "f21f310 docs(brand): PE.BRAND.1-3 IP formalization and INPI trademark plan",
+      "7997603 docs(payment-engine): fix PE.PATRIMONIO.3 report commit hash",
+      "be3a28b (amend) docs(payment-engine): PE.PATRIMONIO.3 governance and baseline report",
+      "7a04eff docs(payment-engine): PE.PATRIMONIO.3 governance and baseline report",
+      "4cd55b2 docs(payment-engine): preserve curated homologation evidence snapshots",
+      "5706d1b chore(scripts): preserve payment engine verification and certification tooling",
+      "b56584e docs(payment-engine): preserve valuation and operational certification docs",
+      "60ca593 docs(payment-engine): preserve F3.x infrastructure prep reports",
+      "a4ca37a docs(payment-engine): preserve F4.x payment engine formation reports",
+      "55e59b3 docs(governance): baseline protection policy and due diligence index",
+      "07c6e86 docs(payment-engine): PE.PATRIMONIO.2B curation report",
+      "a819e67 docs(payment-engine): preserve institutional data room",
+      "246f48e docs(payment-engine): preserve P1.7-P1.8 recovery reports"
+    ],
+    "mergeMaisRecente": "PENDENTE (nao commitado) - origin/main -> chore/f2-4e-2-mp-log",
+    "branchOrigem": "origin/main (22f75f71)",
+    "branchDestino": "chore/f2-4e-2-mp-log (b29d847)"
+  },
+  "etapa11_branches": {
+    "branchAtual": "chore/f2-4e-2-mp-log = b29d847 (loose ref)",
+    "mainLocal": "f5338ca (packed-refs)",
+    "originMainLoose": "22f75f71 (pos-fetch, atual)",
+    "originMainPacked": "3bc89d4 (stale)",
+    "tracking": "chore/f2-4e-2-mp-log -> origin/chore/f2-4e-2-mp-log",
+    "divergencia": "b29d847 (HEAD) divergente de origin/main (22f75f71) -> motivo do merge; main local (f5338ca) tambem divergente de origin/main",
+    "aheadBehind": "nao computavel exatamente sem git (grafo)",
+    "totalBranchesLocais": "~40+ (packed + loose)"
+  },
+  "etapa12_tags": {
+    "exemplosRecentes": ["v3.0.0-golden-goal", "v2.0.0-pix-complete", "v1.1.2", "v1.1.1-prod", "v1.1.1-stable-goleiro-reverted", "v1.1.1"],
+    "headPertenceATag": false,
+    "observacao": "Nenhuma tag em packed-refs aponta para b29d847. Tag 'payment-engine-v1-runtime-baseline' NAO existe localmente (vem de env GIT_TAG no runtime staging)"
+  },
+  "etapa13_integridade": {
+    "fsck": "nao executado (read-only / shell bloqueado)",
+    "objetosPerdidos": "sem evidencia de perda; verificacao formal requer git fsck",
+    "refsQuebradas": "HEAD e refs resolvem para SHAs validos; sem evidencia de quebra",
+    "indice": "presente e em uso pelo merge; consistencia plena requer git",
+    "hooks": "hooksPath = /dev/null -> HOOKS DESABILITADOS",
+    "config": "filemode=false, ignorecase=true (Windows), http.postBuffer=524288000, remote origin OK"
+  },
+  "etapa14_workflowA2R": {
+    "existeLocalmente": true,
+    "path": ".github/workflows/a2r-staging-asaas-sandbox.yml",
+    "tracked": false,
+    "staged": false,
+    "committed": false,
+    "pushado": false,
+    "presenteNoGitHub": false
+  },
+  "etapa15_seguranca": {
+    "deploy": "nenhum",
+    "workflow": "nenhum executado",
+    "secret": "nenhum alterado",
+    "fly": "intacto",
+    "supabase": "intacto",
+    "vercel": "intacto",
+    "producao": "intacta (somente /meta read-only em gates anteriores)",
+    "estaAuditoria": "100% leitura de arquivos .git"
+  },
+  "perguntasObrigatorias": {
+    "1_repositorioIntegro": "SIM estruturalmente, em estado transitorio (merge pendente)",
+    "2_mergePendente": "SIM",
+    "3_rebasePendente": "NAO",
+    "4_cherryPickPendente": "NAO",
+    "5_revertPendente": "NAO",
+    "6_worktreeBloqueando": "NAO",
+    "7_conflitos": "Nao aparentes (pendente confirmacao via git status)",
+    "8_staged": "SIM",
+    "9_untracked": "SIM (incl. workflow A2R)",
+    "10_workflowProntoPublicacao": "Conteudo SIM; publicacao BLOQUEADA",
+    "11_bloqueioAtual": "Merge pendente + shell do agente inoperante + GitHub nao autenticado + sem MCP git",
+    "12_proximoGate": "GIT.2 - resolucao do merge pendente pelo operador (terminal interativo); depois D1.3 e D1.2"
+  }
+}

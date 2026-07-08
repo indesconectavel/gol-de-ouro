@@ -1,0 +1,355 @@
+{
+  "gate": "GIT.6",
+  "title": "Classificacao e Isolamento da Working Tree",
+  "project": "Gol de Ouro V1",
+  "engine": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "READ_ONLY_ABSOLUTO",
+  "verdict": "PASS_COM_RESSALVAS",
+  "verdict_reason": "Mapa operacional completo construido; working tree densa mas classificavel em 8 lotes; shell D0 impede inventario live pos-d79a2e8",
+  "head": "d79a2e8c17eddbdb486244eeb783e53521bf3e62",
+  "branch": "chore/f2-4e-2-mp-log",
+  "ahead_remote": 1,
+  "inventory_source": "_p19_status.txt + globs + git_refs + GIT.5",
+  "inventory_live": false,
+  "summary": {
+    "modified_tracked": 28,
+    "deleted": 0,
+    "renamed": 0,
+    "untracked_entries_snapshot": 255,
+    "untracked_files_estimate": 280,
+    "already_committed_patrimony_d79a2e8": 30
+  },
+  "indices": {
+    "organizacao": 5.5,
+    "patrimonial": 8.5,
+    "reprodutibilidade": 6.0,
+    "versionamento": 6.5,
+    "risco": 3.5
+  },
+  "executive_answers": {
+    "estrutura_real": "28M tracked + ~280 untracked em 9 dominios; nucleo H0-H3.5 commitado",
+    "patrimonio_permanente": "d79a2e8 + LOTE1-2 pendentes",
+    "nunca_entrar_git": "LOTE8 classe E + .env secrets + fly-logs",
+    "sequencia_commits": "8 commits planejados GIT.6-LOTE1..7 + cleanup",
+    "estrategia_menor_risco": "docs primeiro, SQL depois, codigo WIP isolado, push apos review",
+    "pronto_evoluir_seguro": "SIM_COM_RESSALVAS"
+  },
+  "by_folder": {
+    "root": { "modified": 0, "untracked": 12, "dominant": "E" },
+    "cursor": { "modified": 1, "untracked": 0, "dominant": "E" },
+    "controllers": { "modified": 1, "untracked": 0, "dominant": "D" },
+    "database": { "modified": 3, "untracked": 17, "dominant": "B" },
+    "docs": { "modified": 3, "untracked": 200, "dominant": "A/B" },
+    "github": { "modified": 0, "untracked": 8, "dominant": "D" },
+    "goldeouro-player": { "modified": 3, "untracked": 6, "dominant": "D" },
+    "scripts": { "modified": 1, "untracked": 55, "dominant": "B/D" },
+    "src": { "modified": 11, "untracked": 7, "dominant": "D" },
+    "services": { "modified": 1, "untracked": 0, "dominant": "C" },
+    "server": { "modified": 1, "untracked": 0, "dominant": "D" },
+    "package": { "modified": 2, "untracked": 0, "dominant": "D" }
+  },
+  "modified_classification": [
+    { "path": ".cursor/mcp.json", "class": "E", "lot": 8 },
+    { "path": ".dockerignore", "class": "D", "lot": 6 },
+    { "path": "controllers/adminWithdrawController.js", "class": "D", "lot": 4 },
+    { "path": "database/patches/V1.1B-M1-R3-PROD-BASELINE-claim_and_credit_approved_pix_deposit.sql", "class": "B", "lot": 3 },
+    { "path": "database/patches/V1.1B-M1-R3-claim_and_credit_approved_pix_deposit.sql", "class": "B", "lot": 3 },
+    { "path": "database/shoot_apply_atomic_transaction.sql", "class": "B", "lot": 3 },
+    { "path": "docs/relatorios/V1-1B-M1-R3-STAGING-PATCH-CIRURGICO-REAL-2026-05-17.md", "class": "B", "lot": 2 },
+    { "path": "docs/relatorios/V1-1B-M1-R4-FECHAMENTO-PRE-PR-RPC-PIX-LEDGER-2026-05-17.md", "class": "B", "lot": 2 },
+    { "path": "docs/relatorios/V1-1F-STAGING-WEBHOOK-PAYOUT-HMAC-DATA-2026-05-18.json", "class": "B", "lot": 2 },
+    { "path": "goldeouro-player/index.html", "class": "D", "lot": 5 },
+    { "path": "goldeouro-player/vercel.json", "class": "D", "lot": 5 },
+    { "path": "goldeouro-player/vite.config.ts", "class": "D", "lot": 5 },
+    { "path": "package-lock.json", "class": "D", "lot": 4 },
+    { "path": "package.json", "class": "D", "lot": 4 },
+    { "path": "scripts/v1-1b-m1-r3-staging-exec.js", "class": "B", "lot": 7 },
+    { "path": "server-fly.js", "class": "D", "lot": 4 },
+    { "path": "services/pix-mercado-pago.js", "class": "C", "lot": 4 },
+    { "path": "src/domain/payout/processPendingWithdrawals.js", "class": "D", "lot": 4 },
+    { "path": "src/finance/compat/createPixWithdrawCompat.js", "class": "D", "lot": 4 },
+    { "path": "src/finance/deposit/createPixDeposit.js", "class": "D", "lot": 4 },
+    { "path": "src/finance/factory/FinanceProviderFactory.js", "class": "D", "lot": 4 },
+    { "path": "src/finance/providers/asaas/AsaasPaymentProvider.js", "class": "D", "lot": 4 },
+    { "path": "src/finance/providers/asaas/AsaasProvider.js", "class": "D", "lot": 4 },
+    { "path": "src/finance/providers/asaas/asaas-config.js", "class": "D", "lot": 4 },
+    { "path": "src/finance/providers/asaas/asaas-http-client.js", "class": "D", "lot": 4 },
+    { "path": "src/finance/webhooks/processAsaasTransferWebhook.js", "class": "D", "lot": 4 },
+    { "path": "src/finance/webhooks/processPaymentWebhook.js", "class": "D", "lot": 4 },
+    { "path": "src/workers/payout-worker.js", "class": "D", "lot": 4 }
+  ],
+  "lots": [
+    {
+      "id": "LOTE_1",
+      "name": "Patrimonio Executivo",
+      "class": "A",
+      "files_estimate": 45,
+      "priority": "P0",
+      "objective": "Preservar gates GIT, executive final-delivery, certificacoes nucleares",
+      "paths": [
+        "docs/relatorios/GIT.1-*.md",
+        "docs/relatorios/GIT.2-*.md",
+        "docs/relatorios/GIT.4-*.md",
+        "docs/relatorios/GIT.5-*.md",
+        "docs/relatorios/GIT.6-*.md",
+        "docs/relatorios/snapshots/git*.json",
+        "docs/executive/**",
+        "docs/relatorios/DEPLOY.PIPELINE.1-*.md",
+        "docs/relatorios/P1.6D-*.md",
+        "docs/relatorios/P1.8-*.md",
+        "docs/relatorios/PE-BACKUP-1-*.md"
+      ],
+      "dependencies": [],
+      "commit_message": "docs(patrimony): preserve executive and git gate evidence"
+    },
+    {
+      "id": "LOTE_2",
+      "name": "Documentacao Tecnica Operacional",
+      "class": "B",
+      "files_estimate": 165,
+      "priority": "P1",
+      "objective": "Preservar cadeia F2, V1, ASAAS, F6, auditorias e runbooks",
+      "paths": [
+        "docs/relatorios/F2-*.md",
+        "docs/relatorios/V1-*.md",
+        "docs/relatorios/V1-*.json",
+        "docs/relatorios/ASAAS.PIPELINE.*.md",
+        "docs/relatorios/F6-*.md",
+        "docs/relatorios/F5-*.md",
+        "docs/relatorios/H4-*.md",
+        "docs/relatorios/H5-*.md",
+        "docs/relatorios/OC-INC-*.md",
+        "docs/audits/**",
+        "docs/operational/**",
+        "docs/external-monitoring/**",
+        "docs/analytics/**",
+        "docs/autonomous/**",
+        "docs/chaos/**"
+      ],
+      "dependencies": ["LOTE_3 para hashes SQL referenciados"],
+      "commit_message": "docs(evidence): preserve F2 V1 ASAAS operational audit chain"
+    },
+    {
+      "id": "LOTE_3",
+      "name": "Database SQL",
+      "class": "B",
+      "files_estimate": 20,
+      "priority": "P1",
+      "objective": "Versionar patches cirurgicos, migrations P15D, rollbacks",
+      "paths": [
+        "database/patches/F2-*.sql",
+        "database/patches/F6-*.sql",
+        "database/patches/V1.1B-M1-R2-*.sql",
+        "database/migrations/20260628_p15d_*.sql",
+        "database/rollback/**",
+        "database/staging/**",
+        "database/claim_and_credit_approved_pix_deposit.sql",
+        "database/exec-plano-b-*.sql",
+        "database/stg-m1-bootstrap-for-rpc.sql"
+      ],
+      "dependencies": [],
+      "commit_message": "chore(database): preserve F2 F6 V1 and P15D SQL patches"
+    },
+    {
+      "id": "LOTE_4",
+      "name": "Payment Engine WIP",
+      "class": "D",
+      "files_estimate": 22,
+      "priority": "P2",
+      "objective": "Isolar evolucao Asaas PIX OUT sem misturar com docs",
+      "paths": [
+        "src/finance/**",
+        "src/domain/payout/**",
+        "src/workers/payout-worker.js",
+        "server-fly.js",
+        "controllers/adminWithdrawController.js",
+        "package.json",
+        "package-lock.json",
+        "services/pix-mercado-pago.js"
+      ],
+      "dependencies": ["LOTE_3 migrations P15D"],
+      "commit_message": "feat(finance): Asaas PIX OUT WIP isolated batch"
+    },
+    {
+      "id": "LOTE_5",
+      "name": "Frontend Player",
+      "class": "D",
+      "files_estimate": 9,
+      "priority": "P2",
+      "objective": "UX 5B icons, vite, vercel config",
+      "paths": [
+        "goldeouro-player/index.html",
+        "goldeouro-player/vercel.json",
+        "goldeouro-player/vite.config.ts",
+        "goldeouro-player/icons/**",
+        "goldeouro-player/*.svg",
+        ".vercelignore"
+      ],
+      "dependencies": [],
+      "commit_message": "chore(player): preserve UX 5B assets and build config"
+    },
+    {
+      "id": "LOTE_6",
+      "name": "GitHub Actions e Infra",
+      "class": "D",
+      "files_estimate": 9,
+      "priority": "P2",
+      "objective": "Staging deploy workflow e exemplos watchdog",
+      "paths": [
+        ".github/workflows/backend-deploy-staging.yml",
+        ".github/examples/**",
+        ".dockerignore"
+      ],
+      "dependencies": ["fly.staging.toml tracked"],
+      "commit_message": "ci(staging): add deploy workflow and monitoring examples"
+    },
+    {
+      "id": "LOTE_7",
+      "name": "Scripts Homologacao",
+      "class": "B/D",
+      "files_estimate": 55,
+      "priority": "P2",
+      "objective": "Scripts f2/v1/f6/p15y reutilizaveis",
+      "paths": [
+        "scripts/f2-*.mjs",
+        "scripts/f2-*.js",
+        "scripts/f6-*.mjs",
+        "scripts/v1-*.js",
+        "scripts/p15y-*.cjs",
+        "scripts/run-p15y-*.cjs",
+        "scripts/apply-p15d-*.cjs",
+        "scripts/activation/**",
+        "scripts/autonomous/**",
+        "scripts/resilience/**",
+        "scripts/helpers/**",
+        "scripts/lib/**",
+        "scripts/payouts/**",
+        "scripts/efi/**"
+      ],
+      "dependencies": ["LOTE_3 SQL", "LOTE_4 codigo para scripts verify-*"],
+      "commit_message": "chore(scripts): preserve homologation and certification tooling"
+    },
+    {
+      "id": "LOTE_8",
+      "name": "Temporarios NAO versionar",
+      "class": "E",
+      "files_estimate": 20,
+      "priority": "P3",
+      "objective": "Descartar ou gitignore — nunca commit",
+      "paths": [
+        "_p19_*.txt",
+        "_health*.txt",
+        "_pe3_files.txt",
+        "database/patches/_r3_staging_baseline_tmp.sql",
+        "docs/relatorios/snapshots/fly-logs-raw*.txt",
+        "docs/relatorios/snapshots/f2-4e-2a-fly-*.txt",
+        "scripts/f2-4e-2a-fly-remote.b64.txt",
+        ".cursor/mcp.json"
+      ],
+      "dependencies": [],
+      "commit_message": null
+    }
+  ],
+  "dependencies_map": [
+    {
+      "from": "scripts/f2-2c-1-apply-prod.mjs",
+      "to": "database/patches/F2-2C-1-shoot-apply-v1-only-prod-2026-05-26.sql",
+      "type": "script_sql"
+    },
+    {
+      "from": "scripts/f2-2c-2-apply-prod.mjs",
+      "to": "database/patches/F2-2C-2-shoot-apply-active-signature-v1-only-2026-05-26.sql",
+      "type": "script_sql"
+    },
+    {
+      "from": "scripts/f6-1c-apply-rls-remediation.mjs",
+      "to": "database/patches/F6-1C-enable-rls-class-a-tables-2026-06-12.sql",
+      "type": "script_sql"
+    },
+    {
+      "from": "scripts/apply-p15d-schema-production.cjs",
+      "to": "database/migrations/20260628_p15d_asaas_payout_transfer_columns.sql",
+      "type": "script_sql"
+    },
+    {
+      "from": "src/finance/config/asaas-pix-out-config.js",
+      "to": "database/migrations/20260628_p15d_asaas_payout_transfer_columns.sql",
+      "type": "code_schema"
+    },
+    {
+      "from": "src/finance/deposit/claimApprovedPixDeposit.js",
+      "to": "database/patches/V1.1B-M1-R3-claim_and_credit_approved_pix_deposit.sql",
+      "type": "code_rpc"
+    },
+    {
+      "from": "docs/relatorios/F2-2C-1-APLICACAO-CONTROLADA-PATCH-PRODUCAO-2026-05-26.md",
+      "to": "database/patches/F2-2C-1-*.sql",
+      "type": "doc_sql"
+    },
+    {
+      "from": "docs/relatorios/V1-1B-M1-*",
+      "to": "database/claim_and_credit_approved_pix_deposit.sql",
+      "type": "doc_sql"
+    },
+    {
+      "from": ".github/workflows/backend-deploy-staging.yml",
+      "to": "fly.staging.toml",
+      "type": "workflow_infra"
+    },
+    {
+      "from": "docs/relatorios/P1.8-AUDITORIA-CONSISTENCIA-PRODUCAO-REPOSITORIO.md",
+      "to": "src/finance/** (uncommitted)",
+      "type": "doc_code_drift"
+    }
+  ],
+  "risks": {
+    "misturar_patrimonio_wip": { "exists": true, "severity": "ALTO", "mitigation": "LOTE1-2 antes de LOTE4" },
+    "misturar_staging_producao": { "exists": true, "severity": "MEDIO", "mitigation": "Separar fly.staging workflow de prod" },
+    "misturar_doc_codigo": { "exists": true, "severity": "ALTO", "mitigation": "Commits por dominio" },
+    "misturar_sql_testes": { "exists": true, "severity": "MEDIO", "mitigation": "Excluir _r3_staging_baseline_tmp.sql" },
+    "misturar_workflows_incompletos": { "exists": false, "severity": "BAIXO", "mitigation": "Review staging workflow antes push" }
+  },
+  "never_version": [
+    "_p19_*.txt",
+    "_health*.txt",
+    "_pe3_files.txt",
+    "database/patches/_r3_staging_baseline_tmp.sql",
+    "docs/relatorios/snapshots/fly-logs-raw*",
+    "docs/relatorios/snapshots/f2-4e-2a-fly-*.txt",
+    "scripts/f2-4e-2a-fly-remote.b64.txt",
+    "goldeouro-player/.env.prod",
+    ".env.tmp",
+    ".env.production"
+  ],
+  "commit_sequence": [
+    { "order": 0, "note": "Ja executado", "message": "docs(patrimony): preserve H0-H3.5 consolidated asset package", "hash": "d79a2e8" },
+    { "order": 1, "lot": "LOTE_1", "message": "docs(patrimony): preserve executive and git gate evidence" },
+    { "order": 2, "lot": "LOTE_2a", "message": "docs(evidence): preserve F2 economic surgery chain" },
+    { "order": 3, "lot": "LOTE_2b", "message": "docs(evidence): preserve V1 operational governance chain" },
+    { "order": 4, "lot": "LOTE_2c", "message": "docs(evidence): preserve ASAAS pipeline and F6 RLS audits" },
+    { "order": 5, "lot": "LOTE_3", "message": "chore(database): preserve F2 F6 V1 and P15D SQL patches" },
+    { "order": 6, "lot": "LOTE_7", "message": "chore(scripts): preserve homologation tooling" },
+    { "order": 7, "lot": "LOTE_4", "message": "feat(finance): Asaas PIX OUT WIP isolated batch" },
+    { "order": 8, "lot": "LOTE_5", "message": "chore(player): preserve UX 5B assets" },
+    { "order": 9, "lot": "LOTE_6", "message": "ci(staging): add deploy workflow and examples" },
+    { "order": 10, "lot": "LOTE_8", "message": "chore(cleanup): remove forensic dumps (local only)" },
+    { "order": 11, "note": "push", "message": "push d79a2e8 + lotes apos review humano" }
+  ],
+  "security": {
+    "code_changed": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "database_altered": false,
+    "runtime_altered": false,
+    "fly_altered": false,
+    "supabase_altered": false,
+    "vercel_altered": false,
+    "github_actions_executed": false,
+    "production_changed": false
+  },
+  "artifacts_emitted": [
+    "docs/relatorios/GIT.6-CLASSIFICACAO-WORKING-TREE.md",
+    "docs/relatorios/snapshots/git6-working-tree-classification.json"
+  ]
+}

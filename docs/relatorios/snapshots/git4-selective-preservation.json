@@ -1,0 +1,146 @@
+{
+  "gate": "GIT.4",
+  "title": "Preservacao Seletiva dos Artefatos Patrimoniais",
+  "project": "Gol de Ouro V1",
+  "primary_asset": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "OPERACAO_GIT_CONTROLADA_SEM_DEPLOY",
+  "verdict": "FAIL",
+  "verdict_reason": "Shell D0 impediu git add/commit; inventario validado mas preservacao versionada nao executada",
+  "indices": {
+    "higiene_git": 5.5,
+    "preservacao_executada": 0,
+    "prontidao_pacote": 9.0
+  },
+  "ready_for_h4": "SIM_COM_RESSALVAS",
+  "shell_available": false,
+  "shell_error": "System.Management.Automation.LanguagePrimitives exit -65536",
+  "git_status_live": false,
+  "etapa1": {
+    "branch": "chore/f2-4e-2-mp-log",
+    "head": "110db9ed3239f96849116543f6dd51602d507adc",
+    "head_short": "110db9e",
+    "head_message": "ci(a2r): add safe Asaas sandbox staging workflow",
+    "remote_ref": "origin/chore/f2-4e-2-mp-log",
+    "remote_hash": "110db9ed3239f96849116543f6dd51602d507adc",
+    "ahead": 0,
+    "behind": 0,
+    "merge_pending": false,
+    "rebase_pending": false,
+    "cherry_pick_pending": false,
+    "working_tree_clean": false,
+    "staged_unknown": true,
+    "unstaged": true,
+    "untracked": true
+  },
+  "commit": {
+    "executed": false,
+    "hash": null,
+    "message_planned": "docs(patrimony): preserve H0-H3.5 consolidated asset package",
+    "files_expected": 30,
+    "files_committed": 0,
+    "push_executed": false
+  },
+  "inventory": {
+    "classe_a": [
+      "docs/relatorios/H0-CERTIFICACAO-FINAL-PLATAFORMA-ENGENHARIA.md",
+      "docs/relatorios/H1-EMPACOTAMENTO-PATRIMONIAL-OFICIAL.md",
+      "docs/relatorios/H2-DATA-ROOM-EXECUTIVO.md",
+      "docs/relatorios/H2A-AUDITORIA-SUPREMA-STAGING-E-ARQUITETURA.md",
+      "docs/relatorios/H2.5-SINCRONIZACAO-DATA-ROOM.md",
+      "docs/relatorios/H3-VALUATION-TECNOLOGICO-DO-ATIVO.md",
+      "docs/relatorios/H3.5-CONSOLIDACAO-PATRIMONIAL-FINAL.md",
+      "docs/relatorios/P0-ESTABILIZACAO-PLATAFORMA-ENGENHARIA.md",
+      "docs/relatorios/GIT.3-CURADORIA-PATRIMONIAL-REPOSITORIO.md"
+    ],
+    "classe_b": [
+      "docs/data-room/INDICE-DUE-DILIGENCE.md",
+      "docs/data-room/DR-01-RESUMO-EXECUTIVO.md",
+      "docs/data-room/DR-02-INVENTARIO-OFICIAL-DO-ATIVO.md",
+      "docs/data-room/DR-03-ARQUITETURA-GERAL.md",
+      "docs/data-room/DR-04-GOVERNANCA-TECNOLOGICA-E-OPERACIONAL.md",
+      "docs/data-room/DR-05-INFRAESTRUTURA-TECNOLOGICA.md",
+      "docs/data-room/DR-06-PROPRIEDADE-INTELECTUAL.md",
+      "docs/data-room/DR-07-ROADMAP-ESTRATEGICO.md",
+      "docs/data-room/DR-08-MODELO-OPERACIONAL-E-FINANCEIRO.md",
+      "docs/data-room/DR-09-AVALIACAO-ESTRATEGICA-DO-ATIVO.md",
+      "docs/data-room/DR-10-INVESTMENT-MEMORANDUM.md",
+      "docs/data-room/DR-11-MULTI-PSP-ANALYSIS.md"
+    ],
+    "classe_c": [
+      "docs/relatorios/snapshots/h0-platform-certification.json",
+      "docs/relatorios/snapshots/h1-patrimonial-package.json",
+      "docs/relatorios/snapshots/h2-data-room-executive.json",
+      "docs/relatorios/snapshots/h2a-staging-supreme-audit.json",
+      "docs/relatorios/snapshots/h2.5-data-room-sync.json",
+      "docs/relatorios/snapshots/h3-technology-valuation.json",
+      "docs/relatorios/snapshots/h3.5-patrimonial-consolidation.json",
+      "docs/relatorios/snapshots/p0-platform-stabilization.json",
+      "docs/relatorios/snapshots/git3-patrimonial-curation.json"
+    ],
+    "classe_d_excluded_examples": [
+      "src/**",
+      "database/patches/**",
+      ".github/workflows/**",
+      "goldeouro-player/**"
+    ],
+    "classe_e_excluded_examples": [
+      "_p19_*.txt",
+      "_health*.txt",
+      ".env*",
+      "secrets/"
+    ]
+  },
+  "conferencia_pre_add": {
+    "tecnico_misturado": false,
+    "dump": false,
+    "log": false,
+    "env": false,
+    "workflow": false,
+    "runtime": false,
+    "producao": false,
+    "approved_for_add": true
+  },
+  "stage_audit": {
+    "executed": false,
+    "clean": null
+  },
+  "security": {
+    "producao_alterada": false,
+    "runtime_alterado": false,
+    "backend_alterado": false,
+    "frontend_alterado": false,
+    "banco_alterado": false,
+    "fly_alterado": false,
+    "supabase_alterado": false,
+    "vercel_alterado": false,
+    "jogador_impactado": false,
+    "risco_operacional_producao": false,
+    "repositorio_mais_seguro": false,
+    "h4_autorizado": "SIM_COM_RESSALVAS"
+  },
+  "actions_performed": {
+    "code_changed": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "database_altered": false,
+    "runtime_altered": false,
+    "fly_altered": false,
+    "supabase_altered": false,
+    "vercel_altered": false,
+    "github_actions_executed": false,
+    "secrets_changed": false,
+    "production_changed": false
+  },
+  "manual_script_provided": true,
+  "artifacts_emitted": [
+    "docs/relatorios/GIT.4-PRESERVACAO-SELETIVA-ARTEFATOS-PATRIMONIAIS.md",
+    "docs/relatorios/snapshots/git4-selective-preservation.json"
+  ],
+  "next_steps": [
+    "executar_script_manual_cmd_ou_git_bash",
+    "validar_git_diff_cached_name_status",
+    "commit_sem_push",
+    "reabrir_gate_se_shell_cursor_recuperar"
+  ]
+}

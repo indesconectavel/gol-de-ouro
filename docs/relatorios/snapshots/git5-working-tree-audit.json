@@ -1,0 +1,245 @@
+{
+  "gate": "GIT.5",
+  "title": "Auditoria Suprema da Working Tree",
+  "project": "Gol de Ouro V1",
+  "primary_asset": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "READ_ONLY_ABSOLUTO",
+  "verdict": "PASS_COM_RESSALVAS",
+  "verdict_reason": "Pacote patrimonial H0-H3.5 commitado em d79a2e8; working tree permanece densa com ~28 modified tracked e ~220+ untracked pos-commit; shell D0 impede status live",
+  "indices": {
+    "higiene_git": 6.5,
+    "patrimonial": 8.5,
+    "organizacao": 5.5,
+    "versionamento": 6.5,
+    "reprodutibilidade": 6.0,
+    "risco_operacional": 3.5
+  },
+  "executive_answers": {
+    "working_tree_saudavel": "NAO",
+    "patrimonio_protegido": "SIM_COM_RESSALVAS",
+    "codigo_organizado": "NAO",
+    "apto_para_h4": "SIM_COM_RESSALVAS",
+    "risco_producao_homologada": "BAIXO"
+  },
+  "inventory_method": "git_fs_read_p19_snapshot_index_strings",
+  "git_status_live": false,
+  "shell_available": false,
+  "post_git4_state": {
+    "patrimony_commit_exists": true,
+    "patrimony_commit_hash": "d79a2e8c17eddbdb486244eeb783e53521bf3e62",
+    "patrimony_commit_message": "docs(patrimony): preserve H0-H3.5 consolidated asset package",
+    "git4_gate_report_committed": false
+  },
+  "etapa1": {
+    "branch": "chore/f2-4e-2-mp-log",
+    "head": "d79a2e8c17eddbdb486244eeb783e53521bf3e62",
+    "head_short": "d79a2e8",
+    "remote_ref": "origin/chore/f2-4e-2-mp-log",
+    "remote_hash": "110db9ed3239f96849116543f6dd51602d507adc",
+    "ahead": 1,
+    "behind": 0,
+    "merge_pending": false,
+    "rebase_pending": false,
+    "cherry_pick_pending": false,
+    "working_tree_clean": false,
+    "modified_tracked_count": 28,
+    "untracked_estimate_post_d79a2e8": "220-250",
+    "staged": false
+  },
+  "modified_tracked": [
+    ".cursor/mcp.json",
+    ".dockerignore",
+    "controllers/adminWithdrawController.js",
+    "database/patches/V1.1B-M1-R3-PROD-BASELINE-claim_and_credit_approved_pix_deposit.sql",
+    "database/patches/V1.1B-M1-R3-claim_and_credit_approved_pix_deposit.sql",
+    "database/shoot_apply_atomic_transaction.sql",
+    "docs/relatorios/V1-1B-M1-R3-STAGING-PATCH-CIRURGICO-REAL-2026-05-17.md",
+    "docs/relatorios/V1-1B-M1-R4-FECHAMENTO-PRE-PR-RPC-PIX-LEDGER-2026-05-17.md",
+    "docs/relatorios/V1-1F-STAGING-WEBHOOK-PAYOUT-HMAC-DATA-2026-05-18.json",
+    "goldeouro-player/index.html",
+    "goldeouro-player/vercel.json",
+    "goldeouro-player/vite.config.ts",
+    "package-lock.json",
+    "package.json",
+    "scripts/v1-1b-m1-r3-staging-exec.js",
+    "server-fly.js",
+    "services/pix-mercado-pago.js",
+    "src/domain/payout/processPendingWithdrawals.js",
+    "src/finance/compat/createPixWithdrawCompat.js",
+    "src/finance/deposit/createPixDeposit.js",
+    "src/finance/factory/FinanceProviderFactory.js",
+    "src/finance/providers/asaas/AsaasPaymentProvider.js",
+    "src/finance/providers/asaas/AsaasProvider.js",
+    "src/finance/providers/asaas/asaas-config.js",
+    "src/finance/providers/asaas/asaas-http-client.js",
+    "src/finance/webhooks/processAsaasTransferWebhook.js",
+    "src/finance/webhooks/processPaymentWebhook.js",
+    "src/workers/payout-worker.js"
+  ],
+  "patrimony_committed_d79a2e8": {
+    "reports": [
+      "H0-CERTIFICACAO-FINAL-PLATAFORMA-ENGENHARIA.md",
+      "H1-EMPACOTAMENTO-PATRIMONIAL-OFICIAL.md",
+      "H2-DATA-ROOM-EXECUTIVO.md",
+      "H2A-AUDITORIA-SUPREMA-STAGING-E-ARQUITETURA.md",
+      "H2.5-SINCRONIZACAO-DATA-ROOM.md",
+      "H3-VALUATION-TECNOLOGICO-DO-ATIVO.md",
+      "H3.5-CONSOLIDACAO-PATRIMONIAL-FINAL.md",
+      "P0-ESTABILIZACAO-PLATAFORMA-ENGENHARIA.md",
+      "GIT.3-CURADORIA-PATRIMONIAL-REPOSITORIO.md"
+    ],
+    "data_room": "DR-01 through DR-11 + INDICE-DUE-DILIGENCE",
+    "snapshots": [
+      "h0-platform-certification.json",
+      "h1-patrimonial-package.json",
+      "h2-data-room-executive.json",
+      "h2a-staging-supreme-audit.json",
+      "h2.5-data-room-sync.json",
+      "h3-technology-valuation.json",
+      "h3.5-patrimonial-consolidation.json",
+      "p0-platform-stabilization.json",
+      "git3-patrimonial-curation.json"
+    ],
+    "index_confirmed": true
+  },
+  "patrimony_still_untracked": [
+    "docs/relatorios/GIT.1-AUDITORIA-FORENSE-REPOSITORIO.md",
+    "docs/relatorios/GIT.2-DECISAO-MERGE-PENDENTE.md",
+    "docs/relatorios/GIT.4-PRESERVACAO-SELETIVA-ARTEFATOS-PATRIMONIAIS.md",
+    "docs/relatorios/snapshots/git4-selective-preservation.json",
+    "docs/relatorios/snapshots/git1-repository-state.json",
+    "docs/executive/**",
+    "docs/audits/**",
+    "docs/relatorios/P1.*",
+    "docs/relatorios/F2-*",
+    "docs/relatorios/ASAAS.PIPELINE.*"
+  ],
+  "classification_summary": {
+    "A_definitivo_versionado": 30,
+    "A_definitivo_pendente": "150+",
+    "B_codigo_producao_modified": 15,
+    "B_codigo_producao_untracked": 7,
+    "C_desenvolvimento": "scripts ~60, docs historicos ~150",
+    "D_infraestrutura": "workflows staging, fly configs, docker",
+    "E_temporarios": 12,
+    "F_gitignore_candidates": 8,
+    "G_suspeitos": 4
+  },
+  "classe_E_temporarios": [
+    "_p19_status.txt",
+    "_p19_core_diff.txt",
+    "_p19_diffnames.txt",
+    "_p19_diffstat.txt",
+    "_p19_finance_diffstat.txt",
+    "_p19_head_factory.txt",
+    "_p19_tracked.txt",
+    "_health1_code.txt",
+    "_pe3_files.txt",
+    "database/patches/_r3_staging_baseline_tmp.sql",
+    "docs/relatorios/snapshots/fly-logs-raw-2026-05-29.txt",
+    "docs/relatorios/snapshots/f2-4e-2a-fly-*.txt"
+  ],
+  "classe_F_gitignore": [
+    ".env.tmp",
+    ".env.production",
+    "goldeouro-player/.env.prod",
+    "_p19_*",
+    "_health*",
+    "_pe3_*",
+    "docs/relatorios/snapshots/fly-logs-raw*",
+    "backup-pre-limpeza-*/"
+  ],
+  "classe_G_suspeitos": [
+    ".cursor/mcp.json",
+    ".env.production",
+    ".env.tmp",
+    "scripts/f2-4e-2a-fly-remote.b64.txt"
+  ],
+  "directory_audit": {
+    "database": { "class": "C/D", "modified": 3, "untracked": 17, "note": "patches F2/F6/V1 + migrations P15D" },
+    "scripts": { "class": "C", "modified": 1, "untracked": 60, "note": "homologacao f2/v1/p15y" },
+    "docs": { "class": "A/C", "untracked_dirs": 7, "note": "executive/audits/operational massivo" },
+    "docs/relatorios": { "class": "A/C", "modified": 3, "untracked": 150, "note": "F2/P1/V1/ASAAS historicos" },
+    "docs/data-room": { "class": "A", "status": "committed_d79a2e8" },
+    "docs/relatorios/snapshots": { "class": "A/C/E", "committed": 9, "untracked": 50, "note": "fly-logs sao E" },
+    "github/workflows": { "class": "D", "tracked": 12, "untracked": 1, "note": "backend-deploy-staging.yml" },
+    "github/examples": { "class": "C", "untracked": 7 },
+    "goldeouro-player": { "class": "B/C", "modified": 3, "untracked": 6 },
+    "src/finance": { "class": "B", "modified": 9, "untracked": 7, "note": "Asaas PIX OUT WIP" },
+    "src/payment-engine": { "class": "B", "note": "sem delta no snapshot" }
+  },
+  "production_code_analysis": {
+    "server-fly.js": { "status": "modified", "nature": "pendencia WIP", "protected_elsewhere": "b29d847 baseline" },
+    "package.json": { "status": "modified", "nature": "deps/scripts delta" },
+    "fly.toml": { "status": "clean_in_snapshot", "note": "prod config nao modified" },
+    "fly.staging.toml": { "status": "tracked", "note": "sem M no snapshot" },
+    "finance_core": { "status": "11 modified + 7 untracked", "nature": "Asaas PIX OUT evolution", "risk": "nao deployado" }
+  },
+  "hygiene_plan_not_executed": {
+    "FASE_1": [
+      "docs(git): GIT.1 GIT.2 GIT.4 GIT.5",
+      "docs(historico-lote-1): F2 encerramento + P1 serie",
+      "docs(historico-lote-2): V1 ops + ASAAS pipeline"
+    ],
+    "FASE_2": [
+      "remover _p19_* _health* fly-logs-raw localmente",
+      "mover backup-pre-limpeza fora do repo"
+    ],
+    "FASE_3": [
+      "gitignore: _p19_* fly-logs-raw* .env.tmp secrets",
+      "revisar .env.production tracked"
+    ],
+    "FASE_4": [
+      "feat(finance): commit Asaas WIP isolado",
+      "chore(database): SQL patches em lote"
+    ],
+    "FASE_5": [
+      "ci: backend-deploy-staging.yml",
+      "github/examples watchdogs"
+    ],
+    "FASE_6": [
+      "push d79a2e8 + commits higienizacao apos review"
+    ]
+  },
+  "next_commits_recommended": [
+    "docs(git): preserve GIT.1-GIT.5 gate reports and snapshots",
+    "docs(evidence): F2-2C-Z + F2-3D encerramento cirurgias",
+    "docs(evidence): P1.6D-P1.8 payment engine certification chain",
+    "docs(ops): V1-2E continuous verification + executive final-delivery",
+    "chore(database): F2/F6/V1 patches and rollbacks",
+    "feat(finance): Asaas PIX OUT WIP — branch review before merge",
+    "ci(staging): backend-deploy-staging workflow",
+    "chore(cleanup): remove classe E + update gitignore"
+  ],
+  "security": {
+    "producao_alterada": false,
+    "backend_alterado": false,
+    "frontend_alterado": false,
+    "banco_alterado": false,
+    "fly_alterado": false,
+    "supabase_alterado": false,
+    "runtime_alterado": false,
+    "github_alterado": false,
+    "jogador_impactado": false,
+    "risco_financeiro": false,
+    "risco_operacional": false
+  },
+  "actions_performed": {
+    "code_changed": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "database_altered": false,
+    "runtime_altered": false,
+    "fly_altered": false,
+    "supabase_altered": false,
+    "vercel_altered": false,
+    "github_actions_executed": false,
+    "secrets_changed": false,
+    "production_changed": false
+  },
+  "artifacts_emitted": [
+    "docs/relatorios/GIT.5-AUDITORIA-SUPREMA-WORKING-TREE.md",
+    "docs/relatorios/snapshots/git5-working-tree-audit.json"
+  ]
+}
