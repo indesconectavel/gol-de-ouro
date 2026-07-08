@@ -1,0 +1,176 @@
+{
+  "gate": "H3.5",
+  "title": "Consolidacao Patrimonial Final",
+  "project": "Gol de Ouro V1",
+  "primary_asset": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "READ_ONLY_ABSOLUTO_CONSOLIDACAO_PATRIMONIAL",
+  "verdict": "PASS_COM_RESSALVAS",
+  "mother_question": "Narrativa patrimonial H0-H3 consistente e solida para base do Investment Memorandum H4?",
+  "mother_answer": "SIM_COM_RESSALVAS",
+  "h4_authorized": true,
+  "narrative_audit": {
+    "engineering_certs_coherent": true,
+    "patrimony_asset_package_coherent": true,
+    "data_room_synced_post_h25": true,
+    "valuation_aligned_with_risks": true,
+    "governance_staging_coherent": true,
+    "architecture_strategy_coherent": true,
+    "undeclared_material_contradictions": false,
+    "managed_tensions": [
+      "dr_historical_bodies_vs_addenda",
+      "multiple_baseline_shas_by_purpose",
+      "ipe_identity_vs_standalone_product",
+      "h_gate_name_collision_maio_vs_julho"
+    ]
+  },
+  "chronology": {
+    "story_arc": "certificar>empacotar>auditar_DR>staging>sync>valuar>consolidar",
+    "patrimonial_series_date": "2026-07-08",
+    "baselines": {
+      "v1_freeze": "a83c3cf",
+      "pe_certified": "eab1d74",
+      "p22": "d188ca6",
+      "staging_runtime": "b29d847",
+      "prod_at_g2": "f21f310-p5pixout"
+    },
+    "temporal_inconsistency": "gerida_multi_sha"
+  },
+  "patrimonial_coverage": {
+    "asset_package": true,
+    "ipe": true,
+    "produto": true,
+    "capital_intelectual": true,
+    "data_room_dr01": true,
+    "governanca": true,
+    "licenciamento_docs": true,
+    "ip_separation_docs": true,
+    "material_gaps": [
+      "commercial_packaging_materials",
+      "a2r_operational_proof",
+      "ip_registral",
+      "git_merge_residual"
+    ]
+  },
+  "classifications_consistent": true,
+  "uniform_gate_verdict_pattern": "PASS_COM_RESSALVAS",
+  "scores": {
+    "H0_media_engenharia": 7.9,
+    "H1_data_room_pre": 8.2,
+    "H2_indice_pre": 7.6,
+    "H2A_media": 7.5,
+    "H2A_independencia": 5.5,
+    "H25_indice_post": 8.7,
+    "H3_valorisation_avg": 4.3,
+    "H3_discount_avg": 3.7,
+    "incompatible_notes": false,
+    "score_inflation": false,
+    "unjustified_regression": false
+  },
+  "valuation_audit": {
+    "compatible_with_engineering": true,
+    "compatible_with_docs": true,
+    "compatible_with_risks": true,
+    "exaggeration_in_fair_band": false,
+    "strategic_ceilings_labeled": true,
+    "brl_300k_as_full_fair_would_undervalue": true,
+    "illustrative_hypotheses_declared": true
+  },
+  "ipe_independence": {
+    "identidade": true,
+    "patrimonio": "SIM_COM_RESSALVAS",
+    "fronteira_tecnica": "SIM_COM_RESSALVAS",
+    "fronteira_documental": true,
+    "fronteira_estrategica": true,
+    "fronteira_comercial": "PARCIAL",
+    "unidade_de_negocio": false
+  },
+  "staging": {
+    "ainda_faz_sentido": true,
+    "agrega_valor": true,
+    "e_patrimonio": true,
+    "serve_desacoplamento": true,
+    "risco_producao": "BAIXO",
+    "risco_patrimonial": "MEDIO"
+  },
+  "production_safety": {
+    "series_h0_h35_altered_production": false,
+    "risco_runtime": "BAIXO",
+    "risco_jogadores": "BAIXO",
+    "risco_financeiro_via_gates_doc": "BAIXO",
+    "risco_deploy_se_git_mal_operado": "MEDIO"
+  },
+  "h4_preparation": {
+    "can_produce_im_now": "SIM_COM_RESSALVAS",
+    "primary_bases": [
+      "DR-01",
+      "INDICE-DUE-DILIGENCE",
+      "H3",
+      "H3.5",
+      "H0",
+      "H1",
+      "H2.5",
+      "H2A",
+      "G2",
+      "P1.9",
+      "PE-VALOR-1",
+      "PE-VALOR-2",
+      "DR-10_precursor",
+      "V1-FINAL",
+      "F4.Z"
+    ],
+    "must_declare_in_h4": [
+      "sem_receita_auditavel",
+      "ipe_embutida",
+      "a2r_pendente",
+      "ip_registral",
+      "contas_cloud_psp",
+      "glossario_H_gates_maio_vs_julho",
+      "dr_corpos_historicos"
+    ]
+  },
+  "executive_board_review": {
+    "patrimonio_tecnologico": "SIM",
+    "patrimonio_documental": "SIM",
+    "patrimonio_intelectual": "SIM_COM_RESSALVAS",
+    "patrimonio_arquitetural": "SIM",
+    "patrimonio_operacional": "SIM_COM_RESSALVAS",
+    "narrativa_consistente": "SIM_COM_RESSALVAS",
+    "base_investidores": "SIM_COM_RESSALVAS",
+    "base_aquisicao": "SIM_COM_RESSALVAS",
+    "base_licenciamento": "SIM_COM_RESSALVAS",
+    "base_valuation": "SIM_COM_RESSALVAS",
+    "base_h4": "SIM_COM_RESSALVAS"
+  },
+  "actions_performed": {
+    "code_changed": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "database_altered": false,
+    "runtime_altered": false,
+    "workflows_executed": false,
+    "documentation_only": true,
+    "existing_technical_docs_edited": false
+  },
+  "artifacts_emitted": [
+    "docs/relatorios/H3.5-CONSOLIDACAO-PATRIMONIAL-FINAL.md",
+    "docs/relatorios/snapshots/h3.5-patrimonial-consolidation.json"
+  ],
+  "sources_required_present": {
+    "H0": true,
+    "H1": true,
+    "H2": true,
+    "H2A": true,
+    "H2.5": true,
+    "H3": true,
+    "P1.9": true,
+    "G2": true,
+    "DR-01": true,
+    "DR-02_to_11": true,
+    "PE-VALOR-1": true,
+    "PE-VALOR-2": true,
+    "V1-FINAL": true,
+    "F4.Z": true
+  },
+  "next_phase": "H4_INVESTMENT_MEMORANDUM"
+}

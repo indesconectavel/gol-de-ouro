@@ -4,8 +4,23 @@
 **Versão:** V1 (~95% concluída)  
 **Data:** 2026-06-23  
 **Modo:** auditoria READ-ONLY — infraestrutura documentada a partir de evidências do repositório  
-**Documentos relacionados:** DR-02 (Inventário), DR-03 (Arquitetura), DR-04 (Governança), `docs/certification/GOLDEOURO-V1-OFFICIAL-CERTIFICATION.md`  
+**Documentos relacionados:** DR-01, DR-02–04, certificação V1, **G2**, **H2A**, `fly.toml`, `fly.staging.toml`  
 **Repositório:** monorepo `goldeouro-backend`
+
+---
+
+## ADENDA H2.5 — Estado oficial (2026-07-08)
+
+> Corpo **2026-06-23** documenta baseline produção V1.FINAL (`a83c3cf` / Fly **v461**) como **HISTÓRICO certificado plataforma**. Releases Fly posteriores (ex.: evidências P1.9 / G2) **não invalidam** aquela certificação, mas o runtime live deve ser lido nos relatórios mais recentes.
+
+| Tema | Estado oficial H2.5 |
+|------|---------------------|
+| App produção | `goldeouro-backend-v2` + `payout_worker` (`fly.toml`) |
+| **Staging permanente** | `goldeouro-backend-staging` + **somente** processo `app` (`fly.staging.toml`) — **G2** |
+| Supabase staging | `uatszaqzdqcwnfbipoxg` (isolado de prod `gayopagjdrkcmkirmfvy`) |
+| Asaas em DR-05 como “prep/planejado” | **HISTÓRICO** no texto antigo — ver P1.9 / DR-11 adenda |
+| Deploy staging | `backend-deploy-staging.yml` (dispatch) |
+| A2R | Sandbox Asaas no staging **pendente** (H2A) |
 
 ---
 

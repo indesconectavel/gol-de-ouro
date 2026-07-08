@@ -4,8 +4,21 @@
 **Versão:** V1 (~95% concluída)  
 **Data:** 2026-06-23  
 **Modo:** auditoria READ-ONLY — patrimônio intelectual documentado a partir de evidências do repositório  
-**Documentos relacionados:** DR-02 (Inventário), DR-03 (Arquitetura), DR-04 (Governança), DR-05 (Infraestrutura), `docs/arquitetura/PAYMENT-ENGINE-V1.md`  
+**Documentos relacionados:** DR-01–05, `docs/arquitetura/PAYMENT-ENGINE-V1.md`, `LICENSE-PAYMENT-ENGINE.md`, `docs/governance/PROPRIETARY-SCOPE.md`, **H1**  
 **Repositório:** monorepo `goldeouro-backend`
+
+---
+
+## ADENDA H2.5 — Estado oficial (2026-07-08)
+
+> Corpo **2026-06-23** = inventário IP **HISTÓRICO**. Atualizações obrigatórias:
+
+| Tema histórico | Estado oficial |
+|----------------|----------------|
+| Asaas “zero código” | **OBSOLETO** — código IPE + certs P1.9 |
+| Data Room “DR-02 a DR-06” apenas | Agora **DR-01–11** + índice H2.5 |
+| Escopo proprietário IPE | Ver `LICENSE-PAYMENT-ENGINE.md` + `PROPRIETARY-SCOPE.md` + Asset Package **H1** |
+| Titularidade Indesconectável™ | Documentação de governança PE.BRAND (eficácia registral: sem evidência plena no repo) |
 
 ---
 

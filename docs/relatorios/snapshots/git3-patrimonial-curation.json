@@ -1,0 +1,207 @@
+{
+  "gate": "GIT.3",
+  "title": "Curadoria Patrimonial do Repositorio",
+  "project": "Gol de Ouro V1",
+  "primary_asset": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "READ_ONLY_ABSOLUTO",
+  "verdict": "PASS_COM_RESSALVAS",
+  "indices": {
+    "higiene_git": 5.5,
+    "patrimonial": 8.0,
+    "curadoria": 7.5
+  },
+  "ready_for_evolution": "SIM_COM_RESSALVAS",
+  "inventory_method": "documental_pe_patrimonio_plus_globs_plus_git_fs_read",
+  "git_status_short_live": false,
+  "shell_available": false,
+  "post_git2_context": {
+    "merge_open": false,
+    "branch": "chore/f2-4e-2-mp-log",
+    "head_documented": "110db9e",
+    "last_commit_message": "ci(a2r): add safe Asaas sandbox staging workflow",
+    "origin_branch_ref": "110db9e"
+  },
+  "class_counts_estimated": {
+    "A_permanente": { "min": 80, "max": 150 },
+    "B_evolutivo": { "min": 60, "max": 120 },
+    "C_historico": { "min": 400, "max": 900 },
+    "D_temporario": { "min": 20, "max": 80 },
+    "E_gitignore_candidates": { "min": 10, "max": 50 },
+    "exact_count": "sem_evidencia_suficiente"
+  },
+  "class_definitions": {
+    "A": "Patrimonio Permanente",
+    "B": "Patrimonio Evolutivo",
+    "C": "Patrimonio Historico",
+    "D": "Artefatos Temporarios",
+    "E": "Candidatos gitignore"
+  },
+  "map_roots": {
+    "A": [
+      "src/finance",
+      "src/payment-engine",
+      "src/domain/payout",
+      "src/workers",
+      "server-fly.js",
+      "docs/payment-engine",
+      "docs/data-room",
+      "docs/certification",
+      "docs/governance",
+      "fly.toml",
+      "core workflows",
+      "goldeouro-player",
+      "goldeouro-admin",
+      "H0-H3.5-P0 oficiais"
+    ],
+    "B": [
+      "fly.staging.toml",
+      "backend-deploy-staging.yml",
+      "a2r-staging-asaas-sandbox.yml",
+      ".github/examples",
+      "scripts/verify-*",
+      "scripts/p19*",
+      "scripts/s2*",
+      "scripts/s3*",
+      "database/staging",
+      "database/migrations/20260628*"
+    ],
+    "C": [
+      "docs/relatorios/P1.*",
+      "docs/relatorios/F*",
+      "docs/relatorios/S*",
+      "docs/relatorios/G*",
+      "docs/relatorios/PE-*",
+      "docs/relatorios/D0*",
+      "docs/relatorios/H ops maio",
+      "docs/relatorios/snapshots/**",
+      "database/patches",
+      "database/rollback"
+    ],
+    "D": [
+      "_p19_*.txt",
+      "_health*.txt",
+      "_pe3_files.txt",
+      "fly-logs-raw*",
+      "_r3_staging_baseline_tmp.sql"
+    ],
+    "E": [
+      ".env locais",
+      "secrets/",
+      "_agent_*",
+      "spike-*",
+      "backup tip duplicates",
+      "node_modules/dist"
+    ]
+  },
+  "top50_important": [
+    "src/finance",
+    "src/payment-engine",
+    "server-fly.js",
+    "src/workers/payout-worker.js",
+    "src/domain/payout",
+    "LICENSE-PAYMENT-ENGINE.md",
+    "README-PAYMENT-ENGINE.md",
+    "CHANGELOG_PAYMENT_ENGINE.md",
+    "docs/payment-engine/01-12",
+    "DR-01",
+    "INDICE-DUE-DILIGENCE",
+    "DR-02 to DR-11",
+    "GOLDEOURO-V1-OFFICIAL-CERTIFICATION",
+    "V1-FINAL-OPERATIONAL-VERDICT",
+    "fly.toml",
+    "fly.staging.toml",
+    "backend-deploy.yml",
+    "backend-deploy-staging.yml",
+    "a2r-staging-asaas-sandbox.yml",
+    "p19-certification.cjs",
+    "verify-p18-payout-recovery.mjs",
+    "P1.9",
+    "F4.Z",
+    "G2",
+    "H0",
+    "H1",
+    "H3",
+    "H3.5",
+    "P0",
+    "PROPRIETARY-SCOPE",
+    "BASELINE-PROTECTION-POLICY",
+    "PAYMENT-ENGINE-V1.md",
+    "HOMOLOGACAO-PERMANENTE.md",
+    "F6-1C RLS patch",
+    "V1.1B-M1-R3 claim baselines",
+    "PE-VALOR-1",
+    "g2-certificacao snapshot",
+    "h1-patrimonial-package.json",
+    "goldeouro-player",
+    "goldeouro-admin",
+    "env examples"
+  ],
+  "top50_temporary_patterns": [
+    "_p19_*.txt",
+    "_health1_code.txt",
+    "_pe3_files.txt",
+    "f2-4e-2a-fly-*.txt",
+    "fly-logs-raw*",
+    "_r3_staging_baseline_tmp.sql",
+    "_agent_*",
+    "spike-*",
+    "P15Y-*",
+    "backup-pre-limpeza workflows duplicates"
+  ],
+  "thematic_checks": {
+    "docs_duplicates": true,
+    "docs_obsolete_mitigated_by_h25": true,
+    "data_room_consistent_post_h25": true,
+    "workflows_prod_staging_ci_examples": true,
+    "sql_tmp_identified": true
+  },
+  "risks": [
+    { "axis": "versionamento", "severity": "ALTO", "risk": "commit_dumps_secrets_logs" },
+    { "axis": "patrimonio", "severity": "ALTO", "risk": "perda_untracked_h0_p0_p1" },
+    { "axis": "git", "severity": "MEDIO_ALTO", "risk": "wip_finance_misturado_baseline" },
+    { "axis": "deploy", "severity": "MEDIO", "risk": "R7_e_workflows" },
+    { "axis": "producao", "severity": "BAIXO", "risk": "nenhuma_mutacao_neste_gate" }
+  ],
+  "hygiene_plan_not_executed": {
+    "FASE_1": [
+      "git_status_live_operador",
+      "commit_lotes_A_B_docs_sem_dumps",
+      "bloquear_secrets_env"
+    ],
+    "FASE_2": [
+      "lotes_C_historicos",
+      "snapshots_curated",
+      "glossario_H_gates"
+    ],
+    "FASE_3": [
+      "remover_D_local",
+      "atualizar_gitignore_gate_futuro",
+      "archive_backups"
+    ]
+  },
+  "actions_performed": {
+    "code_changed": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "database_altered": false,
+    "runtime_altered": false,
+    "fly_altered": false,
+    "supabase_altered": false,
+    "vercel_altered": false,
+    "github_actions_executed": false,
+    "secrets_changed": false,
+    "production_changed": false,
+    "files_edited_besides_deliverables": false,
+    "gitignore_altered": false
+  },
+  "artifacts_emitted": [
+    "docs/relatorios/GIT.3-CURADORIA-PATRIMONIAL-REPOSITORIO.md",
+    "docs/relatorios/snapshots/git3-patrimonial-curation.json"
+  ],
+  "next_recommended": [
+    "operador_git_status_short",
+    "fase1_commits_seletivos_outro_gate",
+    "H4_Investment_Memorandum"
+  ]
+}

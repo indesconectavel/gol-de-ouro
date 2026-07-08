@@ -1,0 +1,93 @@
+{
+  "gate": "H2.5",
+  "title": "Sincronizacao Oficial do Data Room",
+  "project": "Gol de Ouro V1",
+  "primary_asset": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "DOCUMENTACAO_CONTROLADA",
+  "base_gates": ["H0", "H1", "H2", "H2A", "P1.9", "G2"],
+  "verdict": "PASS_COM_RESSALVAS",
+  "ready_for_h3": "SIM_COM_RESSALVAS",
+  "executive_answers": {
+    "data_room_represents_current_state": "SIM_COM_RESSALVAS",
+    "patrimony_synchronized": "SIM_COM_RESSALVAS",
+    "documental_drift": "material_critico_mitigado_residual_existe",
+    "narrative_consistent": "SIM_COM_RESSALVAS",
+    "ready_for_h3": "SIM_COM_RESSALVAS"
+  },
+  "scores": {
+    "pre_h25_from_h2": {
+      "completude": 8.0,
+      "organizacao": 8.5,
+      "coerencia": 6.5,
+      "rastreabilidade": 7.5,
+      "navegacao": 7.0,
+      "indice_geral": 7.6
+    },
+    "post_h25": {
+      "completude": 9.0,
+      "organizacao": 9.0,
+      "coerencia": 8.5,
+      "rastreabilidade": 8.5,
+      "navegacao": 8.5,
+      "consistencia_executiva": 8.5,
+      "indice_data_room_executivo": 8.7
+    }
+  },
+  "drift_closed": [
+    "asaas_zero_codigo_narrative",
+    "pix_out_only_mp_blockage_as_sole_gap",
+    "dr01_absent",
+    "index_missing_h0_h2a_p19_g2",
+    "staging_absent_from_dr05_narrative",
+    "asset_package_not_in_data_room_nav"
+  ],
+  "residual_reservations": [
+    "a2r_asaas_sandbox_resolvable_pending",
+    "dr_bodies_still_historical_require_addenda_reading",
+    "staging_sha_b29d847_vs_tip_p22",
+    "homologacao_permanente_md_header_not_updated_this_gate",
+    "git_merge_outside_scope"
+  ],
+  "artifacts": {
+    "created": [
+      "docs/data-room/DR-01-RESUMO-EXECUTIVO.md",
+      "docs/relatorios/H2.5-SINCRONIZACAO-DATA-ROOM.md",
+      "docs/relatorios/snapshots/h2.5-data-room-sync.json"
+    ],
+    "updated": [
+      "docs/data-room/INDICE-DUE-DILIGENCE.md",
+      "docs/data-room/DR-02-INVENTARIO-OFICIAL-DO-ATIVO.md",
+      "docs/data-room/DR-03-ARQUITETURA-GERAL.md",
+      "docs/data-room/DR-04-GOVERNANCA-TECNOLOGICA-E-OPERACIONAL.md",
+      "docs/data-room/DR-05-INFRAESTRUTURA-TECNOLOGICA.md",
+      "docs/data-room/DR-06-PROPRIEDADE-INTELECTUAL.md",
+      "docs/data-room/DR-07-ROADMAP-ESTRATEGICO.md",
+      "docs/data-room/DR-08-MODELO-OPERACIONAL-E-FINANCEIRO.md",
+      "docs/data-room/DR-09-AVALIACAO-ESTRATEGICA-DO-ATIVO.md",
+      "docs/data-room/DR-10-INVESTMENT-MEMORANDUM.md",
+      "docs/data-room/DR-11-MULTI-PSP-ANALYSIS.md"
+    ]
+  },
+  "method": "addenda_h25_preserving_historical_bodies",
+  "roadmap_decoupling": {
+    "B": "modulo_interno_recomendado_agora",
+    "C": "pacote_apos_B",
+    "D": "prematuro",
+    "E": "prematuro"
+  },
+  "actions_performed": {
+    "code_changed": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "fly_altered": false,
+    "supabase_altered": false,
+    "vercel_altered": false,
+    "secrets_altered": false,
+    "workflows_altered": false,
+    "database_altered": false,
+    "runtime_altered": false,
+    "documentation_only": true
+  },
+  "next_phase": "H3_VALUATION_TECNOLOGICO"
+}

@@ -4,8 +4,24 @@
 **Versão:** V1 (~95% concluída)  
 **Data:** 2026-06-23  
 **Modo:** auditoria READ-ONLY — arquitetura documentada a partir de evidências do repositório  
-**Documentos relacionados:** DR-01 (Resumo Executivo), DR-02 (Inventário), `docs/arquitetura/PAYMENT-ENGINE-V1.md`  
+**Documentos relacionados:** [`DR-01`](./DR-01-RESUMO-EXECUTIVO.md) (Resumo Executivo — **presente desde H2.5**), DR-02 (Inventário), `docs/arquitetura/PAYMENT-ENGINE-V1.md`  
 **Repositório:** monorepo `goldeouro-backend`
+
+---
+
+## ADENDA H2.5 — Estado oficial (2026-07-08)
+
+> Corpo datado **2026-06-23** = **NARRATIVA ORIGINAL**. Fatos arquiteturais atuais: **H0**, **H2A**, **P1.9**, **G2**, `docs/payment-engine/01–12`.
+
+| Afirmação histórica típica neste DR | Estado oficial |
+|-------------------------------------|----------------|
+| Asaas “planejado / sem código” | **HISTÓRICO** — código + operação/homologação Asaas existentes |
+| Gap dominante = PIX OUT automático inexistente | **SUBSTITUÍDO:** OUT Asaas + Recovery Job (P1.9); staging workers OFF por design |
+| DR-01 ausente | **Resolvido** (H2.5) |
+| PE só como pasta parcial | **IPE™** com Facade P2.2 + Compat Layer + Provider Layer |
+| Sem homologação permanente Fly | **Existe** — `fly.staging.toml` / G2 |
+
+Desacoplamento recomendado (**sem antecipar**): **B** módulo interno → **C** pacote → **D** repo → **E** produto (H2A).
 
 ---
 

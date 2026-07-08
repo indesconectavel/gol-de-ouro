@@ -1,0 +1,157 @@
+{
+  "gate": "H3",
+  "title": "Valuation Tecnologico do Ativo",
+  "project": "Gol de Ouro V1",
+  "primary_asset": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "VALUATION_DOCUMENTAL_READ_ONLY_ABSOLUTO",
+  "verdict": "PASS_COM_RESSALVAS",
+  "disclaimer": "Nao constitui laudo pericial, oferta vinculante ou valuation IFRS. Sem MRR/ARR auditavel no repositorio. Faixas BRL indicativas.",
+  "objects": {
+    "A_gol_de_ouro_v1": "produto_completo_producao",
+    "B_ipe": "nucleo_financeiro_reutilizavel",
+    "C_asset_package": "documentacao_data_room_certs",
+    "D_capital_intelectual": "metodologias_know_how_gates"
+  },
+  "methods": {
+    "reconstruction_cost": {
+      "gdo_hours_h41": "1500-2200",
+      "gdo_rebuild_proxy_brl": "225000-550000",
+      "docs_premium_brl": "100000-250000",
+      "ipe_replacement_pe_valor1_brl": "750000-1200000"
+    },
+    "strategic_value": "alto_com_ressalvas_monolito",
+    "market_potential": "negociavel_sem_transacoes_fechadas",
+    "documentary_value": "alto_data_room_8_7",
+    "option_value": "real_condicionado_B_para_E"
+  },
+  "valorisation_factors_avg": 4.3,
+  "discount_factors_avg": 3.7,
+  "scenarios": [
+    {
+      "id": 1,
+      "name": "venda_conservadora_rapida",
+      "brl_range": [180000, 350000],
+      "defensibility": "media_baixa"
+    },
+    {
+      "id": 2,
+      "name": "venda_tecnica_justa",
+      "brl_range": [400000, 850000],
+      "defensibility": "alta"
+    },
+    {
+      "id": 3,
+      "name": "licenciamento_parceria",
+      "setup_brl": [80000, 250000],
+      "recurring_brl_month_illustrative": [8000, 40000],
+      "defensibility": "media"
+    },
+    {
+      "id": 4,
+      "name": "valuation_estrategico_ipe",
+      "brl_range": [900000, 2500000],
+      "defensibility": "media_condicionado",
+      "note": "haircut vs teto PE.VALOR enquanto sem 2o cliente"
+    }
+  ],
+  "bands_package_A_with_B_embedded": {
+    "minimo_defensavel_brl": [250000, 350000],
+    "justo_tecnico_brl": [450000, 800000],
+    "estrategico_brl": [800000, 1500000],
+    "maximo_condicionado_brl": [1500000, 3000000]
+  },
+  "bands_ipe_isolated_B": {
+    "source": "PE-VALOR-1",
+    "minimo_economico_brl": [450000, 650000],
+    "tecnico_provavel_brl": [750000, 1800000],
+    "estrategico_brl": [1500000, 3500000],
+    "h3_haircut_recommendation": "15-35_percent_while_embedded"
+  },
+  "brl_300k": {
+    "answer": "SIM_COM_RESSALVAS",
+    "venda_rapida": "SIM",
+    "venda_tecnica": "SIM_COM_RESSALVAS_piso",
+    "venda_estrategica": "NAO_como_preco_justo",
+    "licenciamento": "SIM_como_setup_parcial"
+  },
+  "negotiation_models": [
+    "venda_integral",
+    "venda_parcial",
+    "licenciamento",
+    "white_label",
+    "parceria_estrategica",
+    "earn_out",
+    "entrada_mais_participacao",
+    "retainer_pos_venda"
+  ],
+  "market_readiness": "SIM_COM_RESSALVAS",
+  "top_5_value_lifts": [
+    "one_pager_teaser_from_dr01",
+    "demo_video_pix_recovery",
+    "complete_a2r_staging",
+    "pitch_ipe_separado",
+    "pagina_institucional_kit_licenca"
+  ],
+  "buyers": {
+    "empresa_software": 4,
+    "fintech": 5,
+    "casa_apostas_legalizada": 3,
+    "plataforma_jogos": 4,
+    "agencia_tech": 3,
+    "investidor_anjo": 3,
+    "operador_regional": 3,
+    "comprador_estrategico": 4,
+    "parceiro_white_label": 3
+  },
+  "executive_answers": {
+    "valor_tecnologico_real": true,
+    "valor_patrimonial_real": true,
+    "valor_mercado_imediato": "SIM_COM_RESSALVAS",
+    "valor_estrategico_futuro": true,
+    "ipe_mais_valiosa": "fora_medio_prazo_dentro_curto_prazo_prova",
+    "vender_junto_ou_separado": "pacote_integral_ou_licenca_ipe_evitar_carve_frio",
+    "justifica_300k": "SIM_COM_RESSALVAS",
+    "vender_agora_ou_empacotar": "oferta_soft_agora_empacotar_paralelo"
+  },
+  "missing_for_classic_financial_valuation": [
+    "receita_auditavel",
+    "pipeline_compradores",
+    "multiplos_transacoes_comparaveis_fechadas"
+  ],
+  "actions_performed": {
+    "code_changed": false,
+    "existing_docs_edited": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "scripts_executed": false,
+    "fly_altered": false,
+    "supabase_altered": false,
+    "vercel_altered": false,
+    "secrets_altered": false,
+    "workflows_executed": false,
+    "database_altered": false,
+    "runtime_altered": false,
+    "financial_ops_simulated": false
+  },
+  "artifacts_emitted": [
+    "docs/relatorios/H3-VALUATION-TECNOLOGICO-DO-ATIVO.md",
+    "docs/relatorios/snapshots/h3-technology-valuation.json"
+  ],
+  "sources_required": {
+    "H0": true,
+    "H1": true,
+    "H2": true,
+    "H2A": true,
+    "H2.5": true,
+    "P1.9": true,
+    "G2": true,
+    "DR-01": true,
+    "DR-09": true,
+    "DR-10": true,
+    "PE-VALOR-1": true,
+    "PE-VALOR-2": true,
+    "H4.1_auxiliar": true
+  },
+  "next_phase": "H4_INVESTMENT_MEMORANDUM"
+}

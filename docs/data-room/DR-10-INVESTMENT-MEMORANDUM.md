@@ -5,7 +5,23 @@
 **Data:** 2026-06-23  
 **Classificação:** Uso interno — sócios, investidores qualificados e processos de M&A  
 **Modo:** consolidação READ-ONLY — síntese dos documentos DR-02 a DR-09  
-**Base analítica:** Repositório `goldeouro-backend` + certificação V1.6 + handbook executivo  
+**Base analítica:** Repositório `goldeouro-backend` + certificação V1.6 + handbook + **H0–H2.5** + **P1.9** + **G2**
+
+---
+
+## ADENDA H2.5 — Estado oficial (2026-07-08)
+
+> Este DR-10 permanece **precursor do H4** (Investment Memorandum de negociação). Corpo **2026-06-23** = **NARRATIVA ORIGINAL**.
+
+| Afirmação histórica | Leitura oficial |
+|---------------------|-----------------|
+| Gap principal = “destravar Cash-Out via PSP” | **HISTÓRICO / parcial** — OUT Asaas + Recovery (**P1.9**); packaging/desacoplamento e A2R são gaps atuais relevantes |
+| DR-01 ausente | **Resolvido** |
+| Data Room “8 docs” | Agora **DR-01–11** + índice sincronizado |
+| Runtime só v461 / `a83c3cf` | Baseline **plataforma** V1.FINAL; runtime financeiro evoluiu (ler P1.9 / G2 / H2A) |
+| Asset Package | Ver **H1** |
+
+**Para deal process:** usar **DR-01** + esta adenda + H0/H1 até emissão do **H4**.
 
 ---
 

@@ -6,7 +6,26 @@
 **Modo:** auditoria READ-ONLY + decisão arquitetural F4.3C  
 **Documento técnico completo:** [`F4.2H-MULTI-PSP-AUDIT.md`](../relatorios/F4.2H-MULTI-PSP-AUDIT.md)  
 **Promoção PSP primário:** [`F4.3C-PRIMARY-PSP-PROMOTION.md`](../relatorios/F4.3C-PRIMARY-PSP-PROMOTION.md)  
-**Documentos relacionados:** DR-07 (Roadmap), DR-08 (Modelo Financeiro), DR-09 (Avaliação Estratégica)
+**Documentos relacionados:** DR-01, DR-07, DR-08, DR-09, **P1.9**, **G2**, **H2A**, F4.2H, F4.3C  
+**Repositório:** monorepo `goldeouro-backend`
+
+---
+
+## ADENDA H2.5 — Estado oficial (2026-07-08)
+
+> Corpo **2026-06-27 (F4.3C)** = decisão arquitetural **ainda válida** (Asaas primário arquitetural × runtime gated). Completar com evidências pós-F4:
+
+| Fluxo | Estado oficial pós-P1.9 / G2 |
+|-------|------------------------------|
+| PIX IN Asaas | Homologação/produção controlada na trilha P1.4–P1.5 (não “sandbox only” como único fato) |
+| PIX OUT Asaas | Homologado + **Recovery** (P1.8/P1.9) — **não** “apenas PENDING sandbox” |
+| Staging | Provider pode estar MP legacy se `ASAAS_API_KEY` ausente (**G2**); A2R visando resolvível=true **pendente** |
+| Produção (G2 snapshot) | `paymentProvider` Asaas primary observado na certificação staging G2 vs prod |
+| Celcoin | Continua prep / parcial |
+
+Matriz §3 do corpo que marca PIX OUT Asaas ❌ operacional = **HISTÓRICO** relativo a jun/2026 — substituir leitura pela linha P1.9.
+
+Bloqueio §4 (MP Transaction Intents) permanece **relevante para rota MP OUT**, não como único bloqueio da V1 após Asaas OUT.
 
 ---
 

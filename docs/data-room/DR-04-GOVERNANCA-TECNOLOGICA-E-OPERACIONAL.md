@@ -4,8 +4,15 @@
 **Versão:** V1 (~95% concluída)  
 **Data:** 2026-06-23  
 **Modo:** auditoria READ-ONLY — governança documentada a partir de evidências do repositório  
-**Documentos relacionados:** DR-02 (Inventário), DR-03 (Arquitetura), `docs/certification/GOLDEOURO-V1-OFFICIAL-CERTIFICATION.md`, `docs/governance/`  
+**Documentos relacionados:** DR-01, DR-02, DR-03, `docs/certification/GOLDEOURO-V1-OFFICIAL-CERTIFICATION.md`, `docs/governance/`, série **H0–H2.5**  
 **Repositório:** monorepo `goldeouro-backend`
+
+---
+
+## ADENDA H2.5 — Estado oficial (2026-07-08)
+
+> Governança V1.6 (**88/100**, CERTIFIED WITH RESSALVAS) **permanece válida**. Ampliar leitura com: **H0** (engenharia), **H1** (Asset Package), **G2** (staging permanente), **BASELINE-PROTECTION-POLICY**, tags PE.  
+> Corpo 2026-06-23 = **NARRATIVA ORIGINAL** da governança naquela data; não contradiz score 88.
 
 ---
 

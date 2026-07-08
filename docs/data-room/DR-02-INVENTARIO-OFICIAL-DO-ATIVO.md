@@ -9,6 +9,24 @@
 
 ---
 
+## ADENDA H2.5 — Estado oficial (2026-07-08)
+
+> **SUBSTITUÍDO PELO H0 / H1 / P1.9 / G2 / H2A** para fatos abaixo. O corpo deste DR-02 (datado 2026-06-23) permanece como **NARRATIVA ORIGINAL / HISTÓRICO** do inventário naquela data.  
+> Porta de entrada atual: [`DR-01-RESUMO-EXECUTIVO.md`](./DR-01-RESUMO-EXECUTIVO.md).
+
+| Tema no corpo histórico | Estado oficial H2.5 |
+|-------------------------|---------------------|
+| Asaas “zero código / planejado” | **OBSOLETO** — Providers Asaas em `src/finance/providers/asaas/`; PIX IN/OUT e Recovery certificados (**P1.9 PASS**) |
+| Payment Engine “parcial” / MP-only default | **Atualizar leitura:** IPE™ com factory multi-PSP, fachada P2.2, Asaas primário arquitetural; MP pode permanecer legado/fallback conforme ENV |
+| Staging só “docs F2-2B” | **Homologação permanente:** `goldeouro-backend-staging` + `fly.staging.toml` + **G2 PASS COM RESSALVAS** (`b29d847`) |
+| PIX OUT “bloqueio onboarding” como único gap | **Parcialmente historico:** OUT Asaas homologado + Recovery; gates produção aplicáveis; A2R staging sandbox pendente (H2A) |
+| Data Room sem DR-01 | **Resolvido:** DR-01 criado em H2.5 |
+| Asset Package / patrimônio | Ver **H1** + snapshot `h1-patrimonial-package.json` |
+
+**Não apagar** seções históricas §9/§12 que citam Asaas ausente — marcar mentalmente como inventário jun/2026.
+
+---
+
 ## Metodologia
 
 Este inventário responde, para cada ativo encontrado:

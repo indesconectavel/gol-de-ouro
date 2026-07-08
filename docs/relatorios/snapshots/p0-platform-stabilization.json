@@ -1,0 +1,225 @@
+{
+  "gate": "P0",
+  "title": "Estabilizacao da Plataforma de Engenharia",
+  "project": "Gol de Ouro V1",
+  "primary_asset": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "READ_ONLY_ABSOLUTO",
+  "priority": "MAXIMA",
+  "verdict_platform_stabilized": "SIM_COM_RESSALVAS",
+  "h4_can_start": true,
+  "git_audit": {
+    "verdict": "PASS_COM_RESSALVAS",
+    "branch_documented": "chore/f2-4e-2-mp-log",
+    "head_documented": "b29d847",
+    "merge_pending": true,
+    "merge_from": "origin/main@22f75f71",
+    "apparent_conflicts": false,
+    "working_tree_dirty": true,
+    "untracked_volume": true,
+    "prs_live_inventory": "sem_evidencia_suficiente",
+    "evidence": [
+      "docs/relatorios/snapshots/git1-repository-state.json",
+      "docs/relatorios/GIT.2-DECISAO-MERGE-PENDENTE.md"
+    ],
+    "resolution_after_git2": "sem_evidencia_suficiente"
+  },
+  "architecture": {
+    "stable": "SIM_COM_RESSALVAS",
+    "acceptable_couplings": [
+      "monolith_http",
+      "goldeouro_schema_wallet_ledger",
+      "compat_layers",
+      "goldeouro_adapters"
+    ],
+    "future_removal": [
+      "unnecessary_compat",
+      "generic_claim_credit",
+      "B_to_C_extraction",
+      "later_D_E"
+    ],
+    "decoupling_path": "B>C>D>E"
+  },
+  "production": {
+    "risk_from_hx_docs_series": "BAIXO",
+    "risk_players": "BAIXO",
+    "risk_financial_legacy": "MEDIO",
+    "risk_ops_git_deploy": "MEDIO_ALTO",
+    "live_revalidated_on_p0_date": false
+  },
+  "staging": {
+    "coherent": true,
+    "adds_value": true,
+    "still_makes_sense": true,
+    "technical_debt": true,
+    "g2": "PASS_COM_RESSALVAS",
+    "a2r_pending": true
+  },
+  "payment_engine": {
+    "evolving_to_independent_asset": "SIM_COM_RESSALVAS",
+    "identidade": "madura",
+    "arquitetura": "madura_com_ressalvas",
+    "produto_standalone": "imaturo",
+    "negocio": "imaturo",
+    "patrimonio": "reconhecido_com_ressalvas",
+    "licenciamento": "parcial",
+    "desacoplamento": "caminho_correto_B_C"
+  },
+  "data_room": {
+    "integral": "SIM_COM_RESSALVAS",
+    "material_unresolved_drift": false,
+    "residual_drift": true,
+    "index_score_post_h25": 8.7
+  },
+  "valuation": {
+    "exaggeration_in_fair_band": false,
+    "bands_coherent": true,
+    "h3_h35_consistent": true
+  },
+  "governance_maturity": "GOVERNED_semi_autonomous_plus_patrimonial_PASS_COM_RESSALVAS",
+  "infrastructure_critical_pending": [
+    "a2r_operational_close",
+    "git_hygiene_for_pipeline_repro"
+  ],
+  "risk_matrix": [
+    { "id": "G1", "category": "Git", "severity": "ALTO", "risk": "merge_pendente_tree_suja" },
+    { "id": "G2", "category": "Git/Patrimonial", "severity": "ALTO", "risk": "artefatos_tags_locais" },
+    { "id": "G3", "category": "Git/Infra", "severity": "MEDIO", "risk": "R7_dev_to_prod_app" },
+    { "id": "A1", "category": "Arquitetural", "severity": "MEDIO", "risk": "ipe_monolito_schema" },
+    { "id": "S1", "category": "Staging", "severity": "MEDIO_ALTO", "risk": "a2r_asaas" },
+    { "id": "S2", "category": "Staging", "severity": "MEDIO", "risk": "sha_pin_vs_p22" },
+    { "id": "O1", "category": "Operacional", "severity": "MEDIO", "risk": "shell_local_d0" },
+    { "id": "F1", "category": "Financeiro", "severity": "MEDIO", "risk": "legado_sem_ARR" },
+    { "id": "P1", "category": "Producao", "severity": "MEDIO", "risk": "cutover_merge_deploy" },
+    { "id": "D1", "category": "Documental", "severity": "BAIXO_MEDIO", "risk": "dr_corpos_homologacao_header" },
+    { "id": "C1", "category": "Cloud", "severity": "MEDIO", "risk": "contas_nao_transferiveis" },
+    { "id": "IP1", "category": "Patrimonial", "severity": "MEDIO", "risk": "ip_registral" }
+  ],
+  "roadmap": {
+    "immediate": [
+      "git2_resolve_merge",
+      "curadoria_commit_vs_gitignore",
+      "declarar_ressalvas_no_h4"
+    ],
+    "short": [
+      "a2r_staging",
+      "tags_pe_remote",
+      "one_pager_demo",
+      "mitigar_R7"
+    ],
+    "medium": [
+      "desacoplamento_B_C",
+      "politica_pin_staging",
+      "atualizar_homologacao_doc"
+    ],
+    "long": [
+      "D_E_productization",
+      "stress_pentest_alertas",
+      "segundo_cliente"
+    ]
+  },
+  "executive_checklist": {
+    "plataforma_estavel": "SIM_COM_RESSALVAS",
+    "pode_continuar_evoluindo": true,
+    "pode_iniciar_h4": true,
+    "pode_iniciar_dd": "SIM_COM_RESSALVAS",
+    "pode_apresentacoes": "SIM_COM_RESSALVAS",
+    "pode_negociacao": "SIM_COM_RESSALVAS",
+    "pode_receber_investidores": "SIM_COM_RESSALVAS"
+  },
+  "scores": {
+    "arquitetura": 8.0,
+    "backend": 8.0,
+    "frontend": 7.0,
+    "admin": 6.8,
+    "payment_engine": 8.5,
+    "infraestrutura": 7.8,
+    "governanca": 7.5,
+    "documentacao": 8.8,
+    "observabilidade": 7.5,
+    "seguranca": 8.0,
+    "escalabilidade": 6.0,
+    "patrimonio_tecnologico": 8.0,
+    "maturidade_geral": 7.7
+  },
+  "pending_before_h4_priority": [
+    {
+      "rank": 1,
+      "item": "merge_git_pendente_GIT2",
+      "blocks_h4_draft": false,
+      "blocks_full_stability": true
+    },
+    {
+      "rank": 2,
+      "item": "preservacao_patrimonial_untracked_tags",
+      "blocks_h4_draft": false,
+      "blocks_full_stability": true
+    },
+    {
+      "rank": 3,
+      "item": "a2r_asaas_sandbox",
+      "blocks_h4_draft": false,
+      "blocks_full_stability": "partial"
+    },
+    {
+      "rank": 4,
+      "item": "glossario_e_ressalvas_no_IM",
+      "blocks_h4_draft": false,
+      "recommended_in_h4": true
+    },
+    {
+      "rank": 5,
+      "item": "materiais_comerciais",
+      "blocks_h4_draft": false
+    },
+    {
+      "rank": 6,
+      "item": "R7_workflow",
+      "blocks_h4_draft": false
+    },
+    {
+      "rank": 7,
+      "item": "pin_sha_staging_vs_p22",
+      "blocks_h4_draft": false
+    },
+    {
+      "rank": 8,
+      "item": "ipe_B_to_C",
+      "blocks_h4_draft": false
+    },
+    {
+      "rank": 9,
+      "item": "stress_pentest_alertas",
+      "blocks_h4_draft": false
+    },
+    {
+      "rank": 10,
+      "item": "segundo_cliente_receita",
+      "blocks_h4_draft": false
+    }
+  ],
+  "actions_performed": {
+    "code_changed": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "database_altered": false,
+    "runtime_altered": false,
+    "fly_executed": false,
+    "supabase_executed": false,
+    "vercel_executed": false,
+    "github_actions_executed": false,
+    "workflows_altered": false,
+    "secrets_altered": false,
+    "financial_operations": false,
+    "existing_docs_edited": false
+  },
+  "artifacts_emitted": [
+    "docs/relatorios/P0-ESTABILIZACAO-PLATAFORMA-ENGENHARIA.md",
+    "docs/relatorios/snapshots/p0-platform-stabilization.json"
+  ],
+  "next_recommended": [
+    "GIT2_resolve_operator",
+    "H4_Investment_Memorandum",
+    "A2R_parallel"
+  ]
+}

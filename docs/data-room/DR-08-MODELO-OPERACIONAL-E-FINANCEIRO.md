@@ -4,8 +4,23 @@
 **Versão:** V1 (~95% concluída)  
 **Data:** 2026-06-23  
 **Modo:** auditoria READ-ONLY — modelo documentado a partir de evidências do repositório  
-**Documentos relacionados:** DR-03 (Arquitetura §6), DR-06 (IP), DR-07 (Roadmap), `docs/arquitetura/PAYMENT-ENGINE-V1.md`, `docs/certification/GOLDEOURO-V1-OFFICIAL-CERTIFICATION.md`  
+**Documentos relacionados:** DR-01, DR-03, DR-06, DR-07, DR-11, **P1.9**, **H0**, `docs/arquitetura/PAYMENT-ENGINE-V1.md`  
 **Repositório:** monorepo `goldeouro-backend`
+
+---
+
+## ADENDA H2.5 — Estado oficial (2026-07-08)
+
+> Corpo **2026-06-23** = **NARRATIVA ORIGINAL** do modelo dual wallet+ledger (ainda válido). Atualizar fluxos OUT:
+
+| Tema | Estado oficial |
+|------|----------------|
+| PIX OUT automático “📋 / bloqueio onboarding MP” como gap único | **HISTÓRICO parcial** — Asaas PIX OUT homologado; **Recovery Job** certificado (**P1.9 PASS**) |
+| Workers | Produção: `payout_worker` ON; Staging: OFF (design G2/H2A) |
+| Idempotência / ledger | Mantém-se como eixo de integridade (V1.1B / P1.9) |
+| Gates produção | Feature flags Asaas / PIX OUT / webhook — ler health snapshot PE |
+
+Para matriz PSP atualizada ver **DR-11 adenda H2.5**.
 
 ---
 

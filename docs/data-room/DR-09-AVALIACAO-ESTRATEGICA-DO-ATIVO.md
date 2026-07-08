@@ -4,8 +4,22 @@
 **Versão de referência:** V1 (~95% concluída)  
 **Data:** 2026-06-23  
 **Modo:** auditoria READ-ONLY — avaliação estratégica baseada em evidências do repositório e Data Room  
-**Documentos base:** DR-02 a DR-08, certificação V1.6, handbook executivo, PAYMENT-ENGINE-V1  
+**Documentos relacionados:** DR-01–08, certificação V1.6, **H0**, **H1**, **PE.VALOR.1**, handbook executivo  
 **Repositório:** monorepo `goldeouro-backend`
+
+---
+
+## ADENDA H2.5 — Estado oficial (2026-07-08)
+
+> Avaliação qualitativa jun/2026 permanece útil como **NARRATIVA ORIGINAL**. Completar com:
+
+| Dimensão | Atualização |
+|----------|-------------|
+| Classificação patrimonial | Ativo Tecnológico Patrimonial **COM RESSALVAS** (**H1**) |
+| IPE como ativo reutilizável | **SIM COM RESSALVAS** — núcleo sim; SaaS/npm não (**H0/H2A**) |
+| Gap Cash-Out | **Não** usar DR-09 antigo como única fonte — ver **P1.9** |
+| Data Room / DR-01 | Completude melhorada em **H2.5** |
+| Próximo valuation formal | Gate **H3** (não reemitir preço neste DR) |
 
 ---
 

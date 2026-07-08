@@ -1,0 +1,195 @@
+{
+  "gate": "H2",
+  "title": "Data Room Executivo",
+  "project": "Gol de Ouro V1",
+  "primary_asset": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "READ_ONLY_ABSOLUTE",
+  "base_gate": {
+    "id": "H1",
+    "verdict": "PASS_COM_RESSALVAS",
+    "path": "docs/relatorios/H1-EMPACOTAMENTO-PATRIMONIAL-OFICIAL.md"
+  },
+  "verdict": "PASS_COM_RESSALVAS",
+  "mother_question": "O Data Room Executivo do Gol de Ouro atende ao padrao esperado para um ativo tecnologico em processo de negociacao estrategica?",
+  "mother_answer": "SIM_COM_RESSALVAS",
+  "corporate_documentation_standard": true,
+  "next_phase": "H3_VALUATION_TECNOLOGICO",
+  "h3_prerequisite": "sincronizar_data_room_ao_estado_P19_H0_H1_incluindo_DR01",
+  "inventory": {
+    "folder": "docs/data-room/",
+    "files_present_count": 11,
+    "index": {
+      "path": "docs/data-room/INDICE-DUE-DILIGENCE.md",
+      "present": true,
+      "date": "2026-07-01",
+      "focus": "IPE_primary",
+      "includes_h0_h1": false
+    },
+    "documents": [
+      { "id": "DR-01", "title": "Resumo Executivo Data Room", "present": false, "impact": "Alto" },
+      { "id": "DR-02", "title": "Inventario Oficial", "present": true, "date": "2026-06-23", "temporal_status": "desatualizado_asaas" },
+      { "id": "DR-03", "title": "Arquitetura Geral", "present": true, "temporal_status": "desatualizado_parcial_psp" },
+      { "id": "DR-04", "title": "Governanca", "present": true, "date": "2026-06-23", "aligned_with": "V1.6_88_100" },
+      { "id": "DR-05", "title": "Infraestrutura", "present": true, "date": "2026-06-23", "baseline_documented": "fly_v461" },
+      { "id": "DR-06", "title": "Propriedade Intelectual", "present": true, "date": "2026-06-23", "temporal_status": "asaas_ainda_planejado" },
+      { "id": "DR-07", "title": "Roadmap Estrategico", "present": true, "date": "2026-06-23", "notes_dr01_absent": true },
+      { "id": "DR-08", "title": "Modelo Operacional e Financeiro", "present": true, "date": "2026-06-23", "temporal_status": "pix_out_gap_narrativa_antiga" },
+      { "id": "DR-09", "title": "Avaliacao Estrategica", "present": true, "date": "2026-06-23" },
+      { "id": "DR-10", "title": "Investment Memorandum", "present": true, "date": "2026-06-23", "role": "precursor_H4" },
+      { "id": "DR-11", "title": "Multi-PSP Analysis", "present": true, "date": "2026-06-27", "temporal_status": "mais_atual_ainda_pre_P19_prod" }
+    ],
+    "adjacent_layers": [
+      "docs/certification",
+      "docs/executive/V1-FINAL-*",
+      "docs/payment-engine/01-12",
+      "docs/relatorios/H0*",
+      "docs/relatorios/H1-EMPACOTAMENTO*",
+      "docs/relatorios/PE-PATRIMONIO*",
+      "docs/relatorios/PE-VALOR*",
+      "docs/governance"
+    ]
+  },
+  "scores": {
+    "completude_serie_dr": 8.0,
+    "organizacao": 8.5,
+    "coerencia_interna_dr": 6.5,
+    "rastreabilidade": 7.5,
+    "navegacao_executiva": 7.0,
+    "inventario_geral": 7.6,
+    "navegabilidade": 6.8,
+    "consistencia_executiva": 7.0
+  },
+  "navigability": {
+    "entry_points": [
+      "INDICE-DUE-DILIGENCE (IPE)",
+      "docs/executive/V1-FINAL-*",
+      "H0 + H1 patrimonial gates"
+    ],
+    "unified_investor_hub": false,
+    "orphan_references": ["DR-01"],
+    "duplicities": [
+      "DR-09 vs PE-VALOR-1",
+      "DR-10 vs future H4",
+      "score_88_restated_multiple_docs",
+      "H_gate_name_collision_maio_vs_julho"
+    ],
+    "factual_inconsistencies": [
+      {
+        "topic": "Asaas",
+        "old": "DR-02/03/05/06 zero codigo ou planejado",
+        "new": "P1.9/H0 codigo + homologacao prod + Recovery"
+      },
+      {
+        "topic": "PIX_OUT",
+        "old": "DR-07/08/10 bloqueio onboarding como gap dominante",
+        "new": "Asaas OUT homologado com gates; Recovery comprovado"
+      }
+    ],
+    "recommended_reading_order": [
+      "H0",
+      "H1",
+      "DR-10_with_temporal_caveat",
+      "DR-02_with_asaas_caveat",
+      "DR-03",
+      "DR-05",
+      "DR-08",
+      "DR-11",
+      "P1.9",
+      "F4.Z",
+      "payment-engine_01-12",
+      "DR-06",
+      "PROPRIETARY-SCOPE",
+      "DR-04",
+      "DR-07",
+      "V1-FINAL",
+      "PE-PATRIMONIO",
+      "PE-VALOR"
+    ]
+  },
+  "consistency": {
+    "aligned_messages": [
+      "CERTIFIED_WITH_RESSALVAS_88_100",
+      "PE_identity_PASS_COM_RESSALVAS_patrimonial",
+      "P19_PASS_GOLD_recovery",
+      "PE_embedded_monolith_packaging_incomplete",
+      "data_room_useful_with_reservations"
+    ],
+    "misaligned_messages": [
+      "asaas_code_and_production_status",
+      "pix_out_automatic_status",
+      "baseline_fly_v461_vs_later_releases",
+      "asset_package_h0_h1_not_in_dr_index"
+    ],
+    "strategic_narrative": "coherent",
+    "financial_psp_narrative_in_dr_core": "outdated_relative_to_P19_H0"
+  },
+  "personas": {
+    "investidor": "positivo_com_friccao_pede_DR01_e_refresh_asaas",
+    "comprador_estrategico": "interessado_cauteloso_transferibilidade_e_packaging",
+    "auditor_tecnico": "pass_with_findings_drift_e_acoplamento",
+    "fundo_investimento": "ready_for_process_with_conditions_H3_H4",
+    "empresa_software": "build_vs_buy_core_psp_atrativo",
+    "parceiro_white_label": "pilot_ready_narrative_not_productized"
+  },
+  "gaps": [
+    { "id": "L1", "type": "ausente", "item": "DR-01", "impact": "Alto" },
+    { "id": "L2", "type": "desatualizado", "item": "DR-02", "impact": "Alto" },
+    { "id": "L3", "type": "desatualizado", "item": "DR-03_05_06_08", "impact": "Alto" },
+    { "id": "L4", "type": "desatualizado", "item": "DR-07_09_10", "impact": "Medio-Alto" },
+    { "id": "L5", "type": "parcialmente_desatualizado", "item": "DR-11", "impact": "Medio" },
+    { "id": "L6", "type": "ausente_no_indice", "item": "H0_H1_Asset_Package", "impact": "Medio-Alto" },
+    { "id": "L7", "type": "redundante", "item": "DR-09_vs_PE-VALOR / score_88", "impact": "Baixo-Medio" },
+    { "id": "L8", "type": "colisao_nomenclatura", "item": "gates_H_maio_vs_julho", "impact": "Medio" },
+    { "id": "L9", "type": "prioritario_H3", "item": "bridge_factual_jul_2026", "impact": "Alto" },
+    { "id": "L10", "type": "prioritario", "item": "hub_leitura_investidor", "impact": "Medio" }
+  ],
+  "readiness": {
+    "due_diligence_tecnica": "SIM_COM_RESSALVAS",
+    "due_diligence_comercial": "PARCIAL",
+    "due_diligence_operacional": "SIM_COM_RESSALVAS",
+    "valuation": "PARCIAL",
+    "licenciamento": "PARCIAL",
+    "aquisicao": "SIM_COM_RESSALVAS"
+  },
+  "executive_summary": {
+    "padrao_corporativo": true,
+    "pronto_apresentacao_institucional": "SIM_COM_RESSALVAS",
+    "pronto_due_diligence": "SIM_COM_RESSALVAS",
+    "pronto_investidores": "SIM_COM_RESSALVAS",
+    "pronto_negociacao_estrategica": "SIM_COM_RESSALVAS",
+    "patrimonio_adequadamente_documentado": "SIM_COM_RESSALVAS",
+    "principal_lacuna_antes_h3": "sincronizar_DR_ao_P19_H0_H1_criar_DR01_atualizar_indice"
+  },
+  "actions_performed": {
+    "code_changed": false,
+    "scripts_executed": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "database_altered": false,
+    "secrets_altered": false,
+    "fictional_documents_created": false,
+    "dr01_created": false
+  },
+  "artifacts_emitted": [
+    "docs/relatorios/H2-DATA-ROOM-EXECUTIVO.md",
+    "docs/relatorios/snapshots/h2-data-room-executive.json"
+  ],
+  "evidence_roots": [
+    "docs/data-room/INDICE-DUE-DILIGENCE.md",
+    "docs/data-room/DR-02-INVENTARIO-OFICIAL-DO-ATIVO.md",
+    "docs/data-room/DR-03-ARQUITETURA-GERAL.md",
+    "docs/data-room/DR-04-GOVERNANCA-TECNOLOGICA-E-OPERACIONAL.md",
+    "docs/data-room/DR-05-INFRAESTRUTURA-TECNOLOGICA.md",
+    "docs/data-room/DR-06-PROPRIEDADE-INTELECTUAL.md",
+    "docs/data-room/DR-07-ROADMAP-ESTRATEGICO.md",
+    "docs/data-room/DR-08-MODELO-OPERACIONAL-E-FINANCEIRO.md",
+    "docs/data-room/DR-09-AVALIACAO-ESTRATEGICA-DO-ATIVO.md",
+    "docs/data-room/DR-10-INVESTMENT-MEMORANDUM.md",
+    "docs/data-room/DR-11-MULTI-PSP-ANALYSIS.md",
+    "docs/relatorios/H0-CERTIFICACAO-FINAL-PLATAFORMA-ENGENHARIA.md",
+    "docs/relatorios/H1-EMPACOTAMENTO-PATRIMONIAL-OFICIAL.md",
+    "docs/relatorios/P1.9-CERTIFICACAO-FINAL-PAYMENT-ENGINE-V1.md",
+    "docs/executive/V1-FINAL-OPERATIONAL-VERDICT.md"
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "gate": "H2A",
+  "title": "Auditoria Suprema do Ambiente Staging e Integridade Arquitetural",
+  "project": "Gol de Ouro V1",
+  "engine": "Indesconectavel Payment Engine",
+  "date": "2026-07-08",
+  "mode": "READ_ONLY_ABSOLUTO",
+  "priority": "MAXIMA",
+  "verdict": "PASS_COM_RESSALVAS",
+  "mother_question": "A arquitetura construida continua coerente com a estrategia de transformar a IPE em ativo tecnologico independente?",
+  "mother_answer": "SIM_COM_RESSALVAS",
+  "objective_answer": {
+    "staging_represents_architecture": "SIM_para_baseline_tagged_b29d847_perfil_homologacao_segura",
+    "drift_exists": true,
+    "drift_classes": [
+      "esperado_isolamento",
+      "operacional_asaas_sandbox_nao_resolvivel",
+      "documental_homologacao_e_data_room",
+      "baseline_sha_staging_vs_tip_patrimonial_p22"
+    ],
+    "production_contamination_in_g2": false
+  },
+  "readiness": {
+    "h25": "SIM_COM_RESSALVAS",
+    "h3": "SIM_COM_RESSALVAS",
+    "architecture_integra": "SIM_COM_RESSALVAS",
+    "staging_faz_sentido": true
+  },
+  "staging": {
+    "app": "goldeouro-backend-staging",
+    "config": "fly.staging.toml",
+    "url": "https://goldeouro-backend-staging.fly.dev",
+    "baseline_tag": "payment-engine-v1-runtime-baseline",
+    "baseline_commit": "b29d847",
+    "processes": ["app"],
+    "payout_worker": false,
+    "supabase_ref_documented": "uatszaqzdqcwnfbipoxg",
+    "last_full_certification": {
+      "gate": "G2",
+      "date": "2026-07-06",
+      "verdict": "PASS_COM_RESSALVAS",
+      "snapshot": "docs/relatorios/snapshots/g2-certificacao-staging-2026-07-06.json"
+    },
+    "a2r": {
+      "date": "2026-07-07",
+      "asaasPaymentProviderResolvable": false,
+      "objective_achieved": false,
+      "snapshot": "docs/relatorios/snapshots/a2r-runtime-health.json"
+    },
+    "live_revalidated_on_h2a_date": false
+  },
+  "production_documented_at_g2": {
+    "app": "goldeouro-backend-v2",
+    "config": "fly.toml",
+    "gitCommit": "f21f310-p5pixout",
+    "payout_worker": true,
+    "supabase_ref_documented": "gayopagjdrkcmkirmfvy"
+  },
+  "comparison_staging_vs_production": {
+    "Runtime": { "expected_diff": true, "unexpected": false },
+    "Provider": { "expected_diff": true, "note": "MP legacy staging vs Asaas primary prod at G2" },
+    "Workers": { "expected_diff": true },
+    "Payment_Engine": { "expected_diff": true, "same_architecture_different_env": true },
+    "Recovery": { "expected_diff": true, "staging_pix_out_off": true },
+    "Webhooks": { "expected_diff": true, "g2_post_skipped": true },
+    "PIX_IN": { "expected_diff": true, "gap": "asaas_not_resolvable" },
+    "PIX_OUT": { "expected_diff": true },
+    "Observabilidade": { "expected_diff": false, "parity": "high" },
+    "Configuracao": { "expected_diff": true },
+    "Infraestrutura": { "expected_diff": true, "isolation": true }
+  },
+  "architecture_audit": {
+    "separacao_suficiente": "SIM_COM_RESSALVAS",
+    "acoplamento_excessivo": true,
+    "monolito_justificavel": "SIM_para_V1_nao_estado_final"
+  },
+  "payment_engine": {
+    "reutilizavel_como_nucleo": "SIM_COM_RESSALVAS",
+    "produto_independente_v1": false,
+    "capabilities": {
+      "provider_layer": "alta",
+      "recovery": "alta_prod_parcial_staging",
+      "facade_p22": "media_alta",
+      "psp_abstraction": "alta",
+      "compat": "debito_consciente",
+      "idempotency": "alta",
+      "webhook_engine": "alta",
+      "workers": "design_off_staging",
+      "gates": "alta",
+      "certifications": "alta"
+    }
+  },
+  "decoupling_recommendation": {
+    "A_monolith_only": "curto_prazo_insuficiente_estrategia",
+    "B_modulo_interno": "RECOMENDADO_AGORA",
+    "C_pacote_npm": "proximo_pos_B",
+    "D_repo_proprio": "prematuro",
+    "E_produto_independente": "prematuro"
+  },
+  "strategic_purpose": {
+    "original_mission_unchanged": true,
+    "still_used_for_purpose": true,
+    "direction_change": false,
+    "note": "H0-H2 patrimonium complementary to staging proof bench"
+  },
+  "patrimony_from_staging": {
+    "increased": true,
+    "assets": [
+      "fly.staging.toml",
+      "goldeouro-backend-staging_app",
+      "backend-deploy-staging.yml",
+      "a2r-staging-asaas-sandbox.yml",
+      "S1-S3.3_G1.5_G2_A2R_docs_snapshots",
+      "HOMOLOGACAO-PERMANENTE.md",
+      "isolation_proof",
+      "runtime_baseline_tag_exercisable",
+      "staging_db_hygiene_S2"
+    ]
+  },
+  "next_evolution": [
+    "completar_A2R_staging_only",
+    "manter_staging_permanente",
+    "continuar_desacoplamento_B_para_C",
+    "sincronizar_docs_antes_H3"
+  ],
+  "git_audit_readonly": {
+    "source": "docs/relatorios/snapshots/git1-repository-state.json",
+    "branch_at_git1": "chore/f2-4e-2-mp-log",
+    "head_at_git1": "b29d847",
+    "merge_pending": true,
+    "operational_risk": true,
+    "architectural_divergence": "SIM_COM_RESSALVAS",
+    "technical_debt": true,
+    "h2a_executed_git": false
+  },
+  "risks": [
+    { "id": "T1", "category": "tecnico", "severity": "ALTO", "risk": "asaas_sandbox_nao_resolvivel" },
+    { "id": "T2", "category": "tecnico", "severity": "MEDIO", "risk": "staging_sem_pix_out_recovery_e2e" },
+    { "id": "A1", "category": "arquitetural", "severity": "ALTO", "risk": "pe_acoplada_monolito_schema" },
+    { "id": "A2", "category": "arquitetural", "severity": "MEDIO", "risk": "baseline_staging_vs_tip_p22" },
+    { "id": "O1", "category": "operacional", "severity": "ALTO", "risk": "merge_git_pendente" },
+    { "id": "O2", "category": "operacional", "severity": "MEDIO", "risk": "dev_to_same_prod_app_R7" },
+    { "id": "O3", "category": "operacional", "severity": "MEDIO", "risk": "shell_local_a2r_fragil" },
+    { "id": "P1", "category": "patrimonial", "severity": "MEDIO", "risk": "prova_staging_nao_cobre_sha_h0_pe" },
+    { "id": "D1", "category": "documental", "severity": "MEDIO", "risk": "homologacao_doc_desatualizada" },
+    { "id": "D2", "category": "documental", "severity": "ALTO", "risk": "data_room_asaas_out_desatualizado" }
+  ],
+  "scores": {
+    "arquitetura": 8.0,
+    "backend": 8.0,
+    "payment_engine": 8.5,
+    "provider_layer": 8.5,
+    "runtime": 7.5,
+    "staging": 7.5,
+    "producao": 8.0,
+    "observabilidade": 7.5,
+    "governanca": 7.5,
+    "documentacao": 7.0,
+    "reutilizacao": 7.5,
+    "independencia": 5.5,
+    "patrimonio_tecnologico": 8.0,
+    "escalabilidade": 6.0,
+    "maturidade": 7.5,
+    "media_geral": 7.5
+  },
+  "executive_answers": {
+    "staging_continua_necessario": true,
+    "staging_cumpriu_missao": "SIM_COM_RESSALVAS",
+    "arquitetura_continua_coerente": "SIM_COM_RESSALVAS",
+    "existe_drift": true,
+    "divida_tecnica": true,
+    "divida_documental": true,
+    "divida_patrimonial": "SIM_COM_RESSALVAS",
+    "pe_caminha_independencia": true,
+    "desacoplamento_evolucao_correta": true
+  },
+  "actions_performed": {
+    "code_changed": false,
+    "docs_edited_besides_deliverables": false,
+    "git_mutated": false,
+    "deploy_executed": false,
+    "workflow_executed": false,
+    "fly_executed": false,
+    "supabase_executed": false,
+    "secrets_altered": false,
+    "database_altered": false,
+    "runtime_altered": false
+  },
+  "artifacts_emitted": [
+    "docs/relatorios/H2A-AUDITORIA-SUPREMA-STAGING-E-ARQUITETURA.md",
+    "docs/relatorios/snapshots/h2a-staging-supreme-audit.json"
+  ],
+  "evidence_roots": [
+    "fly.toml",
+    "fly.staging.toml",
+    ".github/workflows/backend-deploy-staging.yml",
+    ".github/workflows/a2r-staging-asaas-sandbox.yml",
+    "docs/arquitetura/HOMOLOGACAO-PERMANENTE.md",
+    "docs/relatorios/G2-CERTIFICACAO-HOMOLOGACAO-PERMANENTE.md",
+    "docs/relatorios/S3.3-DEPLOY-CONTROLADO-STAGING.md",
+    "docs/relatorios/S3-INFRAESTRUTURA-PERMANENTE-HOMOLOGACAO.md",
+    "docs/relatorios/A2R-RUNTIME-ASAAS-SANDBOX-STAGING.md",
+    "docs/relatorios/snapshots/g2-certificacao-staging-2026-07-06.json",
+    "docs/relatorios/snapshots/a2r-runtime-health.json",
+    "docs/relatorios/snapshots/git1-repository-state.json",
+    "docs/relatorios/H0-CERTIFICACAO-FINAL-PLATAFORMA-ENGENHARIA.md",
+    "docs/relatorios/H1-EMPACOTAMENTO-PATRIMONIAL-OFICIAL.md",
+    "docs/relatorios/H2-DATA-ROOM-EXECUTIVO.md",
+    "docs/relatorios/P1.9-CERTIFICACAO-FINAL-PAYMENT-ENGINE-V1.md",
+    "docs/relatorios/A1.0-AUDITORIA-ESTRATEGICA-PAYMENT-ENGINE.md"
+  ]
+}

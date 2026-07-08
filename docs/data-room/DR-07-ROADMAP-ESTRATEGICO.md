@@ -4,8 +4,32 @@
 **Versão de referência:** V1 (~95% concluída)  
 **Data:** 2026-06-23  
 **Modo:** auditoria READ-ONLY — roadmap consolidado a partir de evidências do repositório e documentação oficial  
-**Documentos relacionados:** DR-02 a DR-06, `docs/audits/V1-X1-PRODUCT-IMPROVEMENT-ROADMAP.md`, `docs/arquitetura/PAYMENT-ENGINE-V1.md`, `docs/certification/GOLDEOURO-V1-OFFICIAL-CERTIFICATION.md`, `V1-FINAL-FREEZE.md`  
+**Documentos relacionados:** DR-01–06, roadmaps produto, **H2A** (desacoplamento B→E), `docs/payment-engine/05-Roadmap.md`  
 **Repositório:** monorepo `goldeouro-backend`
+
+---
+
+## ADENDA H2.5 — Roadmap sincronizado (2026-07-08)
+
+> Seção §1 e timeline do corpo = **NARRATIVA ORIGINAL** (jun/2026). **Não apagar.**  
+> **DR-01** agora **existe**. Itens “Cash-Out só bloqueio MP” e “Asaas zero” = **HISTÓRICO**.
+
+### Desacoplamento IPE™ (oficial H2A — sem antecipar)
+
+| Fase | Descrição | Status |
+|------|-----------|--------|
+| **B** | Módulo interno (facade / adapters) | **Recomendado agora** — P2.2 em curso |
+| **C** | Pacote reutilizável | Após B |
+| **D** | Repositório dedicado | Prematuro |
+| **E** | Produto independente (SaaS / White Label) | Prematuro |
+
+### Roadmap patrimonial
+
+H2.5 (sync) → **H3** Valuation Tecnológico → **H4** Investment Memorandum → **H5** Due Diligence Final.
+
+### Homologação
+
+Staging permanente certificado (**G2**); A2R pendente; produção governa via gates P1.9 / V1.FINAL.
 
 ---
 
@@ -33,7 +57,7 @@ O Gol de Ouro™ percorreu uma trajetória de **produto de entretenimento com pr
 | **Financeiro automático OUT** | 📋 Código pronto; bloqueio onboarding MP Payouts |
 | **Multi-PSP** | 🔄 Payment Engine parcial; Celcoin prep (F4/F4.1) |
 | **Governança** | ✅ Certificação + runbooks; 🔄 branch protection incompleta |
-| **Documentação / Data Room** | 🔄 DR-02 a DR-07; DR-01 referenciado mas ausente no repo |
+| **Documentação / Data Room** | ✅ DR-01–11 + índice H2.5 *(corpo antigo dizia DR-01 ausente — **HISTÓRICO**)* |
 | **Encerramento V1 a 100%** | 📋 ~5% residual documentado (Cash-Out prod, PSP, homologação) |
 
 ### Direção estratégica pós-V1 (evidência documental)
