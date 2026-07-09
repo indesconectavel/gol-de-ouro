@@ -1,0 +1,130 @@
+{
+  "gate": "PE.2B",
+  "title": "IPE Adapter Boundary Map",
+  "date": "2026-07-09",
+  "mode": "SHADOW_COMPATIBILITY_FIRST",
+  "flag": {
+    "name": "PE_ADAPTER_BOUNDARY_ENABLED",
+    "default": false,
+    "implementation": "src/payment-engine/boundary/adapter-boundary-config.js"
+  },
+  "layers": {
+    "production_preserved": {
+      "description": "Caminhos ativos quando PE_ADAPTER_BOUNDARY_ENABLED=false (default)",
+      "paths": [
+        "src/finance/contracts/PaymentProvider.js",
+        "src/finance/contracts/PayoutProvider.js",
+        "src/finance/factory/FinanceProviderFactory.js",
+        "src/finance/deposit/claimApprovedPixDeposit.js",
+        "src/finance/webhooks/processPaymentWebhook.js",
+        "src/finance/webhooks/processAsaasTransferWebhook.js",
+        "src/finance/reconciliation/asaasPayoutRecovery.js",
+        "src/domain/payout/processPendingWithdrawals.js",
+        "src/payment-engine/api/PaymentEngine.js",
+        "src/payment-engine/adapters/goldeouro/GolDeOuroWalletAdapter.js",
+        "src/payment-engine/adapters/goldeouro/GolDeOuroLedgerAdapter.js",
+        "server-fly.js"
+      ]
+    },
+    "boundary_prepared": {
+      "description": "Novos artefatos shadow — inertes até flag=true",
+      "contracts": [
+        {
+          "name": "WebhookPayload",
+          "path": "src/payment-engine/types/WebhookPayload.js",
+          "status": "READY_SHADOW"
+        },
+        {
+          "name": "LedgerPort",
+          "path": "src/payment-engine/ports/LedgerPort.js",
+          "status": "READY_SHADOW"
+        },
+        {
+          "name": "WalletPort",
+          "path": "src/payment-engine/ports/WalletPort.js",
+          "status": "READY_SHADOW"
+        },
+        {
+          "name": "WithdrawalPort",
+          "path": "src/payment-engine/ports/WithdrawalPort.js",
+          "status": "READY_SHADOW"
+        }
+      ],
+      "bridges": [
+        {
+          "name": "webhookPayloadFromExpress",
+          "path": "src/payment-engine/compat/webhookPayloadFromExpress.js",
+          "maps": "express.Request → WebhookPayload"
+        },
+        {
+          "name": "ledgerPortBridge",
+          "path": "src/payment-engine/compat/ledgerPortBridge.js",
+          "maps": "LedgerAdapter → LedgerPort"
+        },
+        {
+          "name": "walletPortBridge",
+          "path": "src/payment-engine/compat/walletPortBridge.js",
+          "maps": "WalletAdapter → WalletPort (+ credit)"
+        },
+        {
+          "name": "withdrawalIdAlias",
+          "path": "src/payment-engine/compat/withdrawalIdAlias.js",
+          "maps": "saqueId ↔ withdrawalId"
+        }
+      ],
+      "adapters": [
+        {
+          "name": "GolDeOuroWebhookAdapter",
+          "path": "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookAdapter.js",
+          "status": "READY_SHADOW"
+        },
+        {
+          "name": "GolDeOuroWithdrawalAdapter",
+          "path": "src/payment-engine/adapters/goldeouro/GolDeOuroWithdrawalAdapter.js",
+          "status": "READY_SHADOW"
+        },
+        {
+          "name": "GolDeOuroLedgerAdapter",
+          "path": "src/payment-engine/adapters/goldeouro/GolDeOuroLedgerAdapter.js",
+          "status": "PRESERVED_P2.2"
+        },
+        {
+          "name": "GolDeOuroWalletAdapter",
+          "path": "src/payment-engine/adapters/goldeouro/GolDeOuroWalletAdapter.js",
+          "status": "PRESERVED_P2.2"
+        }
+      ],
+      "resolver": {
+        "name": "resolveAdapterBoundaryPorts",
+        "path": "src/payment-engine/boundary/index.js",
+        "returns_null_when_flag_false": true
+      }
+    }
+  },
+  "activation_matrix": {
+    "PE_ADAPTER_BOUNDARY_ENABLED=false": {
+      "resolveAdapterBoundaryPorts": "returns null",
+      "PaymentEngine.configure": "unchanged",
+      "webhook handlers": "express.Request (production)",
+      "wallet/ledger writes": "legacy paths",
+      "withdrawal persistence": "GolDeOuroWithdrawRepository direct"
+    },
+    "PE_ADAPTER_BOUNDARY_ENABLED=true": {
+      "resolveAdapterBoundaryPorts": "returns ports bundle",
+      "production_routes": "still legacy until PE.2E+",
+      "note": "Flag enables shadow ports for staging/harness only — NOT authorized for production in PE.2B"
+    }
+  },
+  "pe2a_blocker_reduction": {
+    "B1_WebhookPayload": { "before": "NEEDS_CHANGES", "after": "READY_SHADOW", "production_migrated": false },
+    "B3_LedgerPort": { "before": "NEEDS_CHANGES", "after": "READY_SHADOW", "production_migrated": false },
+    "B4_WalletPort_credit": { "before": "NEEDS_CHANGES", "after": "READY_SHADOW", "production_migrated": false },
+    "B9_withdrawalId": { "before": "NEEDS_CHANGES", "after": "READY_SHADOW", "production_migrated": false },
+    "B2_IdempotencyStore": { "status": "UNCHANGED", "note": "delegação parcial via GolDeOuroWebhookAdapter.checkDepositIdempotency" },
+    "B7_import_isolation": { "status": "UNCHANGED" },
+    "B8_claimApproved_ports": { "status": "UNCHANGED" }
+  },
+  "exports_added": {
+    "src/payment-engine/index.js": ["boundary", "ports", "types", "compat"]
+  }
+}

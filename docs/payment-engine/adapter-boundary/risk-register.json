@@ -1,0 +1,115 @@
+{
+  "gate": "PE.2B",
+  "title": "Risk Register",
+  "date": "2026-07-09",
+  "residual_risk_index": 2.8,
+  "risks": [
+    {
+      "id": "R1",
+      "title": "Ativação acidental de PE_ADAPTER_BOUNDARY_ENABLED em produção",
+      "severity": "HIGH",
+      "probability": "LOW",
+      "impact": "Shadow ports usados sem certificação P1.9/G2",
+      "mitigation": "Default false; documentado em .env.example; resolveAdapterBoundaryPorts retorna null",
+      "status": "MITIGATED",
+      "owner_gate": "PE.2B.1"
+    },
+    {
+      "id": "R2",
+      "title": "credit() no walletPortBridge diverge de claimApprovedPixDeposit",
+      "severity": "MEDIUM",
+      "probability": "LOW",
+      "impact": "Ordem ledger/saldo diferente se ativado sem testes",
+      "mitigation": "Bridge inativo por default; P1.9 obrigatório antes de flag true",
+      "status": "ACCEPTED_SHADOW",
+      "owner_gate": "PE.2E"
+    },
+    {
+      "id": "R3",
+      "title": "express.Request ainda em contracts PSP produtivos",
+      "severity": "MEDIUM",
+      "probability": "CERTAIN",
+      "impact": "B1 PE.2A não resolvido em produção",
+      "mitigation": "WebhookPayload preparado; mapper compat; migração PE.2E",
+      "status": "OPEN",
+      "owner_gate": "PE.2E"
+    },
+    {
+      "id": "R4",
+      "title": "createGolDeOuroAdapters extended shape",
+      "severity": "LOW",
+      "probability": "LOW",
+      "impact": "Consumidores que iteram keys podem ver novos campos",
+      "mitigation": "Campos aditivos apenas; keys P2.2 preservadas",
+      "status": "MITIGATED"
+    },
+    {
+      "id": "R5",
+      "title": "GolDeOuroWebhookAdapter importa finance idempotency",
+      "severity": "LOW",
+      "probability": "LOW",
+      "impact": "Acoplamento adapter→finance (aceitável em B2)",
+      "mitigation": "Delegação à função certificada; sem alteração de comportamento",
+      "status": "ACCEPTED"
+    },
+    {
+      "id": "R6",
+      "title": "findByCorrelation em ledgerPortBridge consulta Supabase",
+      "severity": "MEDIUM",
+      "probability": "LOW",
+      "impact": "Query direta se flag ativada sem harness",
+      "mitigation": "Método novo; não usado em produção PE.2B",
+      "status": "ACCEPTED_SHADOW",
+      "owner_gate": "PE.2E"
+    },
+    {
+      "id": "R7",
+      "title": "PE.2C iniciado prematuramente",
+      "severity": "HIGH",
+      "probability": "MEDIUM",
+      "impact": "Package layout antes de import isolation",
+      "mitigation": "Este gate bloqueia PE.2C explicitamente",
+      "status": "MITIGATED"
+    }
+  ],
+  "coupling_audit_summary": {
+    "express_Request": { "total_refs": 10, "production": 5, "boundary_prepared": 5, "severity": "MEDIO" },
+    "usuarios": { "total_refs": 14, "production_core": 8, "adapter_gdo": 5, "severity": "ALTO" },
+    "pagamentos_pix": { "total_refs": 5, "production_core": 4, "adapter_gdo": 1, "severity": "ALTO" },
+    "saques": { "total_refs": 30, "production_core": 27, "adapter_gdo": 2, "severity": "ALTO" },
+    "ledger_financeiro": { "total_refs": 85, "production_core": 84, "adapter_gdo": 1, "severity": "ALTO" },
+    "saqueId": { "total_refs": 147, "production": 137, "boundary_alias": 10, "severity": "MEDIO" },
+    "wallet": { "total_refs": "conceptual", "production_via_usuarios_saldo": true, "severity": "ALTO" },
+    "ledger": { "total_refs": "conceptual", "production_inline": true, "severity": "ALTO" }
+  },
+  "classification_buckets": {
+    "production_preserved": [
+      "src/finance/**",
+      "src/domain/payout/**",
+      "src/payment-engine/api/PaymentEngine.js",
+      "src/payment-engine/core/**",
+      "server-fly.js"
+    ],
+    "boundary_prepared": [
+      "src/payment-engine/boundary/**",
+      "src/payment-engine/ports/**",
+      "src/payment-engine/types/WebhookPayload.js",
+      "src/payment-engine/compat/**",
+      "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookAdapter.js",
+      "src/payment-engine/adapters/goldeouro/GolDeOuroWithdrawalAdapter.js"
+    ],
+    "pe2c_blockers": [
+      "B2 IdempotencyStore formal",
+      "B7 payment-engine/core → finance imports",
+      "B8 claimApprovedPixDeposit port extraction",
+      "B10 GolDeOuroWebhookStore persistence port",
+      "Production PSP contracts still use express.Request"
+    ],
+    "remains_in_gdo_adapter": [
+      "usuarios.saldo via GolDeOuroWalletAdapter",
+      "pagamentos_pix via GolDeOuroDepositRepository",
+      "saques via GolDeOuroWithdrawRepository",
+      "ledger_financeiro via GolDeOuroLedgerAdapter"
+    ]
+  }
+}

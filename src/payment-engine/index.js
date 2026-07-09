@@ -23,5 +23,21 @@ module.exports = {
     UserRepository: require('./interfaces/UserRepository'),
     WithdrawRepository: require('./interfaces/WithdrawRepository'),
     DepositRepository: require('./interfaces/DepositRepository')
+  },
+  // PE.2B — adapter boundary (shadow; default PE_ADAPTER_BOUNDARY_ENABLED=false)
+  boundary: require('./boundary'),
+  ports: {
+    LedgerPort: require('./ports/LedgerPort'),
+    WalletPort: require('./ports/WalletPort'),
+    WithdrawalPort: require('./ports/WithdrawalPort')
+  },
+  types: {
+    WebhookPayload: require('./types/WebhookPayload')
+  },
+  compat: {
+    webhookPayloadFromExpress: require('./compat/webhookPayloadFromExpress'),
+    withdrawalIdAlias: require('./compat/withdrawalIdAlias'),
+    ledgerPortBridge: require('./compat/ledgerPortBridge'),
+    walletPortBridge: require('./compat/walletPortBridge')
   }
 };

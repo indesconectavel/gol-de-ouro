@@ -1,0 +1,153 @@
+{
+  "gate": "PE.2B",
+  "title": "Compatibility Report",
+  "date": "2026-07-09",
+  "strategy": "SHADOW_COMPATIBILITY_FIRST",
+  "production_preserved": true,
+  "signatures_removed": false,
+  "endpoints_altered": false,
+  "webhooks_altered": false,
+  "providers_altered": false,
+  "database_altered": false,
+  "flag": {
+    "name": "PE_ADAPTER_BOUNDARY_ENABLED",
+    "default": false,
+    "documented_in": [".env.example", "src/payment-engine/boundary/adapter-boundary-config.js"]
+  },
+  "compatibility_matrix": [
+    {
+      "surface": "PaymentProvider.handleDepositWebhook(express.Request)",
+      "status": "PRESERVED",
+      "evidence": "src/finance/contracts/PaymentProvider.js unchanged"
+    },
+    {
+      "surface": "PayoutProvider.handlePayoutWebhook(express.Request)",
+      "status": "PRESERVED",
+      "evidence": "src/finance/contracts/PayoutProvider.js unchanged"
+    },
+    {
+      "surface": "PixPayoutRequestInput.saqueId",
+      "status": "PRESERVED",
+      "evidence": "Contract unchanged; withdrawalIdAlias adds parallel field only in shadow layer"
+    },
+    {
+      "surface": "WalletAdapter.getBalance/debitBalance(supabase, ...)",
+      "status": "PRESERVED",
+      "evidence": "GolDeOuroWalletAdapter.js unchanged"
+    },
+    {
+      "surface": "LedgerAdapter.createEntry({ supabase, ... })",
+      "status": "PRESERVED",
+      "evidence": "GolDeOuroLedgerAdapter.js unchanged"
+    },
+    {
+      "surface": "WithdrawRepository.findById/listByUser",
+      "status": "PRESERVED",
+      "evidence": "GolDeOuroWithdrawRepository.js unchanged"
+    },
+    {
+      "surface": "createGolDeOuroAdapters() return shape",
+      "status": "EXTENDED_ADDITIVE",
+      "evidence": "Added webhookAdapter, withdrawalAdapter (optional null) — existing keys unchanged"
+    },
+    {
+      "surface": "PaymentEngine facade API",
+      "status": "PRESERVED",
+      "evidence": "PaymentEngine.js not modified"
+    },
+    {
+      "surface": "FinanceProviderFactory",
+      "status": "PRESERVED",
+      "evidence": "No changes in src/finance/factory"
+    },
+    {
+      "surface": "HTTP routes server-fly.js",
+      "status": "PRESERVED",
+      "evidence": "Not modified"
+    },
+    {
+      "surface": "WebhookPayload mapper",
+      "status": "NEW_SHADOW",
+      "evidence": "src/payment-engine/compat/webhookPayloadFromExpress.js — not wired to routes"
+    },
+    {
+      "surface": "LedgerPort / WalletPort / WithdrawalPort",
+      "status": "NEW_SHADOW",
+      "evidence": "Only via resolveAdapterBoundaryPorts when flag=true"
+    }
+  ],
+  "wrappers": [
+    {
+      "name": "webhookPayloadFromExpress",
+      "preserves": "express.Request semantics for round-trip",
+      "breaks_production": false
+    },
+    {
+      "name": "createLedgerPortFromAdapter",
+      "preserves": "LedgerAdapter.createEntry behavior",
+      "breaks_production": false
+    },
+    {
+      "name": "createWalletPortFromAdapter",
+      "preserves": "WalletAdapter get/debit; adds credit in bridge only",
+      "breaks_production": false
+    },
+    {
+      "name": "withWithdrawalIdAliases",
+      "preserves": "saqueId in all legacy payloads",
+      "breaks_production": false
+    }
+  ],
+  "certification_evidence": {
+    "P1.9": {
+      "status": "NOT_RE_RUN",
+      "reason": "No production path activated; shadow-only changes",
+      "required_before_flag_true_in_staging": true
+    },
+    "G2": {
+      "status": "NOT_RE_RUN",
+      "required_before_flag_true_in_staging": true
+    },
+    "SUPA": {
+      "status": "NOT_RE_RUN",
+      "required_before_flag_true_in_staging": true
+    },
+    "PIX_IN": {
+      "status": "PRESERVED_BY_DEFAULT",
+      "evidence": "No deposit/webhook handler changes"
+    },
+    "PIX_OUT": {
+      "status": "PRESERVED_BY_DEFAULT",
+      "evidence": "No payout/provider changes"
+    },
+    "Wallet": {
+      "status": "PRESERVED_BY_DEFAULT",
+      "evidence": "GolDeOuroWalletAdapter unchanged"
+    },
+    "Ledger": {
+      "status": "PRESERVED_BY_DEFAULT",
+      "evidence": "GolDeOuroLedgerAdapter unchanged"
+    },
+    "Recovery": {
+      "status": "PRESERVED_BY_DEFAULT",
+      "evidence": "No scheduler/reconciliation changes"
+    },
+    "Idempotency": {
+      "status": "PRESERVED_BY_DEFAULT",
+      "evidence": "GolDeOuroWebhookAdapter delegates to existing checkSupabaseDepositIdempotency"
+    },
+    "Health": {
+      "status": "PRESERVED_BY_DEFAULT",
+      "evidence": "getHealthSnapshot unchanged"
+    },
+    "Meta": {
+      "status": "PRESERVED_BY_DEFAULT",
+      "evidence": "getPublicPspSnapshot unchanged"
+    },
+    "smoke_test": {
+      "script": "scripts/pe2b-adapter-boundary-smoke.mjs",
+      "status": "PENDING_LOCAL_EXEC",
+      "note": "Shell indisponível na sessão; executar manualmente antes de ativar flag em staging"
+    }
+  }
+}

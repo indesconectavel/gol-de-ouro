@@ -1,0 +1,89 @@
+{
+  "gate": "PE.2B",
+  "title": "Adapter Boundary SAFE",
+  "date": "2026-07-09",
+  "mode": "SHADOW_COMPATIBILITY_FIRST",
+  "verdict": "PASS_COM_RESSALVAS",
+  "flags": {
+    "PE_ADAPTER_BOUNDARY_ENABLED": {
+      "implemented": true,
+      "default": false,
+      "path": "src/payment-engine/boundary/adapter-boundary-config.js"
+    },
+    "PE_USE_PACKAGE": {
+      "unchanged": true,
+      "default": false
+    },
+    "code_changed": true,
+    "git_mutated": false,
+    "runtime_altered": false,
+    "database_altered": false,
+    "deploy_executed": false,
+    "production_flows_activated": false,
+    "rollback_available": true
+  },
+  "indices": {
+    "residual_risk": 2.8,
+    "decoupling_after_pe2b": 5.7,
+    "decoupling_delta_vs_pe2a": 0.8,
+    "pe2c_readiness": 6.1
+  },
+  "recommendation": {
+    "pe2b": "PASS_COM_RESSALVAS",
+    "pe2c": "NO_GO",
+    "pe2b_1_staging_flag": "RECOMMENDED_BEFORE_ANY_ACTIVATION"
+  },
+  "files_added": [
+    "src/payment-engine/boundary/adapter-boundary-config.js",
+    "src/payment-engine/boundary/index.js",
+    "src/payment-engine/types/WebhookPayload.js",
+    "src/payment-engine/ports/LedgerPort.js",
+    "src/payment-engine/ports/WalletPort.js",
+    "src/payment-engine/ports/WithdrawalPort.js",
+    "src/payment-engine/compat/webhookPayloadFromExpress.js",
+    "src/payment-engine/compat/ledgerPortBridge.js",
+    "src/payment-engine/compat/walletPortBridge.js",
+    "src/payment-engine/compat/withdrawalIdAlias.js",
+    "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookAdapter.js",
+    "src/payment-engine/adapters/goldeouro/GolDeOuroWithdrawalAdapter.js",
+    "scripts/pe2b-adapter-boundary-smoke.mjs"
+  ],
+  "files_modified_additive": [
+    "src/payment-engine/index.js",
+    "src/payment-engine/adapters/goldeouro/index.js",
+    ".env.example"
+  ],
+  "files_production_intouched": [
+    "src/finance/**",
+    "src/domain/payout/**",
+    "src/payment-engine/api/PaymentEngine.js",
+    "src/payment-engine/core/**",
+    "server-fly.js"
+  ],
+  "pe2a_blocker_reduction": {
+    "B1": "READY_SHADOW",
+    "B3": "READY_SHADOW",
+    "B4": "READY_SHADOW",
+    "B9": "READY_SHADOW",
+    "B2": "UNCHANGED",
+    "B7": "UNCHANGED",
+    "B8": "UNCHANGED",
+    "B10": "UNCHANGED"
+  },
+  "remaining_blockers": [
+    "B2 IdempotencyStore formal",
+    "B7 import isolation payment-engine/core → finance",
+    "B8 claimApprovedPixDeposit via ports",
+    "B10 GolDeOuroWebhookStore",
+    "PSP contracts express.Request in production",
+    "P1.9 G2 SUPA not re-run before flag activation"
+  ],
+  "artifacts": {
+    "main_report": "docs/relatorios/PE.2B-ADAPTER-BOUNDARY-SAFE.md",
+    "adapter_boundary_map": "docs/payment-engine/adapter-boundary/adapter-boundary-map.json",
+    "compatibility_report": "docs/payment-engine/adapter-boundary/compatibility-report.json",
+    "risk_register": "docs/payment-engine/adapter-boundary/risk-register.json",
+    "rollback_plan": "docs/payment-engine/adapter-boundary/rollback-plan.md"
+  },
+  "next_gate": "PE.2B.1_or_PE.2D"
+}
