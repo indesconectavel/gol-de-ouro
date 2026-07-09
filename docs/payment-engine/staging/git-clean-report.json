@@ -1,0 +1,44 @@
+{
+  "gate": "PE.2B.2-FIXPRE",
+  "at": "2026-07-09T17:20:28.437Z",
+  "dry_run": false,
+  "blockers": {
+    "B-GIT-01": {
+      "status": "RESOLVED",
+      "commit": "73bca758789ad6ba23561f9f5695abb2b20a3a9d"
+    },
+    "B-GIT-02": {
+      "status": "RESOLVED",
+      "working_tree_clean": true
+    },
+    "B-ENV-01": {
+      "status": "RESOLVED",
+      "app": "goldeouro-backend-staging",
+      "PE_ADAPTER_BOUNDARY_ENABLED": false
+    },
+    "B-WF-01": {
+      "status": "RESOLVED_IN_REPO",
+      "workflow": ".github/workflows/backend-deploy-staging.yml",
+      "default_release_ref": "pe2b-adapter-boundary-safe",
+      "note": "Workflow default aponta para tag pe2b-adapter-boundary-safe"
+    }
+  },
+  "git": {
+    "branch_before": "chore/f2-4e-2-mp-log",
+    "head_before": "976e39f066bcd4d7c79779f75ec5a82870df0489",
+    "branch": "pe/pe2b-staging-deploy",
+    "cached_stat": ".env.example                                       |   2 +\n .../adapter-boundary/adapter-boundary-map.json     | 130 +++++++++++\n .../adapter-boundary/compatibility-report.json     | 153 ++++++++++++\n .../adapter-boundary/risk-register.json            | 115 +++++++++\n .../adapter-boundary/rollback-plan.md              | 104 +++++++++\n docs/relatorios/PE.2B-ADAPTER-BOUNDARY-SAFE.md     | 257 +++++++++++++++++++++\n .../snapshots/pe2b-adapter-boundary-safe.json      |  89 +++++++\n scripts/pe2b-adapter-boundary-smoke.mjs            | 147 ++++++++++++\n .../adapters/goldeouro/GolDeOuroWebhookAdapter.js  |  43 ++++\n .../goldeouro/GolDeOuroWithdrawalAdapter.js        |  63 +++++\n src/payment-engine/adapters/goldeouro/index.js     |  13 +-\n .../boundary/adapter-boundary-config.js            |  19 ++\n src/payment-engine/boundary/index.js               |  37 +++\n src/payment-engine/compat/ledgerPortBridge.js      |  64 +++++\n src/payment-engine/compat/walletPortBridge.js      |  58 +++++\n .../compat/webhookPayloadFromExpress.js            |  65 ++++++\n src/payment-engine/compat/withdrawalIdAlias.js     |  39 ++++\n src/payment-engine/index.js                        |  16 ++\n src/payment-engine/ports/LedgerPort.js             |  22 ++\n src/payment-engine/ports/WalletPort.js             |  27 +++\n src/payment-engine/ports/WithdrawalPort.js         |  22 ++\n src/payment-engine/types/WebhookPayload.js         |  27 +++\n 22 files changed, 1509 insertions(+), 3 deletions(-)",
+    "pe2b_commit": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+    "tag": "pe2b-adapter-boundary-safe",
+    "stash_created": true,
+    "stash_message": "WIP: unrelated changes preserved PE.2B.2-FIXPRE",
+    "working_tree_clean": true
+  },
+  "fly": {
+    "exit_code": 0,
+    "stdout": "Updating existing machines in 'goldeouro-backend-staging' with rolling strategy\n> [1/2] Updating 1857319a736448 [app]\n> [1/2] Updating 1857319a736448 [app]\n> [1/2] Waiting for 1857319a736448 [app] to have state: started\n> [1/2] Machine 1857319a736448 [app] has state: started\n> [1/2] Checking that 1857319a736448 [app] is up and running\n> [1/2] Waiting for 1857319a736448 [app] to become healthy: 1/1\n\n✔ [1/2] Machine 1857319a736448 [app] update succeeded\n> [2/2] Updating 48e7452f2d7658 [app]\n> [2/2"
+  },
+  "production_touched": false,
+  "deploy_executed": false,
+  "verdict": "PASS"
+}
