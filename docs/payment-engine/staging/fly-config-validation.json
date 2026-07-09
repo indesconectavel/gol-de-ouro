@@ -1,0 +1,39 @@
+{
+  "gate": "PE.2B.2-FIXPIPE",
+  "artifact": "fly.staging.toml",
+  "validated_at": "2026-07-09",
+  "method": "static_analysis_local",
+  "verdict": "PASS_LOCAL_PENDING_REMOTE",
+  "app": "goldeouro-backend-staging",
+  "primary_region": "gru",
+  "env": {
+    "NODE_ENV": "staging",
+    "DATABASE_ENV": "staging"
+  },
+  "processes": {
+    "app": "node server-fly.js",
+    "payout_worker": null
+  },
+  "compute": {
+    "memory_mb": 512,
+    "cpus": 1
+  },
+  "health_check": {
+    "path": "/health",
+    "interval": "30s"
+  },
+  "production_references": {
+    "goldeouro_backend_v2": false,
+    "fly_toml": false,
+    "production_database_ref": false,
+    "production_secrets_ref": false,
+    "NODE_ENV_production": false
+  },
+  "alignment": {
+    "h2a_spec": true,
+    "g2_design_app_only": true,
+    "workers_off_by_manifest": true
+  },
+  "github_remote_published": false,
+  "github_remote_note": "Arquivo criado localmente; push pendente (shell indisponível no agente)"
+}

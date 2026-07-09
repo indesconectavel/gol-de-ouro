@@ -1,0 +1,67 @@
+{
+  "gate": "PE.2B.2-FIXPIPE",
+  "title": "Pipeline Staging Audit",
+  "date": "2026-07-09",
+  "mode": "GOVERNANCA_PIPELINE",
+  "verdict": "BLOCKED",
+  "blockers_resolved": {
+    "FP-01_workflow_staging": {
+      "status": "RESOLVED_LOCAL",
+      "file": ".github/workflows/backend-deploy-staging.yml",
+      "remote_github": false
+    },
+    "FP-02_fly_staging_toml": {
+      "status": "RESOLVED_LOCAL",
+      "file": "fly.staging.toml",
+      "remote_github": false
+    },
+    "FP-03_governance_docs": {
+      "status": "RESOLVED",
+      "file": "docs/payment-engine/staging/deployment-governance.md"
+    },
+    "FP-04_flag_staging": {
+      "status": "BLOCKED",
+      "reason": "fly secrets list indisponível — PE_ADAPTER_BOUNDARY_ENABLED não confirmado live"
+    },
+    "FP-05_remote_publication": {
+      "status": "BLOCKED",
+      "reason": "git push não executado — workflow e fly.staging.toml ausentes no GitHub remoto"
+    }
+  },
+  "runtime": {
+    "deploy_executed": false,
+    "production_touched": false,
+    "staging_runtime_unchanged": true
+  },
+  "production_probe": {
+    "url": "https://goldeouro-backend-v2.fly.dev/meta",
+    "environment": "production",
+    "gitCommit": "f21f310-p5pixout",
+    "productionRuntime": true,
+    "intact": true
+  },
+  "staging_probe": {
+    "url": "https://goldeouro-backend-staging.fly.dev/meta",
+    "environment": "staging",
+    "gitCommit": "b29d847",
+    "gitTag": "payment-engine-v1-runtime-baseline",
+    "productionRuntime": false,
+    "unchanged_pre_pe2b_deploy": true
+  },
+  "artifacts": {
+    "workflow": ".github/workflows/backend-deploy-staging.yml",
+    "fly_config": "fly.staging.toml",
+    "governance": "docs/payment-engine/staging/deployment-governance.md",
+    "workflow_validation": "docs/payment-engine/staging/workflow-validation.json",
+    "fly_validation": "docs/payment-engine/staging/fly-config-validation.json",
+    "report": "docs/relatorios/PE.2B.2-FIXPIPE.md",
+    "snapshot": "docs/relatorios/snapshots/pe2b2-fixpipe.json"
+  },
+  "next_steps": [
+    "git add + commit + push pe/pe2b-staging-deploy",
+    "Confirmar workflow e fly.staging.toml via GitHub API (404 → 200)",
+    "fly secrets list -a goldeouro-backend-staging — confirmar PE_ADAPTER_BOUNDARY_ENABLED",
+    "Se ausente: fly secrets set PE_ADAPTER_BOUNDARY_ENABLED=false -a goldeouro-backend-staging",
+    "Re-executar PE.2B.2-FINAL-PRE"
+  ]
+}

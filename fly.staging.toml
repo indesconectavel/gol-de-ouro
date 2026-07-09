@@ -1,0 +1,46 @@
+# fly.staging.toml — Homologação permanente Gol de Ouro™ / Indesconectável Payment Engine™
+# PE.2B.2-FIXPIPE — NUNCA usar em produção. App exclusivo: goldeouro-backend-staging
+app = "goldeouro-backend-staging"
+primary_region = "gru"
+
+[build]
+  dockerfile = "Dockerfile"
+  ignorefile = ".dockerignore"
+
+[env]
+  NODE_ENV = "staging"
+  DATABASE_ENV = "staging"
+
+# Staging: somente processo HTTP — sem payout_worker (design G2/H2A)
+[processes]
+  app = "node server-fly.js"
+
+[compute]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [services.concurrency]
+    type = "requests"
+    soft_limit = 100
+    hard_limit = 200
+
+  [[services.http_checks]]
+    path = "/health"
+    interval = "30s"
+    timeout = "10s"
+    method = "get"
+    grace_period = "10s"

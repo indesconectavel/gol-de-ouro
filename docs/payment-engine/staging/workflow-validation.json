@@ -1,0 +1,47 @@
+{
+  "gate": "PE.2B.2-FIXPIPE",
+  "artifact": ".github/workflows/backend-deploy-staging.yml",
+  "validated_at": "2026-07-09",
+  "method": "static_analysis_local",
+  "verdict": "PASS_LOCAL_PENDING_REMOTE",
+  "trigger": {
+    "type": "workflow_dispatch_only": true,
+    "auto_push_trigger": false,
+    "auto_pr_trigger": false
+  },
+  "defaults": {
+    "release_ref": "pe2b-adapter-boundary-safe",
+    "git_tag": "pe2b-adapter-boundary-safe"
+  },
+  "authorized_refs": [
+    "pe2b-adapter-boundary-safe",
+    "pe/pe2b-staging-deploy",
+    "73bca758789ad6ba23561f9f5695abb2b20a3a9d"
+  ],
+  "staging_only": {
+    "FLY_APP_NAME": "goldeouro-backend-staging",
+    "FLY_CONFIG": "fly.staging.toml",
+    "uses_fly_toml_production": false,
+    "uses_goldeouro_backend_v2_as_target": false,
+    "deploy_command_uses_fly_staging_toml": true
+  },
+  "anti_production_guards": [
+    "confirm must equal STAGING",
+    "FLY_APP_NAME != PROD_APP_NAME",
+    "app name must not match *v2* or *prod*",
+    "FLY_CONFIG must not be fly.toml",
+    "post-deploy production /meta read-only gate"
+  ],
+  "production_workflow_unchanged": true,
+  "github_remote_published": false,
+  "github_remote_note": "Arquivo criado localmente; push pendente (shell indisponível no agente)",
+  "checks": {
+    "uses_only_staging_app": true,
+    "uses_only_fly_staging_toml": true,
+    "never_uses_fly_toml": true,
+    "never_targets_production_app": true,
+    "accepts_pe2b_tag": true,
+    "accepts_pe_branch": true,
+    "dangerous_auto_trigger": false
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "gate": "PE.2B.2-FIXPIPE",
+  "title": "Publicacao Segura do Pipeline Staging",
+  "project": "Gol de Ouro V1",
+  "engine": "Indesconectavel Payment Engine",
+  "date": "2026-07-09",
+  "phase": "B_to_C",
+  "mode": "GOVERNANCA_PIPELINE",
+  "verdict": "BLOCKED",
+  "mandatory_answers": {
+    "producao_alterada": "NAO",
+    "runtime_alterado": "NAO",
+    "deploy_executado": "NAO",
+    "workflow_publicado": "NAO",
+    "fly_staging_toml_publicado": "NAO",
+    "secrets_staging_confirmadas": "NAO",
+    "rollback_documentado": "SIM",
+    "pipeline_auditavel": "PARCIAL",
+    "pronto_para_pe2b2": "NO_GO"
+  },
+  "fixpipe_blockers": {
+    "FP-01": "RESOLVED_LOCAL",
+    "FP-02": "RESOLVED_LOCAL",
+    "FP-03": "RESOLVED",
+    "FP-04": "BLOCKED",
+    "FP-05": "BLOCKED"
+  },
+  "files_created": [
+    ".github/workflows/backend-deploy-staging.yml",
+    "fly.staging.toml",
+    "docs/payment-engine/staging/deployment-governance.md",
+    "docs/payment-engine/staging/pipeline-audit.json",
+    "docs/payment-engine/staging/workflow-validation.json",
+    "docs/payment-engine/staging/fly-config-validation.json",
+    "docs/relatorios/PE.2B.2-FIXPIPE.md"
+  ],
+  "workflow_static_validation": {
+    "staging_app_only": true,
+    "fly_staging_toml_only": true,
+    "no_fly_toml": true,
+    "no_production_app": true,
+    "default_tag_pe2b_adapter_boundary_safe": true,
+    "workflow_dispatch_only": true
+  },
+  "fly_config_static_validation": {
+    "app": "goldeouro-backend-staging",
+    "no_production_refs": true,
+    "app_process_only": true,
+    "memory_mb": 512
+  },
+  "production_intact": {
+    "gitCommit": "f21f310-p5pixout",
+    "environment": "production",
+    "productionRuntime": true
+  },
+  "staging_unchanged": {
+    "gitCommit": "b29d847",
+    "environment": "staging"
+  },
+  "authorization": {
+    "deploy_pe2b2": false,
+    "final_pre_rerun_required": true,
+    "note": "FIXPIPE nao autoriza deploy; apenas prepara pipeline para novo FINAL-PRE"
+  }
+}
