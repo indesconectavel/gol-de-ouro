@@ -1,0 +1,264 @@
+# PE.2F.1 — Certificação automatizada (deposit claim port)
+# Somente workflow_dispatch. Sem deploy, sem secrets de finance/db.
+name: PE.2F.1 Automated Certification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+env:
+  NODE_VERSION: '20'
+  PE_DEPOSIT_CLAIM_PORT_ENABLED: 'false'
+  PE_ADAPTER_BOUNDARY_ENABLED: 'false'
+  ARTIFACT_DIR: artifacts/pe2f1-certification
+  WF_PATH: .github/workflows/pe2f1-automated-certification.yml
+  CORE_CLAIM: src/payment-engine/core/claimApprovedDeposit.js
+
+jobs:
+  certify:
+    name: PE.2F.1 certify
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Guard — abort if workflow contains forbidden patterns
+        run: |
+          set -euo pipefail
+          WF="${{ env.WF_PATH }}"
+          # Construir padrões em runtime para o próprio YAML não hospedar literais proibidos.
+          BAD_FLY="$(printf '%s%s%s' 'fly' ' ' 'deploy')"
+          BAD_APP="$(printf '%s%s' 'goldeouro-backend-' 'v2')"
+          if grep -F "$BAD_FLY" "$WF" >/dev/null 2>&1; then
+            echo "ABORT: workflow file contains forbidden pattern (BAD_FLY)"
+            exit 1
+          fi
+          if grep -F "$BAD_APP" "$WF" >/dev/null 2>&1; then
+            echo "ABORT: workflow file contains forbidden pattern (BAD_APP)"
+            exit 1
+          fi
+          echo "Static guard OK — no forbidden patterns in $WF"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies (deterministic)
+        run: |
+          set -euo pipefail
+          if [ -f package-lock.json ]; then
+            echo "Using npm ci (package-lock.json present)"
+            npm ci
+          else
+            echo "No package-lock.json — npm install --ignore-scripts"
+            npm install --ignore-scripts
+          fi
+
+      - name: Prepare artifact directory
+        run: |
+          set -euo pipefail
+          mkdir -p "${{ env.ARTIFACT_DIR }}"
+
+      - name: Environment report
+        run: |
+          set -euo pipefail
+          OUT="${{ env.ARTIFACT_DIR }}/environment-report.json"
+          node <<'NODE'
+          const fs = require('fs');
+          const report = {
+            gate: 'PE.2F.1',
+            generatedAt: new Date().toISOString(),
+            node: process.version,
+            platform: process.platform,
+            arch: process.arch,
+            cwd: process.cwd(),
+            env: {
+              PE_DEPOSIT_CLAIM_PORT_ENABLED: process.env.PE_DEPOSIT_CLAIM_PORT_ENABLED || null,
+              PE_ADAPTER_BOUNDARY_ENABLED: process.env.PE_ADAPTER_BOUNDARY_ENABLED || null,
+              NODE_ENV: process.env.NODE_ENV || null
+            },
+            github: {
+              ref: process.env.GITHUB_REF || null,
+              sha: process.env.GITHUB_SHA || null,
+              runId: process.env.GITHUB_RUN_ID || null,
+              runNumber: process.env.GITHUB_RUN_NUMBER || null,
+              repository: process.env.GITHUB_REPOSITORY || null,
+              workflow: process.env.GITHUB_WORKFLOW || null
+            },
+            secretsUsed: false,
+            financeDbSecrets: false
+          };
+          fs.writeFileSync(process.env.OUT, JSON.stringify(report, null, 2) + '\n');
+          console.log('Wrote', process.env.OUT);
+          NODE
+        env:
+          OUT: ${{ env.ARTIFACT_DIR }}/environment-report.json
+
+      - name: Dependency audit snapshot
+        run: |
+          set -euo pipefail
+          OUT="${{ env.ARTIFACT_DIR }}/dependency-audit.json"
+          if command -v npm >/dev/null 2>&1; then
+            # Relatório local — não falha a certificação por vulnerabilidades conhecidas.
+            npm audit --json >"$OUT" 2>/dev/null || true
+            if [ ! -s "$OUT" ]; then
+              node -e 'const fs=require("fs");fs.writeFileSync(process.env.OUT,JSON.stringify({ok:false,reason:"npm_audit_empty"},null,2)+"\n")'
+            fi
+          else
+            node -e 'const fs=require("fs");fs.writeFileSync(process.env.OUT,JSON.stringify({ok:false,reason:"npm_missing"},null,2)+"\n")'
+          fi
+          echo "Wrote $OUT"
+        env:
+          OUT: ${{ env.ARTIFACT_DIR }}/dependency-audit.json
+
+      - name: Verify PE.2F.1 scripts exist
+        run: |
+          set -euo pipefail
+          SMOKE=scripts/pe2f-claim-deposit-port-smoke.mjs
+          VERIFY=scripts/verify-pe2f-deposit-claim-port.mjs
+          missing=0
+          if [ ! -f "$SMOKE" ]; then
+            echo "MISSING: $SMOKE"
+            missing=1
+          else
+            echo "OK: $SMOKE"
+          fi
+          if [ ! -f "$VERIFY" ]; then
+            echo "MISSING: $VERIFY"
+            missing=1
+          else
+            echo "OK: $VERIFY"
+          fi
+          if [ "$missing" -ne 0 ]; then
+            echo "ABORT: required PE.2F.1 scripts not found"
+            exit 1
+          fi
+
+      - name: Structural check — core claimApprovedDeposit has no supabase coupling
+        run: |
+          set -euo pipefail
+          CORE="${{ env.CORE_CLAIM }}"
+          if [ ! -f "$CORE" ]; then
+            echo "MISSING: $CORE"
+            exit 1
+          fi
+          if grep -Ei 'supabase' "$CORE" >/dev/null 2>&1; then
+            echo "FAIL: $CORE matches /supabase/i — core must stay port-pure"
+            grep -Ein 'supabase' "$CORE" || true
+            exit 1
+          fi
+          echo "OK: $CORE has no /supabase/i match"
+
+      - name: Run smoke — pe2f-claim-deposit-port-smoke
+        id: smoke
+        run: |
+          set -euo pipefail
+          OUT="${{ env.ARTIFACT_DIR }}/smoke-output.txt"
+          set +e
+          node scripts/pe2f-claim-deposit-port-smoke.mjs >"$OUT" 2>&1
+          CODE=$?
+          set -e
+          echo "smoke_exit=$CODE" >>"$GITHUB_OUTPUT"
+          echo "----- smoke output -----"
+          cat "$OUT"
+          echo "smoke_exit=$CODE" >>"$OUT"
+          exit "$CODE"
+
+      - name: Run verify — verify-pe2f-deposit-claim-port
+        id: verify
+        run: |
+          set -euo pipefail
+          OUT="${{ env.ARTIFACT_DIR }}/verify-output.txt"
+          set +e
+          node scripts/verify-pe2f-deposit-claim-port.mjs >"$OUT" 2>&1
+          CODE=$?
+          set -e
+          echo "verify_exit=$CODE" >>"$GITHUB_OUTPUT"
+          echo "----- verify output -----"
+          cat "$OUT"
+          echo "verify_exit=$CODE" >>"$OUT"
+          exit "$CODE"
+
+      - name: Write certification-result.json
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "${{ env.ARTIFACT_DIR }}"
+          SMOKE_CODE="${{ steps.smoke.outputs.smoke_exit }}"
+          VERIFY_CODE="${{ steps.verify.outputs.verify_exit }}"
+          if [ -z "$SMOKE_CODE" ]; then SMOKE_CODE="n/a"; fi
+          if [ -z "$VERIFY_CODE" ]; then VERIFY_CODE="n/a"; fi
+          CONCLUSION=FAIL
+          if [ "$SMOKE_CODE" = "0" ] && [ "$VERIFY_CODE" = "0" ]; then
+            CONCLUSION=PASS
+          fi
+          export SMOKE_CODE VERIFY_CODE CONCLUSION
+          node <<'NODE'
+          const fs = require('fs');
+          const out = process.env.ARTIFACT_DIR + '/certification-result.json';
+          const smokeExit = process.env.SMOKE_CODE;
+          const verifyExit = process.env.VERIFY_CODE;
+          const conclusion = process.env.CONCLUSION;
+          const result = {
+            gate: 'PE.2F.1',
+            title: 'Deposit claim port automated certification',
+            conclusion,
+            generatedAt: new Date().toISOString(),
+            sha: process.env.GITHUB_SHA || null,
+            ref: process.env.GITHUB_REF || null,
+            runUrl: process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID
+              ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+              : null,
+            checks: {
+              workflowStaticGuard: 'executed',
+              scriptsPresent: ['scripts/pe2f-claim-deposit-port-smoke.mjs', 'scripts/verify-pe2f-deposit-claim-port.mjs'],
+              coreNoSupabase: 'src/payment-engine/core/claimApprovedDeposit.js',
+              smokeExit: smokeExit === 'n/a' ? null : Number(smokeExit),
+              verifyExit: verifyExit === 'n/a' ? null : Number(verifyExit)
+            },
+            flags: {
+              PE_DEPOSIT_CLAIM_PORT_ENABLED: process.env.PE_DEPOSIT_CLAIM_PORT_ENABLED || 'false',
+              PE_ADAPTER_BOUNDARY_ENABLED: process.env.PE_ADAPTER_BOUNDARY_ENABLED || 'false'
+            },
+            artifacts: [
+              'smoke-output.txt',
+              'verify-output.txt',
+              'certification-result.json',
+              'environment-report.json',
+              'dependency-audit.json'
+            ],
+            constraints: {
+              workflow_dispatch_only: true,
+              no_deploy: true,
+              no_finance_db_secrets: true
+            }
+          };
+          fs.writeFileSync(out, JSON.stringify(result, null, 2) + '\n');
+          console.log('Wrote', out, 'conclusion=', conclusion);
+          NODE
+        env:
+          ARTIFACT_DIR: ${{ env.ARTIFACT_DIR }}
+
+      - name: Upload PE.2F.1 certification artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pe2f1-certification-${{ github.run_id }}
+          path: |
+            artifacts/pe2f1-certification/smoke-output.txt
+            artifacts/pe2f1-certification/verify-output.txt
+            artifacts/pe2f1-certification/certification-result.json
+            artifacts/pe2f1-certification/environment-report.json
+            artifacts/pe2f1-certification/dependency-audit.json
+          if-no-files-found: warn
+          retention-days: 30
