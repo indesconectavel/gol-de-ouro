@@ -1,43 +1,106 @@
 'use strict';
 
-const { checkSupabaseDepositIdempotency } = require('../../../finance/webhooks/paymentWebhookIdempotency');
+
+
+const { isIdempotencyPortEnabled } = require('../../boundary/idempotency-port-config');
+
+const { isWebhookStorePortEnabled } = require('../../boundary/webhook-store-port-config');
+
+const { checkDepositIdempotencyCompat } = require('../../compat/idempotencyPortBridge');
+
+const { createGolDeOuroWebhookStore } = require('./GolDeOuroWebhookStore');
+
 const {
+
   webhookPayloadFromExpress,
-  expressLikeFromWebhookPayload
+
+  expressLikeFromWebhookPayload,
+
+  coerceToWebhookPayload
+
 } = require('../../compat/webhookPayloadFromExpress');
 
+const GdoWebhookHttpBridge = require('../../bridges/http/GdoWebhookHttpBridge');
+
+
+
 /**
- * PE.2B — adapter shadow de webhook GDO (não ativo em produção por default).
- * Concentra idempotência depósito + conversão WebhookPayload sem alterar handlers PSP.
+
+ * PE.2E / PE.2G / PE.2H — adapter de webhook GDO.
+
+ * Payload + idempotência (PE.2G) + store de ciclo de vida (PE.2H).
+
  */
+
 const GolDeOuroWebhookAdapter = {
+
   productId: 'gol-de-ouro',
 
-  /**
-   * @param {import('express').Request} req
-   * @param {{ provider?: string }} [options]
-   * @returns {import('../../types/WebhookPayload').WebhookPayload}
-   */
+  httpBridge: GdoWebhookHttpBridge,
+
+
+
   toWebhookPayload(req, options = {}) {
+
     return webhookPayloadFromExpress(req, options);
+
   },
 
-  /**
-   * @param {import('../../types/WebhookPayload').WebhookPayload} payload
-   * @returns {import('express').Request}
-   */
+
+
+  coercePayload(input, options = {}) {
+
+    return coerceToWebhookPayload(input, options);
+
+  },
+
+
+
   toExpressLike(payload) {
+
     return expressLikeFromWebhookPayload(payload);
+
   },
 
-  /**
-   * Idempotência depósito — delega implementação certificada existente.
-   * @param {object} supabase
-   * @param {string} paymentId
-   */
-  async checkDepositIdempotency(supabase, paymentId) {
-    return checkSupabaseDepositIdempotency(supabase, paymentId);
-  }
+
+
+  buildProcessInput(req, options = {}) {
+
+    return GdoWebhookHttpBridge.buildProcessInput(req, options);
+
+  },
+
+
+
+  async checkDepositIdempotency(supabase, paymentId, extraDeps = {}) {
+
+    return checkDepositIdempotencyCompat(
+
+      { supabase, idempotencyStore: extraDeps.idempotencyStore },
+
+      paymentId
+
+    );
+
+  },
+
+
+
+  createWebhookStore(deps = {}) {
+
+    return createGolDeOuroWebhookStore(deps);
+
+  },
+
+
+
+  isIdempotencyPortEnabled,
+
+  isWebhookStorePortEnabled
+
 };
 
+
+
 module.exports = GolDeOuroWebhookAdapter;
+

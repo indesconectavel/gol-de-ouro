@@ -1,13 +1,26 @@
 'use strict';
 
-const {
-  reconcileAsaasPendingPayouts,
-  reconcileSingleAsaasPayout,
-  isAsaasPayoutRecoveryEnabled
-} = require('../../finance/reconciliation/asaasPayoutRecovery');
+
+
+/**
+
+ * PE.2I — Core reconciliation.
+
+ * ZERO require de finance/* — surface via Compatibility Layer.
+
+ */
+
+
+
+const { reconciliation } = require('../compat/financeLegacySurface');
+
+
 
 module.exports = {
-  reconcileAsaasPendingPayouts,
-  reconcileSingleAsaasPayout,
-  isAsaasPayoutRecoveryEnabled
+
+  ...reconciliation,
+
+  __pe2i: 'bridged_via_financeLegacySurface'
+
 };
+

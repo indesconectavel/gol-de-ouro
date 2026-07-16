@@ -1,4 +1,8 @@
 'use strict';
 
-/** Namespace reconciliation — delegação para core/reconciliation.js (P2.2). */
-module.exports = require('../core/reconciliation');
+
+
+/** Namespace reconciliation — PE.2I: surface financeira, não core→finance. */
+
+module.exports = require('../compat/financeLegacySurface').reconciliation;
+

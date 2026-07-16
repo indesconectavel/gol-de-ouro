@@ -1,17 +1,38 @@
 'use strict';
 
+
+
+/**
+
+ * PE.2I — Core deposit (somente ports / compat de ports).
+
+ * ZERO require de finance/*.
+
+ */
+
+
+
 const {
-  createPixDepositCompat,
-  isPixDepositConfigured,
-  getPixDepositHealth
-} = require('../../finance/compat/createPixDepositCompat');
-const { claimApprovedPixDeposit } = require('../../finance/deposit/claimApprovedPixDeposit');
-const { createPixDeposit } = require('../../finance/deposit/createPixDeposit');
+
+  claimApprovedDeposit,
+
+  claimApprovedDepositOrchestrated
+
+} = require('./claimApprovedDeposit');
+
+const { claimApprovedPixDepositCompat } = require('../compat/depositClaimPortBridge');
+
+
 
 module.exports = {
-  createPixDepositCompat,
-  isPixDepositConfigured,
-  getPixDepositHealth,
-  createPixDeposit,
-  claimApprovedPixDeposit
+
+  claimApprovedDeposit,
+
+  claimApprovedDepositOrchestrated,
+
+  /** PE.2F compat — bridge pode tocar finance; core não importa finance diretamente */
+
+  claimApprovedPixDepositCompat
+
 };
+
