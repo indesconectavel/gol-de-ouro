@@ -1,0 +1,44 @@
+{
+
+  "gate": "PE.2G",
+
+  "title": "Idempotency readiness",
+
+  "date": "2026-07-14",
+
+  "b2_status": "ELIMINATED_FOR_DEPOSIT_WEBHOOK_PORT",
+
+  "formal_port": true,
+
+  "adapter_gdo": true,
+
+  "flag": {
+
+    "name": "PE_IDEMPOTENCY_PORT_ENABLED",
+
+    "default": false
+
+  },
+
+  "core_clean": true,
+
+  "legacy_preserved": true,
+
+  "payout_coverage": false,
+
+  "package_readiness_ports_delta": "+IdempotencyStore READY_SHADOW",
+
+  "pe2h_authorized": false,
+
+  "notes": [
+
+    "B2 formal store exists for deposit webhook check path",
+
+    "Claim/ledger idempotency remains via PE.2F + legado",
+
+    "Payout store formalization remaining residual"
+
+  ]
+
+}
+

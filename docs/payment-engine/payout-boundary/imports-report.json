@@ -1,0 +1,42 @@
+{
+
+  "gate": "PE.2J",
+
+  "date": "2026-07-14",
+
+  "scan": {
+
+    "globs": ["src/payment-engine/core/**/*.js"],
+
+    "pattern_forbidden": "require\\(['\"][^'\"]*domain/payout",
+
+    "matches": 0
+
+  },
+
+  "also_forbidden_in_core": {
+
+    "@supabase": 0,
+
+    "express": 0
+
+  },
+
+  "expected_domain_payout_outside_core": [
+
+    "compat/payoutBoundaryBridge.js",
+
+    "adapters/goldeouro/GolDeOuroPayoutAdapter.js",
+
+    "compat/financeLegacySurface.js",
+
+    "workers/payout-worker.js"
+
+  ],
+
+  "agent_static_audit": "PASS",
+
+  "runtime_smoke": "PENDING_LOCAL_OR_SHELL"
+
+}
+

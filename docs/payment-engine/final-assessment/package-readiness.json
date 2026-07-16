@@ -1,0 +1,62 @@
+{
+
+  "gate": "PE.2C-FINAL-PRE",
+
+  "date": "2026-07-14",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "overall_score": 6.8,
+
+  "band": "QUASE_PRONTO",
+
+  "minimum_for_physical_package_go": 7.0,
+
+  "score_gap": 0.2,
+
+  "pe2c_authorized": false,
+
+  "dimensions": {
+
+    "arquitetura": 7.6,
+
+    "acoplamento": 6.2,
+
+    "reutilizacao": 5.8,
+
+    "testabilidade": 6.2,
+
+    "ports": 7.5,
+
+    "adapters": 6.3,
+
+    "governanca": 8.3,
+
+    "documentacao": 8.9,
+
+    "sdk_readiness": 4.2,
+
+    "licenciamento": 6.0,
+
+    "runtime_isolation": 7.5
+
+  },
+
+  "package_isolation": {
+
+    "logical_workspace": "SIM_COM_RESSALVAS",
+
+    "physical_zero_gdo_imports": "NAO",
+
+    "production_safe_move_now": "NAO",
+
+    "npm_package_exists": "NAO"
+
+  },
+
+  "rule_applied": "Qualquer dúvida sobre isolamento físico → NO-GO",
+
+  "verdict": "NOT_READY_FOR_PHYSICAL_PACKAGE"
+
+}
+

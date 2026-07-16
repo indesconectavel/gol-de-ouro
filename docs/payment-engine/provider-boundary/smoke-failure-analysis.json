@@ -1,0 +1,78 @@
+{
+
+  "gate": "PE.2L.1",
+
+  "date": "2026-07-14",
+
+  "script": "scripts/pe2l-provider-boundary-smoke.mjs",
+
+  "failure": {
+
+    "error": "AssertionError: true !== false",
+
+    "approx_line": 109,
+
+    "assertion": "assert.equal(/pix-mercado-pago/.test(mpAdapter), false)",
+
+    "left_hand_side": "boolean from RegExp.test over MercadoPagoTransferAdapter.js source",
+
+    "right_hand_side": false,
+
+    "producer_object": "file contents of src/payment-engine/adapters/psp/MercadoPagoTransferAdapter.js",
+
+    "preceding_call": "fs.readFileSync(...MercadoPagoTransferAdapter.js)",
+
+    "match_source": "JSDoc comment documenting encapsulation of MercadoPagoPayoutProvider → services/pix-mercado-pago"
+
+  },
+
+  "nearby_resolve_logs": {
+
+    "requestedProvider": "asaas",
+
+    "effectiveProvider": "mercadopago",
+
+    "legacyFallback": true,
+
+    "gate": "Asaas não resolvível no ambiente do smoke",
+
+    "note": "Logs corretos semanticamente; não eram o sujeito da asserção que falhou"
+
+  },
+
+  "causal_map": [
+
+    "PRIMARY_PSP/default → requested=asaas",
+
+    "gates/config Asaas não resolvível",
+
+    "FinanceProviderFactory → effective=mercadopago + legacyFallback=true",
+
+    "ProviderResolver devolve provider efetivo (flag ON/OFF conforme etapa)",
+
+    "smoke lê adapter MP e aplica regex ampla pix-mercado-pago",
+
+    "comentário match → true !== false"
+
+  ],
+
+  "classification": "bug_de_teste",
+
+  "secondary_ambiguity": "nomenclatura_smoke_vs_observability_logs",
+
+  "fix": {
+
+    "smoke_assert": "require\\s*\\(\\s*['\"][^'\"]*pix-mercado-pago  (proíbe require, não menção documental)",
+
+    "semantics": "ProviderResolver.deriveResolutionSide + getResolutionMetadata + asserts de matriz"
+
+  },
+
+  "not_a_bug": {
+
+    "factory_legacyFallback_true": "Comportamento homologado e desejado para Asaas→MP"
+
+  }
+
+}
+

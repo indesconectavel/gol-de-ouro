@@ -1,0 +1,34 @@
+{
+
+  "gate": "PE.2K",
+
+  "date": "2026-07-14",
+
+  "before": {
+
+    "payout_worker": ["finance/factory", "domain/payout"],
+
+    "admin": ["domain/payout"],
+
+    "server_fly_payout": ["domain/payout", "finance/factory getPublicPspSnapshot"],
+
+    "asaas_scheduler": ["payoutBoundaryBridge / financeLegacySurface"]
+
+  },
+
+  "after": {
+
+    "payout_worker": ["RuntimeBoundary", "supabase client (infra ping only)"],
+
+    "admin": ["RuntimeBoundary"],
+
+    "server_fly_payout": ["RuntimeBoundary", "PaymentEngine"],
+
+    "asaas_scheduler": ["RuntimeBoundary"]
+
+  },
+
+  "financial_bypass_remaining": []
+
+}
+

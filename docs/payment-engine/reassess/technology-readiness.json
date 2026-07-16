@@ -1,0 +1,84 @@
+{
+
+  "gate": "PE.2C-REASSESS",
+
+  "date": "2026-07-14",
+
+  "overall_technology_readiness": 7.0,
+
+  "trl_proxy": {
+
+    "scale_note": "proxy 1–9 inspirado em TRL, mapeado narrativamente",
+
+    "production_operation": 8,
+
+    "architectural_separation": 6,
+
+    "package_extractability": 4,
+
+    "multi_product_proven": 2,
+
+    "blended": 6.5
+
+  },
+
+  "pillars": {
+
+    "isolation": {
+
+      "score": 7.0,
+
+      "pre_proxy": 4.5,
+
+      "note": "Core limpo; adapters/compat concentram GDO/finance/domain"
+
+    },
+
+    "governance": { "score": 8.2 },
+
+    "documentation": { "score": 8.8 },
+
+    "ports_adapters": { "score": 7.2 },
+
+    "rollback_safety": { "score": 8.5 },
+
+    "reutilization": { "score": 5.8 },
+
+    "risk_control": { "score": 7.0, "note": "shadow-first; flags OFF" },
+
+    "runtime_homologation": {
+
+      "score": 8.0,
+
+      "note": "P1.9 produção; ports ON não homologados em prod"
+
+    }
+
+  },
+
+  "strengths": [
+
+    "Multi-PSP factory",
+
+    "Recovery Asaas",
+
+    "Idempotency/webhook/claim/payout ports shadow",
+
+    "HITL + rollback por flag"
+
+  ],
+
+  "weaknesses": [
+
+    "Extractabilidade física insuficiente",
+
+    "Worker bypass",
+
+    "MP legacy coupling",
+
+    "Certificação smoke agente intermitente"
+
+  ]
+
+}
+

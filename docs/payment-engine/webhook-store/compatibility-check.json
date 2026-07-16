@@ -1,0 +1,32 @@
+{
+
+  "gate": "PE.2H.1",
+
+  "flag_defaults_unchanged": true,
+
+  "financial_rules_unchanged": true,
+
+  "persistence_unchanged": true,
+
+  "idempotency_unchanged": true,
+
+  "components_aligned": {
+
+    "WebhookStorePort": "status enum without TIMEOUT; errorCode on markFailed",
+
+    "core_webhookStore": "preserves errorCode through normalize",
+
+    "GolDeOuroWebhookStore": "status=failed + lastErrorCode from input.errorCode",
+
+    "InMemoryWebhookStore": "same",
+
+    "smoke": "asserts status=failed and lastErrorCode=TIMEOUT",
+
+    "verify": "dedicated PE.2H.1 timeout semantics test"
+
+  },
+
+  "legacy_dry_run": "untouched; markFailed not part of DryRun API"
+
+}
+

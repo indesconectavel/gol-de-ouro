@@ -1,0 +1,66 @@
+{
+
+  "gate": "PE.2I",
+
+  "title": "Imports report — core vs finance",
+
+  "date": "2026-07-14",
+
+  "scan": {
+
+    "globs": ["src/payment-engine/core/**/*.js"],
+
+    "pattern_forbidden": "require\\(['\"][^'\"]*finance/",
+
+    "matches": 0
+
+  },
+
+  "also_forbidden_in_core": {
+
+    "domain/payout": 0,
+
+    "@supabase": 0,
+
+    "express": 0,
+
+    "mercadopago": 0,
+
+    "asaas": 0
+
+  },
+
+  "core_files_audited": [
+
+    "deposit.js",
+
+    "withdraw.js",
+
+    "webhooks.js",
+
+    "reconciliation.js",
+
+    "claimApprovedDeposit.js",
+
+    "idempotency.js",
+
+    "webhookStore.js"
+
+  ],
+
+  "payment_engine_facade": {
+
+    "file": "api/PaymentEngine.js",
+
+    "direct_finance_require": false,
+
+    "uses": "getFinanceSurface() / resolveFinanceSurface()"
+
+  },
+
+  "agent_static_audit": "PASS",
+
+  "runtime_smoke": "NOT_EXECUTED_SHELL_BLOCKED"
+
+}
+

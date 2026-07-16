@@ -1,0 +1,34 @@
+{
+
+  "gate": "PE.2J",
+
+  "date": "2026-07-14",
+
+  "flag": {
+
+    "name": "PE_PAYOUT_BOUNDARY_ENABLED",
+
+    "default": false
+
+  },
+
+  "ports": {
+
+    "WithdrawalPort": "formalized (read; PE.2B+J docs)",
+
+    "PayoutStorePort": "formalized",
+
+    "PayoutRecoveryPort": "formalized"
+
+  },
+
+  "adapter": "GolDeOuroPayoutAdapter",
+
+  "core": "core/payout.js",
+
+  "bridge": "payoutBoundaryBridge",
+
+  "status": "ACTIVE_DEFAULT_OFF"
+
+}
+

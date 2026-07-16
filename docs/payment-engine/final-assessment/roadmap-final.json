@@ -1,0 +1,150 @@
+{
+
+  "gate": "PE.2C-FINAL-PRE",
+
+  "date": "2026-07-14",
+
+  "priority_maxima": [
+
+    {
+
+      "id": "M1",
+
+      "do": "Certificar smokes PE.2F–K localmente e arquivar evidência",
+
+      "why": "fecha ressalva de certificação que impede GO pleno"
+
+    },
+
+    {
+
+      "id": "M2",
+
+      "do": "PB-03 — encapsular services/pix-mercado-pago atrás de port/adapter",
+
+      "why": "último bypass PSP legado crítico ao package"
+
+    },
+
+    {
+
+      "id": "M3",
+
+      "do": "Fechar gap 0.2 de readiness (providers/config residual OU decisão documentada)",
+
+      "why": "atingir limiar 7.0 sem package físico precipitado"
+
+    }
+
+  ],
+
+  "alta": [
+
+    {
+
+      "id": "A1",
+
+      "do": "PB-05 — reavaliar staging PE.2B.2 ou aceitar formalmente bloqueio"
+
+    },
+
+    {
+
+      "id": "A2",
+
+      "do": "Spec package C0 lógico (workspace) sem mover produção"
+
+    },
+
+    {
+
+      "id": "A3",
+
+      "do": "Extrair residual providers/config → finance do payment-engine"
+
+    }
+
+  ],
+
+  "media": [
+
+    {
+
+      "id": "ME1",
+
+      "do": "SDK mínimo: createPaymentEngine + README público + types"
+
+    },
+
+    {
+
+      "id": "ME2",
+
+      "do": "B1 residual Express paths"
+
+    },
+
+    {
+
+      "id": "ME3",
+
+      "do": "Worker supabase ping via RuntimeBoundary factory (higiene)"
+
+    }
+
+  ],
+
+  "baixa": [
+
+    {
+
+      "id": "B1-R",
+
+      "do": "IP registral / INPI"
+
+    },
+
+    {
+
+      "id": "B2-R",
+
+      "do": "White-label / multi-tenant"
+
+    },
+
+    {
+
+      "id": "B3-R",
+
+      "do": "SaaS billing IPE"
+
+    }
+
+  ],
+
+  "do_not_invest_further_now": [
+
+    "Package físico / mover diretórios agora",
+
+    "Ativar flags PE_* em produção sem staging HITL",
+
+    "Productização comercial agressiva da IPE isolada",
+
+    "Segundo cliente pago sem PB-03 + certificação",
+
+    "Reescrita financeira / schema / PIX rules",
+
+    "SDK marketing sem readiness ≥ 7.0"
+
+  ],
+
+  "next_gate_options": [
+
+    "PE.2L — PB-03 MP encapsulation (shadow)",
+
+    "PE.2C-PRE.2 — re-audit when package score ≥ 7.0 + smokes PASS"
+
+  ]
+
+}
+

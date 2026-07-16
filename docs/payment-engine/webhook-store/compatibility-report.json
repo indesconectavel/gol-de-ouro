@@ -1,0 +1,24 @@
+{
+
+  "gate": "PE.2H",
+
+  "flag": {
+
+    "name": "PE_WEBHOOK_STORE_PORT_ENABLED",
+
+    "default": false
+
+  },
+
+  "legacy_file_modified": false,
+
+  "dry_run_store_untouched": true,
+
+  "processPaymentWebhook": "uses markWebhookProcessedCompat (flag-gated)",
+
+  "double_write_prevented": true,
+
+  "financial_semantics_unchanged": true
+
+}
+

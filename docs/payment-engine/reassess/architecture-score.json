@@ -1,0 +1,238 @@
+{
+
+  "gate": "PE.2C-REASSESS",
+
+  "date": "2026-07-14",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "scale": "0-10",
+
+  "baseline_gate": "PE.2C-PRE",
+
+  "baseline_date": "2026-07-11",
+
+  "gates_audited": ["PE.2E", "PE.2F", "PE.2G", "PE.2H", "PE.2I", "PE.2J"],
+
+  "overall_architecture_maturity": 6.5,
+
+  "band": "QUASE_PRONTO",
+
+  "dimensions": {
+
+    "arquitetura": {
+
+      "score": 7.3,
+
+      "pre": 6.5,
+
+      "delta": 0.8,
+
+      "evidence": [
+
+        "PaymentEngine facade + financeLegacySurface (PE.2I)",
+
+        "Core sem require finance/* nem domain/payout",
+
+        "Ports shadow PE.2B–J com bridges flag-gated",
+
+        "Factory multi-PSP preservada"
+
+      ],
+
+      "gaps": [
+
+        "providers/config → finance residual",
+
+        "domain/payout fora do package físico",
+
+        "flags sempre OFF em produção"
+
+      ]
+
+    },
+
+    "acoplamento": {
+
+      "score": 5.5,
+
+      "pre": 4.0,
+
+      "delta": 1.5,
+
+      "evidence": [
+
+        "B7/B8/B2/B10/PB-01 extraídos para ports/adapters",
+
+        "Compat layer concentra legado"
+
+      ],
+
+      "gaps": [
+
+        "payout-worker → domain/payout (PB-02)",
+
+        "MP services/pix-mercado-pago (PB-03)",
+
+        "schema GDO nos adapters"
+
+      ]
+
+    },
+
+    "ports": {
+
+      "score": 7.5,
+
+      "pre": 5.0,
+
+      "delta": 2.5,
+
+      "inventory": [
+
+        "LedgerPort",
+
+        "WalletPort",
+
+        "WithdrawalPort",
+
+        "DepositClaimPort",
+
+        "IdempotencyStore",
+
+        "WebhookStorePort",
+
+        "PayoutStorePort",
+
+        "PayoutRecoveryPort",
+
+        "WebhookPayload type"
+
+      ]
+
+    },
+
+    "adapters": {
+
+      "score": 6.3,
+
+      "pre": 6.0,
+
+      "delta": 0.3,
+
+      "evidence": [
+
+        "GolDeOuro* adapters + GolDeOuroPayoutAdapter",
+
+        "InMemory fakes para smoke"
+
+      ],
+
+      "gaps": ["único produto GDO", "MP legacy fora boundary"]
+
+    },
+
+    "compat_bridges": {
+
+      "score": 7.0,
+
+      "note": "depositClaim/idempotency/webhookStore/payout/financeLegacySurface bridges"
+
+    },
+
+    "facade": {
+
+      "score": 7.5,
+
+      "note": "PaymentEngine.withdraw/deposit/webhooks/reconcile via bridges"
+
+    },
+
+    "runtime_workers": {
+
+      "score": 3.5,
+
+      "note": "worker e parte do server-fly ainda bypassam facade (PB-02)"
+
+    },
+
+    "feature_flags": {
+
+      "score": 8.0,
+
+      "inventory_default_false": [
+
+        "PE_ADAPTER_BOUNDARY_ENABLED",
+
+        "PE_DEPOSIT_CLAIM_PORT_ENABLED",
+
+        "PE_IDEMPOTENCY_PORT_ENABLED",
+
+        "PE_WEBHOOK_STORE_PORT_ENABLED",
+
+        "PE_CORE_FINANCE_BOUNDARY_ENABLED",
+
+        "PE_PAYOUT_BOUNDARY_ENABLED"
+
+      ],
+
+      "production_risk": "baixo — defaults false preservam legado"
+
+    },
+
+    "documentacao": {
+
+      "score": 8.8,
+
+      "pre": 8.5,
+
+      "delta": 0.3
+
+    },
+
+    "governanca": {
+
+      "score": 8.2,
+
+      "pre": 8.0,
+
+      "delta": 0.2,
+
+      "evidence": ["PIPELINE.3 HITL", "gates PE.2E–J com rollback", "shadow-first"]
+
+    },
+
+    "rollback": {
+
+      "score": 8.5,
+
+      "note": "flags OFF + planos rollback por gate"
+
+    }
+
+  },
+
+  "static_import_audit_core": {
+
+    "finance_require": 0,
+
+    "domain_payout_require": 0,
+
+    "supabase_require": 0,
+
+    "evidence": "grep src/payment-engine/core — zero matches"
+
+  },
+
+  "ressalvas": [
+
+    "Smokes PE.2F–J frequentemente NÃO EXECUTADOS no agente (shell LanguagePrimitives)",
+
+    "Eliminações B* são arquiteturais; certificação runtime de flags ON incompleta",
+
+    "Não altera produção — maturidade de runtime = legado"
+
+  ]
+
+}
+

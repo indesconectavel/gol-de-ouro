@@ -1,0 +1,112 @@
+{
+
+  "gate": "PE.2L.1",
+
+  "date": "2026-07-14",
+
+  "rows": [
+
+    {
+
+      "id": "ASAAS_AUTHORIZED",
+
+      "requestedProvider": "asaas",
+
+      "asaasResolvable": true,
+
+      "effectiveProvider": "asaas",
+
+      "fallbackApplied": false,
+
+      "legacyFallbackApplied": false,
+
+      "fallbackReason": null,
+
+      "validation": "matrix_pure_deriveResolutionSide"
+
+    },
+
+    {
+
+      "id": "ASAAS_GATE_BLOCKED",
+
+      "requestedProvider": "asaas",
+
+      "asaasResolvable": false,
+
+      "effectiveProvider": "mercadopago",
+
+      "fallbackApplied": true,
+
+      "legacyFallbackApplied": true,
+
+      "fallbackReason": "ASAAS_GATE_NOT_RESOLVABLE",
+
+      "validation": "matrix_pure + integration_getResolutionMetadata"
+
+    },
+
+    {
+
+      "id": "MERCADOPAGO_REQUESTED",
+
+      "requestedProvider": "mercadopago",
+
+      "asaasResolvable": false,
+
+      "effectiveProvider": "mercadopago",
+
+      "fallbackApplied": false,
+
+      "legacyFallbackApplied": false,
+
+      "fallbackReason": null,
+
+      "validation": "integration_getResolutionMetadata"
+
+    },
+
+    {
+
+      "id": "UNKNOWN_PROVIDER",
+
+      "requestedProvider": "unknown_psp",
+
+      "effectiveProvider": null,
+
+      "fallbackApplied": null,
+
+      "behavior": "assertBootConfig throws Unknown PAYMENT_PROVIDER — no silent fallback",
+
+      "validation": "integration_assertBootConfig"
+
+    },
+
+    {
+
+      "id": "BOUNDARY_FLAG_OFF",
+
+      "PE_PROVIDER_BOUNDARY_ENABLED": false,
+
+      "mode": "legacy_factory",
+
+      "selection": "FinanceProviderFactory unchanged"
+
+    },
+
+    {
+
+      "id": "BOUNDARY_FLAG_ON_LOCAL",
+
+      "PE_PROVIDER_BOUNDARY_ENABLED": true,
+
+      "mode": "ports_adapters",
+
+      "selection": "same factory selection wrapped by adapters"
+
+    }
+
+  ]
+
+}
+

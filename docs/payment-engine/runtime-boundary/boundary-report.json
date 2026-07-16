@@ -1,0 +1,17 @@
+{
+  "gate": "PE.2K",
+  "date": "2026-07-14",
+  "module": "src/payment-engine/runtime/RuntimeBoundary.js",
+  "flag": {
+    "name": "PE_RUNTIME_BOUNDARY_ENABLED",
+    "default": false
+  },
+  "knows": ["PaymentEngine facade", "compat/domain via flag OFF path", "FinanceProviderFactory via flag OFF"],
+  "never_contains": ["Express handlers", "SQL schema definitions", "financial rule logic"],
+  "consumers": [
+    "payout-worker",
+    "adminWithdrawController",
+    "server-fly payout surface",
+    "asaasPayoutRecoveryScheduler"
+  ]
+}

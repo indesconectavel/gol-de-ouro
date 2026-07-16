@@ -1,0 +1,66 @@
+{
+
+  "gate": "PE.2H",
+
+  "risks": [
+
+    {
+
+      "id": "R-PE2H-01",
+
+      "severity": "HIGH",
+
+      "title": "Ativação acidental PE_WEBHOOK_STORE_PORT_ENABLED em produção",
+
+      "mitigation": "default false; rollback unset",
+
+      "residual": "LOW"
+
+    },
+
+    {
+
+      "id": "R-PE2H-02",
+
+      "severity": "MEDIUM",
+
+      "title": "Ausência de tabela webhook_events — store é in-memory DryRun",
+
+      "mitigation": "Documentado; adapter pronto para futura tabela sem mudar core",
+
+      "residual": "MEDIUM"
+
+    },
+
+    {
+
+      "id": "R-PE2H-03",
+
+      "severity": "LOW",
+
+      "title": "Smoke não executado no agente",
+
+      "mitigation": "Scripts prontos; PASS COM RESSALVAS",
+
+      "residual": "LOW"
+
+    },
+
+    {
+
+      "id": "R-PE2H-04",
+
+      "severity": "MEDIUM",
+
+      "title": "ControlledCreditStore e payout raw fora do WebhookStorePort",
+
+      "mitigation": "Escopo B10 = lifecycle dry-run; restantes = gates futuros",
+
+      "residual": "MEDIUM"
+
+    }
+
+  ]
+
+}
+

@@ -1,0 +1,78 @@
+{
+
+  "gate": "PE.2I",
+
+  "title": "Boundary report",
+
+  "date": "2026-07-14",
+
+  "flag": {
+
+    "name": "PE_CORE_FINANCE_BOUNDARY_ENABLED",
+
+    "default": false,
+
+    "independent_of": [
+
+      "PE_ADAPTER_BOUNDARY_ENABLED",
+
+      "PE_DEPOSIT_CLAIM_PORT_ENABLED",
+
+      "PE_IDEMPOTENCY_PORT_ENABLED",
+
+      "PE_WEBHOOK_STORE_PORT_ENABLED"
+
+    ]
+
+  },
+
+  "allowed_core_dependencies": [
+
+    "ports",
+
+    "types",
+
+    "compat/*",
+
+    "boundary (via facade)",
+
+    "./ sibling core modules"
+
+  ],
+
+  "forbidden_core_dependencies": [
+
+    "finance/*",
+
+    "supabase client",
+
+    "express",
+
+    "mercadopago",
+
+    "asaas SDK",
+
+    "controllers",
+
+    "workers",
+
+    "schemas/queries/repositories GDO"
+
+  ],
+
+  "boundary_modules": [
+
+    "boundary/core-finance-boundary-config.js",
+
+    "boundary/resolveFinanceSurface.js",
+
+    "compat/financeLegacySurface.js"
+
+  ],
+
+  "facade_entry": "api/PaymentEngine.js → getFinanceSurface()",
+
+  "status": "ACTIVE_DEFAULT_OFF"
+
+}
+

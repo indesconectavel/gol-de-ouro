@@ -1,0 +1,190 @@
+{
+
+  "gate": "PE.2C-FINAL-PRE",
+
+  "date": "2026-07-14",
+
+  "blockers": [
+
+    {
+
+      "id": "B1",
+
+      "status": "PARCIAL",
+
+      "nature": ["arquitetural", "residual"],
+
+      "eliminated": false,
+
+      "why": "PE.2E formalizou WebhookPayload; paths Express residual possíveis"
+
+    },
+
+    {
+
+      "id": "B2",
+
+      "status": "ELIMINADO_ARQUITETURAL",
+
+      "nature": ["arquitetural"],
+
+      "eliminated": true,
+
+      "gate": "PE.2G",
+
+      "residual": "flag OFF; backing finance idempotency"
+
+    },
+
+    {
+
+      "id": "B7",
+
+      "status": "ELIMINADO_ARQUITETURAL",
+
+      "nature": ["arquitetural"],
+
+      "eliminated": true,
+
+      "gate": "PE.2I",
+
+      "residual": "providers/config → finance"
+
+    },
+
+    {
+
+      "id": "B8",
+
+      "status": "ELIMINADO_ARQUITETURAL",
+
+      "nature": ["arquitetural"],
+
+      "eliminated": true,
+
+      "gate": "PE.2F"
+
+    },
+
+    {
+
+      "id": "B10",
+
+      "status": "ELIMINADO_ARQUITETURAL",
+
+      "nature": ["arquitetural"],
+
+      "eliminated": true,
+
+      "gate": "PE.2H",
+
+      "residual": "DryRun store; sem tabela webhook_events"
+
+    },
+
+    {
+
+      "id": "PB-01",
+
+      "status": "ELIMINADO_ARQUITETURAL",
+
+      "nature": ["arquitetural"],
+
+      "eliminated": true,
+
+      "gate": "PE.2J",
+
+      "residual": "domain/payout ainda fora do package físico"
+
+    },
+
+    {
+
+      "id": "PB-02",
+
+      "status": "ELIMINADO_ARQUITETURAL",
+
+      "nature": ["arquitetural", "operacional"],
+
+      "eliminated": true,
+
+      "gate": "PE.2K",
+
+      "residual": "worker supabase ping infra; smokes não agent-certified"
+
+    },
+
+    {
+
+      "id": "PB-03",
+
+      "status": "ABERTO",
+
+      "nature": ["arquitetural", "dívida"],
+
+      "eliminated": false,
+
+      "why": "MercadoPagoPayoutProvider → services/pix-mercado-pago"
+
+    },
+
+    {
+
+      "id": "PB-04",
+
+      "status": "ABERTO_BY_DESIGN",
+
+      "nature": ["operacional", "shadow-first"],
+
+      "eliminated": false,
+
+      "why": "todas PE_* flags default false — política HITL, não regressão"
+
+    },
+
+    {
+
+      "id": "PB-05",
+
+      "status": "ABERTO",
+
+      "nature": ["operacional"],
+
+      "eliminated": false,
+
+      "why": "PE.2B.2 staging deploy NO-GO"
+
+    },
+
+    {
+
+      "id": "PB-06",
+
+      "status": "PARCIAL",
+
+      "nature": ["métrica"],
+
+      "eliminated": false,
+
+      "why": "readiness 6.8; limiar package físico 7.0; gap 0.2"
+
+    }
+
+  ],
+
+  "summary": {
+
+    "eliminated_architecturally": ["B2", "B7", "B8", "B10", "PB-01", "PB-02"],
+
+    "partial": ["B1", "PB-06"],
+
+    "open": ["PB-03", "PB-05"],
+
+    "open_by_design": ["PB-04"],
+
+    "count_eliminated": 6
+
+  }
+
+}
+

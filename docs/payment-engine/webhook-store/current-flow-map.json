@@ -1,0 +1,50 @@
+{
+
+  "gate": "PE.2H",
+
+  "title": "Webhook persistence current flow",
+
+  "date": "2026-07-14",
+
+  "findings": {
+
+    "dedicated_webhook_events_table": false,
+
+    "lifecycle_store": "PaymentWebhookDryRunStore (in-memory F4.5)",
+
+    "controlled_credit_store": "PaymentWebhookControlledCreditStore (in-memory F4.6)",
+
+    "deposit_idempotency": "pagamentos_pix status via PE.2G IdempotencyStore / legado",
+
+    "transfer_raw": "saques.asaas_payout_raw (payout path — fora do corte dry-run B10)"
+
+  },
+
+  "consumers": [
+
+    {
+
+      "path": "src/finance/webhooks/processPaymentWebhook.js",
+
+      "uses": ["dryRunStore.markProcessed", "recordCreditDecision", "snapshot", "controlled credit"]
+
+    },
+
+    {
+
+      "path": "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookAdapter.js",
+
+      "uses": ["payload", "idempotency", "sem store lifecycle pré-PE.2H"]
+
+    }
+
+  ],
+
+  "tables_touched_by_webhook_deposit_prod": ["pagamentos_pix (idempotency/claim)", "usuarios", "ledger_financeiro"],
+
+  "tables_webhook_event_registry": [],
+
+  "bypasses": ["workers may call claim directly", "payout transfer handlers write saques"]
+
+}
+

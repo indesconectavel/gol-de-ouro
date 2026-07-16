@@ -1,0 +1,100 @@
+{
+
+  "gate": "PE.2K",
+
+  "date": "2026-07-14",
+
+  "bypasses_before": [
+
+    {
+
+      "id": "BY-01",
+
+      "from": "payout-worker",
+
+      "to": "domain/payout",
+
+      "severity": "Crítico",
+
+      "status_after": "RESOLVED"
+
+    },
+
+    {
+
+      "id": "BY-02",
+
+      "from": "payout-worker",
+
+      "to": "finance/factory",
+
+      "severity": "Crítico",
+
+      "status_after": "RESOLVED"
+
+    },
+
+    {
+
+      "id": "BY-03",
+
+      "from": "adminWithdrawController",
+
+      "to": "domain/payout",
+
+      "severity": "Crítico",
+
+      "status_after": "RESOLVED"
+
+    },
+
+    {
+
+      "id": "BY-04",
+
+      "from": "server-fly",
+
+      "to": "domain/payout processPending*",
+
+      "severity": "Crítico",
+
+      "status_after": "RESOLVED"
+
+    },
+
+    {
+
+      "id": "BY-05",
+
+      "from": "worker",
+
+      "to": "supabase createClient ping",
+
+      "severity": "Baixo",
+
+      "status_after": "ACCEPTED_INFRA",
+
+      "justification": "infra connectivity; sem regras financeiras"
+
+    },
+
+    {
+
+      "id": "BY-06",
+
+      "from": "finance/webhooks processAsaasTransferWebhook",
+
+      "to": "domain/payout",
+
+      "severity": "Moderado",
+
+      "status_after": "OUT_OF_SCOPE_PE2K",
+
+      "note": "camada finance webhook; não é runtime worker/scheduler bypass PB-02"
+
+    }
+
+  ]
+
+}
+

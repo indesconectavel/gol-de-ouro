@@ -1,0 +1,40 @@
+{
+
+  "gate": "PE.2H",
+
+  "core_webhookStore": {
+
+    "path": "src/payment-engine/core/webhookStore.js",
+
+    "supabase": false,
+
+    "tables": false,
+
+    "from_rpc": false,
+
+    "express": false
+
+  },
+
+  "adapter": {
+
+    "path": "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookStore.js",
+
+    "backing": "PaymentWebhookDryRunStore",
+
+    "supabase_table_webhook_events": false,
+
+    "note": "Nenhuma tabela webhook_events no GDO; adapter não inventa schema"
+
+  },
+
+  "legacy_untouched": [
+
+    "src/finance/webhooks/paymentWebhookDryRunStore.js",
+
+    "src/finance/webhooks/paymentWebhookControlledCreditStore.js"
+
+  ]
+
+}
+

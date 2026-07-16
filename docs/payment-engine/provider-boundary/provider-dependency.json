@@ -1,0 +1,28 @@
+{
+
+  "gate": "PE.2L",
+
+  "date": "2026-07-14",
+
+  "before": {
+
+    "payment_engine_providers": "direct FinanceProviderFactory",
+
+    "mp_payout": "services/pix-mercado-pago from finance provider"
+
+  },
+
+  "after": {
+
+    "payment_engine_providers": "ProviderResolver only",
+
+    "mp_services_known_by": "finance/MercadoPagoPayoutProvider (behind MercadoPagoTransferAdapter)"
+
+  },
+
+  "pb03_engine_surface": "ELIMINATED",
+
+  "residual": "MP service coupling inside finance provider encapsulated by PE adapter"
+
+}
+

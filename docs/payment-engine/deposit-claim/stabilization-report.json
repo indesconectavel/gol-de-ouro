@@ -1,0 +1,76 @@
+{
+
+  "gate": "PE.2F.1",
+
+  "title": "Stabilization & Smoke Fix",
+
+  "date": "2026-07-14",
+
+  "verdict": "BLOCKED_SHELL",
+
+  "pass_criterion_met": false,
+
+  "reason": "Agent shell cannot start (PowerShell LanguagePrimitives). F1/F2 code fixes applied; smoke/verify not executed in agent.",
+
+  "fixes": {
+
+    "F1_core_supabase_mention": {
+
+      "status": "FIXED_STATIC",
+
+      "file": "src/payment-engine/core/claimApprovedDeposit.js",
+
+      "cause": "Comment contained word Supabase; smoke regex /supabase/i failed",
+
+      "action": "Neutral comments; no persistence vendor names"
+
+    },
+
+    "F2_adapter_find_neutral_map": {
+
+      "status": "FIXED_CODE_AND_MOCK",
+
+      "files": [
+
+        "src/payment-engine/adapters/goldeouro/GolDeOuroDepositClaimAdapter.js",
+
+        "scripts/verify-pe2f-deposit-claim-port.mjs"
+
+      ],
+
+      "cause": "Verify mock maybeSingle arrow lost this; found=false",
+
+      "action": "Closure-based mock + adapter trySelect terminal resolve + DepositRecord asserts"
+
+    }
+
+  },
+
+  "unchanged": {
+
+    "flags_default_false": true,
+
+    "legacy_claim_file": true,
+
+    "financial_rules": true,
+
+    "production": true,
+
+    "public_api_surface": true
+
+  },
+
+  "pe2g_authorized": false,
+
+  "pe2c_authorized": false,
+
+  "operator_commands": [
+
+    "node scripts/pe2f-claim-deposit-port-smoke.mjs",
+
+    "node scripts/verify-pe2f-deposit-claim-port.mjs"
+
+  ]
+
+}
+

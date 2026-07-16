@@ -1,0 +1,92 @@
+{
+
+  "gate": "PE.2G",
+
+  "implementations": [
+
+    {
+
+      "id": "checkSupabaseDepositIdempotency",
+
+      "path": "src/finance/webhooks/paymentWebhookIdempotency.js",
+
+      "role": "legacy_source_of_truth_deposit_webhook",
+
+      "modified_in_pe2g": false
+
+    },
+
+    {
+
+      "id": "PaymentWebhookDryRunStore",
+
+      "path": "src/finance/webhooks/paymentWebhookDryRunStore.js",
+
+      "role": "sandbox_in_memory"
+
+    },
+
+    {
+
+      "id": "PaymentWebhookControlledCreditStore",
+
+      "path": "src/finance/webhooks/paymentWebhookControlledCreditStore.js",
+
+      "role": "controlled_credit_in_memory"
+
+    },
+
+    {
+
+      "id": "claimApprovedPixDeposit",
+
+      "path": "src/finance/deposit/claimApprovedPixDeposit.js",
+
+      "role": "claim_ledger_wallet_idempotency"
+
+    },
+
+    {
+
+      "id": "IdempotencyStore",
+
+      "path": "src/payment-engine/ports/IdempotencyStore.js",
+
+      "role": "formal_port_pe2g"
+
+    },
+
+    {
+
+      "id": "GolDeOuroIdempotencyStore",
+
+      "path": "src/payment-engine/adapters/goldeouro/GolDeOuroIdempotencyStore.js",
+
+      "role": "gdo_adapter"
+
+    },
+
+    {
+
+      "id": "InMemoryIdempotencyStore",
+
+      "path": "src/payment-engine/adapters/memory/InMemoryIdempotencyStore.js",
+
+      "role": "test_fake"
+
+    },
+
+    {
+
+      "id": "idempotencyPortBridge",
+
+      "path": "src/payment-engine/compat/idempotencyPortBridge.js",
+
+      "role": "compat_flag_gate"
+
+    }
+
+  ]
+
+}
+

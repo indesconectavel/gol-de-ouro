@@ -1,0 +1,86 @@
+{
+
+  "gate": "PE.2F",
+
+  "date": "2026-07-14",
+
+  "risks": [
+
+    {
+
+      "id": "R-PE2F-01",
+
+      "severity": "HIGH",
+
+      "title": "Ativação acidental de PE_DEPOSIT_CLAIM_PORT_ENABLED em produção",
+
+      "mitigation": "default false; não setar em Fly prod; rollback = unset/false",
+
+      "residual": "LOW"
+
+    },
+
+    {
+
+      "id": "R-PE2F-02",
+
+      "severity": "MEDIUM",
+
+      "title": "Adapter ainda depende de finance/deposit legado (não é Core puro)",
+
+      "mitigation": "Aceito em PE.2F — B7 permanece; isolamento do core payment-engine claimApprovedDeposit",
+
+      "residual": "MEDIUM",
+
+      "owner_gate": "B7 / PE.2C"
+
+    },
+
+    {
+
+      "id": "R-PE2F-03",
+
+      "severity": "MEDIUM",
+
+      "title": "JS fallback não-transacional (pré-existente)",
+
+      "mitigation": "Documentado; adapter preserva ordem; RPC preferencial",
+
+      "residual": "MEDIUM",
+
+      "owner_gate": "futuro transactional adapter"
+
+    },
+
+    {
+
+      "id": "R-PE2F-04",
+
+      "severity": "LOW",
+
+      "title": "Smoke não executado no agente (shell broken)",
+
+      "mitigation": "Operador roda scripts localmente; mesmo padrão PE.2E",
+
+      "residual": "LOW"
+
+    },
+
+    {
+
+      "id": "R-PE2F-05",
+
+      "severity": "LOW",
+
+      "title": "Usar walletPortBridge.credit no claim GDO causaria drift (updated_at)",
+
+      "mitigation": "Claim GDO não usa walletPortBridge — wrap legacy",
+
+      "residual": "LOW"
+
+    }
+
+  ]
+
+}
+

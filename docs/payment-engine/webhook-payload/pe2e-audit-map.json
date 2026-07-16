@@ -1,0 +1,220 @@
+{
+
+  "gate": "PE.2E",
+
+  "title": "Webhook Payload Extraction — Mapa pre-implementacao",
+
+  "date": "2026-07-14",
+
+  "mode": "CONTROLLED_REVERSIBLE",
+
+  "blocker": "B1",
+
+  "producers": [
+
+    {
+
+      "route": "POST /api/payments/webhook",
+
+      "file": "server-fly.js",
+
+      "provider": "mercadopago",
+
+      "uses_express_Request": true,
+
+      "signature": "utils/webhook-signature-validator.js",
+
+      "engine_entry": "PaymentEngine.webhooks.process → processPaymentWebhook"
+
+    },
+
+    {
+
+      "route": "POST /webhooks/asaas",
+
+      "file": "server-fly.js",
+
+      "provider": "asaas",
+
+      "uses_express_Request": true,
+
+      "engine_entry": "PaymentEngine.webhooks.processCompat → processPaymentWebhookCompat"
+
+    },
+
+    {
+
+      "route": "POST /webhooks/asaas/transfer-validation",
+
+      "file": "server-fly.js",
+
+      "provider": "asaas",
+
+      "uses_express_Request": true,
+
+      "engine_entry": "handleAsaasTransferAuthorization({ headers, body })",
+
+      "already_partially_decoupled": true
+
+    },
+
+    {
+
+      "route": "POST /webhooks/mercadopago",
+
+      "file": "server-fly.js",
+
+      "provider": "mercadopago",
+
+      "note": "payout MP — rota separada"
+
+    }
+
+  ],
+
+  "consumers_with_express_coupling": [
+
+    {
+
+      "path": "src/finance/contracts/PaymentProvider.js",
+
+      "surface": "handleDepositWebhook(express.Request)",
+
+      "severity": "B1"
+
+    },
+
+    {
+
+      "path": "src/finance/contracts/PayoutProvider.js",
+
+      "surface": "handlePayoutWebhook(express.Request)",
+
+      "severity": "B1"
+
+    },
+
+    {
+
+      "path": "src/finance/providers/asaas/AsaasPaymentProvider.js",
+
+      "surface": "handleDepositWebhook(req)"
+
+    },
+
+    {
+
+      "path": "src/finance/providers/asaas/AsaasPayoutProvider.js",
+
+      "surface": "handlePayoutWebhook(req)"
+
+    },
+
+    {
+
+      "path": "src/finance/providers/asaas/AsaasProvider.js",
+
+      "surface": "validateWebhook(req) / handleWebhook(req)"
+
+    },
+
+    {
+
+      "path": "src/finance/providers/celcoin/CelcoinPaymentProvider.js",
+
+      "surface": "handleDepositWebhook(req)"
+
+    },
+
+    {
+
+      "path": "src/finance/providers/celcoin/CelcoinPayoutProvider.js",
+
+      "surface": "handlePayoutWebhook(req)"
+
+    },
+
+    {
+
+      "path": "src/finance/providers/mercadopago/mercadopago-webhook-validator.js",
+
+      "surface": "validateMercadoPagoDepositWebhook(req)"
+
+    },
+
+    {
+
+      "path": "utils/webhook-signature-validator.js",
+
+      "surface": "req.headers / req.body / req.rawBody"
+
+    },
+
+    {
+
+      "path": "src/finance/webhooks/processPaymentWebhook.js",
+
+      "surface": "input.req optional — ja aceita body/headers"
+
+    },
+
+    {
+
+      "path": "src/finance/compat/processPaymentWebhookCompat.js",
+
+      "surface": "input.req obrigatorio no JSDoc"
+
+    }
+
+  ],
+
+  "shadow_already_prepared_pe2b": [
+
+    "src/payment-engine/types/WebhookPayload.js",
+
+    "src/payment-engine/compat/webhookPayloadFromExpress.js",
+
+    "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookAdapter.js"
+
+  ],
+
+  "recovery_builder": {
+
+    "path": "src/finance/reconciliation/asaasPayoutRecovery.js",
+
+    "fn": "buildRecoveryWebhookPayload",
+
+    "note": "payload sintetico — nao Express"
+
+  },
+
+  "pe2e_target": {
+
+    "neutral_contract": "WebhookPayload",
+
+    "http_bridge": "GDO edge only",
+
+    "engine_must_not_require": [
+
+      "express",
+
+      "express.Request",
+
+      "req.body",
+
+      "req.headers",
+
+      "req.query",
+
+      "req.params",
+
+      "req.rawBody"
+
+    ],
+
+    "flag": "PE_ADAPTER_BOUNDARY_ENABLED=false (default)"
+
+  }
+
+}
+

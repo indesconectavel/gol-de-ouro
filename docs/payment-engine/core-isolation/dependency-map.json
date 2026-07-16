@@ -1,0 +1,90 @@
+{
+
+  "gate": "PE.2I",
+
+  "title": "Core-to-Finance Isolation — dependency map",
+
+  "date": "2026-07-14",
+
+  "criterion": "src/payment-engine/core/** must not require(...finance/*)",
+
+  "core_direct_finance_imports": [],
+
+  "core_path": "src/payment-engine/core",
+
+  "before": {
+
+    "core_finance_edges": [
+
+      { "from": "core/deposit.js", "to": "finance/compat|deposit/*", "class": "C", "note": "eliminated → ports + claim bridge" },
+
+      { "from": "core/withdraw.js", "to": "domain/payout + finance/compat", "class": "C", "note": "eliminated → financeLegacySurface" },
+
+      { "from": "core/webhooks.js", "to": "finance/webhooks|compat", "class": "C", "note": "eliminated → financeLegacySurface" },
+
+      { "from": "core/reconciliation.js", "to": "finance/reconciliation", "class": "C", "note": "eliminated → financeLegacySurface" }
+
+    ]
+
+  },
+
+  "after": {
+
+    "core_requires": [
+
+      { "file": "deposit.js", "requires": ["./claimApprovedDeposit", "../compat/depositClaimPortBridge"], "class": "A" },
+
+      { "file": "claimApprovedDeposit.js", "requires": ["../types/DepositClaimInput"], "class": "A" },
+
+      { "file": "idempotency.js", "requires": ["../types/IdempotencyKey"], "class": "A" },
+
+      { "file": "webhookStore.js", "requires": ["../types/WebhookStoreRecord"], "class": "A" },
+
+      { "file": "withdraw.js", "requires": ["../compat/financeLegacySurface"], "class": "B" },
+
+      { "file": "webhooks.js", "requires": ["../compat/financeLegacySurface"], "class": "B" },
+
+      { "file": "reconciliation.js", "requires": ["../compat/financeLegacySurface"], "class": "B" }
+
+    ]
+
+  },
+
+  "non_core_finance_edges_remaining": [
+
+    { "from": "compat/financeLegacySurface.js", "to": "finance/* + domain/payout", "class": "B", "role": "Compatibility Layer" },
+
+    { "from": "compat/depositClaimPortBridge.js", "to": "finance/deposit/claimApprovedPixDeposit", "class": "B" },
+
+    { "from": "compat/idempotencyPortBridge.js", "to": "finance/webhooks/paymentWebhookIdempotency", "class": "B" },
+
+    { "from": "compat/webhookStorePortBridge.js", "to": "finance/webhooks/paymentWebhookDryRunStore", "class": "B" },
+
+    { "from": "adapters/goldeouro/*", "to": "finance/*", "class": "A", "role": "Adapters" },
+
+    { "from": "providers/index.js", "to": "finance/factory/FinanceProviderFactory", "class": "D" },
+
+    { "from": "config/index.js", "to": "finance/config/*", "class": "D" },
+
+    { "from": "api/PaymentEngine.js", "to": "boundary/resolveFinanceSurface → financeLegacySurface", "class": "B" },
+
+    { "from": "scheduler/asaasPayoutRecoveryScheduler.js", "to": "compat/financeLegacySurface", "class": "B" }
+
+  ],
+
+  "classification_legend": {
+
+    "A": "Necessária",
+
+    "B": "Compatibilidade temporária",
+
+    "C": "Bypass indevido",
+
+    "D": "Dívida técnica"
+
+  },
+
+  "b7_core_eliminated": true
+
+}
+

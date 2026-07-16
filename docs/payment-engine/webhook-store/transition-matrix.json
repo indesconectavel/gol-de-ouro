@@ -1,0 +1,36 @@
+{
+
+  "gate": "PE.2H.1",
+
+  "transitions": {
+
+    "received → processing": "allowed",
+
+    "received → processed": "allowed",
+
+    "received → failed": "allowed",
+
+    "processing → processed": "allowed",
+
+    "processing → failed": "allowed",
+
+    "failed → received": "via recordRetry only",
+
+    "processed → *": "forbidden (terminal); returns duplicate",
+
+    "failed → processed": "allowed after retry path reopens to received"
+
+  },
+
+  "timeout": {
+
+    "from": ["received", "processing"],
+
+    "to": "failed",
+
+    "lastErrorCode": "TIMEOUT"
+
+  }
+
+}
+

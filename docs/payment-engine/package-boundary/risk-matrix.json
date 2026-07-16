@@ -1,0 +1,368 @@
+{
+
+  "gate": "PE.2C-PRE",
+
+  "title": "Package Boundary Risk Matrix",
+
+  "date": "2026-07-11",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "residual_risk_index": 3.4,
+
+  "risks": [
+
+    {
+
+      "id": "PB-R01",
+
+      "title": "Core finance acoplado ao schema Gol de Ouro",
+
+      "severity": "CRITICO",
+
+      "probability": "CERTA",
+
+      "cause": "claimApprovedPixDeposit, webhooks e idempotency consultam pagamentos_pix, ledger_financeiro, saques diretamente",
+
+      "impact": "Package C0 nao reutilizavel por segundo produto; licenciamento B2B bloqueado",
+
+      "mitigation": "Extrair persistencia para DepositRepository, LedgerPort, IdempotencyStore (B8, B2, B10); adapters GDO fora do Core",
+
+      "status": "OPEN",
+
+      "owner_gate": "PE.2C-D"
+
+    },
+
+    {
+
+      "id": "PB-R02",
+
+      "title": "domain/payout fora da fronteira da facade",
+
+      "severity": "CRITICO",
+
+      "probability": "CERTA",
+
+      "cause": "processPendingWithdrawals.js importado por server-fly, worker e admin sem PaymentEngine",
+
+      "impact": "Move fisico quebra payout automatico e admin; dual comportamento",
+
+      "mitigation": "Internalizar payout no package ou forcar unico entry point via PaymentEngine.withdraw.processPending",
+
+      "status": "OPEN",
+
+      "owner_gate": "PE.2C"
+
+    },
+
+    {
+
+      "id": "PB-R03",
+
+      "title": "payment-engine/core delega integralmente para finance (B7)",
+
+      "severity": "ALTO",
+
+      "probability": "CERTA",
+
+      "cause": "P2.2 facade e thin wrapper; 12 imports pe->finance",
+
+      "impact": "Package C0 teria duas raizes logicas; confusao de ownership",
+
+      "mitigation": "Merge finance dentro do package C0 como modulo unico ou eliminar camada duplicada",
+
+      "status": "OPEN",
+
+      "blocker": "B7"
+
+    },
+
+    {
+
+      "id": "PB-R04",
+
+      "title": "Contratos PSP usam express.Request em producao",
+
+      "severity": "ALTO",
+
+      "probability": "CERTA",
+
+      "cause": "PaymentProvider/PayoutProvider JSDoc e handlers recebem req Express",
+
+      "impact": "Package nao agnostico de framework HTTP",
+
+      "mitigation": "Migrar para WebhookPayload (PE.2E); webhookPayloadFromExpress como bridge runtime",
+
+      "status": "OPEN",
+
+      "blocker": "B1"
+
+    },
+
+    {
+
+      "id": "PB-R05",
+
+      "title": "Mercado Pago legacy service fora do package",
+
+      "severity": "ALTO",
+
+      "probability": "CERTA",
+
+      "cause": "MercadoPagoPayoutProvider require services/pix-mercado-pago",
+
+      "impact": "Extract parcial impossivel sem mover legacy",
+
+      "mitigation": "Inlinar MP adapter ou mover service para packages/payment-engine-adapters-mp",
+
+      "status": "OPEN"
+
+    },
+
+    {
+
+      "id": "PB-R06",
+
+      "title": "Ports shadow inativos (PE_ADAPTER_BOUNDARY_ENABLED=false)",
+
+      "severity": "ALTO",
+
+      "probability": "CERTA",
+
+      "cause": "PE.2B entregou shadow sem migracao prod",
+
+      "impact": "Isolamento arquitetural nao exercitado em runtime",
+
+      "mitigation": "PE.2B.2 deploy staging + harness flag=true + P1.9 re-run",
+
+      "status": "OPEN"
+
+    },
+
+    {
+
+      "id": "PB-R07",
+
+      "title": "Worker bypass PaymentEngine",
+
+      "severity": "ALTO",
+
+      "probability": "CERTA",
+
+      "cause": "payout-worker.js importa finance + domain/payout diretamente",
+
+      "impact": "Package move nao atualiza worker automaticamente",
+
+      "mitigation": "Refatorar worker para PaymentEngine.withdraw.processPending",
+
+      "status": "OPEN"
+
+    },
+
+    {
+
+      "id": "PB-R08",
+
+      "title": "40+ scripts certificacao com paths hardcoded",
+
+      "severity": "MEDIO",
+
+      "probability": "ALTA",
+
+      "cause": "scripts/verify-* require ../src/finance/*",
+
+      "impact": "CI/certificacao quebra pos-move",
+
+      "mitigation": "Workspace npm + import @indesconectavel/payment-engine",
+
+      "status": "OPEN"
+
+    },
+
+    {
+
+      "id": "PB-R09",
+
+      "title": "ENV global acoplado ao boot factory",
+
+      "severity": "MEDIO",
+
+      "probability": "CERTA",
+
+      "cause": "FinanceProviderFactory le process.env diretamente",
+
+      "impact": "Package em outro repo requer ENV parity",
+
+      "mitigation": "PaymentEngine.configure({ env }) explicito",
+
+      "status": "OPEN"
+
+    },
+
+    {
+
+      "id": "PB-R10",
+
+      "title": "PE.2B.2 staging deploy NO-GO",
+
+      "severity": "MEDIO",
+
+      "probability": "CERTA",
+
+      "cause": "Pipeline publicacao pendente; flag nao confirmada",
+
+      "impact": "PE.2C prematuro antes de validar boundary em staging",
+
+      "mitigation": "PIPELINE.3 HITL publicacao + deploy staging",
+
+      "status": "OPEN"
+
+    },
+
+    {
+
+      "id": "PB-R11",
+
+      "title": "claimApprovedPixDeposit sem port extraction (B8)",
+
+      "severity": "ALTO",
+
+      "probability": "CERTA",
+
+      "cause": "Logica claim inline com RPC + fallback JS GDO",
+
+      "impact": "Core nao substituivel",
+
+      "mitigation": "Operar claim via WalletPort.credit + LedgerPort + DepositRepository",
+
+      "status": "OPEN",
+
+      "blocker": "B8"
+
+    },
+
+    {
+
+      "id": "PB-R12",
+
+      "title": "IdempotencyStore formal ausente (B2)",
+
+      "severity": "MEDIO",
+
+      "probability": "CERTA",
+
+      "cause": "Delegacao parcial via checkSupabaseDepositIdempotency",
+
+      "impact": "Webhook path nao portavel",
+
+      "mitigation": "Interface IdempotencyStore + adapter Supabase/GDO",
+
+      "status": "OPEN",
+
+      "blocker": "B2"
+
+    },
+
+    {
+
+      "id": "PB-R13",
+
+      "title": "Dual-license MIT raiz vs PE proprietaria",
+
+      "severity": "MEDIO",
+
+      "probability": "MEDIA",
+
+      "cause": "package.json raiz MIT; PE LICENSE separada",
+
+      "impact": "DD juridica confusa pos-package",
+
+      "mitigation": "package.json C0 com LICENSE-PAYMENT-ENGINE only",
+
+      "status": "OPEN"
+
+    },
+
+    {
+
+      "id": "PB-R14",
+
+      "title": "GolDeOuroWebhookAdapter importa finance idempotency",
+
+      "severity": "BAIXO",
+
+      "probability": "CERTA",
+
+      "cause": "Adapter delega funcao certificada",
+
+      "impact": "Acoplamento adapter->core aceitavel",
+
+      "mitigation": "Manter; extrair IdempotencyStore resolve",
+
+      "status": "ACCEPTED"
+
+    },
+
+    {
+
+      "id": "PB-R15",
+
+      "title": "Sem dependencia circular modulo finance<->payment-engine",
+
+      "severity": "BAIXO",
+
+      "probability": "N/A",
+
+      "cause": "Direcao unica pe->finance",
+
+      "impact": "Positivo — simplifica merge package",
+
+      "mitigation": "Manter proibicao finance->payment-engine",
+
+      "status": "MITIGATED"
+
+    }
+
+  ],
+
+  "severity_summary": {
+
+    "CRITICO": 2,
+
+    "ALTO": 7,
+
+    "MEDIO": 5,
+
+    "BAIXO": 2
+
+  },
+
+  "pe2c_blockers_from_pe2b": [
+
+    "B2_IdempotencyStore_formal",
+
+    "B7_payment-engine_core_finance_imports",
+
+    "B8_claimApprovedPixDeposit_port_extraction",
+
+    "B10_GolDeOuroWebhookStore_persistence_port",
+
+    "B1_express_Request_production_contracts"
+
+  ],
+
+  "pe2c_pre_additional_blockers": [
+
+    "domain_payout_outside_boundary",
+
+    "runtime_bypass_facade",
+
+    "finance_MP_legacy_coupling",
+
+    "PE_2B_2_staging_NO_GO"
+
+  ]
+
+}
+

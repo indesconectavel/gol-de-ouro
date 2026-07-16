@@ -1,0 +1,8 @@
+{
+  "gate": "PE.2L",
+  "date": "2026-07-14",
+  "flag_off": "FinanceProviderFactory idêntico",
+  "flag_on": "mesma seleção factory + adapters PE por name",
+  "mp_support_preserved": true,
+  "financial_rules_changed": false
+}

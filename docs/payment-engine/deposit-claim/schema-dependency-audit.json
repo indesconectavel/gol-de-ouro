@@ -1,0 +1,70 @@
+{
+
+  "gate": "PE.2F",
+
+  "title": "Schema dependency audit — claim deposit",
+
+  "date": "2026-07-14",
+
+  "core_claimApprovedDeposit": {
+
+    "path": "src/payment-engine/core/claimApprovedDeposit.js",
+
+    "supabase_import": false,
+
+    "pagamentos_pix": false,
+
+    "usuarios": false,
+
+    "ledger_financeiro": false,
+
+    "rpc": false,
+
+    "finance_concrete_imports": false
+
+  },
+
+  "legacy_claimApprovedPixDeposit": {
+
+    "path": "src/finance/deposit/claimApprovedPixDeposit.js",
+
+    "modified_in_pe2f": false,
+
+    "tables": ["pagamentos_pix", "usuarios", "ledger_financeiro"],
+
+    "rpc": ["claim_and_credit_approved_pix_deposit"]
+
+  },
+
+  "adapter": {
+
+    "path": "src/payment-engine/adapters/goldeouro/GolDeOuroDepositClaimAdapter.js",
+
+    "owns_gdo_schema": true,
+
+    "delegates_mutation_to_legacy": true,
+
+    "find_queries": {
+
+      "table": "pagamentos_pix",
+
+      "columns": ["id", "usuario_id", "amount", "valor", "payment_id", "external_id", "status"]
+
+    }
+
+  },
+
+  "wallet_port_bridge_divergence": {
+
+    "note": "walletPortBridge.credit writes updated_at; legacy claim does not — adapter does NOT use walletPortBridge for production claim",
+
+    "risk_if_switched": "behavioral drift on usuarios update"
+
+  },
+
+  "circular_deps_introduced": false,
+
+  "out_of_scope_changes": false
+
+}
+

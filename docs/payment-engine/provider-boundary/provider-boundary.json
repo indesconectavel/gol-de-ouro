@@ -1,0 +1,24 @@
+{
+
+  "gate": "PE.2L",
+
+  "date": "2026-07-14",
+
+  "module": "ProviderResolver",
+
+  "ports": ["PaymentProviderPort", "TransferProviderPort"],
+
+  "flag": "PE_PROVIDER_BOUNDARY_ENABLED",
+
+  "default": false,
+
+  "core_knows_asaas": false,
+
+  "core_knows_mercadopago": false,
+
+  "core_knows_sdk": false,
+
+  "bypass_factory_from_providers_index": false
+
+}
+

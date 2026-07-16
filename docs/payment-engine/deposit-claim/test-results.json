@@ -1,0 +1,102 @@
+{
+
+  "gate": "PE.2F",
+
+  "title": "Test results",
+
+  "date": "2026-07-14",
+
+  "environment": "local agent — shell blocked (PowerShell LanguagePrimitives)",
+
+  "executed_in_agent": false,
+
+  "shell_blocker": "System.Management.Automation.LanguagePrimitives (same as PE.2E)",
+
+  "static_audit": {
+
+    "core_no_supabase": true,
+
+    "core_no_pagamentos_pix": true,
+
+    "core_no_usuarios": true,
+
+    "core_no_ledger_financeiro": true,
+
+    "legacy_untouched": true,
+
+    "flag_default_false": true
+
+  },
+
+  "scripts": {
+
+    "smoke": {
+
+      "path": "scripts/pe2f-claim-deposit-port-smoke.mjs",
+
+      "agent_status": "BLOCKED_SHELL",
+
+      "operator_command": "node scripts/pe2f-claim-deposit-port-smoke.mjs"
+
+    },
+
+    "unit_verify": {
+
+      "path": "scripts/verify-pe2f-deposit-claim-port.mjs",
+
+      "agent_status": "BLOCKED_SHELL",
+
+      "operator_command": "node scripts/verify-pe2f-deposit-claim-port.mjs"
+
+    },
+
+    "legacy_regression": {
+
+      "path": "scripts/verify-asaas-deposit-claim-fallback.mjs",
+
+      "agent_status": "BLOCKED_SHELL"
+
+    },
+
+    "pe2e_smoke": {
+
+      "path": "scripts/pe2e-webhook-payload-smoke.mjs",
+
+      "agent_status": "BLOCKED_SHELL"
+
+    },
+
+    "pe2b_smoke": {
+
+      "path": "scripts/pe2b-adapter-boundary-smoke.mjs",
+
+      "agent_status": "BLOCKED_SHELL"
+
+    }
+
+  },
+
+  "coverage_intended": [
+
+    "DepositClaimPort find/missing/approved/idempotent/invalid_status/concurrency",
+
+    "WalletPort single credit",
+
+    "LedgerPort single append",
+
+    "Core invalid input / port unavailable / wallet partial fail",
+
+    "Compat flag OFF legacy path",
+
+    "Equivalence legacy vs adapter (mock)",
+
+    "No double mutation"
+
+  ],
+
+  "verdict_for_gate": "PASS_COM_RESSALVAS",
+
+  "ressalva": "Smoke/unit not executed in agent shell; static audit PASS; operator must run scripts locally to clear ressalva"
+
+}
+

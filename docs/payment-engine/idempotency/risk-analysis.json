@@ -1,0 +1,80 @@
+{
+
+  "gate": "PE.2G",
+
+  "risks": [
+
+    {
+
+      "id": "R-PE2G-01",
+
+      "severity": "HIGH",
+
+      "title": "Ativação acidental PE_IDEMPOTENCY_PORT_ENABLED em produção",
+
+      "mitigation": "default false; flag isolada; rollback = unset/false",
+
+      "residual": "LOW"
+
+    },
+
+    {
+
+      "id": "R-PE2G-02",
+
+      "severity": "MEDIUM",
+
+      "title": "Reserve lógico ≠ lock DB (depósito webhook)",
+
+      "mitigation": "Documentado: atomicidade financeira segue claim/ledger/RPC; reserve is soft for concurrency smoke",
+
+      "residual": "MEDIUM"
+
+    },
+
+    {
+
+      "id": "R-PE2G-03",
+
+      "severity": "MEDIUM",
+
+      "title": "Payout/withdraw ainda sem IdempotencyStore formal",
+
+      "mitigation": "Fora do corte B2 depósito webhook; próximo gate ou extensão",
+
+      "residual": "MEDIUM"
+
+    },
+
+    {
+
+      "id": "R-PE2G-04",
+
+      "severity": "LOW",
+
+      "title": "Shell agent pode bloquear smoke local",
+
+      "mitigation": "Scripts prontos; evidência estática; CI futuro",
+
+      "residual": "LOW"
+
+    },
+
+    {
+
+      "id": "R-PE2G-05",
+
+      "severity": "LOW",
+
+      "title": "Dupla mutação legado+port",
+
+      "mitigation": "Bridge exclusão mútua flag OFF/ON",
+
+      "residual": "LOW"
+
+    }
+
+  ]
+
+}
+

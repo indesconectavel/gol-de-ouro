@@ -1,0 +1,20 @@
+{
+  "gate": "PE.2L",
+  "date": "2026-07-14",
+  "added": [
+    "providers/ProviderResolver.js",
+    "ports/PaymentProviderPort.js",
+    "ports/TransferProviderPort.js",
+    "adapters/psp/*",
+    "boundary/provider-boundary-config.js",
+    "scripts/pe2l-*.mjs"
+  ],
+  "modified": [
+    "providers/index.js",
+    "api/PaymentEngine.js",
+    "runtime/RuntimeBoundary.js (health via providers)",
+    "boundary/index.js",
+    "payment-engine/index.js"
+  ],
+  "unchanged": ["finance/factory selection rules", "MP support", "produção"]
+}

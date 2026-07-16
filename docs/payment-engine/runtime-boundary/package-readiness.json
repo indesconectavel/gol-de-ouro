@@ -1,0 +1,33 @@
+{
+  "gate": "PE.2K",
+  "date": "2026-07-14",
+  "before_reassess": {
+    "package_readiness": 6.5,
+    "technology_readiness": 7.0,
+    "arquitetura": 7.3,
+    "acoplamento": 5.5,
+    "runtime_isolation": 3.5
+  },
+  "after": {
+    "package_readiness": 6.8,
+    "technology_readiness": 7.3,
+    "arquitetura": 7.6,
+    "acoplamento": 6.2,
+    "runtime_isolation": 7.5,
+    "band": "QUASE_PRONTO"
+  },
+  "delta_package": 0.3,
+  "delta_vs_reassess_pct": 4.6,
+  "pb02_eliminated": true,
+  "pe2c_authorized": false,
+  "score_gap_to_7": 0.2,
+  "remaining_blockers": [
+    "PB-03_MP_coupling",
+    "PB-05_staging_NO_GO",
+    "PB-04_flags_off_by_design",
+    "B1_partial",
+    "providers_config_finance_residual",
+    "domain_payout_outside_package_boundary"
+  ],
+  "next_gate_hint": "PE.2L — PB-03 MP encapsulation OR PE.2C-PRE.2 if readiness hits 7.0"
+}

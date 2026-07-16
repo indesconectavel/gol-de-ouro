@@ -1,0 +1,72 @@
+{
+
+  "gate": "PE.2C-FINAL-PRE",
+
+  "date": "2026-07-14",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "scale": "0-10",
+
+  "architecture_readiness": 7.6,
+
+  "band": "QUASE_PRONTO_ARQUITETURAL",
+
+  "pillars": {
+
+    "core_isolation": {
+
+      "score": 8.5,
+
+      "evidence": "core zero finance/domain/supabase requires"
+
+    },
+
+    "ports": {
+
+      "score": 7.5,
+
+      "inventory_count": 8,
+
+      "flags_default_false": true
+
+    },
+
+    "adapters": { "score": 6.5, "note": "GDO-only product adapter" },
+
+    "compat_bridges": { "score": 7.5 },
+
+    "facade": { "score": 8.0 },
+
+    "runtime_boundary": { "score": 7.5, "gate": "PE.2K" },
+
+    "providers_config_residual": { "score": 4.5, "gap": "finance factory coupling" },
+
+    "package_physical": { "score": 3.5, "gap": "domain/payout + GDO schema still outside" }
+
+  },
+
+  "static_audits": {
+
+    "core_finance_requires": 0,
+
+    "core_domain_payout_requires": 0,
+
+    "worker_finance_requires": 0,
+
+    "worker_domain_requires": 0
+
+  },
+
+  "ressalvas": [
+
+    "Smokes PE.2F–K frequentemente não executados no agente",
+
+    "Flags OFF = runtime produtivo ainda legado via boundary",
+
+    "physical package isolation incompleto"
+
+  ]
+
+}
+

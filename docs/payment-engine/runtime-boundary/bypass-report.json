@@ -1,0 +1,34 @@
+{
+
+  "gate": "PE.2K",
+
+  "date": "2026-07-14",
+
+  "structural_financial_bypasses_remaining": 0,
+
+  "pb02_eliminated_architecturally": true,
+
+  "accepted_residuals": [
+
+    "worker supabase ping client",
+
+    "mpDepositReconcile repository queries via payment-engine adapter",
+
+    "finance webhook → domain (fora escopo runtime worker)"
+
+  ],
+
+  "answers": {
+
+    "runtime_ignores_facade": false,
+
+    "scheduler_calls_finance_direct": false,
+
+    "worker_knows_domain": false,
+
+    "worker_knows_finance": false
+
+  }
+
+}
+

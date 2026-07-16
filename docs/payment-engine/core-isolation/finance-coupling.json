@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2I",
+
+  "title": "Finance coupling inventory",
+
+  "date": "2026-07-14",
+
+  "core_coupling_score_before": "HIGH_DIRECT",
+
+  "core_coupling_score_after": "ZERO_DIRECT",
+
+  "engine_package_coupling": {
+
+    "compat_layer": "EXPECTED_TEMPORARY",
+
+    "adapters": "EXPECTED_PRODUCT",
+
+    "providers_config": "TECH_DEBT_REMAINING"
+
+  },
+
+  "consumers": {
+
+    "controllers": "via PaymentEngine / finance routes — unchanged",
+
+    "workers": "may bypass facade (PB-02 residual)",
+
+    "server-fly": "unchanged",
+
+    "admin": "unchanged",
+
+    "payout": "financeLegacySurface + domain/payout via surface",
+
+    "webhook": "financeLegacySurface + ports PE.2E/G/H",
+
+    "recovery": "scheduler → financeLegacySurface.reconciliation"
+
+  },
+
+  "bridges": [
+
+    "compat/financeLegacySurface.js",
+
+    "boundary/resolveFinanceSurface.js",
+
+    "boundary/core-finance-boundary-config.js",
+
+    "compat/depositClaimPortBridge.js",
+
+    "compat/idempotencyPortBridge.js",
+
+    "compat/webhookStorePortBridge.js"
+
+  ]
+
+}
+

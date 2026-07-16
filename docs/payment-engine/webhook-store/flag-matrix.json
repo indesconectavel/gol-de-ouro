@@ -1,0 +1,28 @@
+{
+
+  "gate": "PE.2H",
+
+  "flags": {
+
+    "PE_ADAPTER_BOUNDARY_ENABLED": { "default": false, "controls": "webhook payload path / ports shadow PE.2B/E" },
+
+    "PE_DEPOSIT_CLAIM_PORT_ENABLED": { "default": false, "controls": "claim deposit port PE.2F" },
+
+    "PE_IDEMPOTENCY_PORT_ENABLED": { "default": false, "controls": "deposit idempotency check PE.2G" },
+
+    "PE_WEBHOOK_STORE_PORT_ENABLED": { "default": false, "controls": "webhook lifecycle store PE.2H" }
+
+  },
+
+  "independence": "PE_WEBHOOK_STORE_PORT_ENABLED does not auto-enable any other flag",
+
+  "safe_prod_matrix": {
+
+    "all_false": "legacy homologado"
+
+  },
+
+  "ambiguous_combinations": "none required; each flag gates its own surface"
+
+}
+

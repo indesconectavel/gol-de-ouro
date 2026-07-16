@@ -1,0 +1,52 @@
+{
+
+  "gate": "PE.2F.1",
+
+  "date": "2026-07-14",
+
+  "adapter": "GolDeOuroDepositClaimAdapter",
+
+  "method": "findByProviderPaymentId",
+
+  "contract": "DepositClaimPort.DepositRecord",
+
+  "expected_fields": [
+
+    "depositId",
+
+    "accountId",
+
+    "amount",
+
+    "status",
+
+    "providerPaymentId",
+
+    "correlationId",
+
+    "metadata"
+
+  ],
+
+  "forbidden_on_deposit_object": ["usuario_id", "payment_id", "external_id", "valor"],
+
+  "mapper": "mapPixRowToDepositRecord",
+
+  "changes": {
+
+    "trySelect_terminal_resolve": true,
+
+    "verify_mock_closure_fixed": true,
+
+    "expanded_contract_asserts": true
+
+  },
+
+  "functional_claim_behavior_changed": false,
+
+  "legacy_delegation_changed": false,
+
+  "validation_status": "CODE_FIXED_AWAITING_SMOKE"
+
+}
+

@@ -1,0 +1,32 @@
+{
+
+  "gate": "PE.2L",
+
+  "date": "2026-07-14",
+
+  "before_pe2k": { "package_readiness": 6.8, "technology_readiness": 7.3 },
+
+  "after": {
+
+    "package_readiness": 7.0,
+
+    "technology_readiness": 7.5,
+
+    "provider_isolation": 7.5,
+
+    "architecture": 7.8,
+
+    "band": "QUASE_PRONTO"
+
+  },
+
+  "delta_package": 0.2,
+
+  "pb03_eliminated": true,
+
+  "pe2c_physical_package": false,
+
+  "note": "score atinge 7.0 mas physical_zero_gdo=NAO e PB-05 → PE.2C permanece NO-GO"
+
+}
+

@@ -1,0 +1,60 @@
+{
+
+  "gate": "PE.2I",
+
+  "title": "Compatibility report",
+
+  "date": "2026-07-14",
+
+  "financial_rules_changed": false,
+
+  "pix_wallet_ledger_payout_behavior": "IDENTICAL",
+
+  "flag_off": {
+
+    "mode": "legacy_direct",
+
+    "surface": "financeLegacySurface (same modules as pre-PE.2I)"
+
+  },
+
+  "flag_on": {
+
+    "mode": "core_bridge",
+
+    "surface": "same object identity as flag OFF"
+
+  },
+
+  "legacy_files_untouched": [
+
+    "src/finance/deposit/claimApprovedPixDeposit.js",
+
+    "src/finance/webhooks/processPaymentWebhook.js",
+
+    "src/finance/webhooks/paymentWebhookIdempotency.js",
+
+    "src/finance/webhooks/paymentWebhookDryRunStore.js",
+
+    "src/finance/reconciliation/asaasPayoutRecovery.js",
+
+    "src/domain/payout/processPendingWithdrawals.js"
+
+  ],
+
+  "public_facade_apis": {
+
+    "PaymentEngine.deposit.*": "preserved via getFinanceSurface",
+
+    "PaymentEngine.withdraw.*": "preserved",
+
+    "PaymentEngine.webhooks.*": "preserved",
+
+    "PaymentEngine.reconcile.*": "preserved"
+
+  },
+
+  "rollback": "delete PE.2I modules OR set flag false; runtime always uses same finance modules"
+
+}
+

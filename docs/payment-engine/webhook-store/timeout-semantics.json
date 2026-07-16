@@ -1,0 +1,62 @@
+{
+
+  "gate": "PE.2H.1",
+
+  "date": "2026-07-14",
+
+  "decision": "OPTION_B",
+
+  "official_semantics": {
+
+    "status": "failed",
+
+    "lastErrorCode": "TIMEOUT",
+
+    "metadata.reason": "TIMEOUT (optional mirror)"
+
+  },
+
+  "rejected": {
+
+    "OPTION_A_status_TIMEOUT": {
+
+      "why": "Explode enum de ciclo de vida; timeout é causa, não estágio; retry trata failed→received igualmente"
+
+    },
+
+    "OPTION_C_metadata_only": {
+
+      "why": "Ambíguo para queries/recovery; lastErrorCode é o campo canônico já no contrato"
+
+    }
+
+  },
+
+  "bug_fixed": {
+
+    "id": "errorCode_dropped_by_normalizeWebhookStoreInput",
+
+    "symptom": "AssertionError actual FAILED expected TIMEOUT on lastErrorCode",
+
+    "root_cause": "core.markFailed passed normalizeWebhookStoreInput(raw) which stripped errorCode; adapters defaulted lastErrorCode to FAILED/WEBHOOK_FAILED",
+
+    "fix": "preserve errorCode in normalizeWebhookStoreInput + adapters read input.errorCode"
+
+  },
+
+  "criteria": {
+
+    "simplicity": "high — 4 statuses only",
+
+    "retry": "failed is retriable via recordRetry",
+
+    "replay": "unchanged",
+
+    "extensibility": "new error codes without new statuses",
+
+    "package_readiness": "stable enum surface"
+
+  }
+
+}
+

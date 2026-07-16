@@ -1,0 +1,78 @@
+{
+
+  "gate": "PE.2L.1",
+
+  "date": "2026-07-14",
+
+  "decision": "LEGACY_FALLBACK_APPLIED_TRUE",
+
+  "official_semantics": {
+
+    "requestedProvider": "Provider solicitado pela configuração efetiva (paymentProviderEnv / payoutProviderEnv).",
+
+    "effectiveProvider": "Provider realmente selecionado após gates (paymentProvider / payoutProvider).",
+
+    "fallbackApplied": "true somente quando o booleano homologado da factory indica fallback controlado (effective ≠ requested por gate).",
+
+    "legacyFallbackApplied": "Alias canônico do mesmo fato — significado A: o fallback legado foi aplicado.",
+
+    "legacyFallback_log_field": "Campo dos logs [PSP][RESOLVE] — mesmo significado A; não significa 'MP disponível' nem 'boundary off'."
+
+  },
+
+  "situation_observed": {
+
+    "requestedProvider": "asaas",
+
+    "effectiveProvider": "mercadopago",
+
+    "gates": "Asaas não resolvível / ASAAS_PRODUCTION_ENABLED efetivamente bloqueado",
+
+    "correct_boolean": true
+
+  },
+
+  "rejected_meanings_for_legacyFallback": {
+
+    "B_legacy_available": "Rejeitado — disponibilidade é mercadoPagoPayout/mercadoPagoPayment no health.",
+
+    "C_boundary_disabled": "Rejeitado — isso é boundaryEnabled / mode=legacy_factory.",
+
+    "D_compat_mode": "Rejeitado — isso é PE_PROVIDER_BOUNDARY_ENABLED.",
+
+    "E_other_mixed": "Rejeitado — um booleano = um conceito."
+
+  },
+
+  "smoke_failure": {
+
+    "symptom": "AssertionError: true !== false @ scripts/pe2l-provider-boundary-smoke.mjs ~L109",
+
+    "compared_variable": "/pix-mercado-pago/.test(mpAdapterSrc)",
+
+    "expected": false,
+
+    "actual": true,
+
+    "root_cause": "Comentário em MercadoPagoTransferAdapter.js documenta encapsulamento mencionando services/pix-mercado-pago; regex de substring era ampla demais.",
+
+    "classification": "bug_de_teste",
+
+    "logs_nearby": "legacyFallback=true era observabilidade correta do fallback Asaas→MP, não o valor sob asserção."
+
+  },
+
+  "criteria": {
+
+    "homologated_behavior": "FinanceProviderFactory já marca legacyFallbackActive quando env=asaas e efetivo=mercadopago",
+
+    "production_safety": "Sem alteração de seleção; MP preservado; Asaas não ativado",
+
+    "observability": "requested/effective/fallback distintos e explícitos",
+
+    "package_readiness": "Contrato de resolução estável para packaging"
+
+  }
+
+}
+

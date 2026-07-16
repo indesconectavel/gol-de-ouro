@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2J",
+
+  "date": "2026-07-14",
+
+  "added": [
+
+    "ports/PayoutStorePort.js",
+
+    "ports/PayoutRecoveryPort.js",
+
+    "adapters/goldeouro/GolDeOuroPayoutAdapter.js",
+
+    "adapters/memory/InMemoryPayoutPorts.js",
+
+    "core/payout.js",
+
+    "compat/payoutBoundaryBridge.js",
+
+    "boundary/payout-boundary-config.js",
+
+    "types/PayoutProcessInput.js",
+
+    "scripts/pe2j-*.mjs"
+
+  ],
+
+  "modified": [
+
+    "core/withdraw.js",
+
+    "api/PaymentEngine.js",
+
+    "scheduler/asaasPayoutRecoveryScheduler.js",
+
+    "boundary/index.js",
+
+    "adapters/goldeouro/index.js",
+
+    "payment-engine/index.js",
+
+    "ports/WithdrawalPort.js"
+
+  ],
+
+  "unchanged": [
+
+    "domain/payout/*",
+
+    "workers/payout-worker.js",
+
+    "produção / Fly / Actions / schema"
+
+  ]
+
+}
+

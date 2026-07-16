@@ -1,0 +1,76 @@
+{
+
+  "gate": "PE.2C-REASSESS",
+
+  "date": "2026-07-14",
+
+  "decisions": {
+
+    "pe2c_physical_package": {
+
+      "verdict": "NO-GO",
+
+      "reason": "readiness 6.5 < 7.0; physical_zero_gdo=NAO; PB-02/03/05 abertos; regra dúvida→NO-GO"
+
+    },
+
+    "productizacao": {
+
+      "verdict": "NO-GO",
+
+      "reason": "IPE ainda embutida; sdk 4.2; sem packaging comercial"
+
+    },
+
+    "segundo_cliente": {
+
+      "verdict": "NO-GO",
+
+      "reason": "sem adapter multi-produto; worker bypass; ports não ON em staging"
+
+    },
+
+    "venda_ativo_isolado_ipe": {
+
+      "verdict": "NO-GO",
+
+      "reason": "commercial readiness 4.0; ativo vendável só como parte GDO/asset package"
+
+    },
+
+    "licenciamento": {
+
+      "verdict": "NO-GO_COM_RESSALVAS",
+
+      "reason": "narrativa + LICENSE existem; falta prova 2º uso + contrato escala; permitir apenas conversas exploratórias, não fechamento"
+
+    },
+
+    "continuar_extracoes_shadow": {
+
+      "verdict": "GO",
+
+      "reason": "priorizar PB-02 sob HITL; não package físico"
+
+    }
+
+  },
+
+  "summary_table": [
+
+    { "topic": "PE.2C package físico", "go": false },
+
+    { "topic": "Productização", "go": false },
+
+    { "topic": "Segundo cliente", "go": false },
+
+    { "topic": "Venda IPE isolada", "go": false },
+
+    { "topic": "Licenciamento fechamento", "go": false },
+
+    { "topic": "Próximo gate técnico HITL", "go": true }
+
+  ]
+
+}
+

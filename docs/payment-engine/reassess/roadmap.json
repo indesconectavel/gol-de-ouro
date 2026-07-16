@@ -1,0 +1,154 @@
+{
+
+  "gate": "PE.2C-REASSESS",
+
+  "date": "2026-07-14",
+
+  "priority_1": {
+
+    "title": "Desbloquear path ao package sem risco prod",
+
+    "items": [
+
+      {
+
+        "id": "P1-A",
+
+        "do": "PB-02 — unificar payout-worker / entry points via PaymentEngine ou bridge oficial (shadow-first)",
+
+        "why": "Único bypass operacional crítico remanescente pós-PE.2J"
+
+      },
+
+      {
+
+        "id": "P1-B",
+
+        "do": "Certificar smokes PE.2F–J localmente (PASS real) e registrar evidência",
+
+        "why": "Eliminações arquiteturais ainda com ressalva de shell"
+
+      },
+
+      {
+
+        "id": "P1-C",
+
+        "do": "Reavaliar PE.2B.2 staging (PB-05) ou documentar bloqueio permanente aceito",
+
+        "why": "Impede ativação segura de flags"
+
+      }
+
+    ]
+
+  },
+
+  "priority_2": {
+
+    "title": "Isolamento residual para readiness ≥ 7.0",
+
+    "items": [
+
+      {
+
+        "id": "P2-A",
+
+        "do": "Extrair/adapters providers+config longe de require finance direto",
+
+        "why": "Residual B7-family fora do core"
+
+      },
+
+      {
+
+        "id": "P2-B",
+
+        "do": "PB-03 — encapsular services/pix-mercado-pago atrás de port/adapter",
+
+        "why": "Acoplamento MP legado"
+
+      },
+
+      {
+
+        "id": "P2-C",
+
+        "do": "Especificar package C0 lógico (workspace) sem mover produção",
+
+        "why": "Passo intermediário antes de package físico"
+
+      }
+
+    ]
+
+  },
+
+  "priority_3": {
+
+    "title": "Comercial / asset scale",
+
+    "items": [
+
+      {
+
+        "id": "P3-A",
+
+        "do": "SDK surface mínima (createPaymentEngine + README público + types)",
+
+        "why": "sdk_readiness trava commercial"
+
+      },
+
+      {
+
+        "id": "P3-B",
+
+        "do": "Prova de segundo produto/cliente piloto (mesmo monorepo)",
+
+        "why": "White-label / licença"
+
+      },
+
+      {
+
+        "id": "P3-C",
+
+        "do": "IP registral / contrato licença escala",
+
+        "why": "Ativo vendável independente"
+
+      }
+
+    ]
+
+  },
+
+  "must_not_do_now": [
+
+    "Iniciar PE.2C package físico (mover diretórios / publicar npm)",
+
+    "Ligar flags em produção sem staging HITL",
+
+    "Alterar regras financeiras / schema / PIX / wallet / ledger",
+
+    "Vender IPE isolada como SaaS white-label pronto",
+
+    "Reorganizar monorepo grande sem readiness ≥ 7.0"
+
+  ],
+
+  "pause": [
+
+    "Productização comercial agressiva",
+
+    "Segundo cliente pago até PB-02 + certificação smokes",
+
+    "Ativação massiva PB-04 (flags ON) sem PB-05"
+
+  ],
+
+  "next_recommended_gate": "PB-02 Runtime Facade Unification (shadow) OU PE.2C-PRE.2 after score ≥ 7.0"
+
+}
+

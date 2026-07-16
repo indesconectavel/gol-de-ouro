@@ -1,0 +1,42 @@
+{
+
+  "gate": "PE.2H",
+
+  "date": "2026-07-14",
+
+  "executed_in_agent": false,
+
+  "shell_blocker": "PowerShell LanguagePrimitives",
+
+  "smoke": {
+
+    "path": "scripts/pe2h-webhook-store-smoke.mjs",
+
+    "status": "NOT_EXECUTED",
+
+    "pass": null
+
+  },
+
+  "verify": {
+
+    "path": "scripts/verify-pe2h-webhook-store-port.mjs",
+
+    "status": "NOT_EXECUTED",
+
+    "pass": null
+
+  },
+
+  "static_audit": {
+
+    "core_no_supabase": true,
+
+    "core_no_gdo_tables": true
+
+  },
+
+  "verdict_for_tests": "NÃO EXECUTADO — não declarar PASS de testes"
+
+}
+

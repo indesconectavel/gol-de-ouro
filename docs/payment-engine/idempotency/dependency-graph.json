@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2G",
+
+  "title": "Idempotency dependency graph",
+
+  "date": "2026-07-14",
+
+  "nodes": [
+
+    { "id": "processPaymentWebhook", "layer": "finance" },
+
+    { "id": "paymentWebhookIdempotency", "layer": "finance_legacy" },
+
+    { "id": "claimApprovedPixDeposit", "layer": "finance_legacy" },
+
+    { "id": "GolDeOuroWebhookAdapter", "layer": "adapter" },
+
+    { "id": "IdempotencyStore", "layer": "port" },
+
+    { "id": "GolDeOuroIdempotencyStore", "layer": "adapter" },
+
+    { "id": "idempotencyPortBridge", "layer": "compat" },
+
+    { "id": "core_idempotency", "layer": "pe_core" },
+
+    { "id": "pagamentos_pix", "layer": "schema_gdo" },
+
+    { "id": "ledger_financeiro", "layer": "schema_gdo" }
+
+  ],
+
+  "edges": [
+
+    { "from": "processPaymentWebhook", "to": "idempotencyPortBridge", "via": "PE.2G compat" },
+
+    { "from": "idempotencyPortBridge", "to": "paymentWebhookIdempotency", "when": "flag_false" },
+
+    { "from": "idempotencyPortBridge", "to": "core_idempotency", "when": "flag_true" },
+
+    { "from": "core_idempotency", "to": "IdempotencyStore", "type": "port" },
+
+    { "from": "GolDeOuroIdempotencyStore", "to": "IdempotencyStore", "type": "implements" },
+
+    { "from": "GolDeOuroIdempotencyStore", "to": "paymentWebhookIdempotency", "type": "delegate" },
+
+    { "from": "paymentWebhookIdempotency", "to": "pagamentos_pix", "type": "query" },
+
+    { "from": "claimApprovedPixDeposit", "to": "ledger_financeiro", "type": "correlation_dedupe" },
+
+    { "from": "GolDeOuroWebhookAdapter", "to": "idempotencyPortBridge", "via": "PE.2G" }
+
+  ],
+
+  "forbidden_in_pe_core_idempotency": ["supabase", "pagamentos_pix", ".from(", ".rpc("]
+
+}
+

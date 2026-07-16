@@ -1,0 +1,156 @@
+{
+
+  "gate": "PE.2F.1-AUTO",
+
+  "title": "Automated Certification via GitHub Actions",
+
+  "date": "2026-07-14",
+
+  "verdict": "BLOCKED",
+
+  "pe2g_authorized": "NO-GO",
+
+  "b8_closed": false,
+
+  "pe2f1_certified": false,
+
+  "capabilities": {
+
+    "github_mcp": "UNAVAILABLE",
+
+    "github_api_local_shell": "UNAVAILABLE",
+
+    "file_write_local": "AVAILABLE",
+
+    "commit_local": "UNAVAILABLE",
+
+    "branch_push_local": "UNAVAILABLE",
+
+    "cloud_agent_git_gh": "AVAILABLE_PARTIAL",
+
+    "workflow_dispatch": "UNAVAILABLE",
+
+    "read_run_logs": "UNAVAILABLE",
+
+    "download_artifacts": "UNAVAILABLE"
+
+  },
+
+  "blockers": [
+
+    {
+
+      "id": "B-AUTO-01",
+
+      "title": "workflow_dispatch HTTP 403",
+
+      "detail": "Resource not accessible by integration"
+
+    },
+
+    {
+
+      "id": "B-AUTO-02",
+
+      "title": "PE.2F.1 sources absent on origin/main",
+
+      "missing": [
+
+        "scripts/pe2f-claim-deposit-port-smoke.mjs",
+
+        "scripts/verify-pe2f-deposit-claim-port.mjs",
+
+        "src/payment-engine/core/claimApprovedDeposit.js"
+
+      ]
+
+    },
+
+    {
+
+      "id": "B-AUTO-03",
+
+      "title": "Local agent shell LanguagePrimitives"
+
+    },
+
+    {
+
+      "id": "B-AUTO-04",
+
+      "title": "GitHub MCP not in agent catalog"
+
+    }
+
+  ],
+
+  "workflow": {
+
+    "created_local": true,
+
+    "published_remote": true,
+
+    "path": ".github/workflows/pe2f1-automated-certification.yml",
+
+    "id": 313084049,
+
+    "name": "PE.2F.1 Automated Certification",
+
+    "html_url": "https://github.com/indesconectavel/gol-de-ouro/blob/main/.github/workflows/pe2f1-automated-certification.yml",
+
+    "runs_count": 0,
+
+    "executed": false
+
+  },
+
+  "repository": {
+
+    "nameWithOwner": "indesconectavel/gol-de-ouro",
+
+    "main_sha_at_audit": "257b9c02ccff1bf4c9dd63f6294e1a1f82787137"
+
+  },
+
+  "prs": {
+
+    "workflow_merged": {
+
+      "number": 104,
+
+      "url": "https://github.com/indesconectavel/gol-de-ouro/pull/104",
+
+      "state": "MERGED"
+
+    },
+
+    "docs_blocked_draft": {
+
+      "number": 105,
+
+      "url": "https://github.com/indesconectavel/gol-de-ouro/pull/105",
+
+      "state": "OPEN_DRAFT"
+
+    }
+
+  },
+
+  "smoke": { "executed": false, "pass": null, "exit_code": null },
+
+  "verify": { "executed": false, "pass": null, "exit_code": null },
+
+  "integrity": {
+
+    "production_altered": false,
+
+    "staging_altered": false,
+
+    "database_accessed": false,
+
+    "deploy_executed": false
+
+  }
+
+}
+

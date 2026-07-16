@@ -1,0 +1,38 @@
+{
+
+  "gate": "PE.2H",
+
+  "title": "Webhook store target flow",
+
+  "date": "2026-07-14",
+
+  "flag_off": {
+
+    "flow": "processPaymentWebhook → markWebhookProcessedCompat → DryRunStore.markProcessed",
+
+    "identical_to_legacy": true
+
+  },
+
+  "flag_on": {
+
+    "flow": "WebhookPayload → (IdempotencyStore PE.2G) → WebhookStorePort.register/mark* → GolDeOuroWebhookStore → DryRun backing",
+
+    "double_write_financial": false
+
+  },
+
+  "layers": [
+
+    "src/payment-engine/ports/WebhookStorePort.js",
+
+    "src/payment-engine/core/webhookStore.js",
+
+    "src/payment-engine/compat/webhookStorePortBridge.js",
+
+    "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookStore.js"
+
+  ]
+
+}
+

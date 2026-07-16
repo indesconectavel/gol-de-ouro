@@ -1,0 +1,22 @@
+{
+
+  "gate": "PE.2F.1-AUTO",
+
+  "script": "scripts/verify-pe2f-deposit-claim-port.mjs",
+
+  "date": "2026-07-14",
+
+  "status": "NOT_EXECUTED",
+
+  "pass": false,
+
+  "exit_code": null,
+
+  "reason": "workflow_dispatch blocked (403); zero runs; local shell unavailable",
+
+  "assertion_errors": null,
+
+  "artifact": null
+
+}
+

@@ -1,0 +1,92 @@
+{
+
+  "gate": "PE.2C-FINAL-PRE",
+
+  "date": "2026-07-14",
+
+  "overall_asset_readiness": 6.2,
+
+  "band": "ATIVO_TECNICO_EMBUTIDO_MADURO",
+
+  "checklist": {
+
+    "biblioteca": {
+
+      "checked": false,
+
+      "status": "PARCIAL",
+
+      "why": "Exportável via index.js; sem npm isolado versionado"
+
+    },
+
+    "sdk": {
+
+      "checked": false,
+
+      "status": "NAO",
+
+      "why": "sdk_readiness 4.2; sem types TS / createPaymentEngine público"
+
+    },
+
+    "framework": { "checked": false, "status": "NAO", "why": "não é framework genérico" },
+
+    "payment_engine": {
+
+      "checked": true,
+
+      "status": "SIM",
+
+      "why": "Facade + ports + adapters + runtime boundary + PSP factory + produção"
+
+    },
+
+    "plataforma": {
+
+      "checked": false,
+
+      "status": "NAO",
+
+      "why": "sem multi-tenant / self-serve / ops SaaS"
+
+    },
+
+    "produto": {
+
+      "checked": false,
+
+      "status": "PARCIAL",
+
+      "why": "produto comercial = GDO; IPE é núcleo embutido"
+
+    },
+
+    "white_label": { "checked": false, "status": "NAO", "why": "adapter único GDO" },
+
+    "tecnologia_licenciavel": {
+
+      "checked": false,
+
+      "status": "PARCIAL",
+
+      "why": "LICENSE + narrativa; falta 2º uso e contrato escala"
+
+    },
+
+    "ativo_independente": {
+
+      "checked": false,
+
+      "status": "NAO",
+
+      "why": "ainda monorepo-dependente; package físico NO-GO"
+
+    }
+
+  },
+
+  "vs_reassess": { "from": 6.0, "to": 6.2, "delta": 0.2 }
+
+}
+

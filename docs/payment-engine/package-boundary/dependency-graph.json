@@ -1,0 +1,296 @@
+{
+
+  "gate": "PE.2C-PRE",
+
+  "title": "Dependency Graph — Payment Engine Package Boundary",
+
+  "date": "2026-07-11",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "circular_dependencies_detected": false,
+
+  "nodes": [
+
+    { "id": "pe_facade", "layer": "CORE", "path": "src/payment-engine/api/PaymentEngine.js" },
+
+    { "id": "pe_core_deposit", "layer": "CORE", "path": "src/payment-engine/core/deposit.js" },
+
+    { "id": "pe_core_withdraw", "layer": "CORE", "path": "src/payment-engine/core/withdraw.js" },
+
+    { "id": "pe_core_webhooks", "layer": "CORE", "path": "src/payment-engine/core/webhooks.js" },
+
+    { "id": "pe_core_reconcile", "layer": "CORE", "path": "src/payment-engine/core/reconciliation.js" },
+
+    { "id": "pe_providers", "layer": "CORE", "path": "src/payment-engine/providers/index.js" },
+
+    { "id": "pe_config", "layer": "CORE", "path": "src/payment-engine/config/index.js" },
+
+    { "id": "pe_scheduler", "layer": "CORE", "path": "src/payment-engine/scheduler/" },
+
+    { "id": "finance_factory", "layer": "CORE", "path": "src/finance/factory/FinanceProviderFactory.js" },
+
+    { "id": "finance_deposit", "layer": "CORE", "path": "src/finance/deposit/" },
+
+    { "id": "finance_webhooks", "layer": "CORE", "path": "src/finance/webhooks/" },
+
+    { "id": "finance_reconciliation", "layer": "CORE", "path": "src/finance/reconciliation/" },
+
+    { "id": "finance_config", "layer": "CORE", "path": "src/finance/config/" },
+
+    { "id": "finance_compat", "layer": "CORE", "path": "src/finance/compat/" },
+
+    { "id": "finance_contracts", "layer": "CORE", "path": "src/finance/contracts/" },
+
+    { "id": "psp_asaas", "layer": "ADAPTER", "path": "src/finance/providers/asaas/" },
+
+    { "id": "psp_mp", "layer": "ADAPTER", "path": "src/finance/providers/mercadopago/" },
+
+    { "id": "psp_celcoin", "layer": "ADAPTER", "path": "src/finance/providers/celcoin/" },
+
+    { "id": "psp_mock", "layer": "ADAPTER", "path": "src/finance/providers/mock/" },
+
+    { "id": "pe_ports", "layer": "PORT", "path": "src/payment-engine/ports/" },
+
+    { "id": "pe_boundary", "layer": "PORT", "path": "src/payment-engine/boundary/" },
+
+    { "id": "pe_compat", "layer": "PORT", "path": "src/payment-engine/compat/" },
+
+    { "id": "pe_types", "layer": "PORT", "path": "src/payment-engine/types/WebhookPayload.js" },
+
+    { "id": "adapter_gdo_wallet", "layer": "ADAPTER", "path": "src/payment-engine/adapters/goldeouro/GolDeOuroWalletAdapter.js" },
+
+    { "id": "adapter_gdo_ledger", "layer": "ADAPTER", "path": "src/payment-engine/adapters/goldeouro/GolDeOuroLedgerAdapter.js" },
+
+    { "id": "adapter_gdo_deposit", "layer": "ADAPTER", "path": "src/payment-engine/adapters/goldeouro/GolDeOuroDepositRepository.js" },
+
+    { "id": "adapter_gdo_withdraw", "layer": "ADAPTER", "path": "src/payment-engine/adapters/goldeouro/GolDeOuroWithdrawRepository.js" },
+
+    { "id": "adapter_gdo_webhook", "layer": "ADAPTER", "path": "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookAdapter.js" },
+
+    { "id": "domain_payout", "layer": "RUNTIME", "path": "src/domain/payout/processPendingWithdrawals.js" },
+
+    { "id": "service_mp_legacy", "layer": "RUNTIME", "path": "services/pix-mercado-pago.js" },
+
+    { "id": "server_fly", "layer": "RUNTIME", "path": "server-fly.js" },
+
+    { "id": "payout_worker", "layer": "RUNTIME", "path": "src/workers/payout-worker.js" },
+
+    { "id": "admin_controller", "layer": "RUNTIME", "path": "controllers/adminWithdrawController.js" },
+
+    { "id": "supabase", "layer": "ADAPTER", "path": "@supabase/supabase-js (injected)" },
+
+    { "id": "express", "layer": "RUNTIME", "path": "express (webhook routes)" },
+
+    { "id": "goldeouro_player", "layer": "RUNTIME", "path": "goldeouro-player/ (HTTP client)" },
+
+    { "id": "goldeouro_admin", "layer": "RUNTIME", "path": "goldeouro-admin/ (HTTP client)" },
+
+    { "id": "scripts_cert", "layer": "RUNTIME", "path": "scripts/verify-*.mjs" }
+
+  ],
+
+  "edges": [
+
+    { "from": "server_fly", "to": "pe_facade", "type": "require", "critical": true },
+
+    { "from": "server_fly", "to": "finance_factory", "type": "require_direct", "critical": true, "note": "BYPASS facade" },
+
+    { "from": "server_fly", "to": "domain_payout", "type": "require_direct", "critical": true, "note": "BYPASS facade" },
+
+    { "from": "payout_worker", "to": "finance_factory", "type": "require", "critical": true },
+
+    { "from": "payout_worker", "to": "domain_payout", "type": "require", "critical": true, "note": "BYPASS PaymentEngine" },
+
+    { "from": "admin_controller", "to": "domain_payout", "type": "require", "critical": true },
+
+    { "from": "pe_facade", "to": "pe_core_deposit", "type": "require", "critical": true },
+
+    { "from": "pe_facade", "to": "pe_core_withdraw", "type": "require", "critical": true },
+
+    { "from": "pe_facade", "to": "pe_core_webhooks", "type": "require", "critical": true },
+
+    { "from": "pe_facade", "to": "pe_core_reconcile", "type": "require", "critical": true },
+
+    { "from": "pe_facade", "to": "adapter_gdo_wallet", "type": "configure", "critical": true },
+
+    { "from": "pe_core_deposit", "to": "finance_deposit", "type": "require", "critical": true, "blocker": "B7" },
+
+    { "from": "pe_core_deposit", "to": "finance_compat", "type": "require", "critical": true, "blocker": "B7" },
+
+    { "from": "pe_core_withdraw", "to": "finance_compat", "type": "require", "critical": true, "blocker": "B7" },
+
+    { "from": "pe_core_withdraw", "to": "domain_payout", "type": "require", "critical": true, "severity": "ALTO" },
+
+    { "from": "pe_core_webhooks", "to": "finance_webhooks", "type": "require", "critical": true, "blocker": "B7" },
+
+    { "from": "pe_core_reconcile", "to": "finance_reconciliation", "type": "require", "critical": true, "blocker": "B7" },
+
+    { "from": "pe_providers", "to": "finance_factory", "type": "require", "critical": true, "blocker": "B7" },
+
+    { "from": "pe_config", "to": "finance_config", "type": "require", "critical": true, "blocker": "B7" },
+
+    { "from": "finance_factory", "to": "psp_asaas", "type": "require", "critical": true },
+
+    { "from": "finance_factory", "to": "psp_mp", "type": "require", "critical": true },
+
+    { "from": "finance_factory", "to": "psp_celcoin", "type": "require", "critical": false },
+
+    { "from": "finance_factory", "to": "psp_mock", "type": "require", "critical": false },
+
+    { "from": "psp_mp", "to": "service_mp_legacy", "type": "require", "critical": true, "classification": "PROIBIDA_IN_CORE" },
+
+    { "from": "finance_deposit", "to": "supabase", "type": "injected_query", "critical": true, "tables": ["pagamentos_pix", "ledger_financeiro"] },
+
+    { "from": "finance_webhooks", "to": "supabase", "type": "injected_query", "critical": true },
+
+    { "from": "domain_payout", "to": "supabase", "type": "direct_query", "critical": true, "tables": ["saques", "ledger_financeiro", "usuarios"], "ref_count": 32 },
+
+    { "from": "domain_payout", "to": "finance_compat", "type": "require", "critical": true },
+
+    { "from": "domain_payout", "to": "service_mp_legacy", "type": "require", "critical": true },
+
+    { "from": "adapter_gdo_wallet", "to": "supabase", "type": "query", "tables": ["usuarios.saldo"] },
+
+    { "from": "adapter_gdo_webhook", "to": "finance_webhooks", "type": "require", "note": "idempotency delegate" },
+
+    { "from": "pe_boundary", "to": "pe_ports", "type": "compose", "flag": "PE_ADAPTER_BOUNDARY_ENABLED" },
+
+    { "from": "pe_compat", "to": "pe_ports", "type": "bridge", "flag": "PE_ADAPTER_BOUNDARY_ENABLED" },
+
+    { "from": "pe_scheduler", "to": "adapter_gdo_deposit", "type": "require", "critical": false },
+
+    { "from": "goldeouro_player", "to": "server_fly", "type": "http", "critical": true },
+
+    { "from": "goldeouro_admin", "to": "server_fly", "type": "http", "critical": true },
+
+    { "from": "scripts_cert", "to": "finance_factory", "type": "require", "count": "40+" },
+
+    { "from": "server_fly", "to": "express", "type": "webhook_routes", "critical": true, "blocker": "B1" }
+
+  ],
+
+  "forbidden_imports_ideal_core": [
+
+    {
+
+      "from": "pe_core_withdraw",
+
+      "to": "domain_payout",
+
+      "reason": "Runtime GDO outside package",
+
+      "status": "VIOLATION"
+
+    },
+
+    {
+
+      "from": "psp_mp",
+
+      "to": "service_mp_legacy",
+
+      "reason": "Legacy service outside package",
+
+      "status": "VIOLATION"
+
+    },
+
+    {
+
+      "from": "finance_deposit",
+
+      "to": "supabase_gdo_schema",
+
+      "reason": "Schema coupling in Core",
+
+      "status": "VIOLATION"
+
+    },
+
+    {
+
+      "from": "finance",
+
+      "to": "payment-engine",
+
+      "reason": "Reverse dependency",
+
+      "status": "OK"
+
+    }
+
+  ],
+
+  "import_matrix": {
+
+    "payment_engine_to_finance": {
+
+      "count": 12,
+
+      "files": [
+
+        "core/deposit.js",
+
+        "core/withdraw.js",
+
+        "core/webhooks.js",
+
+        "core/reconciliation.js",
+
+        "config/index.js",
+
+        "providers/index.js",
+
+        "adapters/goldeouro/GolDeOuroWebhookAdapter.js"
+
+      ],
+
+      "blocker": "B7"
+
+    },
+
+    "finance_to_payment_engine": { "count": 0 },
+
+    "finance_to_services": {
+
+      "count": 2,
+
+      "files": ["providers/mercadopago/MercadoPagoPayoutProvider.js", "domain/payout via MP isConfigured"]
+
+    },
+
+    "runtime_bypass_facade": {
+
+      "count": 3,
+
+      "consumers": ["server-fly.js", "payout-worker.js", "adminWithdrawController.js"]
+
+    },
+
+    "frontend_to_pe": { "count": 0, "note": "HTTP only" }
+
+  },
+
+  "external_dependencies": {
+
+    "axios": { "used_by": ["finance/webhooks", "pe/scheduler/mpDepositReconcile"], "class": "ADAPTER" },
+
+    "crypto": { "used_by": ["finance/webhooks", "finance/providers", "domain/payout"], "class": "CORE" },
+
+    "node:crypto": { "used_by": ["finance/webhooks/asaasTransferAuthorization"], "class": "CORE" },
+
+    "@supabase/supabase-js": { "used_by": ["payout-worker", "runtime injected"], "class": "ADAPTER" },
+
+    "express": { "used_by": ["server-fly webhook routes", "PSP contracts JSDoc"], "class": "RUNTIME" },
+
+    "dotenv": { "used_by": ["server-fly boot"], "class": "RUNTIME" },
+
+    "fetch": { "used_by": ["asaas-http-client native fetch"], "class": "ADAPTER" },
+
+    "process.env": { "used_by": ["finance/config/* widespread"], "class": "RUNTIME" }
+
+  }
+
+}
+

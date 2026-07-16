@@ -1,0 +1,62 @@
+{
+
+  "gate": "PE.2F",
+
+  "title": "Compatibility report — legacy vs DepositClaimPort",
+
+  "date": "2026-07-14",
+
+  "flag": {
+
+    "name": "PE_DEPOSIT_CLAIM_PORT_ENABLED",
+
+    "default": false,
+
+    "production": false,
+
+    "related_not_coupled": "PE_ADAPTER_BOUNDARY_ENABLED"
+
+  },
+
+  "strategy": "SAFE_OPTION_LEGACY_UNCHANGED_FLAG_OFF",
+
+  "legacy_file_modified": false,
+
+  "legacy_path": "src/finance/deposit/claimApprovedPixDeposit.js",
+
+  "bridge": "src/payment-engine/compat/depositClaimPortBridge.js",
+
+  "equivalence": {
+
+    "method": "GolDeOuroDepositClaimAdapter delegates to claimApprovedPixDeposit",
+
+    "compared_fields": ["ok", "credited", "idempotent"],
+
+    "double_mutation_prevented": true,
+
+    "notes": [
+
+      "Flag OFF: compat calls legacy directly — identical pre-PE.2F behavior",
+
+      "Flag ON: single adapter→legacy call — no parallel credit/ledger"
+
+    ]
+
+  },
+
+  "facade_changes": {
+
+    "claimAndCredit": "now uses claimApprovedPixDepositCompat (flag-gated)",
+
+    "claimApproved": "now uses claimApprovedPixDepositCompat (flag-gated)",
+
+    "claimApprovedViaPorts": "additive PE.2F"
+
+  },
+
+  "wallet_port_not_used_for_gdo_claim": true,
+
+  "reason": "walletPortBridge.credit diverges (writes updated_at) — B8 isolation keeps exact legacy mutations in adapter wrap"
+
+}
+

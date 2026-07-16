@@ -1,0 +1,94 @@
+{
+
+  "gate": "PE.2C-REASSESS",
+
+  "date": "2026-07-14",
+
+  "residual_risk_index": 2.6,
+
+  "baseline_pe2c_pre_index": 3.4,
+
+  "delta": -0.8,
+
+  "risks": [
+
+    {
+
+      "id": "R-RE-01",
+
+      "severity": "medium",
+
+      "description": "Falsa sensação de package-ready: score 6.5 próximo de 7.0 mas isolamento físico ainda NAO",
+
+      "mitigation": "manter NO-GO PE.2C até gap fechado com evidência"
+
+    },
+
+    {
+
+      "id": "R-RE-02",
+
+      "severity": "medium",
+
+      "description": "PB-02 worker bypass — dual path payout",
+
+      "mitigation": "Priority 1 roadmap"
+
+    },
+
+    {
+
+      "id": "R-RE-03",
+
+      "severity": "low",
+
+      "description": "Flags OFF = ports não exercitados em prod",
+
+      "mitigation": "by design; staging HITL antes de ON"
+
+    },
+
+    {
+
+      "id": "R-RE-04",
+
+      "severity": "low",
+
+      "description": "Smokes não certificados no agente",
+
+      "mitigation": "execução local obrigatória antes próximo GO"
+
+    },
+
+    {
+
+      "id": "R-RE-05",
+
+      "severity": "medium",
+
+      "description": "Overclaim comercial (venda IPE isolada)",
+
+      "mitigation": "commercial readiness 4.0; NO-GO venda isolada"
+
+    },
+
+    {
+
+      "id": "R-RE-06",
+
+      "severity": "info",
+
+      "description": "Compat bridges ainda carregam finance/domain transitivamente",
+
+      "mitigation": "aceitável até package físico; documentado"
+
+    }
+
+  ],
+
+  "production_impact_of_extractions": "none_by_design",
+
+  "rollback_global": "all PE_* flags default false"
+
+}
+

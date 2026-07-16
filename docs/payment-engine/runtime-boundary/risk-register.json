@@ -1,0 +1,25 @@
+{
+  "gate": "PE.2K",
+  "date": "2026-07-14",
+  "risks": [
+    {
+      "id": "R-PE2K-01",
+      "severity": "low",
+      "description": "Shell agent pode bloquear smoke",
+      "mitigation": "rodar scripts localmente"
+    },
+    {
+      "id": "R-PE2K-02",
+      "severity": "low",
+      "description": "Worker ainda instancia Supabase client (ping)",
+      "mitigation": "aceitável infra; extrair em PE.2L se necessário"
+    },
+    {
+      "id": "R-PE2K-03",
+      "severity": "info",
+      "description": "Flag OFF ainda carrega domain dentro do RuntimeBoundary",
+      "mitigation": "by design — zero regressão"
+    }
+  ],
+  "production_impact": "none"
+}

@@ -1,0 +1,24 @@
+{
+  "gate": "PE.2L",
+  "date": "2026-07-14",
+  "risks": [
+    {
+      "id": "R-PE2L-01",
+      "severity": "low",
+      "description": "Flag ON com mock devolve provider mock direto (sem adapter PE)",
+      "mitigation": "by design — zero regressão testes"
+    },
+    {
+      "id": "R-PE2L-02",
+      "severity": "info",
+      "description": "services/pix-mercado-pago permanece no finance provider",
+      "mitigation": "encapsulado; não na superfície PE"
+    },
+    {
+      "id": "R-PE2L-03",
+      "severity": "low",
+      "description": "mpDepositReconcile HTTP MP hardcoded",
+      "mitigation": "residual produto; não é ProviderResolver bypass"
+    }
+  ]
+}

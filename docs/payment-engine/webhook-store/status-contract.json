@@ -1,0 +1,40 @@
+{
+
+  "gate": "PE.2H.1",
+
+  "statuses": ["received", "processing", "processed", "failed"],
+
+  "not_statuses": ["TIMEOUT", "ERROR", "SUCCESS"],
+
+  "error_codes": {
+
+    "TIMEOUT": "Provider/operation deadline exceeded",
+
+    "WEBHOOK_FAILED": "Generic failure default",
+
+    "INVALID_EVENT_ID": "Missing/invalid event id",
+
+    "PERSISTENCE_ERROR": "Store persistence failure"
+
+  },
+
+  "fields": {
+
+    "status": "lifecycle stage only",
+
+    "lastErrorCode": "machine-readable failure cause when status=failed",
+
+    "metadata.reason": "optional human/mirror of lastErrorCode"
+
+  },
+
+  "constants": {
+
+    "WEBHOOK_STORE_STATUSES": "src/payment-engine/ports/WebhookStorePort.js",
+
+    "WEBHOOK_STORE_ERROR_TIMEOUT": "TIMEOUT"
+
+  }
+
+}
+

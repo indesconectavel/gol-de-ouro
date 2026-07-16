@@ -1,0 +1,396 @@
+{
+
+  "gate": "PE.2C-PRE",
+
+  "title": "Package Readiness Score",
+
+  "date": "2026-07-11",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "scale": "0-10",
+
+  "overall_score": 7.0,
+
+  "overall_verdict": "METRIC_READY_PHYSICAL_PACKAGE_STILL_NO_GO",
+
+  "pe2c_authorized": false,
+
+  "dimensions": {
+
+    "arquitetura": {
+
+      "score": 7.8,
+
+      "weight": 0.12,
+
+      "evidence": [
+
+        "PaymentEngine facade P2.2 presente",
+
+        "PE.2L ProviderResolver + PaymentProviderPort/TransferProviderPort",
+
+        "PE.2K RuntimeBoundary",
+
+        "PE.2I Core sem require finance/*",
+
+        "Ports shadow PE.2B–L inativos em prod"
+
+      ],
+
+      "gaps": [
+
+        "domain/payout ainda fora do package físico",
+
+        "flags sempre OFF em produção",
+
+        "mpDepositReconcile HTTP MP residual"
+
+      ]
+
+    },
+
+    "acoplamento": {
+
+      "score": 6.5,
+
+      "weight": 0.15,
+
+      "evidence": [
+
+        "B7/PB-01/PB-02/PB-03 eliminados na superfície PE",
+
+        "MP services encapsulado atrás MercadoPagoTransferAdapter",
+
+        "claimApprovedPixDeposit queries GDO schema (adapter)"
+
+      ],
+
+      "gaps": [
+
+        "Schema GDO nos adapters/domain",
+
+        "physical_zero_gdo=NAO"
+
+      ]
+
+    },
+
+    "reutilizacao": {
+
+      "score": 5.5,
+
+      "weight": 0.10,
+
+      "evidence": [
+
+        "Factory resolvePayment/Payout multi-PSP",
+
+        "Mock providers para teste",
+
+        "Interfaces Wallet/Ledger/Withdraw JSDoc"
+
+      ],
+
+      "gaps": [
+
+        "Adapters GDO hardcoded como default",
+
+        "Segundo produto ausente",
+
+        "92% core reutilizavel PE-VALOR nao empacotado"
+
+      ]
+
+    },
+
+    "testabilidade": {
+
+      "score": 6.0,
+
+      "weight": 0.08,
+
+      "evidence": [
+
+        "scripts/verify-* extensivos",
+
+        "P1.9 certification runner",
+
+        "MockPaymentProvider MockPayoutProvider",
+
+        "pe2b-adapter-boundary-smoke.mjs"
+
+      ],
+
+      "gaps": [
+
+        "Sem test suite unitaria isolada package",
+
+        "Dependencia ENV global"
+
+      ]
+
+    },
+
+    "ports": {
+
+      "score": 7.5,
+
+      "weight": 0.12,
+
+      "evidence": [
+
+        "LedgerPort WalletPort WithdrawalPort READY_SHADOW",
+
+        "WebhookPayload type READY_SHADOW",
+
+        "DepositClaimPort PE.2F READY_SHADOW",
+
+        "IdempotencyStore PE.2G READY_SHADOW",
+
+        "WebhookStorePort PE.2H READY_SHADOW",
+
+        "PayoutStorePort + PayoutRecoveryPort PE.2J READY_SHADOW",
+
+        "resolveAdapterBoundaryPorts / resolvePayoutStore flag-gated"
+
+      ],
+
+      "gaps": [
+
+        "Flags default false (prod não usa ports)",
+
+        "Produção não usa ports"
+
+      ]
+
+    },
+
+    "adapters": {
+
+      "score": 6.0,
+
+      "weight": 0.10,
+
+      "evidence": [
+
+        "GolDeOuro adapters completos P2.2",
+
+        "PSP adapters Asaas MP Celcoin",
+
+        "Compat bridges PE.2B"
+
+      ],
+
+      "gaps": [
+
+        "GDO adapter e default unico",
+
+        "WebhookAdapter importa finance idempotency",
+
+        "MP legacy fora adapter boundary"
+
+      ]
+
+    },
+
+    "governanca": {
+
+      "score": 8.0,
+
+      "weight": 0.08,
+
+      "evidence": [
+
+        "P1.9 PASS",
+
+        "PROPRIETARY-SCOPE",
+
+        "BASELINE-PROTECTION-POLICY",
+
+        "PIPELINE.3 HITL",
+
+        "PE.2B risk-register"
+
+      ],
+
+      "gaps": [
+
+        "PE.2B.2 deploy NO-GO",
+
+        "Git hygiene P0 pendente"
+
+      ]
+
+    },
+
+    "documentacao": {
+
+      "score": 8.5,
+
+      "weight": 0.08,
+
+      "evidence": [
+
+        "docs/payment-engine 01-12",
+
+        "adapter-boundary-map.json",
+
+        "DR-03 DR-11",
+
+        "README-PAYMENT-ENGINE.md"
+
+      ],
+
+      "gaps": [
+
+        "Package C0 spec ausente ate PE.2C-PRE"
+
+      ]
+
+    },
+
+    "sdk_readiness": {
+
+      "score": 4.0,
+
+      "weight": 0.10,
+
+      "evidence": [
+
+        "PaymentEngine JS facade exportavel",
+
+        "index.js re-exports estruturados"
+
+      ],
+
+      "gaps": [
+
+        "Sem package.json npm",
+
+        "Sem TypeScript types publicos",
+
+        "Sem peerDeps documentadas",
+
+        "Sem createPaymentEngine factory idempotente"
+
+      ]
+
+    },
+
+    "licenciamento": {
+
+      "score": 6.0,
+
+      "weight": 0.07,
+
+      "evidence": [
+
+        "LICENSE-PAYMENT-ENGINE.md",
+
+        "COPYRIGHT-AND-LICENSE-POLICY dual-license",
+
+        "PE-VALOR-2 posicionamento"
+
+      ],
+
+      "gaps": [
+
+        "Contrato comercial escala ausente",
+
+        "INPI nao protocolado",
+
+        "MIT legado package.json raiz"
+
+      ]
+
+    }
+
+  },
+
+  "weighted_calculation": {
+
+    "formula": "sum(score * weight) / sum(weight)",
+
+    "result": 7.0,
+
+    "note": "PE.2L arquitetura 7.6→7.8, acoplamento 6.2→6.5; overall ~7.0"
+
+  },
+
+  "readiness_bands": {
+
+    "0-3": "NAO_INICIADO",
+
+    "4-5": "PREPARACAO",
+
+    "6-7": "QUASE_PRONTO",
+
+    "8-10": "PACKAGE_READY"
+
+  },
+
+  "current_band": "QUASE_PRONTO",
+
+  "package_can_exist_isolated": {
+
+    "logical_npm_workspace": "SIM_COM_RESSALVAS",
+
+    "physical_zero_gdo_imports": "NAO",
+
+    "production_safe_move_now": "NAO",
+
+    "second_product_ready": "NAO"
+
+  },
+
+  "blockers_for_pe2c": [
+
+    "domain_payout_outside_package_boundary",
+
+    "PE_2B_2_staging_deploy_NO_GO",
+
+    "physical_zero_gdo",
+
+    "mp_reconcile_http_residual",
+
+    "PE_ADAPTER_BOUNDARY_ENABLED_unconfirmed_staging"
+
+  ],
+
+  "resolved_blockers_note": {
+
+    "B2": "PE.2G IdempotencyStore formal READY_SHADOW (deposit webhook)",
+
+    "B7": "PE.2I Core zero require finance/* (compat bridge; smoke not agent-certified)",
+
+    "B8": "PE.2F DepositClaimPort READY_SHADOW",
+
+    "B10": "PE.2H WebhookStorePort READY_SHADOW (lifecycle; sem tabela webhook_events)",
+
+    "B1": "PE.2E WebhookPayload (residual Express paths possible)",
+
+    "PB-01": "PE.2J PayoutStorePort + GolDeOuroPayoutAdapter READY_SHADOW",
+
+    "PB-02": "PE.2K RuntimeBoundary — worker/admin/server-fly/scheduler via boundary (flag OFF=legado)",
+
+    "PB-03": "PE.2L ProviderResolver + PSP adapters — engine surface agnostic (MP service behind adapter)"
+
+  },
+
+  "overall_score_note": "PE.2L bump overall 6.8→7.0; PB-03 removido; physical package ainda NO-GO",
+
+  "minimum_score_for_pe2c_go": 7.0,
+
+  "score_gap": 0,
+
+  "pe2h_authorized_next": false,
+
+  "pe2c_go_no_go": "NO-GO",
+
+  "pe2m_go_no_go": "GO",
+
+  "next_gate_hint": "PE.2M — residuals (mp reconcile / package C0 lógico / PB-05) OR PE.2C-PRE.3 physical plan"
+
+}
+

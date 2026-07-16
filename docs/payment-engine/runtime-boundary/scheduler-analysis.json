@@ -1,0 +1,32 @@
+{
+
+  "gate": "PE.2K",
+
+  "date": "2026-07-14",
+
+  "asaas_recovery": {
+
+    "file": "scheduler/asaasPayoutRecoveryScheduler.js",
+
+    "uses": "RuntimeBoundary",
+
+    "requires_finance_direct": false,
+
+    "requires_domain_direct": false
+
+  },
+
+  "mp_deposit_reconcile": {
+
+    "file": "scheduler/mpDepositReconcile.js",
+
+    "uses": "runtime injected claim + GolDeOuroDepositRepository",
+
+    "severity": "moderado_residual",
+
+    "note": "Já dentro payment-engine; consome facade claim via inject. Não é bypass PB-02 worker."
+
+  }
+
+}
+

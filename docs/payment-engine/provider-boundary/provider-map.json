@@ -1,0 +1,36 @@
+{
+
+  "gate": "PE.2L",
+
+  "date": "2026-07-14",
+
+  "authorized_entry": "providers/ProviderResolver.js",
+
+  "flag": "PE_PROVIDER_BOUNDARY_ENABLED=false",
+
+  "ports": ["PaymentProviderPort", "TransferProviderPort"],
+
+  "adapters": [
+
+    "AsaasPaymentAdapter",
+
+    "AsaasTransferAdapter",
+
+    "MercadoPagoPaymentAdapter",
+
+    "MercadoPagoTransferAdapter",
+
+    "CelcoinTransferAdapter",
+
+    "EfiPaymentAdapter stub",
+
+    "EfiTransferAdapter stub"
+
+  ],
+
+  "core_psp_requires": 0,
+
+  "providers_index_factory_require": false
+
+}
+

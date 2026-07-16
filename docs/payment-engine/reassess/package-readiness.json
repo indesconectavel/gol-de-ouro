@@ -1,0 +1,90 @@
+{
+
+  "gate": "PE.2C-REASSESS",
+
+  "date": "2026-07-14",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "scale": "0-10",
+
+  "overall_score": 6.5,
+
+  "band": "QUASE_PRONTO",
+
+  "pe2c_authorized": false,
+
+  "minimum_for_physical_package_go": 7.0,
+
+  "score_gap": 0.5,
+
+  "baseline_pe2c_pre": {
+
+    "overall": 5.7,
+
+    "band": "PREPARACAO"
+
+  },
+
+  "delta_vs_pre": {
+
+    "absolute": 0.8,
+
+    "percent": 14.0,
+
+    "formula": "(6.5-5.7)/5.7"
+
+  },
+
+  "dimensions": {
+
+    "governanca": { "score": 8.2, "weight": 0.08, "pre": 8.0 },
+
+    "documentacao": { "score": 8.8, "weight": 0.08, "pre": 8.5 },
+
+    "arquitetura": { "score": 7.3, "weight": 0.12, "pre": 6.5 },
+
+    "acoplamento": { "score": 5.5, "weight": 0.15, "pre": 4.0 },
+
+    "reutilizacao": { "score": 5.8, "weight": 0.10, "pre": 5.5 },
+
+    "testabilidade": { "score": 6.2, "weight": 0.08, "pre": 6.0 },
+
+    "ports": { "score": 7.5, "weight": 0.12, "pre": 5.0 },
+
+    "adapters": { "score": 6.3, "weight": 0.10, "pre": 6.0 },
+
+    "sdk_readiness": { "score": 4.2, "weight": 0.10, "pre": 4.0 },
+
+    "licenciamento": { "score": 6.0, "weight": 0.07, "pre": 6.0 }
+
+  },
+
+  "weighted_result": 6.51,
+
+  "product_readiness": {
+
+    "score": 5.0,
+
+    "note": "Produto GDO único; IPE ainda embutida; sem 2º cliente"
+
+  },
+
+  "package_isolation": {
+
+    "logical_workspace": "SIM_COM_RESSALVAS",
+
+    "physical_zero_gdo_imports": "NAO",
+
+    "production_safe_move_now": "NAO",
+
+    "npm_package_exists": "NAO",
+
+    "public_types_ts": "NAO"
+
+  },
+
+  "verdict": "NOT_READY_FOR_PHYSICAL_PACKAGE"
+
+}
+

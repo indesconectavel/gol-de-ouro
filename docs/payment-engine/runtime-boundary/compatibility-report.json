@@ -1,0 +1,10 @@
+{
+  "gate": "PE.2K",
+  "date": "2026-07-14",
+  "financial_rules_changed": false,
+  "flag_off": "RuntimeBoundary → domain/finance direct (idêntico pré-PE.2K)",
+  "flag_on": "RuntimeBoundary → PaymentEngine → ports/bridges → legado",
+  "worker_call_signature": "processPendingWithdrawals({ supabase, isDbConnected, payoutEnabled }) preserved",
+  "p15f_compat": "worker ainda contém processPendingWithdrawals({",
+  "rollback": "unset PE_RUNTIME_BOUNDARY_ENABLED"
+}

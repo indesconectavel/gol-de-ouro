@@ -1,0 +1,122 @@
+{
+
+  "gate": "PE.2C-REASSESS",
+
+  "date": "2026-07-14",
+
+  "asset": "Indesconectavel Payment Engine",
+
+  "overall_asset_readiness": 6.0,
+
+  "band": "ATIVO_TECNICO_EMBUTIDO",
+
+  "checklist": {
+
+    "biblioteca": {
+
+      "status": "PARCIAL",
+
+      "checked": false,
+
+      "justification": "Módulos JS exportáveis via index.js, sem package npm isolado nem API pública estável versionada."
+
+    },
+
+    "sdk": {
+
+      "status": "NAO",
+
+      "checked": false,
+
+      "justification": "sdk_readiness ~4.2; sem types TS, peerDeps, createPaymentEngine documentado para terceiros."
+
+    },
+
+    "framework": {
+
+      "status": "NAO",
+
+      "checked": false,
+
+      "justification": "Não oferece lifecycle/plugin system genérico; é orquestração financeira de produto."
+
+    },
+
+    "engine": {
+
+      "status": "SIM",
+
+      "checked": true,
+
+      "justification": "Identidade clara PaymentEngine + ports/adapters/providers/schedulers; produção homologada P1.9."
+
+    },
+
+    "produto": {
+
+      "status": "PARCIAL",
+
+      "checked": false,
+
+      "justification": "IPE não é produto comercial separado; GDO V1 é o produto. IPE é núcleo embutido."
+
+    },
+
+    "white_label": {
+
+      "status": "NAO",
+
+      "checked": false,
+
+      "justification": "Adapter único Gol de Ouro; segundo produto ausente."
+
+    },
+
+    "saas": {
+
+      "status": "NAO",
+
+      "checked": false,
+
+      "justification": "Sem multi-tenant, billing, onboarding de clientes IPE."
+
+    },
+
+    "tecnologia_licenciavel": {
+
+      "status": "PARCIAL",
+
+      "checked": false,
+
+      "justification": "Narrativa PE-VALOR + LICENSE-PAYMENT-ENGINE presentes; contrato comercial escala e 2º cliente ausentes."
+
+    },
+
+    "ativo_vendavel": {
+
+      "status": "PARCIAL",
+
+      "checked": false,
+
+      "justification": "Vendável como parte do monorepo GDO / asset package documental; venda isolada da IPE ainda condicionada a package físico + runtime unificado."
+
+    }
+
+  },
+
+  "reusable_today": {
+
+    "as_internal_module": "SIM",
+
+    "as_independent_npm": "NAO",
+
+    "as_second_product_drop_in": "NAO",
+
+    "as_licensable_binary": "NAO"
+
+  },
+
+  "evolution_note": "Pós PE.2E–J a IPE é Engine madura com fronteiras explícitas; ainda não Asset Package físico independente."
+
+}
+

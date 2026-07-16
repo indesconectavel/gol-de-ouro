@@ -1,0 +1,116 @@
+{
+
+  "gate": "PE.2C-REASSESS",
+
+  "date": "2026-07-14",
+
+  "comparison": {
+
+    "from": {
+
+      "gate": "PE.2C-PRE",
+
+      "date": "2026-07-11",
+
+      "overall": 5.7,
+
+      "band": "PREPARACAO",
+
+      "ports": 5.0,
+
+      "arquitetura": 6.5,
+
+      "acoplamento": 4.0,
+
+      "pe2c": "NO-GO"
+
+    },
+
+    "to": {
+
+      "gate": "PE.2C-REASSESS",
+
+      "date": "2026-07-14",
+
+      "overall": 6.5,
+
+      "band": "QUASE_PRONTO",
+
+      "ports": 7.5,
+
+      "arquitetura": 7.3,
+
+      "acoplamento": 5.5,
+
+      "pe2c": "NO-GO"
+
+    }
+
+  },
+
+  "evolution": {
+
+    "overall_absolute": 0.8,
+
+    "overall_percent": 14.0,
+
+    "band_change": "PREPARACAO → QUASE_PRONTO",
+
+    "largest_gains": [
+
+      { "dimension": "ports", "from": 5.0, "to": 7.5, "delta": 2.5, "pct": 50.0 },
+
+      { "dimension": "acoplamento", "from": 4.0, "to": 5.5, "delta": 1.5, "pct": 37.5 },
+
+      { "dimension": "arquitetura", "from": 6.5, "to": 7.3, "delta": 0.8, "pct": 12.3 }
+
+    ],
+
+    "unchanged_or_flat": [
+
+      { "dimension": "licenciamento", "score": 6.0 },
+
+      { "dimension": "sdk_readiness", "from": 4.0, "to": 4.2, "note": "quase igual — sem npm package" },
+
+      { "dimension": "segundo_cliente", "score": 0 },
+
+      { "dimension": "pe2c_authorization", "value": "NO-GO → NO-GO" }
+
+    ]
+
+  },
+
+  "what_changed_architecturally": [
+
+    "PE.2E WebhookPayload",
+
+    "PE.2F DepositClaimPort",
+
+    "PE.2G IdempotencyStore",
+
+    "PE.2H WebhookStorePort",
+
+    "PE.2I Core↔Finance isolation",
+
+    "PE.2J Payout boundary ports"
+
+  ],
+
+  "what_did_not_change": [
+
+    "Produção / runtime homologado legado",
+
+    "Flags default false",
+
+    "Worker bypass facade",
+
+    "MP services coupling",
+
+    "Ausência de package npm físico",
+
+    "Staging PE.2B.2 NO-GO"
+
+  ]
+
+}
+

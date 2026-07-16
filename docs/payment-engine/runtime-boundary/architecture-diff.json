@@ -1,0 +1,22 @@
+{
+  "gate": "PE.2K",
+  "date": "2026-07-14",
+  "added": [
+    "runtime/RuntimeBoundary.js",
+    "boundary/runtime-boundary-config.js",
+    "scripts/pe2k-*.mjs",
+    "docs/payment-engine/runtime-boundary/*"
+  ],
+  "modified": [
+    "workers/payout-worker.js",
+    "controllers/adminWithdrawController.js",
+    "server-fly.js (payout import surface)",
+    "scheduler/asaasPayoutRecoveryScheduler.js",
+    "api/PaymentEngine.js (admin withdraw methods)",
+    "compat/payoutBoundaryBridge.js (admin compat)",
+    "boundary/index.js",
+    "payment-engine/index.js"
+  ],
+  "unchanged_financial_behavior": true,
+  "production_assets": "behavior unchanged (flag default false)"
+}

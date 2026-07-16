@@ -1,0 +1,62 @@
+{
+
+  "gate": "PE.2J",
+
+  "title": "Payout boundary dependency map",
+
+  "date": "2026-07-14",
+
+  "core_direct_domain_payout_imports": [],
+
+  "before": {
+
+    "edges": [
+
+      { "from": "core/withdraw.js", "to": "compat/financeLegacySurface → domain/payout", "class": "C" },
+
+      { "from": "PaymentEngine.withdraw", "to": "financeLegacySurface → domain/payout", "class": "B" },
+
+      { "from": "workers/payout-worker.js", "to": "domain/payout", "class": "D", "note": "PB-02 residual" }
+
+    ]
+
+  },
+
+  "after": {
+
+    "core": [
+
+      { "file": "core/payout.js", "requires": ["types/PayoutProcessInput"], "class": "A" },
+
+      { "file": "core/withdraw.js", "requires": ["compat/payoutBoundaryBridge", "core/payout"], "class": "B" }
+
+    ],
+
+    "ports": ["WithdrawalPort", "PayoutStorePort", "PayoutRecoveryPort"],
+
+    "adapter": "adapters/goldeouro/GolDeOuroPayoutAdapter.js → domain/payout + asaasPayoutRecovery",
+
+    "bridge": "compat/payoutBoundaryBridge.js",
+
+    "flag": "PE_PAYOUT_BOUNDARY_ENABLED=false"
+
+  },
+
+  "classification_legend": {
+
+    "A": "Necessária",
+
+    "B": "Compatibilidade temporária",
+
+    "C": "Bypass indevido",
+
+    "D": "Dívida técnica"
+
+  },
+
+  "pb01_eliminated": true,
+
+  "pb02_remains": true
+
+}
+

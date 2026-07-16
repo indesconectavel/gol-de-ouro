@@ -1,0 +1,26 @@
+{
+
+  "gate": "PE.2K",
+
+  "date": "2026-07-14",
+
+  "alias": "runtime-map.md",
+
+  "entrypoints": [
+
+    "server-fly.js",
+
+    "src/workers/payout-worker.js",
+
+    "src/payment-engine/scheduler/*",
+
+    "controllers/adminWithdrawController.js"
+
+  ],
+
+  "authorized_gateway": "src/payment-engine/runtime/RuntimeBoundary.js",
+
+  "flag": "PE_RUNTIME_BOUNDARY_ENABLED=false"
+
+}
+

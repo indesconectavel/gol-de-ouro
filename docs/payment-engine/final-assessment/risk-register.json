@@ -1,0 +1,86 @@
+{
+
+  "gate": "PE.2C-FINAL-PRE",
+
+  "date": "2026-07-14",
+
+  "residual_risk_index": 2.3,
+
+  "series": {
+
+    "pe2c_pre": 3.4,
+
+    "reassess": 2.6,
+
+    "final_pre": 2.3
+
+  },
+
+  "risks": [
+
+    {
+
+      "id": "R-FP-01",
+
+      "severity": "medium",
+
+      "description": "Score 6.8 próximo de 7.0 pode induzir GO precipitado de package físico",
+
+      "mitigation": "manter regra dúvida→NO-GO; exigir physical_zero_gdo plan"
+
+    },
+
+    {
+
+      "id": "R-FP-02",
+
+      "severity": "medium",
+
+      "description": "PB-03 MP coupling permanece",
+
+      "mitigation": "Priority máxima roadmap"
+
+    },
+
+    {
+
+      "id": "R-FP-03",
+
+      "severity": "low",
+
+      "description": "Smokes não agent-certified",
+
+      "mitigation": "execução local obrigatória antes qualquer GO"
+
+    },
+
+    {
+
+      "id": "R-FP-04",
+
+      "severity": "medium",
+
+      "description": "Overclaim comercial (IPE vendável isolada)",
+
+      "mitigation": "matrix GO/NO-GO explícita"
+
+    },
+
+    {
+
+      "id": "R-FP-05",
+
+      "severity": "info",
+
+      "description": "Flags OFF — ports shadow não exercitados em prod",
+
+      "mitigation": "by design HITL"
+
+    }
+
+  ],
+
+  "production_impact": "none"
+
+}
+

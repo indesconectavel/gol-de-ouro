@@ -1,0 +1,60 @@
+{
+
+  "gate": "PE.2J",
+
+  "date": "2026-07-14",
+
+  "before": {
+
+    "overall_score": 6.3,
+
+    "arquitetura": 7.0,
+
+    "acoplamento": 5.0,
+
+    "ports": 7.0,
+
+    "pb01_in_blockers": true
+
+  },
+
+  "after": {
+
+    "overall_score": 6.5,
+
+    "arquitetura": 7.2,
+
+    "acoplamento": 5.5,
+
+    "ports": 7.5,
+
+    "pb01_in_blockers": false,
+
+    "band": "QUASE_PRONTO"
+
+  },
+
+  "pb01_eliminated": true,
+
+  "pb02_remains": true,
+
+  "pe2c_authorized": false,
+
+  "remaining_blockers": [
+
+    "PB-02_runtime_bypass_facade",
+
+    "domain_payout_outside_package_boundary",
+
+    "worker_server_fly_bypass_facade",
+
+    "finance_MP_coupling_services_pix_mercado_pago",
+
+    "PE_2B_2_staging_deploy_NO_GO",
+
+    "providers_config_finance_imports_residual"
+
+  ]
+
+}
+

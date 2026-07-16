@@ -1,0 +1,54 @@
+{
+
+  "gate": "PE.2F.1-AUTO",
+
+  "date": "2026-07-14",
+
+  "evidence_map": {
+
+    "capability_audit": "docs/relatorios/PE.2F.1-AUTOMATED-CERTIFICATION.md#etapa-1--auditoria-de-capacidades",
+
+    "workflow_local": ".github/workflows/pe2f1-automated-certification.yml",
+
+    "workflow_remote": "https://github.com/indesconectavel/gol-de-ouro/blob/main/.github/workflows/pe2f1-automated-certification.yml",
+
+    "workflow_id": 313084049,
+
+    "pr_workflow_publish": "https://github.com/indesconectavel/gol-de-ouro/pull/104",
+
+    "pr_docs_blocked": "https://github.com/indesconectavel/gol-de-ouro/pull/105",
+
+    "dispatch_error": "HTTP 403 Resource not accessible by integration",
+
+    "runs": [],
+
+    "artifacts_expected": [
+
+      "artifacts/pe2f1-certification/smoke-output.txt",
+
+      "artifacts/pe2f1-certification/verify-output.txt",
+
+      "artifacts/pe2f1-certification/certification-result.json",
+
+      "artifacts/pe2f1-certification/environment-report.json",
+
+      "artifacts/pe2f1-certification/dependency-audit.json"
+
+    ],
+
+    "artifacts_collected": [],
+
+    "remote_main_missing_sources": [
+
+      "scripts/pe2f-claim-deposit-port-smoke.mjs",
+
+      "scripts/verify-pe2f-deposit-claim-port.mjs",
+
+      "src/payment-engine/core/claimApprovedDeposit.js"
+
+    ]
+
+  }
+
+}
+

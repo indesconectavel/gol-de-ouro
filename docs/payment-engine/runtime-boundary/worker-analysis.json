@@ -1,0 +1,24 @@
+{
+
+  "gate": "PE.2K",
+
+  "date": "2026-07-14",
+
+  "worker": "src/workers/payout-worker.js",
+
+  "requires_domain": false,
+
+  "requires_finance": false,
+
+  "requires_runtime_boundary": true,
+
+  "still_creates_supabase_client": true,
+
+  "note": "Supabase client permanece para ping de conectividade Fly — não é bypass financeiro domain/finance",
+
+  "call": "RuntimeBoundary.processPendingWithdrawals",
+
+  "health": "RuntimeBoundary.getHealthSnapshot"
+
+}
+

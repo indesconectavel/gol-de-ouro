@@ -1,0 +1,28 @@
+{
+
+  "gate": "PE.2J",
+
+  "date": "2026-07-14",
+
+  "financial_rules_changed": false,
+
+  "flag_off": "domain/payout direct via bridge",
+
+  "flag_on": "core ports → GolDeOuroPayoutAdapter → same domain/payout",
+
+  "legacy_untouched": [
+
+    "src/domain/payout/processPendingWithdrawals.js",
+
+    "src/domain/payout/payoutProviderPersistence.js",
+
+    "src/workers/payout-worker.js"
+
+  ],
+
+  "idempotency_webhooks_wallet_ledger": "preserved (paths unchanged for those concerns)",
+
+  "rollback": "unset PE_PAYOUT_BOUNDARY_ENABLED"
+
+}
+

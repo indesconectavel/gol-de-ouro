@@ -1,0 +1,52 @@
+{
+
+  "gate": "PE.2L.1",
+
+  "date": "2026-07-14",
+
+  "flag_defaults_unchanged": true,
+
+  "PE_PROVIDER_BOUNDARY_ENABLED_default": false,
+
+  "financial_rules_unchanged": true,
+
+  "factory_selection_unchanged": true,
+
+  "asaas_gates_unchanged": true,
+
+  "mercadopago_fallback_unchanged": true,
+
+  "components_aligned": {
+
+    "PaymentProviderPort": "untouched",
+
+    "TransferProviderPort": "untouched",
+
+    "ProviderResolver": "additive metadata deriveResolutionSide/getResolutionMetadata",
+
+    "AsaasAdapter": "untouched",
+
+    "MercadoPagoAdapter": "untouched (comment may still mention encapsulado)",
+
+    "CelcoinAdapter": "untouched",
+
+    "EfiAdapter": "untouched",
+
+    "providers_surface": "exports resolution helpers",
+
+    "RuntimeBoundary": "still via providers getHealthSnapshot",
+
+    "PaymentEngine.health.pe2l": "additive resolution object",
+
+    "smoke": "require-scoped pix-mercado-pago + fallback matrix",
+
+    "verify": "PE.2L.1 semantic tests"
+
+  },
+
+  "effective_provider_changed": false,
+
+  "production_impact": "none"
+
+}
+

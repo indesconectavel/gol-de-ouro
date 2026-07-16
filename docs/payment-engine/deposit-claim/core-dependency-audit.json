@@ -1,0 +1,44 @@
+{
+
+  "gate": "PE.2F.1",
+
+  "date": "2026-07-14",
+
+  "core_path": "src/payment-engine/core/claimApprovedDeposit.js",
+
+  "audit_method": "static_regex_grep",
+
+  "forbidden_tokens": {
+
+    "supabase": { "case_insensitive": true, "present": false },
+
+    "pagamentos_pix": { "present": false },
+
+    "usuarios": { "present": false },
+
+    "ledger_financeiro": { "present": false },
+
+    ".from(": { "present": false },
+
+    ".rpc(": { "present": false }
+
+  },
+
+  "imports": {
+
+    "only": ["../types/DepositClaimInput"],
+
+    "supabase_client": false,
+
+    "finance_concrete": false,
+
+    "adapters": false
+
+  },
+
+  "f1_resolved": true,
+
+  "smoke_assertion_expected": "core must not mention supabase → PASS when smoke runs"
+
+}
+

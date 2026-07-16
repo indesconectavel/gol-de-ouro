@@ -1,0 +1,16 @@
+{
+
+  "gate": "PE.2I",
+
+  "alias_of": "imports-report.json",
+
+  "core_finance_import_count": 0,
+
+  "verdict": "PASS_STATIC",
+
+  "smoke_runtime": "NOT_EXECUTED_SHELL_BLOCKED",
+
+  "date": "2026-07-14"
+
+}
+

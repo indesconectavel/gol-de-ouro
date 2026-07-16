@@ -1,0 +1,122 @@
+{
+
+  "gate": "PE.2F",
+
+  "title": "Claim Deposit Port Extraction — target flow map",
+
+  "date": "2026-07-14",
+
+  "architecture": {
+
+    "production_flag_off": {
+
+      "flow": "PaymentEngine.deposit.claimAndCredit → claimApprovedPixDepositCompat → claimApprovedPixDeposit (legado)",
+
+      "mutation": "single path identical to pre-PE.2F",
+
+      "ports_used": false
+
+    },
+
+    "flag_on_authorized": {
+
+      "flow": "PaymentEngine → claimApprovedPixDepositCompat → claimApprovedDeposit(core) → DepositClaimPort → GolDeOuroDepositClaimAdapter → claimApprovedPixDeposit legado",
+
+      "mutation": "single path (adapter wraps legacy — no double credit)",
+
+      "ports_used": true
+
+    },
+
+    "shadow_fakes": {
+
+      "flow": "claimApprovedDeposit / claimApprovedDepositOrchestrated → InMemoryDepositClaimPorts",
+
+      "mutation": "in-memory only"
+
+    }
+
+  },
+
+  "layers": [
+
+    { "name": "Payment Engine facade", "path": "src/payment-engine/api/PaymentEngine.js" },
+
+    { "name": "Compat bridge", "path": "src/payment-engine/compat/depositClaimPortBridge.js" },
+
+    { "name": "Core neutro", "path": "src/payment-engine/core/claimApprovedDeposit.js" },
+
+    { "name": "DepositClaimPort", "path": "src/payment-engine/ports/DepositClaimPort.js" },
+
+    { "name": "WalletPort", "path": "src/payment-engine/ports/WalletPort.js" },
+
+    { "name": "LedgerPort", "path": "src/payment-engine/ports/LedgerPort.js" },
+
+    { "name": "GolDeOuroDepositClaimAdapter", "path": "src/payment-engine/adapters/goldeouro/GolDeOuroDepositClaimAdapter.js" },
+
+    { "name": "Legacy homologado", "path": "src/finance/deposit/claimApprovedPixDeposit.js" }
+
+  ],
+
+  "neutral_input": {
+
+    "type": "DepositClaimInput",
+
+    "path": "src/payment-engine/types/DepositClaimInput.js",
+
+    "fields": [
+
+      "provider",
+
+      "providerPaymentId",
+
+      "accountId",
+
+      "amount",
+
+      "currency",
+
+      "eventId",
+
+      "correlationId",
+
+      "occurredAt",
+
+      "metadata"
+
+    ]
+
+  },
+
+  "flag": {
+
+    "name": "PE_DEPOSIT_CLAIM_PORT_ENABLED",
+
+    "default": false,
+
+    "why_specific": "Isolates financial claim from PE_ADAPTER_BOUNDARY_ENABLED (webhook/ports shadow)"
+
+  },
+
+  "forbidden_in_core": [
+
+    "supabase",
+
+    "pagamentos_pix",
+
+    "usuarios",
+
+    "ledger_financeiro",
+
+    ".from(",
+
+    ".rpc(",
+
+    "Express req",
+
+    "PSP SDK"
+
+  ]
+
+}
+

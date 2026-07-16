@@ -1,0 +1,192 @@
+{
+
+  "gate": "PE.2F",
+
+  "title": "Claim Deposit Port Extraction — current flow map",
+
+  "date": "2026-07-14",
+
+  "source_of_truth": "src/finance/deposit/claimApprovedPixDeposit.js",
+
+  "entry_points": [
+
+    {
+
+      "name": "PaymentEngine.deposit.claimAndCredit",
+
+      "path": "src/payment-engine/api/PaymentEngine.js",
+
+      "shape": "(paymentId) => boolean (ok)"
+
+    },
+
+    {
+
+      "name": "PaymentEngine.deposit.claimApproved",
+
+      "path": "src/payment-engine/api/PaymentEngine.js",
+
+      "shape": "(paymentId, deps) => { ok, credited, idempotent }"
+
+    },
+
+    {
+
+      "name": "deps.claimAndCreditApprovedPixDeposit",
+
+      "consumers": [
+
+        "src/finance/webhooks/processPaymentWebhook.js",
+
+        "src/payment-engine/scheduler/mpDepositReconcile.js"
+
+      ]
+
+    },
+
+    {
+
+      "name": "scripts/p14f-reprocess-asaas-deposit.cjs",
+
+      "direct_require": "claimApprovedPixDeposit"
+
+    }
+
+  ],
+
+  "orchestrator": {
+
+    "function": "claimApprovedPixDeposit",
+
+    "deps": ["supabase", "createLedgerEntry", "log?"],
+
+    "input": "paymentId string (MP numeric | Asaas pay_*)",
+
+    "output": { "ok": "boolean", "credited": "boolean", "idempotent": "boolean" }
+
+  },
+
+  "branches": [
+
+    {
+
+      "id": "RPC_PRIMARY",
+
+      "call": "supabase.rpc('claim_and_credit_approved_pix_deposit', { p_mercadopago_id })",
+
+      "when": "RPC exists and returns object",
+
+      "effects": "atomic claim + ledger + wallet inside SQL (GDO)",
+
+      "fallback_trigger": "ok=false && error=invalid_mercadopago_id && pay_* Asaas"
+
+    },
+
+    {
+
+      "id": "RPC_ERROR_HARD",
+
+      "when": "rpcError and not missing-function",
+
+      "result": { "ok": false, "credited": false, "idempotent": false }
+
+    },
+
+    {
+
+      "id": "JS_FALLBACK",
+
+      "function": "claimApprovedPixDepositJsFallback",
+
+      "when": "RPC missing OR Asaas invalid_mercadopago_id rejection",
+
+      "steps": [
+
+        "SELECT ledger_financeiro by correlation_id+tipo=deposito (idempotency)",
+
+        "UPDATE pagamentos_pix SET approved WHERE payment_id AND status≠approved (claim)",
+
+        "else UPDATE by external_id",
+
+        "createLedgerEntry(tipo=deposito, correlationId=paymentId)",
+
+        "SELECT usuarios.saldo + UPDATE saldo += credit"
+
+      ]
+
+    }
+
+  ],
+
+  "tables": {
+
+    "pagamentos_pix": {
+
+      "columns_read": ["id", "usuario_id", "amount", "valor", "payment_id", "external_id", "status"],
+
+      "columns_written": ["status", "updated_at", "approved_at"],
+
+      "claim_predicate": "neq(status, approved) — single-row select after update"
+
+    },
+
+    "usuarios": {
+
+      "columns_read": ["saldo"],
+
+      "columns_written": ["saldo"]
+
+    },
+
+    "ledger_financeiro": {
+
+      "columns_read": ["id", "correlation_id", "tipo"],
+
+      "written_via": "createLedgerEntry (finance/withdraw path)"
+
+    }
+
+  },
+
+  "idempotency": {
+
+    "rpc": "SQL + rpcResult.idempotent",
+
+    "js_fallback": [
+
+      "ledger existing by correlation_id+deposito",
+
+      "claim update returns 0 rows (already approved/missing)",
+
+      "createLedgerEntry.deduped"
+
+    ]
+
+  },
+
+  "atomicity": {
+
+    "rpc_path": "transactional inside Postgres function",
+
+    "js_fallback": "NOT a single DB transaction — sequential claim → ledger → wallet",
+
+    "partial_failure_window": "ledger without wallet credit possible on wallet update failure after ledger success",
+
+    "double_credit_protection": "claim row status gate + ledger correlation_id"
+
+  },
+
+  "coupling_b8": {
+
+    "supabase_client": true,
+
+    "schema_gdo": true,
+
+    "table_names_in_core_finance": true,
+
+    "payment_engine_core_deposit_reexport": "src/payment-engine/core/deposit.js re-exports finance claim"
+
+  }
+
+}
+

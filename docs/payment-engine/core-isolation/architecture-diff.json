@@ -1,0 +1,60 @@
+{
+
+  "gate": "PE.2I",
+
+  "date": "2026-07-14",
+
+  "diff": {
+
+    "added": [
+
+      "compat/financeLegacySurface.js",
+
+      "boundary/core-finance-boundary-config.js",
+
+      "boundary/resolveFinanceSurface.js",
+
+      "scripts/pe2i-core-finance-smoke.mjs",
+
+      "scripts/verify-pe2i-core-finance-boundary.mjs",
+
+      "docs/payment-engine/core-isolation/*"
+
+    ],
+
+    "modified": [
+
+      "core/deposit.js",
+
+      "core/withdraw.js",
+
+      "core/webhooks.js",
+
+      "core/reconciliation.js",
+
+      "api/PaymentEngine.js",
+
+      "scheduler/asaasPayoutRecoveryScheduler.js",
+
+      "reconciliation/index.js",
+
+      "boundary/index.js",
+
+      "payment-engine/index.js"
+
+    ],
+
+    "removed_edges": [
+
+      "core/* → finance/* (direct require)"
+
+    ],
+
+    "unchanged_financial_behavior": true,
+
+    "production_assets": "unchanged"
+
+  }
+
+}
+

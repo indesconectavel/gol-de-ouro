@@ -1,0 +1,56 @@
+{
+
+  "gate": "PE.2J",
+
+  "date": "2026-07-14",
+
+  "risks": [
+
+    {
+
+      "id": "R-PE2J-01",
+
+      "severity": "low",
+
+      "description": "Shell agent may block smoke/verify",
+
+      "mitigation": "run scripts locally",
+
+      "status": "open"
+
+    },
+
+    {
+
+      "id": "R-PE2J-02",
+
+      "severity": "medium",
+
+      "description": "payout-worker bypasses PaymentEngine (PB-02)",
+
+      "mitigation": "próximo gate de runtime facade",
+
+      "status": "accepted_residual"
+
+    },
+
+    {
+
+      "id": "R-PE2J-03",
+
+      "severity": "info",
+
+      "description": "Flag ON still delegates to same domain modules",
+
+      "mitigation": "by design — zero risk financeiro",
+
+      "status": "by_design"
+
+    }
+
+  ],
+
+  "production_impact": "none"
+
+}
+

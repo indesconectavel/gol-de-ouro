@@ -1,0 +1,30 @@
+{
+
+  "gate": "PE.2J",
+
+  "title": "Runtime coupling",
+
+  "date": "2026-07-14",
+
+  "production_runtime_changed": false,
+
+  "flag_default": false,
+
+  "paths": {
+
+    "facade_withdraw": "PaymentEngine → payoutBoundaryBridge (flag gated)",
+
+    "scheduler_recovery": "asaasPayoutRecoveryScheduler → payoutBoundaryBridge",
+
+    "worker": "payout-worker → domain/payout DIRECT (unchanged; PB-02)",
+
+    "webhooks_finance": "processAsaasTransferWebhook → domain/payout (unchanged; outside PE core)"
+
+  },
+
+  "supabase_queries_schema": "only inside GolDeOuroPayoutAdapter → domain/payout (and worker legacy)",
+
+  "controllers_admin": "untouched; ainda podem chamar domain via finance routes"
+
+}
+

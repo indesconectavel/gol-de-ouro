@@ -1,0 +1,72 @@
+{
+
+  "gate": "PE.2I",
+
+  "date": "2026-07-14",
+
+  "risks": [
+
+    {
+
+      "id": "R-PE2I-01",
+
+      "severity": "low",
+
+      "description": "Shell LanguagePrimitives impede smoke/verify no agente",
+
+      "mitigation": "rodar localmente: node scripts/pe2i-core-finance-smoke.mjs && node scripts/verify-pe2i-core-finance-boundary.mjs",
+
+      "status": "open"
+
+    },
+
+    {
+
+      "id": "R-PE2I-02",
+
+      "severity": "low",
+
+      "description": "providers/ e config/ ainda importam finance/* (fora do Core)",
+
+      "mitigation": "gates futuros de package boundary; não reabre B7",
+
+      "status": "accepted_residual"
+
+    },
+
+    {
+
+      "id": "R-PE2I-03",
+
+      "severity": "info",
+
+      "description": "Flag ON/OFF não bifurcates implementation — só documenta modo",
+
+      "mitigation": "intencional nesta fase (zero risco financeiro)",
+
+      "status": "by_design"
+
+    },
+
+    {
+
+      "id": "R-PE2I-04",
+
+      "severity": "low",
+
+      "description": "core/withdraw|webhooks|reconciliation ainda carregam finance transitivamente via compat",
+
+      "mitigation": "extração futura para ports de payout/webhook runtime quando flags de produto ligarem",
+
+      "status": "accepted_temporary_compat"
+
+    }
+
+  ],
+
+  "production_impact": "none",
+
+  "rollback_risk": "negligible"
+
+}
+

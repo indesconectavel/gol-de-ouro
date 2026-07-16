@@ -1,0 +1,22 @@
+{
+
+  "gate": "PE.2L",
+
+  "date": "2026-07-14",
+
+  "runtime": "RuntimeBoundary → providers (ProviderResolver) for health/snapshot",
+
+  "worker": "RuntimeBoundary.getHealthSnapshot — no FinanceProviderFactory",
+
+  "scheduler_mp_reconcile": {
+
+    "residual": "mpDepositReconcile still calls api.mercadopago.com",
+
+    "severity": "moderado_produto",
+
+    "note": "fora da seleção de PSP via factory; produto GDO reconcile — residual PE.2M opcional"
+
+  }
+
+}
+

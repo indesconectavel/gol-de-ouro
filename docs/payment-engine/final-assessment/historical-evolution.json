@@ -1,0 +1,124 @@
+{
+
+  "gate": "PE.2C-FINAL-PRE",
+
+  "date": "2026-07-14",
+
+  "series": [
+
+    {
+
+      "gate": "PE.2C-PRE",
+
+      "date": "2026-07-11",
+
+      "package_readiness": 5.7,
+
+      "band": "PREPARACAO",
+
+      "ports": 5.0,
+
+      "arquitetura": 6.5,
+
+      "acoplamento": 4.0,
+
+      "technology_readiness": null,
+
+      "asset_readiness": null,
+
+      "commercial_readiness": null,
+
+      "pe2c": "NO-GO"
+
+    },
+
+    {
+
+      "gate": "PE.2C-REASSESS",
+
+      "date": "2026-07-14",
+
+      "package_readiness": 6.5,
+
+      "band": "QUASE_PRONTO",
+
+      "ports": 7.5,
+
+      "arquitetura": 7.3,
+
+      "acoplamento": 5.5,
+
+      "technology_readiness": 7.0,
+
+      "asset_readiness": 6.0,
+
+      "commercial_readiness": 4.0,
+
+      "pe2c": "NO-GO",
+
+      "delta_vs_pre_abs": 0.8,
+
+      "delta_vs_pre_pct": 14.0
+
+    },
+
+    {
+
+      "gate": "PE.2C-FINAL-PRE",
+
+      "date": "2026-07-14",
+
+      "package_readiness": 6.8,
+
+      "band": "QUASE_PRONTO",
+
+      "ports": 7.5,
+
+      "arquitetura": 7.6,
+
+      "acoplamento": 6.2,
+
+      "runtime_isolation": 7.5,
+
+      "technology_readiness": 7.3,
+
+      "asset_readiness": 6.2,
+
+      "commercial_readiness": 4.2,
+
+      "productization_readiness": 4.5,
+
+      "pe2c": "NO-GO",
+
+      "delta_vs_reassess_abs": 0.3,
+
+      "delta_vs_reassess_pct": 4.6,
+
+      "delta_vs_pre_abs": 1.1,
+
+      "delta_vs_pre_pct": 19.3
+
+    }
+
+  ],
+
+  "evolution_narrative": "PRE→REASSESS: ports/extrações B*; REASSESS→FINAL: PE.2K runtime isolation + PB-02",
+
+  "unchanged_across_series": [
+
+    "pe2c_authorization=NO-GO",
+
+    "production_ports_flags_false",
+
+    "no_npm_physical_package",
+
+    "no_second_customer",
+
+    "PB-03_MP_coupling",
+
+    "PB-05_staging"
+
+  ]
+
+}
+

@@ -1,0 +1,102 @@
+{
+
+  "gate": "PE.2C-FINAL-PRE",
+
+  "date": "2026-07-14",
+
+  "matrix": [
+
+    {
+
+      "topic": "Package físico",
+
+      "verdict": "NO-GO",
+
+      "reason": "score 6.8 < 7.0; physical_zero_gdo=NAO; PB-03/PB-05; dúvida→NO-GO"
+
+    },
+
+    {
+
+      "topic": "Productização",
+
+      "verdict": "NO-GO",
+
+      "reason": "productization 4.5; IPE embutida; sem SDK/onboarding 3º"
+
+    },
+
+    {
+
+      "topic": "Segundo cliente",
+
+      "verdict": "NO-GO",
+
+      "reason": "sem 2º adapter/produto; flags OFF; PB-03"
+
+    },
+
+    {
+
+      "topic": "Licenciamento (fechamento)",
+
+      "verdict": "NO-GO",
+
+      "reason": "commercial 4.2; falta prova 2º uso + contrato escala"
+
+    },
+
+    {
+
+      "topic": "Licenciamento (conversa exploratória / teaser)",
+
+      "verdict": "GO_COM_RESSALVAS",
+
+      "reason": "Data Room + gates permitem narrativa sem fechamento"
+
+    },
+
+    {
+
+      "topic": "Venda IPE isoladamente",
+
+      "verdict": "NO-GO",
+
+      "reason": "ativo independente = NÃO; package físico NO-GO"
+
+    },
+
+    {
+
+      "topic": "Venda no pacote Gol de Ouro™",
+
+      "verdict": "GO_COM_RESSALVAS",
+
+      "reason": "produção homologada + corpus DD; comprador compra GDO com IPE embutida"
+
+    },
+
+    {
+
+      "topic": "Apresentar a potenciais compradores (DD técnica)",
+
+      "verdict": "GO",
+
+      "reason": "documentação/gates suficientes para due diligence técnica"
+
+    },
+
+    {
+
+      "topic": "Continuar extrações shadow (ex.: PB-03)",
+
+      "verdict": "GO",
+
+      "reason": "fecha gap residual sem risco prod"
+
+    }
+
+  ]
+
+}
+

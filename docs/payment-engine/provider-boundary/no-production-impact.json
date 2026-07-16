@@ -1,0 +1,50 @@
+{
+
+  "gate": "PE.2L.1",
+
+  "date": "2026-07-14",
+
+  "production_altered": false,
+
+  "staging_altered": false,
+
+  "runtime_altered": false,
+
+  "database_altered": false,
+
+  "schema_altered": false,
+
+  "secrets_altered": false,
+
+  "deploy_executed": false,
+
+  "fly_touched": false,
+
+  "main_branch_touched": false,
+
+  "env_flags_changed": false,
+
+  "financial_rules_altered": false,
+
+  "pix_in_out_altered": false,
+
+  "provider_effective_altered": false,
+
+  "asaas_activated": false,
+
+  "mercadopago_preserved": true,
+
+  "asaas_gates_preserved": true,
+
+  "evidence": [
+
+    "Only metadata helpers + smoke/verify asserts + documentation",
+
+    "FinanceProviderFactory selection paths not modified",
+
+    "PE_PROVIDER_BOUNDARY_ENABLED remains default false"
+
+  ]
+
+}
+

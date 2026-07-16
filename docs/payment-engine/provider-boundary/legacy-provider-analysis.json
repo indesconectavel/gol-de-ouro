@@ -1,0 +1,18 @@
+{
+
+  "gate": "PE.2L",
+
+  "date": "2026-07-14",
+
+  "legacy_mp_service": "services/pix-mercado-pago.js",
+
+  "used_by": "finance/providers/mercadopago/MercadoPagoPayoutProvider.js",
+
+  "engine_import_of_service": false,
+
+  "mp_not_removed": true,
+
+  "note": "PE.2L encapsulates; does not delete MP support"
+
+}
+

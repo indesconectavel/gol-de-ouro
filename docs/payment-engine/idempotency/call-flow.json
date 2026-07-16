@@ -1,0 +1,84 @@
+{
+
+  "gate": "PE.2G",
+
+  "flows": [
+
+    {
+
+      "id": "deposit_webhook_mp_flag_off",
+
+      "steps": [
+
+        "processPaymentWebhook(mercadopago)",
+
+        "checkDepositIdempotencyCompat",
+
+        "checkSupabaseDepositIdempotency",
+
+        "pagamentos_pix status==approved? return idempotent",
+
+        "else fetch MP + claimAndCreditApprovedPixDeposit"
+
+      ]
+
+    },
+
+    {
+
+      "id": "deposit_webhook_mp_flag_on",
+
+      "steps": [
+
+        "processPaymentWebhook(mercadopago)",
+
+        "checkDepositIdempotencyCompat",
+
+        "core.checkDepositAlreadyProcessed",
+
+        "GolDeOuroIdempotencyStore.exists",
+
+        "checkSupabaseDepositIdempotency (delegate)",
+
+        "same financial path"
+
+      ]
+
+    },
+
+    {
+
+      "id": "deposit_claim_ledger",
+
+      "steps": [
+
+        "claimApprovedPixDeposit",
+
+        "ledger correlation_id deposito OR RPC atomic",
+
+        "wallet credit"
+
+      ],
+
+      "note": "Claim path permanece sob PE.2F ports; não reimplementado neste gate"
+
+    },
+
+    {
+
+      "id": "dry_run_sandbox",
+
+      "steps": [
+
+        "PaymentWebhookDryRunStore.markProcessed",
+
+        "in-memory duplicate"
+
+      ]
+
+    }
+
+  ]
+
+}
+
