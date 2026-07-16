@@ -1,0 +1,67 @@
+{
+  "gate": "PE.2M",
+  "date": "2026-07-14",
+  "verdict": "PASS_STRUCTURAL",
+  "flags": [
+    {
+      "name": "PE_ADAPTER_BOUNDARY_ENABLED",
+      "default": false,
+      "off": "fluxo legado preservado",
+      "on": "adapter boundary / ports shadow",
+      "immediate_rollback": true
+    },
+    {
+      "name": "PE_DEPOSIT_CLAIM_PORT_ENABLED",
+      "default": false,
+      "off": "claim legado",
+      "on": "DepositClaimPort",
+      "immediate_rollback": true
+    },
+    {
+      "name": "PE_IDEMPOTENCY_PORT_ENABLED",
+      "default": false,
+      "off": "idempotency legado",
+      "on": "IdempotencyStore (PE.2G canonical)",
+      "immediate_rollback": true
+    },
+    {
+      "name": "PE_WEBHOOK_STORE_PORT_ENABLED",
+      "default": false,
+      "off": "webhook store legado / dry-run path",
+      "on": "WebhookStorePort",
+      "immediate_rollback": true
+    },
+    {
+      "name": "PE_CORE_FINANCE_BOUNDARY_ENABLED",
+      "default": false,
+      "off": "legacy_direct finance surface",
+      "on": "core_bridge (mesma mutação financeira)",
+      "immediate_rollback": true
+    },
+    {
+      "name": "PE_PAYOUT_BOUNDARY_ENABLED",
+      "default": false,
+      "off": "payout legado",
+      "on": "Payout boundary ports",
+      "immediate_rollback": true
+    },
+    {
+      "name": "PE_RUNTIME_BOUNDARY_ENABLED",
+      "default": false,
+      "off": "legacy_direct RuntimeBoundary",
+      "on": "facade PaymentEngine",
+      "immediate_rollback": true
+    },
+    {
+      "name": "PE_PROVIDER_BOUNDARY_ENABLED",
+      "default": false,
+      "off": "legacy_factory",
+      "on": "ports_adapters via ProviderResolver",
+      "immediate_rollback": true
+    }
+  ],
+  "staging_workflow_forces": {
+    "PE_ADAPTER_BOUNDARY_ENABLED": "false (B-01)"
+  },
+  "production_flags_altered_by_this_gate": false
+}

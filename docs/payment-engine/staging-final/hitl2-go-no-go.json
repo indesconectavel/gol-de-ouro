@@ -1,0 +1,44 @@
+{
+
+  "gate": "PE.2M.2A-HITL.2",
+
+  "date": "2026-07-14",
+
+  "verdict": "NO-GO",
+
+  "etapa_A_authorized": false,
+
+  "hitl3_authorized": false,
+
+  "pass_criteria": {
+
+    "live_inventory_complete": false,
+
+    "all_files_classified": false,
+
+    "class_E_zeroed": false,
+
+    "class_D_identified_explicitly": false,
+
+    "strategy_cannot_hit_ABC": true,
+
+    "rollback_documented": true,
+
+    "no_mutation_executed": true
+
+  },
+
+  "blockers": [
+
+    "agent_shell_LanguagePrimitives",
+
+    "live_porcelain_unavailable",
+
+    "class_E_cannot_be_zeroed_without_full_list"
+
+  ],
+
+  "next": "Operator captura porcelain → reabrir HITL.2 com lista OU reclassificar em gate de ingestão; só então HITL.3"
+
+}
+

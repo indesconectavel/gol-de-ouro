@@ -1,0 +1,84 @@
+{
+
+  "gate": "PE.2M.2A-HITL.1",
+
+  "date": "2026-07-14",
+
+  "script": "scripts/pe2m2a-release-freeze.mjs",
+
+  "verdict": "CONDITIONAL_SAFE_NO_WIDE_GIT_ADD",
+
+  "git_commands_executed_by_script": [
+
+    "git branch --show-current",
+
+    "git rev-parse HEAD",
+
+    "git status --porcelain"
+
+  ],
+
+  "git_add": false,
+
+  "git_add_dot": false,
+
+  "git_add_A": false,
+
+  "git_commit": false,
+
+  "git_commit_a": false,
+
+  "git_tag": false,
+
+  "git_push": false,
+
+  "touches_main": false,
+
+  "uses_stash": false,
+
+  "dry_run": false,
+
+  "aborts_on_dirty_tree": true,
+
+  "validates_exact_allowlist_for_commit": false,
+
+  "validates_required_paths_exist_when_clean": true,
+
+  "filesystem_writes": [
+
+    "docs/payment-engine/staging/release-manifest.json",
+
+    "docs/payment-engine/staging-final/release-manifest.json"
+
+  ],
+
+  "prints_suggested_git_add_narrow": true,
+
+  "suggested_add_paths": [
+
+    "docs/payment-engine/staging/release-manifest.json",
+
+    "docs/payment-engine/staging-final/release-manifest.json"
+
+  ],
+
+  "gaps": [
+
+    "Sem dry-run",
+
+    "Não impede inclusão de arquivos fora do escopo no commit HITL (só aborta se árvore já suja)",
+
+    "Ao escrever manifests, suja a árvore; SHA pinado é o HEAD pré-write — exige segundo commit e re-pin (risco de circularidade se mal usado)",
+
+    "payload_sha e release_commit hoje são o mesmo campo no script — não distingue commit técnico vs commit de pin"
+
+  ],
+
+  "wide_selection_banned_patterns_present": false,
+
+  "safe_to_run_now": false,
+
+  "reason_not_safe_now": "working tree dirty / não auditada ao vivo — script abortaria; e release ainda tem arquivos D/E"
+
+}
+

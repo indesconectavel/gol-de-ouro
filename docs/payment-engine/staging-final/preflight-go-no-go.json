@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2M.2",
+
+  "date": "2026-07-14",
+
+  "mode": "READ_ONLY_ABSOLUTE",
+
+  "verdict": "NO-GO",
+
+  "deploy_authorized": false,
+
+  "reasons": [
+
+    "release_manifest_sha_PENDING_PIPELINE2A_COMMIT",
+
+    "tag_pe2b-staging-ready_not_published",
+
+    "release_is_PE2B_era_not_proven_PE2E_to_PE2L",
+
+    "eight_flags_not_all_explicitly_controlled_in_workflow",
+
+    "git_remote_ancestry_INDETERMINADO_shell_blocked",
+
+    "working_tree_clean_NOT_VALIDATED"
+
+  ],
+
+  "pb05_remains_open": true,
+
+  "staging_runtime": "NOT_CERTIFIED",
+
+  "production_intact": true,
+
+  "code_altered_this_gate": false,
+
+  "answers": {
+
+    "exact_release": null,
+
+    "pipeline_executable": false,
+
+    "fly_app_guaranteed": true,
+
+    "db_isolated_design": true,
+
+    "eight_flags_explicit": false,
+
+    "rollback_ready_design": true,
+
+    "path_to_production_ci": "blocked_by_guards",
+
+    "shadow_deploy_go": "NO-GO"
+
+  }
+
+}
+

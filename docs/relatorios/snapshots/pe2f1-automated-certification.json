@@ -1,0 +1,44 @@
+{
+
+  "gate": "PE.2F.1-AUTO",
+
+  "title": "Automated Certification via GitHub Actions",
+
+  "date": "2026-07-14",
+
+  "verdict": "BLOCKED",
+
+  "workflow_created": true,
+
+  "workflow_published": true,
+
+  "workflow_executed": false,
+
+  "smoke_pass": false,
+
+  "verify_pass": false,
+
+  "production_altered": false,
+
+  "staging_altered": false,
+
+  "database_accessed": false,
+
+  "deploy_executed": false,
+
+  "b8_closed": false,
+
+  "pe2f1_certified": false,
+
+  "pe2g_authorized": "NO-GO",
+
+  "blockers": ["B-AUTO-01_dispatch_403", "B-AUTO-02_sources_absent_main", "B-AUTO-03_local_shell", "B-AUTO-04_no_github_mcp"],
+
+  "workflow_id": 313084049,
+
+  "runs": 0,
+
+  "report": "docs/relatorios/PE.2F.1-AUTOMATED-CERTIFICATION.md"
+
+}
+

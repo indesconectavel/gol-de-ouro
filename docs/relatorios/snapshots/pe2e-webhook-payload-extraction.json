@@ -1,0 +1,192 @@
+{
+
+  "gate": "PE.2E",
+
+  "title": "Webhook Payload Extraction",
+
+  "project": "Gol de Ouro V1",
+
+  "engine": "Indesconectavel Payment Engine",
+
+  "date": "2026-07-14",
+
+  "mode": "CONTROLLED_REVERSIBLE",
+
+  "phase": "B_to_C",
+
+  "blocker_targeted": "B1",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "flag": {
+
+    "name": "PE_ADAPTER_BOUNDARY_ENABLED",
+
+    "default": false,
+
+    "production_activation": false
+
+  },
+
+  "integrity": {
+
+    "deploy_executed": false,
+
+    "database_altered": false,
+
+    "schema_altered": false,
+
+    "financial_rules_altered": false,
+
+    "legacy_webhooks_removed": false,
+
+    "production_preserved": true,
+
+    "shell_smoke_executed": false,
+
+    "shell_blocker": "PowerShell LanguagePrimitives"
+
+  },
+
+  "architecture": {
+
+    "before": "Express Request → Webhook PSP → Payment Engine / Finance → Persistencia GDO",
+
+    "after_flag_false": "Express Request → processFromExpress → {req} legado → engines iguais",
+
+    "after_flag_true": "Express Request → GdoWebhookHttpBridge → WebhookPayload → PaymentEngine → Ports/Adapters"
+
+  },
+
+  "contract": {
+
+    "path": "src/payment-engine/types/WebhookPayload.js",
+
+    "fields": [
+
+      "provider",
+
+      "eventId",
+
+      "eventType",
+
+      "headers",
+
+      "query",
+
+      "params",
+
+      "body",
+
+      "rawBody",
+
+      "receivedAt",
+
+      "sourceIp",
+
+      "requestId",
+
+      "metadata",
+
+      "method",
+
+      "path",
+
+      "parsedBody",
+
+      "correlationId"
+
+    ],
+
+    "pe2b_aliases_preserved": true
+
+  },
+
+  "artifacts": {
+
+    "audit_map": "docs/payment-engine/webhook-payload/pe2e-audit-map.json",
+
+    "bridge": "src/payment-engine/bridges/http/GdoWebhookHttpBridge.js",
+
+    "ingress": "src/finance/compat/resolveWebhookIngress.js",
+
+    "coerce": "src/finance/compat/coerceHttpLikeWebhookInput.js",
+
+    "mapper": "src/payment-engine/compat/webhookPayloadFromExpress.js",
+
+    "adapter": "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookAdapter.js",
+
+    "facade_methods": [
+
+      "PaymentEngine.webhooks.processFromPayload",
+
+      "PaymentEngine.webhooks.processFromExpress",
+
+      "PaymentEngine.webhooks.extractPayload"
+
+    ],
+
+    "smoke": "scripts/pe2e-webhook-payload-smoke.mjs",
+
+    "report": "docs/relatorios/PE.2E-WEBHOOK-PAYLOAD-EXTRACTION.md"
+
+  },
+
+  "contracts_updated": [
+
+    "src/finance/contracts/PaymentProvider.js",
+
+    "src/finance/contracts/PayoutProvider.js"
+
+  ],
+
+  "routes_wired_shadow_safe": [
+
+    "POST /api/payments/webhook",
+
+    "POST /webhooks/asaas"
+
+  ],
+
+  "engine_forbidden_runtime_deps": {
+
+    "express_package_require": false,
+
+    "express_Request_in_psp_contracts": false,
+
+    "req_mandatory_in_processPaymentWebhook": false
+
+  },
+
+  "b1_status": {
+
+    "before": "OPEN",
+
+    "after": "MITIGATED",
+
+    "production_migrated_forced": false,
+
+    "note": "Legacy path intact when flag=false; shadow opt-in when true"
+
+  },
+
+  "rollback": {
+
+    "primary": "PE_ADAPTER_BOUNDARY_ENABLED=false",
+
+    "secondary": "git revert PE.2E commits"
+
+  },
+
+  "next": [
+
+    "HITL smoke pe2e + pe2b",
+
+    "Optional shadow staging under PIPELINE.3",
+
+    "Do not enable flag in production without dedicated gate"
+
+  ]
+
+}
+

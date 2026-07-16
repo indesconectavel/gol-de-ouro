@@ -1,0 +1,74 @@
+{
+
+  "gate": "PE.2H",
+
+  "title": "Webhook Persistence Store Extraction",
+
+  "date": "2026-07-14",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "blocker_targeted": "B10",
+
+  "flag": {
+
+    "name": "PE_WEBHOOK_STORE_PORT_ENABLED",
+
+    "default": false
+
+  },
+
+  "integrity": {
+
+    "deploy_executed": false,
+
+    "database_altered": false,
+
+    "schema_altered": false,
+
+    "production_preserved": true,
+
+    "financial_rules_altered": false,
+
+    "shell_smoke_executed": false
+
+  },
+
+  "b10_eliminated_architecturally": true,
+
+  "b10_certified_by_tests": false,
+
+  "artifacts": {
+
+    "port": "src/payment-engine/ports/WebhookStorePort.js",
+
+    "core": "src/payment-engine/core/webhookStore.js",
+
+    "adapter": "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookStore.js",
+
+    "bridge": "src/payment-engine/compat/webhookStorePortBridge.js",
+
+    "smoke": "scripts/pe2h-webhook-store-smoke.mjs",
+
+    "verify": "scripts/verify-pe2h-webhook-store-port.mjs",
+
+    "report": "docs/relatorios/PE.2H-WEBHOOK-PERSISTENCE-STORE-EXTRACTION.md"
+
+  },
+
+  "package_readiness": {
+
+    "ports_score": 7.0,
+
+    "overall_estimate": 6.1,
+
+    "pe2c_authorized": false
+
+  },
+
+  "next_gate": "B7 payment-engine/core → finance isolation",
+
+  "remaining_blockers": ["B7", "PB-01", "PB-02", "PB-03", "PB-04", "PB-05"]
+
+}
+

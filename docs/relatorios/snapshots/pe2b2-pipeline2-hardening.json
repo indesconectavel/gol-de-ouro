@@ -1,0 +1,80 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2",
+
+  "title": "Hardening Deterministico do Pipeline Oficial",
+
+  "project": "Gol de Ouro V1",
+
+  "engine": "Indesconectavel Payment Engine",
+
+  "date": "2026-07-10",
+
+  "mode": "IMPLEMENTACAO_CONTROLADA",
+
+  "verdict": "HARDENED_PARTIAL",
+
+  "mandatory_answers": {
+
+    "producao_alterada": "NAO",
+
+    "staging_alterado": "NAO",
+
+    "deploy_executado": "NAO",
+
+    "pipeline_endurecido": "SIM",
+
+    "release_deterministica": "SIM",
+
+    "workflow_certificado": "PARCIAL",
+
+    "bloqueadores_eliminados": "PARCIAL",
+
+    "pipeline3_apt": "NO_GO"
+
+  },
+
+  "blockers": {
+
+    "B-01": "RESOLVED_IN_WORKFLOW",
+
+    "B-02": "RESOLVED",
+
+    "B-03": "PARTIAL_PENDING_PUBLISH",
+
+    "B-04": "RESOLVED_IN_WORKFLOW"
+
+  },
+
+  "pending_publish": [
+
+    "Commit PIPELINE.2 em pe/pe2b-staging-deploy",
+
+    "Atualizar manifest.release.sha para commit PIPELINE.2",
+
+    "git tag pe2b-staging-ready && git push origin pe2b-staging-ready",
+
+    "Cherry-pick workflow para main (governanca secao 8)"
+
+  ],
+
+  "artifacts": [
+
+    "docs/relatorios/PE.2B.2-PIPELINE.2-HARDENING.md",
+
+    "docs/payment-engine/staging/pipeline-hardening.json",
+
+    "docs/payment-engine/staging/pipeline-determinism.json",
+
+    "docs/payment-engine/staging/release-hardening.json",
+
+    "docs/payment-engine/staging/security-hardening.json",
+
+    "docs/payment-engine/staging/guard-analysis.json",
+
+    "docs/payment-engine/staging/rollback-hardening.json"
+
+  ]
+
+}
+

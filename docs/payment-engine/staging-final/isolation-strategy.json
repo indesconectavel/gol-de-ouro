@@ -1,0 +1,78 @@
+{
+
+  "gate": "PE.2M.2A-HITL.2",
+
+  "date": "2026-07-14",
+
+  "chosen": "OPTION_2_DEDICATED_WORKTREE",
+
+  "priority_order_applied": [
+
+    "1_worktree",
+
+    "2_selective_stash_explicit_pathspec",
+
+    "3_preserve_branch"
+
+  ],
+
+  "rationale": [
+
+    "Worktree cria workspace limpo a partir de HEAD sem mover/apagar untracked na árvore principal",
+
+    "Árvore principal preserva 100% D/E/untracked/modified",
+
+    "RC monta-se na worktree com checkout limpo + cópia ou checkout seletivo apenas A/B/C quando listados",
+
+    "Evita git stash -u global",
+
+    "Não altera commits, remoto, tags, produção, staging Fly"
+
+  ],
+
+  "rejected": {
+
+    "OPTION_1_selective_stash": "Aceitável como fallback; risco maior se pathspec errado ou untracked omitido",
+
+    "OPTION_3_preserve_branch": "Útil se worktree indisponível; mais commits locais",
+
+    "OPTION_4_copy_plus_stash": "Só se indispensável"
+
+  },
+
+  "forbidden": [
+
+    "git stash -u sem pathspec",
+
+    "git clean",
+
+    "git reset --hard",
+
+    "stash pop neste gate"
+
+  ],
+
+  "preserves_DE": true,
+
+  "leaves_ABC_available": true,
+
+  "alters_commits": false,
+
+  "alters_remote": false,
+
+  "creates_tag": false,
+
+  "deploy": false,
+
+  "full_restore_possible": true,
+
+  "touches_production": false,
+
+  "touches_staging_runtime": false,
+
+  "authorized_to_execute_now": false,
+
+  "why_not_authorized": "inventário live incompleto; classe E não zerada"
+
+}
+

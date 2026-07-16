@@ -1,0 +1,44 @@
+{
+
+  "gate": "PE.2M.2A-HITL.2",
+
+  "date": "2026-07-14",
+
+  "class_D_explicit_list_complete": false,
+
+  "class_E_list": "ALL_UNAUDITED_PENDING_PATHS",
+
+  "d_files_confirmed_from_live": [],
+
+  "d_files_provisional": [
+
+    ".env.example",
+
+    ".cursor/**",
+
+    "docs/patrimonio/**",
+
+    "docs/relatorios/H*.md",
+
+    "docs/relatorios/P0*.md",
+
+    "docs/relatorios/snapshots/h*.json",
+
+    "docs/relatorios/snapshots/p0*.json",
+
+    "goldeouro-player/**",
+
+    "scripts/f2-*",
+
+    "scripts/v1-*",
+
+    "scripts/s2-*",
+
+    "docs/relatorios/P1.*.md (históricos não PE.2)"
+
+  ],
+
+  "note": "Lista D final exige cruzamento com porcelain live — até lá Etapa A NÃO autorizada"
+
+}
+

@@ -1,0 +1,32 @@
+{
+  "gate": "PE.2B.2",
+  "artifact": "shadow-load-report",
+  "deploy_executed": false,
+  "verdict": "BLOCKED_NOT_DEPLOYED",
+  "shadow_layer_design": {
+    "mode": "SHADOW_COMPATIBILITY_FIRST",
+    "flag_off_behavior": "resolveAdapterBoundaryPorts returns null; legacy paths active",
+    "flag_on_behavior": "ports ledger/wallet/withdrawal/webhook resolved (not activated in PE.2B.2)"
+  },
+  "static_load_map": {
+    "boundary": "src/payment-engine/boundary/",
+    "config": "src/payment-engine/boundary/adapter-boundary-config.js",
+    "ports": "src/payment-engine/ports/",
+    "types": "src/payment-engine/types/WebhookPayload.js",
+    "compat": "src/payment-engine/compat/",
+    "adapters": "src/payment-engine/adapters/goldeouro/GolDeOuro*Adapter.js",
+    "exports": "src/payment-engine/index.js"
+  },
+  "smoke_test_coverage": {
+    "flag_false_default": true,
+    "flag_true_resolution": true,
+    "webhookPayload_roundtrip": true,
+    "withdrawalId_alias": true,
+    "ledgerPort_bridge": true,
+    "walletPort_bridge": true,
+    "full_ports_resolver": true
+  },
+  "runtime_shadow_active": false,
+  "runtime_shadow_loaded": "NOT_VERIFIED",
+  "note": "Com flag=false em runtime, shadow carrega no bundle mas não resolve ports em produção de requests"
+}

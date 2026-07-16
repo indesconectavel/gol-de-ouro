@@ -1,0 +1,56 @@
+{
+
+  "gate": "PE.2M.2A-HITL.1",
+
+  "date": "2026-07-14",
+
+  "files": {
+
+    "staging_manifest": "docs/payment-engine/staging/release-manifest.json",
+
+    "staging_final_manifest": "docs/payment-engine/staging-final/release-manifest.json",
+
+    "release_freeze": "docs/payment-engine/staging-final/release-freeze.json",
+
+    "release_pin": "docs/payment-engine/staging-final/release-pin.json",
+
+    "workflow": ".github/workflows/backend-deploy-staging.yml"
+
+  },
+
+  "tag_expected": "pe2m-shadow-staging-ready",
+
+  "sha_artificially_filled_with_real_hash": false,
+
+  "sha_placeholder": "PENDING_HITL_FREEZE_COMMIT",
+
+  "frozen": false,
+
+  "workflow_release_ref": "pe2m-shadow-staging-ready",
+
+  "eight_flags_explicit_false_in_workflow": true,
+
+  "circular_dependency_risk": {
+
+    "present_if_naive_self_pin": true,
+
+    "correct_model": {
+
+      "payload_sha": "commit técnico completo (código PE.2E–PE.2M + workflow + docs RC) — NÃO inclui hash de si mesmo no conteúdo final",
+
+      "release_commit": "commit final da release (tipicamente o commit que só pina/atualiza manifests OU o mesmo payload se manifests sem SHA)",
+
+      "tag": "pe2m-shadow-staging-ready → aponta para release_commit"
+
+    },
+
+    "freeze_script_current_behavior": "copia HEAD atual para sha/payload_sha/release_commit e escreve manifests — coerente apenas se rodado em árvore limpa ANTES do pin commit, depois re-pin no commit de manifests",
+
+    "recommendation": "Não inserir o SHA do próprio commit no blob que define esse SHA. Usar: (1) commit payload sem sha real; (2) freeze → commit pin com payload_sha=<payload> e release_commit=<pin>; (3) tag no pin."
+
+  },
+
+  "consistency": "PASS_STRUCTUREAL_PENDING_PIN"
+
+}
+

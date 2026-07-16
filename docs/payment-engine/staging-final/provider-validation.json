@@ -1,0 +1,48 @@
+{
+
+  "gate": "PE.2M",
+
+  "date": "2026-07-14",
+
+  "verdict": "STRUCTURAL_PASS_RUNTIME_STAGING_PENDING",
+
+  "ProviderResolver": {
+
+    "present": true,
+
+    "flag": "PE_PROVIDER_BOUNDARY_ENABLED",
+
+    "default": false,
+
+    "off_mode": "legacy_factory",
+
+    "on_mode": "ports_adapters"
+
+  },
+
+  "fallback_semantics_pe2l1": {
+
+    "official": "legacyFallbackApplied = A (fallback legado aplicado)",
+
+    "asaas_gate_blocked": {
+
+      "requested": "asaas",
+
+      "effective": "mercadopago",
+
+      "fallbackApplied": true
+
+    }
+
+  },
+
+  "asaas_sandbox": "not exercised in this gate (no live PSP calls)",
+
+  "mercadopago_legacy": "preserved behind adapters / factory",
+
+  "adapters": ["Asaas", "MercadoPago", "Celcoin", "Efi stub"],
+
+  "production_touched": false
+
+}
+

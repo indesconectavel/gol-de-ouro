@@ -1,0 +1,38 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "workflow_hardening": "PASS",
+
+  "eight_flags": "PASS",
+
+  "release_freeze": "PREPARED_NOT_PUBLISHED",
+
+  "tag_created": false,
+
+  "sha_pinned": false,
+
+  "deploy_go": "NO-GO",
+
+  "checks": {
+
+    "unique_rc_name": "pe2m-shadow-staging-ready",
+
+    "series_complete_declared": true,
+
+    "pe2b_superseded": true,
+
+    "staging_db_ref": "uatszaqzdqcwnfbipoxg",
+
+    "prod_db_ref_guard_only": "gayopagjdrkcmkirmfvy",
+
+    "production_untouched": true
+
+  }
+
+}
+

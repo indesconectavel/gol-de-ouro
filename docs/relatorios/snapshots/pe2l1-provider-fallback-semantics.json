@@ -1,0 +1,94 @@
+{
+
+  "gate": "PE.2L.1",
+
+  "title": "Provider Fallback Semantics Stabilization",
+
+  "date": "2026-07-14",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "decision": "LEGACY_FALLBACK_APPLIED_TRUE",
+
+  "semantics": {
+
+    "requestedProvider": "config-effective request",
+
+    "effectiveProvider": "post-gate selection",
+
+    "fallbackApplied": "true when controlled fallback applied",
+
+    "legacyFallback": "A_fallback_legado_aplicado"
+
+  },
+
+  "smoke_root_cause": "broad_regex_matched_comment_pix-mercado-pago_in_MercadoPagoTransferAdapter",
+
+  "classification": "bug_de_teste",
+
+  "situation": {
+
+    "requestedProvider": "asaas",
+
+    "effectiveProvider": "mercadopago",
+
+    "correct_fallback_boolean": true
+
+  },
+
+  "integrity": {
+
+    "production_altered": false,
+
+    "staging_altered": false,
+
+    "deploy_executed": false,
+
+    "database_altered": false,
+
+    "financial_rules_altered": false,
+
+    "provider_effective_altered": false,
+
+    "mercadopago_preserved": true,
+
+    "asaas_gates_preserved": true,
+
+    "shell_smoke_executed": false,
+
+    "shell_verify_executed": false
+
+  },
+
+  "pb03_certified": false,
+
+  "pe2l_fully_approved": false,
+
+  "pe2m_authorized": false,
+
+  "code_changed": [
+
+    "src/payment-engine/providers/ProviderResolver.js",
+
+    "src/payment-engine/providers/index.js",
+
+    "src/payment-engine/api/PaymentEngine.js",
+
+    "scripts/pe2l-provider-boundary-smoke.mjs",
+
+    "scripts/verify-pe2l-provider-boundary.mjs"
+
+  ],
+
+  "local_certification_commands": [
+
+    "node scripts/pe2l-provider-boundary-smoke.mjs",
+
+    "node scripts/verify-pe2l-provider-boundary.mjs"
+
+  ],
+
+  "report": "docs/relatorios/PE.2L.1-PROVIDER-FALLBACK-SEMANTICS.md"
+
+}
+

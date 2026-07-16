@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2A",
+
+  "date": "2026-07-10",
+
+  "status": "BLOCKED_SHELL",
+
+  "release_candidate": {
+
+    "tag": "pe2b-staging-ready",
+
+    "branch": "pe/pe2b-staging-deploy",
+
+    "base_head_before_freeze": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "payload_sha": "PENDING_COMMIT",
+
+    "release_commit": "PENDING_COMMIT",
+
+    "release_version": "pe2b-staging-ready",
+
+    "release_date": "2026-07-10",
+
+    "git_tag": "pe2b-staging-ready",
+
+    "frozen": false
+
+  },
+
+  "technical_anchor": {
+
+    "tag": "pe2b-adapter-boundary-safe",
+
+    "sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+    "delta_commits_from_anchor": "73bca75 -> bd38019 -> a651de6 -> PIPELINE.2 (pending) -> PIPELINE.2A (pending)"
+
+  },
+
+  "immutability": {
+
+    "release_ref": "pe2b-staging-ready",
+
+    "git_tag_meta": "pe2b-staging-ready",
+
+    "override_allowed": false,
+
+    "manifest": "docs/payment-engine/staging/release-manifest.json"
+
+  },
+
+  "blocker": "Shell Cursor indisponivel — commit/tag/push nao executados",
+
+  "publish_script": "scripts/pe2b-pipeline2a-release-freeze.mjs"
+
+}
+

@@ -1,0 +1,136 @@
+{
+
+  "gate": "PE.2B.2-RELEASE",
+
+  "date": "2026-07-09",
+
+  "dimensions": {
+
+    "producao": {
+
+      "level": "BAIXO",
+
+      "score": 1.5,
+
+      "notes": "App/config/workflow isolados; gates anti-v2; meta prod estavel f21f310"
+
+    },
+
+    "staging": {
+
+      "level": "MEDIO",
+
+      "score": 3.0,
+
+      "notes": "Primeiro deploy PE.2B; bootstrap only; baseline b29d847 rollback conhecido"
+
+    },
+
+    "rollback": {
+
+      "level": "BAIXO",
+
+      "score": 1.8,
+
+      "notes": "fly releases rollback + flag false + tag baseline documentados"
+
+    },
+
+    "runtime": {
+
+      "level": "BAIXO_MEDIO",
+
+      "score": 2.5,
+
+      "notes": "Flag false mantem shadow inerte; smoke obrigatorio pos-deploy"
+
+    },
+
+    "banco": {
+
+      "level": "BAIXO",
+
+      "score": 1.2,
+
+      "notes": "Sem migrations PE.2B; staging DB isolado uatszaqzdqcwnfbipoxg"
+
+    },
+
+    "payment_engine": {
+
+      "level": "MEDIO",
+
+      "score": 2.8,
+
+      "notes": "Camada shadow aditiva; fluxos legados com flag off"
+
+    },
+
+    "git": {
+
+      "level": "MEDIO",
+
+      "score": 3.2,
+
+      "notes": "Divergencia tag vs branch; workflow default aponta ref incompleta"
+
+    },
+
+    "workflow": {
+
+      "level": "MEDIO",
+
+      "score": 3.0,
+
+      "notes": "Default release_ref=tag falha sem fly.staging.toml; override necessario"
+
+    }
+
+  },
+
+  "general_index": {
+
+    "residual_risk": 2.6,
+
+    "scale": "0-5 (menor=melhor)",
+
+    "verdict": "ACEITAVEL_COM_RESSALVAS_OPERACIONAIS"
+
+  },
+
+  "blockers": [
+
+    {
+
+      "id": "R-GIT-01",
+
+      "title": "Tag tecnica incompleta para deploy",
+
+      "severity": "ALTO"
+
+    },
+
+    {
+
+      "id": "R-WF-01",
+
+      "title": "Workflow default release_ref incompativel",
+
+      "severity": "ALTO"
+
+    },
+
+    {
+
+      "id": "R-ENV-01",
+
+      "title": "PE_ADAPTER_BOUNDARY_ENABLED nao confirmado live",
+
+      "severity": "ALTO"
+
+    }
+
+  ]
+
+}
+

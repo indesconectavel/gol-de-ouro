@@ -1,0 +1,92 @@
+{
+
+  "gate": "PE.2C-REASSESS",
+
+  "title": "Auditoria Arquitetural Pos-Extracoes",
+
+  "date": "2026-07-14",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "pe2c_authorized": false,
+
+  "integrity": {
+
+    "code_changed": false,
+
+    "production_altered": false,
+
+    "deploy": false,
+
+    "database": false,
+
+    "schema": false,
+
+    "runtime": false,
+
+    "secrets": false,
+
+    "git_mutated": false,
+
+    "existing_docs_altered": false,
+
+    "only_new_documentation": true
+
+  },
+
+  "scores": {
+
+    "package_readiness": 6.5,
+
+    "asset_readiness": 6.0,
+
+    "technology_readiness": 7.0,
+
+    "commercial_readiness": 4.0,
+
+    "architecture_maturity": 6.5,
+
+    "baseline_pe2c_pre": 5.7,
+
+    "evolution_percent": 14.0
+
+  },
+
+  "blockers_eliminated_architecturally": ["B2", "B7", "B8", "B10", "PB-01"],
+
+  "blockers_remaining": ["B1_partial", "PB-02", "PB-03", "PB-04_by_design", "PB-05", "PB-06_gap_0.5"],
+
+  "go_no_go": {
+
+    "pe2c": "NO-GO",
+
+    "productizacao": "NO-GO",
+
+    "segundo_cliente": "NO-GO",
+
+    "venda_ipe_isolada": "NO-GO",
+
+    "licenciamento_fechamento": "NO-GO"
+
+  },
+
+  "valuation_plausible_ipe_brl": [850000, 2000000],
+
+  "ressalvas": [
+
+    "smokes PE.2F-J agent-shell often blocked",
+
+    "architectural elimination != production ports ON",
+
+    "valuation indicativa only"
+
+  ],
+
+  "deliverables_dir": "docs/payment-engine/reassess/",
+
+  "report": "docs/relatorios/PE.2C-REASSESS-ARQUITETURA.md"
+
+}
+

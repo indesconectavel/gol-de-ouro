@@ -1,0 +1,106 @@
+{
+
+  "gate": "PE.2J",
+
+  "title": "Payout Boundary Extraction",
+
+  "date": "2026-07-14",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "blocker": "PB-01",
+
+  "pb01_eliminated_architecturally": true,
+
+  "pb01_test_certified": false,
+
+  "pb02_remains": true,
+
+  "flag": {
+
+    "name": "PE_PAYOUT_BOUNDARY_ENABLED",
+
+    "default": false
+
+  },
+
+  "core_direct_domain_payout_imports": 0,
+
+  "production_changed": false,
+
+  "deploy": false,
+
+  "database": false,
+
+  "schema": false,
+
+  "runtime": false,
+
+  "secrets": false,
+
+  "financial_rules_changed": false,
+
+  "ports": {
+
+    "WithdrawalPort": true,
+
+    "PayoutStorePort": true,
+
+    "PayoutRecoveryPort": true
+
+  },
+
+  "adapter": "GolDeOuroPayoutAdapter",
+
+  "compatibility_preserved": true,
+
+  "rollback_preserved": true,
+
+  "smoke": "NOT_EXECUTED_SHELL_BLOCKED",
+
+  "verify": "NOT_EXECUTED_SHELL_BLOCKED",
+
+  "package_readiness": {
+
+    "before": 6.3,
+
+    "after": 6.5,
+
+    "arquitetura": 7.2,
+
+    "acoplamento": 5.5,
+
+    "ports": 7.5,
+
+    "band": "QUASE_PRONTO"
+
+  },
+
+  "remaining_blockers": [
+
+    "PB-02_runtime_bypass_facade",
+
+    "domain_payout_outside_package_boundary",
+
+    "worker_server_fly_bypass_facade",
+
+    "finance_MP_coupling_services_pix_mercado_pago",
+
+    "PE_2B_2_staging_deploy_NO_GO",
+
+    "providers_config_finance_imports_residual"
+
+  ],
+
+  "pe2c_authorized": false,
+
+  "local_certification_commands": [
+
+    "node scripts/pe2j-payout-boundary-smoke.mjs",
+
+    "node scripts/verify-pe2j-payout-boundary.mjs"
+
+  ]
+
+}
+

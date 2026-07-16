@@ -1,0 +1,238 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2",
+
+  "date": "2026-07-10",
+
+  "guards": [
+
+    {
+
+      "id": "G-01",
+
+      "name": "confirm STAGING",
+
+      "step": "Guard — confirmação STAGING",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-02",
+
+      "name": "release imutavel pe2b-staging-ready",
+
+      "step": "Guard — release determinística (B-02)",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-03",
+
+      "name": "app staging only",
+
+      "step": "Guard — app alvo exclusivamente staging",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-04",
+
+      "name": "fly.staging.toml only",
+
+      "step": "Guard — config exclusivamente fly.staging.toml",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-05",
+
+      "name": "FLY_API_TOKEN presente",
+
+      "step": "Guard — FLY_API_TOKEN presente (B-04)",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-06",
+
+      "name": "SHA manifest match",
+
+      "step": "Guard — SHA da release via manifest (B-02)",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-07",
+
+      "name": "artefatos staging",
+
+      "step": "Validar artefatos staging no checkout",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-08",
+
+      "name": "pipeline validate script",
+
+      "step": "node scripts/pe2b-staging-pipeline-validate.mjs",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-09",
+
+      "name": "token scope staging read",
+
+      "step": "Gate B-04 — FLY_API_TOKEN escopo staging",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-10",
+
+      "name": "DATABASE_URL exists",
+
+      "step": "Gate B-04 — DATABASE_URL existe em staging",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-11",
+
+      "name": "DATABASE_URL not prod ref",
+
+      "step": "Gate B-04 — DATABASE_URL não aponta para produção",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-12",
+
+      "name": "flag false deterministic",
+
+      "step": "Gate B-01 — PE_ADAPTER_BOUNDARY_ENABLED=false",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-13",
+
+      "name": "health staging",
+
+      "step": "Gate — /health staging",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-14",
+
+      "name": "meta staging",
+
+      "step": "Gate — /meta staging",
+
+      "abort_on_fail": true,
+
+      "production_impact": "none"
+
+    },
+
+    {
+
+      "id": "G-15",
+
+      "name": "producao read-only",
+
+      "step": "Gate — produção intocada (read-only)",
+
+      "abort_on_fail": true,
+
+      "production_impact": "read_only_verify_only"
+
+    }
+
+  ],
+
+  "human_error_protection": [
+
+    "Removidos inputs release_ref e git_tag",
+
+    "SHA fixado via manifest versionado",
+
+    "Flag sempre setada false antes do deploy",
+
+    "DATABASE_URL prod ref bloqueada por exit-code"
+
+  ],
+
+  "total_guards": 15,
+
+  "fail_fast": "set -euo pipefail em todos os steps shell"
+
+}
+

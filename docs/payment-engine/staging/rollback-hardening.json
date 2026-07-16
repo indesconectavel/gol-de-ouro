@@ -1,0 +1,84 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2",
+
+  "date": "2026-07-10",
+
+  "changes_from_pipeline1": {
+
+    "flag_rollback": "Inalterado — PE_ADAPTER_BOUNDARY_ENABLED=false",
+
+    "fly_rollback": "Inalterado — flyctl releases rollback -a goldeouro-backend-staging",
+
+    "baseline": {
+
+      "commit": "b29d847",
+
+      "tag": "payment-engine-v1-runtime-baseline"
+
+    },
+
+    "new_deterministic_flag_set": "Workflow seta false antes e depois do deploy"
+
+  },
+
+  "rollback_layers": [
+
+    {
+
+      "layer": "fly_runtime",
+
+      "command": "flyctl releases rollback -a goldeouro-backend-staging",
+
+      "estimated_minutes": "2-5"
+
+    },
+
+    {
+
+      "layer": "flag",
+
+      "command": "flyctl secrets set PE_ADAPTER_BOUNDARY_ENABLED=false -a goldeouro-backend-staging",
+
+      "automatic_in_workflow": true
+
+    },
+
+    {
+
+      "layer": "git",
+
+      "ref": "pe2b-staging-ready",
+
+      "revert": "git revert ou redeploy tag anterior"
+
+    },
+
+    {
+
+      "layer": "manifest",
+
+      "file": "docs/payment-engine/staging/release-manifest.json",
+
+      "note": "SHA no manifest permite auditoria pos-rollback"
+
+    }
+
+  ],
+
+  "abort_triggers_added": [
+
+    "DATABASE_URL contem ref producao",
+
+    "PE_ADAPTER_BOUNDARY_ENABLED != false apos set",
+
+    "SHA checkout diverge do manifest"
+
+  ],
+
+  "security_reduced": false,
+
+  "status": "ENHANCED_NOT_REDUCED"
+
+}
+

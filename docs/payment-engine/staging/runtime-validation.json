@@ -1,0 +1,102 @@
+{
+
+  "gate": "PE.2B.2",
+
+  "artifact": "runtime-validation",
+
+  "validated_at": "2026-07-09T21:47Z",
+
+  "deploy_executed": false,
+
+  "verdict": "BLOCKED_NOT_DEPLOYED",
+
+  "staging": {
+
+    "url": "https://goldeouro-backend-staging.fly.dev",
+
+    "pre_deploy": {
+
+      "health": {
+
+        "status": "ok",
+
+        "database": "connected",
+
+        "productionRuntime": false,
+
+        "timestamp": "2026-07-09T21:47:08.091Z"
+
+      },
+
+      "meta": {
+
+        "environment": "staging",
+
+        "gitCommit": "b29d847",
+
+        "gitTag": "payment-engine-v1-runtime-baseline",
+
+        "version": "1.2.1",
+
+        "productionRuntime": false,
+
+        "asaasEnv": "sandbox"
+
+      }
+
+    },
+
+    "post_deploy": null,
+
+    "expected_post_deploy": {
+
+      "gitCommit": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+      "gitTag": "pe2b-adapter-boundary-safe",
+
+      "environment": "staging",
+
+      "productionRuntime": false
+
+    }
+
+  },
+
+  "production": {
+
+    "url": "https://goldeouro-backend-v2.fly.dev",
+
+    "pre_deploy": {
+
+      "gitCommit": "f21f310-p5pixout",
+
+      "environment": "production",
+
+      "productionRuntime": true
+
+    },
+
+    "post_deploy": {
+
+      "unchanged_expected": true,
+
+      "note": "Deploy não executado; produção permanece baseline"
+
+    },
+
+    "touched": false
+
+  },
+
+  "checks_not_run": [
+
+    "post_deploy_health",
+
+    "post_deploy_meta_alignment",
+
+    "runtime_flag_false_live"
+
+  ]
+
+}
+

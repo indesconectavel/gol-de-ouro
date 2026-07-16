@@ -1,0 +1,84 @@
+{
+
+  "gate": "PE.2M.1A",
+
+  "title": "Idempotency Port Inventory Stabilization",
+
+  "date": "2026-07-14",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "classification": "nome_incorreto_no_teste",
+
+  "canonical": {
+
+    "name": "IdempotencyStore",
+
+    "path": "src/payment-engine/ports/IdempotencyStore.js"
+
+  },
+
+  "rejected_duplicate": "IdempotencyStorePort.js",
+
+  "duplicate_created": false,
+
+  "pe2g_preserved": true,
+
+  "integrity": {
+
+    "production_altered": false,
+
+    "staging_altered": false,
+
+    "deploy_executed": false,
+
+    "database_altered": false,
+
+    "financial_rules_altered": false
+
+  },
+
+  "smoke_pe2g": "NOT_EXECUTED",
+
+  "verify_pe2g": "NOT_EXECUTED",
+
+  "smoke_pe2m": "NOT_EXECUTED",
+
+  "verify_pe2m": "NOT_EXECUTED",
+
+  "pb05_open": true,
+
+  "pe2m_operational_authorized": false,
+
+  "pe2c_final_authorized": false,
+
+  "code_changed": [
+
+    "scripts/pe2m-shadow-final-smoke.mjs",
+
+    "scripts/verify-pe2m-shadow-final.mjs",
+
+    "docs/payment-engine/staging-final/architecture-final.json",
+
+    "docs/payment-engine/staging-final/feature-flags-validation.json",
+
+    "docs/relatorios/PE.2M-SHADOW-STAGING-FINAL-CERTIFICATION.md"
+
+  ],
+
+  "local_commands": [
+
+    "node scripts/pe2g-idempotency-smoke.mjs",
+
+    "node scripts/verify-pe2g-idempotency-port.mjs",
+
+    "node scripts/pe2m-shadow-final-smoke.mjs",
+
+    "node scripts/verify-pe2m-shadow-final.mjs"
+
+  ],
+
+  "report": "docs/relatorios/PE.2M.1A-IDEMPOTENCY-INVENTORY-STABILIZATION.md"
+
+}
+

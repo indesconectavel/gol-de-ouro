@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2M",
+
+  "date": "2026-07-14",
+
+  "verdict": "STRUCTURAL_OK_RUNTIME_NOT_VERIFIED",
+
+  "chain": [
+
+    "Webhook",
+
+    "Deposit",
+
+    "Wallet",
+
+    "Ledger",
+
+    "Idempotency",
+
+    "Payout",
+
+    "Provider",
+
+    "Recovery",
+
+    "Scheduler",
+
+    "RuntimeBoundary",
+
+    "Facade",
+
+    "Ports",
+
+    "Adapters",
+
+    "Legado"
+
+  ],
+
+  "design": {
+
+    "dual_mutation_expected_with_flags_off": false,
+
+    "flags_default_false": true,
+
+    "shadow_ports_inert_until_flag_true": true
+
+  },
+
+  "runtime_shadow_load": "NOT_VERIFIED",
+
+  "source": "docs/payment-engine/staging/shadow-load-report.json → BLOCKED_NOT_DEPLOYED",
+
+  "financial_side_effects_in_this_gate": "none (no PIX/wallet/ledger mutation executed)"
+
+}
+

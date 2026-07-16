@@ -1,0 +1,88 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2",
+
+  "date": "2026-07-10",
+
+  "production_isolation": {
+
+    "workflow_targets_staging_only": true,
+
+    "production_app_in_deploy_steps": false,
+
+    "production_readonly_gate": true,
+
+    "production_secrets_write": false
+
+  },
+
+  "secrets_audit": {
+
+    "FLY_API_TOKEN": {
+
+      "scope": "repositorio GitHub",
+
+      "workflow_check": "secrets.FLY_API_TOKEN nao vazio + flyctl secrets list staging",
+
+      "value_exposed": false,
+
+      "live_verified_this_gate": "INDETERMINADO"
+
+    },
+
+    "DATABASE_URL": {
+
+      "scope": "Fly app goldeouro-backend-staging",
+
+      "workflow_check": "nome presente + ssh node exit-code ref staging",
+
+      "staging_ref": "uatszaqzdqcwnfbipoxg",
+
+      "production_ref_blocked": "gayopagjdrkcmkirmfvy",
+
+      "value_exposed": false,
+
+      "live_verified_this_gate": "INDETERMINADO"
+
+    },
+
+    "PE_ADAPTER_BOUNDARY_ENABLED": {
+
+      "scope": "Fly app staging",
+
+      "workflow_check": "flyctl secrets set false + ssh sh exit-code",
+
+      "expected_value": false,
+
+      "value_exposed": false,
+
+      "live_verified_this_gate": "INDETERMINADO"
+
+    }
+
+  },
+
+  "local_audit_tool": {
+
+    "script": "scripts/pe2b-staging-secrets-audit.mjs",
+
+    "mode": "read_only",
+
+    "reveals_values": false
+
+  },
+
+  "token_scope_expectation": {
+
+    "must_access": ["goldeouro-backend-staging"],
+
+    "must_not_write": ["goldeouro-backend-v2"],
+
+    "note": "Token Fly org-wide; workflow hardcoded para app staging"
+
+  },
+
+  "status": "HARDENED_IN_WORKFLOW_PENDING_LIVE_AUDIT"
+
+}
+

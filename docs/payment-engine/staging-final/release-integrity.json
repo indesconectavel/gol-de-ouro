@@ -1,0 +1,70 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "reproducible": "PENDING_HITL_PIN",
+
+  "deterministic": {
+
+    "release_ref_immutable": true,
+
+    "sha_manifest_required": true,
+
+    "frozen_flag_required": true,
+
+    "no_manual_app_input": true,
+
+    "no_manual_config_input": true,
+
+    "no_manual_release_input": true
+
+  },
+
+  "required_artifacts": {
+
+    "ports": [
+
+      "IdempotencyStore.js",
+
+      "DepositClaimPort.js",
+
+      "WebhookStorePort.js",
+
+      "PaymentProviderPort.js",
+
+      "TransferProviderPort.js"
+
+    ],
+
+    "runtime": ["RuntimeBoundary.js"],
+
+    "providers": ["ProviderResolver.js"],
+
+    "scripts": [
+
+      "pe2m-shadow-final-smoke.mjs",
+
+      "verify-pe2m-shadow-final.mjs",
+
+      "pe2m2a-release-freeze.mjs"
+
+    ],
+
+    "workflow": "backend-deploy-staging.yml",
+
+    "fly": "fly.staging.toml"
+
+  },
+
+  "hashes": {
+
+    "release_sha": "PENDING_HITL_FREEZE_COMMIT",
+
+    "note": "Hashes finais após freeze script"
+
+  }
+
+}
+

@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "status": "NOT_PUBLISHED",
+
+  "publication": {
+
+    "branch": "pe/pe2b-staging-deploy",
+
+    "tag": "pe2m-shadow-staging-ready",
+
+    "sha": "PENDING_HITL_FREEZE_COMMIT",
+
+    "pushed": false,
+
+    "frozen": false
+
+  },
+
+  "prior_head": {
+
+    "sha": "a651de6563b09025adec91ceb84dfa7933088a48"
+
+  },
+
+  "commands_hitl": [
+
+    "git checkout pe/pe2b-staging-deploy",
+
+    "git add <RC scoped files only>",
+
+    "git commit -m \"feat(pe): PE.2E–PE.2M shadow staging release candidate\"",
+
+    "node scripts/pe2m2a-release-freeze.mjs",
+
+    "git add docs/payment-engine/staging/release-manifest.json docs/payment-engine/staging-final/release-manifest.json",
+
+    "git commit -m \"chore(staging): pin pe2m-shadow-staging-ready\"",
+
+    "node scripts/pe2m2a-release-freeze.mjs",
+
+    "git add docs/payment-engine/staging/release-manifest.json docs/payment-engine/staging-final/release-manifest.json",
+
+    "git commit --amend --no-edit   # only if not pushed; else third pin commit",
+
+    "git tag -a pe2m-shadow-staging-ready -m \"PE.2M shadow staging ready\"",
+
+    "git push origin pe/pe2b-staging-deploy pe2m-shadow-staging-ready"
+
+  ],
+
+  "deploy_forbidden_until": "frozen=true AND tag on remote AND PE.2M.2-RECHECK GO"
+
+}
+

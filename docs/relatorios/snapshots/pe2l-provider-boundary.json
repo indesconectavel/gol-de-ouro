@@ -1,0 +1,41 @@
+{
+  "gate": "PE.2L",
+  "title": "Legacy Provider Decoupling",
+  "date": "2026-07-14",
+  "verdict": "PASS_COM_RESSALVAS",
+  "blocker": "PB-03",
+  "pb03_eliminated_architecturally": true,
+  "flag": {
+    "name": "PE_PROVIDER_BOUNDARY_ENABLED",
+    "default": false
+  },
+  "core_knows_mercadopago": false,
+  "core_knows_asaas": false,
+  "provider_resolver_created": true,
+  "payment_provider_port_created": true,
+  "transfer_provider_port_created": true,
+  "adapters_consolidated": true,
+  "mp_support_preserved": true,
+  "production_changed": false,
+  "financial_rules_changed": false,
+  "smoke": "NOT_EXECUTED_SHELL_BLOCKED",
+  "verify": "NOT_EXECUTED_SHELL_BLOCKED",
+  "package_readiness": 7.0,
+  "technology_readiness": 7.5,
+  "baseline_pe2k_package": 6.8,
+  "delta_package": 0.2,
+  "pe2c_physical_authorized": false,
+  "pe2m_authorized": true,
+  "remaining_blockers": [
+    "PB-05_staging_NO_GO",
+    "PB-04_flags_off_by_design",
+    "B1_partial",
+    "domain_payout_outside_package_boundary",
+    "mp_reconcile_http_residual",
+    "physical_zero_gdo"
+  ],
+  "local_certification_commands": [
+    "node scripts/pe2l-provider-boundary-smoke.mjs",
+    "node scripts/verify-pe2l-provider-boundary.mjs"
+  ]
+}

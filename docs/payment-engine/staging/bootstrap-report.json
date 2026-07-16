@@ -1,0 +1,152 @@
+{
+
+  "gate": "PE.2B.2",
+
+  "artifact": "bootstrap-report",
+
+  "deploy_executed": false,
+
+  "verdict": "BLOCKED_NOT_DEPLOYED",
+
+  "local_smoke": {
+
+    "script": "scripts/pe2b-adapter-boundary-smoke.mjs",
+
+    "executed": false,
+
+    "reason": "node/shell indisponível no agente",
+
+    "expected_on_pass": "[PE.2B] adapter boundary smoke: PASS"
+
+  },
+
+  "shadow_components": {
+
+    "WebhookPayload": {
+
+      "path": "src/payment-engine/types/WebhookPayload.js",
+
+      "present_in_repo": true,
+
+      "runtime_verified": false
+
+    },
+
+    "LedgerPort": {
+
+      "path": "src/payment-engine/ports/LedgerPort.js",
+
+      "present_in_repo": true,
+
+      "runtime_verified": false
+
+    },
+
+    "WalletPort": {
+
+      "path": "src/payment-engine/ports/WalletPort.js",
+
+      "present_in_repo": true,
+
+      "runtime_verified": false
+
+    },
+
+    "WithdrawalPort": {
+
+      "path": "src/payment-engine/ports/WithdrawalPort.js",
+
+      "present_in_repo": true,
+
+      "runtime_verified": false
+
+    },
+
+    "resolver": {
+
+      "path": "src/payment-engine/boundary/index.js",
+
+      "function": "resolveAdapterBoundaryPorts",
+
+      "returns_null_when_flag_false": true,
+
+      "runtime_verified": false
+
+    },
+
+    "compat_layer": {
+
+      "paths": [
+
+        "src/payment-engine/compat/webhookPayloadFromExpress.js",
+
+        "src/payment-engine/compat/ledgerPortBridge.js",
+
+        "src/payment-engine/compat/walletPortBridge.js",
+
+        "src/payment-engine/compat/withdrawalIdAlias.js"
+
+      ],
+
+      "present_in_repo": true,
+
+      "runtime_verified": false
+
+    },
+
+    "adapters_shadow": {
+
+      "paths": [
+
+        "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookAdapter.js",
+
+        "src/payment-engine/adapters/goldeouro/GolDeOuroWithdrawalAdapter.js"
+
+      ],
+
+      "present_in_repo": true,
+
+      "runtime_verified": false
+
+    }
+
+  },
+
+  "flag": {
+
+    "name": "PE_ADAPTER_BOUNDARY_ENABLED",
+
+    "expected": false,
+
+    "code_default": false,
+
+    "fly_staging_confirmed": "INDETERMINADO"
+
+  },
+
+  "bootstrap_only": true,
+
+  "functional_flows_prohibited": [
+
+    "P1.9",
+
+    "PIX",
+
+    "Recovery",
+
+    "Worker",
+
+    "ASAAS live",
+
+    "Mercado Pago live",
+
+    "Webhook real",
+
+    "Gameplay",
+
+    "Admin"
+
+  ]
+
+}
+

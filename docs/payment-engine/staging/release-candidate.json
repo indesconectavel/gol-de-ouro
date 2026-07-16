@@ -1,0 +1,122 @@
+{
+
+  "gate": "PE.2B.2-RELEASE",
+
+  "certified_at": "2026-07-09",
+
+  "question": "Qual e a release correta e certificada para o primeiro deploy PE.2B em staging?",
+
+  "answer": {
+
+    "checkout_ref": "pe/pe2b-staging-deploy",
+
+    "checkout_sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "technical_identity_sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+    "meta_git_tag": "pe2b-adapter-boundary-safe",
+
+    "option_selected": "B",
+
+    "option_label": "branch pe/pe2b-staging-deploy"
+
+  },
+
+  "options_evaluated": {
+
+    "A_tag_pe2b_adapter_boundary_safe": {
+
+      "sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+      "sufficient_for_deploy": false,
+
+      "reason": "Ausente fly.staging.toml e backend-deploy-staging.yml; workflow aborta"
+
+    },
+
+    "B_branch_pe_pe2b_staging_deploy": {
+
+      "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+      "sufficient_for_deploy": true,
+
+      "reason": "Contem codigo PE.2B (ancestry 73bca75) + pipeline + fly.staging.toml"
+
+    },
+
+    "C_nova_tag": {
+
+      "recommended": true,
+
+      "name": "pe2b-staging-ready",
+
+      "target_sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+      "create_now": false,
+
+      "reason": "Congelaria release completa sem ambiguidade tag vs branch"
+
+    },
+
+    "D_nenhuma": {
+
+      "applicable": false
+
+    }
+
+  },
+
+  "deploy_parameters": {
+
+    "fly_app": "goldeouro-backend-staging",
+
+    "fly_config": "fly.staging.toml",
+
+    "workflow": ".github/workflows/backend-deploy-staging.yml",
+
+    "workflow_dispatch": {
+
+      "confirm": "STAGING",
+
+      "release_ref": "pe/pe2b-staging-deploy",
+
+      "git_tag": "pe2b-adapter-boundary-safe"
+
+    },
+
+    "manual_fly_deploy": {
+
+      "checkout": "pe/pe2b-staging-deploy",
+
+      "build_arg_git_commit": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+      "command": "fly deploy --config fly.staging.toml --app goldeouro-backend-staging --build-arg GIT_COMMIT=73bca758789ad6ba23561f9f5695abb2b20a3a9d --remote-only"
+
+    }
+
+  },
+
+  "workflow_default_mismatch": {
+
+    "exists": true,
+
+    "workflow_default_release_ref": "pe2b-adapter-boundary-safe",
+
+    "certified_release_ref": "pe/pe2b-staging-deploy",
+
+    "action_required": "Operador deve sobrescrever release_ref no dispatch"
+
+  },
+
+  "preconditions_before_deploy": [
+
+    "PE_ADAPTER_BOUNDARY_ENABLED=false confirmado em fly secrets staging",
+
+    "release_ref=pe/pe2b-staging-deploy (nao usar default tag sozinha)",
+
+    "git_tag=pe2b-adapter-boundary-safe para /meta"
+
+  ]
+
+}
+

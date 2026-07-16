@@ -1,0 +1,72 @@
+{
+
+  "gate": "PE.2M.2",
+
+  "date": "2026-07-14",
+
+  "branch_candidate": {
+
+    "name": "pe/pe2b-staging-deploy",
+
+    "classification": "VALIDADO",
+
+    "evidence": ".git/HEAD"
+
+  },
+
+  "head_local": {
+
+    "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "classification": "VALIDADO",
+
+    "evidence": ".git/refs/heads/pe/pe2b-staging-deploy"
+
+  },
+
+  "packed_refs_branch_sha": {
+
+    "sha": "bd38019f9bece28bfe4dac9b37f3874574f9c323",
+
+    "classification": "INDETERMINADO",
+
+    "note": "drift vs refs/heads tip"
+
+  },
+
+  "tags": {
+
+    "pe2b-adapter-boundary-safe": {
+
+      "sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+      "classification": "VALIDADO",
+
+      "source": ".git/packed-refs"
+
+    },
+
+    "pe2b-staging-ready": {
+
+      "exists_local_packed_refs": false,
+
+      "classification": "NAO_VALIDADO",
+
+      "docs": "tag-certification.json PENDING_PUBLISH"
+
+    }
+
+  },
+
+  "remote_head": "INDETERMINADO",
+
+  "working_tree_clean": "NAO_VALIDADO",
+
+  "pe2e_to_pe2l_on_pinned_release": "NAO_VALIDADO",
+
+  "pe2e_to_pe2l_in_workspace_files": "VALIDADO_PRESENT_NOT_A_RELEASE",
+
+  "immutable_published_ref": "NAO_VALIDADO"
+
+}
+

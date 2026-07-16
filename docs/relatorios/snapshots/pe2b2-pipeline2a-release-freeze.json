@@ -1,0 +1,110 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2A",
+
+  "title": "Publicacao e Congelamento da Release Staging",
+
+  "project": "Gol de Ouro V1",
+
+  "engine": "Indesconectavel Payment Engine",
+
+  "date": "2026-07-10",
+
+  "mode": "PUBLICACAO_CONTROLADA",
+
+  "verdict": "NO_GO",
+
+  "mandatory_answers": {
+
+    "producao_alterada": "NAO",
+
+    "staging_alterado": "NAO",
+
+    "deploy_executado": "NAO",
+
+    "commit_oficial_criado": "NAO",
+
+    "tag_criada": "NAO",
+
+    "branch_publicada": "NAO",
+
+    "dispatcher_publicado": "NAO",
+
+    "workflow_visivel_github": "NAO",
+
+    "release_congelada": "NAO",
+
+    "rollback_preservado": "SIM",
+
+    "pipeline3_autorizado": "NO_GO"
+
+  },
+
+  "blocker": {
+
+    "id": "SHELL-01",
+
+    "title": "Shell Cursor indisponivel",
+
+    "error": "PowerShell LanguagePrimitives initialization failure",
+
+    "exit_code": -65536,
+
+    "impact": "Impossivel executar git commit, tag, push e dispatcher main"
+
+  },
+
+  "audit_initial": {
+
+    "branch_local": "pe/pe2b-staging-deploy",
+
+    "head_local": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "head_remote": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "working_tree_clean": "INDETERMINADO",
+
+    "pipeline2_files_present": true,
+
+    "release_manifest_present": true,
+
+    "workflow_hardened": true
+
+  },
+
+  "audit_final": {
+
+    "tag_pe2b_staging_ready_remote": false,
+
+    "branch_updated_remote": false,
+
+    "main_dispatcher": false,
+
+    "github_workflows_staging_visible": false,
+
+    "production_intact": true,
+
+    "staging_runtime_intact": true
+
+  },
+
+  "publish_script": "scripts/pe2b-pipeline2a-release-freeze.mjs",
+
+  "artifacts": [
+
+    "docs/relatorios/PE.2B.2-PIPELINE.2A-RELEASE-FREEZE.md",
+
+    "docs/payment-engine/staging/release-freeze.json",
+
+    "docs/payment-engine/staging/release-publication.json",
+
+    "docs/payment-engine/staging/tag-certification.json",
+
+    "docs/payment-engine/staging/release-integrity.json",
+
+    "docs/payment-engine/staging/publication-diff.json"
+
+  ]
+
+}
+

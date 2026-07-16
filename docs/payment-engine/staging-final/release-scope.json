@@ -1,0 +1,32 @@
+{
+
+  "gate": "PE.2M.2A-HITL.1",
+
+  "date": "2026-07-14",
+
+  "allowed_classes": ["A", "B", "C"],
+
+  "forbidden_in_rc": ["D", "E"],
+
+  "series": ["PE.2E", "PE.2F", "PE.2G", "PE.2H", "PE.2I", "PE.2J", "PE.2K", "PE.2L", "PE.2L.1", "PE.2M", "PE.2M.1A", "PE.2M.2", "PE.2M.2A"],
+
+  "definition": {
+
+    "A": "Código/surfaces da cadeia PE.2E→PE.2M.2A (ports, adapters, boundary, runtime, providers, smokes/verify PE.2*)",
+
+    "B": "Governança necessária à release (workflow staging, fly.staging.toml, release-manifest, freeze script, pipeline validate)",
+
+    "C": "Evidência/documentação necessária (relatórios PE.2*, docs/payment-engine/{staging,staging-final,idempotency,...} da série)",
+
+    "D": "Fora do escopo (patrimonial H/P0, .cursor, env produto, PDF legados, etc.)",
+
+    "E": "Indeterminado — proibido até reclassificação humana"
+
+  },
+
+  "live_porcelain_complete": false,
+
+  "implication": "Enquanto E existir ou porcelain incompleto → NO-GO para Release Freeze"
+
+}
+

@@ -1,0 +1,84 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2",
+
+  "date": "2026-07-10",
+
+  "release": {
+
+    "canonical_tag": "pe2b-staging-ready",
+
+    "canonical_sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "sha_status": "PENDING_UPDATE_POS_PIPELINE2_COMMIT",
+
+    "manifest": "docs/payment-engine/staging/release-manifest.json",
+
+    "supersedes": {
+
+      "branch_only_ref": "pe/pe2b-staging-deploy",
+
+      "incomplete_tag": "pe2b-adapter-boundary-safe",
+
+      "fixpipe_head": "a651de6563b09025adec91ceb84dfa7933088a48"
+
+    }
+
+  },
+
+  "unification": {
+
+    "before": {
+
+      "release_ref_default": "pe2b-adapter-boundary-safe",
+
+      "git_tag_default": "pe2b-adapter-boundary-safe",
+
+      "branch_required_override": "pe/pe2b-staging-deploy",
+
+      "problem": "tag sem fly.staging.toml"
+
+    },
+
+    "after": {
+
+      "release_ref": "pe2b-staging-ready",
+
+      "git_tag": "pe2b-staging-ready",
+
+      "single_source": true
+
+    }
+
+  },
+
+  "artifacts_in_release": [
+
+    "fly.staging.toml",
+
+    ".github/workflows/backend-deploy-staging.yml",
+
+    "docs/payment-engine/staging/release-manifest.json",
+
+    "scripts/pe2b-staging-pipeline-validate.mjs",
+
+    "src/payment-engine/boundary/**",
+
+    "scripts/pe2b-adapter-boundary-smoke.mjs"
+
+  ],
+
+  "hardening_actions": [
+
+    "Criar tag pe2b-staging-ready apontando para commit com PIPELINE.2",
+
+    "Atualizar manifest.release.sha para o mesmo commit",
+
+    "Push tag e branch"
+
+  ],
+
+  "status": "UNIFIED_IN_DESIGN"
+
+}
+

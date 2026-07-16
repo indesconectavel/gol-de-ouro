@@ -1,0 +1,98 @@
+{
+
+  "gate": "PE.2B.2",
+
+  "title": "Deploy Controlado Shadow Staging",
+
+  "project": "Gol de Ouro V1",
+
+  "engine": "Indesconectavel Payment Engine",
+
+  "date": "2026-07-09",
+
+  "mode": "DEPLOY_CONTROLADO",
+
+  "verdict": "BLOCKED",
+
+  "mandatory_answers": {
+
+    "producao_alterada": "NAO",
+
+    "staging_alterado": "NAO",
+
+    "deploy_executado": "NAO",
+
+    "rollback_executado": "NAO",
+
+    "health_ok": "NAO",
+
+    "meta_ok": "NAO",
+
+    "smoke_pass": "NAO",
+
+    "shadow_carregada": "NAO",
+
+    "flag_permanece_false": "INDETERMINADO",
+
+    "producao_preservada": "SIM",
+
+    "pronto_para_pe2c": "NO_GO"
+
+  },
+
+  "blockers": [
+
+    "Shell do agente indisponível — fly deploy não executável",
+
+    "PE_ADAPTER_BOUNDARY_ENABLED não confirmado via fly secrets list",
+
+    "Working tree não verificada live"
+
+  ],
+
+  "pre_check_summary": {
+
+    "branch_tag_github": "PASS",
+
+    "workflow_fly_config_github": "PASS",
+
+    "production_intact": "PASS",
+
+    "flag_staging": "BLOCKED",
+
+    "working_tree": "INDETERMINADO"
+
+  },
+
+  "staging_pre_deploy": {
+
+    "gitCommit": "b29d847",
+
+    "unchanged": true
+
+  },
+
+  "production": {
+
+    "gitCommit": "f21f310-p5pixout",
+
+    "touched": false
+
+  },
+
+  "artifacts": [
+
+    "docs/relatorios/PE.2B.2-STAGING-DEPLOY.md",
+
+    "docs/payment-engine/staging/deploy-report.json",
+
+    "docs/payment-engine/staging/runtime-validation.json",
+
+    "docs/payment-engine/staging/bootstrap-report.json",
+
+    "docs/payment-engine/staging/shadow-load-report.json"
+
+  ]
+
+}
+

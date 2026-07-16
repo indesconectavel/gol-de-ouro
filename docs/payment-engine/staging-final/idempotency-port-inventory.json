@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2M.1A",
+
+  "date": "2026-07-14",
+
+  "canonical_contract": "IdempotencyStore",
+
+  "canonical_path": "src/payment-engine/ports/IdempotencyStore.js",
+
+  "rejected_name": "IdempotencyStorePort",
+
+  "rejected_path": "src/payment-engine/ports/IdempotencyStorePort.js",
+
+  "export_barrel": "src/payment-engine/index.js → ports.IdempotencyStore",
+
+  "adapter": "src/payment-engine/adapters/goldeouro/GolDeOuroIdempotencyStore.js",
+
+  "memory_adapter": "src/payment-engine/adapters/memory/InMemoryIdempotencyStore.js",
+
+  "compat": "src/payment-engine/compat/idempotencyPortBridge.js → checkDepositIdempotencyCompat",
+
+  "flag": {
+
+    "name": "PE_IDEMPOTENCY_PORT_ENABLED",
+
+    "default": false
+
+  },
+
+  "consumers": [
+
+    "src/payment-engine/core/idempotency.js",
+
+    "src/payment-engine/compat/idempotencyPortBridge.js",
+
+    "src/payment-engine/boundary/index.js → resolveIdempotencyStore",
+
+    "src/finance/webhooks/processPaymentWebhook.js",
+
+    "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookAdapter.js"
+
+  ],
+
+  "pe2g_scripts": [
+
+    "scripts/pe2g-idempotency-smoke.mjs",
+
+    "scripts/verify-pe2g-idempotency-port.mjs"
+
+  ],
+
+  "pe2g_docs": "docs/relatorios/PE.2G-IDEMPOTENCYSTORE-EXTRACTION.md",
+
+  "duplicate_created": false
+
+}
+

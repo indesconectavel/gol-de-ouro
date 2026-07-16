@@ -1,0 +1,56 @@
+{
+
+  "gate": "PE.2M",
+
+  "date": "2026-07-14",
+
+  "verdict": "BLOCKED_NOT_DEPLOYED",
+
+  "staging_app": "goldeouro-backend-staging",
+
+  "prod_app": "goldeouro-backend-v2",
+
+  "fly_config": "fly.staging.toml",
+
+  "deploy_executed": false,
+
+  "source_evidence": "docs/payment-engine/staging/deploy-report.json",
+
+  "pre_deploy_baseline": {
+
+    "staging_git_commit_observed_historically": "b29d847",
+
+    "note": "Baseline antigo; post-deploy PE.2E–L nunca medido"
+
+  },
+
+  "post_deploy": null,
+
+  "health_validated": false,
+
+  "meta_validated": false,
+
+  "workers": {
+
+    "staging_design": "HTTP app only — no payout_worker process in fly.staging.toml",
+
+    "runtime_verified": false
+
+  },
+
+  "productive_references_in_staging_path": false,
+
+  "known_risks": [
+
+    "PB-05 staging shadow deploy never executed",
+
+    "shared FLY_API_TOKEN between staging and prod (guards mitigate)",
+
+    "PE.2L.1 smoke/verify not executed in agent shell"
+
+  ],
+
+  "path_to_production_from_staging_workflow": "BLOCKED_BY_GUARDS"
+
+}
+

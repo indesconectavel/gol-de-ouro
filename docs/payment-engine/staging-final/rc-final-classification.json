@@ -1,0 +1,68 @@
+{
+
+  "gate": "PE.2M.2A-HITL.2",
+
+  "date": "2026-07-14",
+
+  "classification_complete": false,
+
+  "class_E_zeroed": false,
+
+  "reason": "Sem lista integral live de arquivos pendentes, todo path não auditado permanece E",
+
+  "files": [],
+
+  "schema_per_file": {
+
+    "path": "string",
+
+    "class": "A|B|C|D|E",
+
+    "origin_gate": "string",
+
+    "reason": "string",
+
+    "risk": "low|medium|high",
+
+    "recommended_action": "include_rc|isolate|reclassify"
+
+  },
+
+  "provisional_rules_only": {
+
+    "A": "src/payment-engine/** PE.2E–L + scripts pe2[e-m]* / verify-pe2*",
+
+    "B": "workflow staging, fly.staging.toml, release-manifest, pe2m2a-release-freeze.mjs",
+
+    "C": "docs/relatorios/PE.2* + docs/payment-engine/{staging,staging-final,*} da série",
+
+    "D": ".env.example, .cursor/**, H/P0/patrimonio, scripts legados não PE.2",
+
+    "E": "DEFAULT até classificação linha-a-linha do porcelain live"
+
+  },
+
+  "known_D_candidates_unconfirmed_as_pending": [
+
+    {
+
+      "path": ".env.example",
+
+      "class": "D",
+
+      "origin_gate": "produto/env",
+
+      "reason": "Alteração de env de produto; fora da RC shadow",
+
+      "risk": "medium",
+
+      "recommended_action": "isolate",
+
+      "pending_confirmation": "must appear in live porcelain"
+
+    }
+
+  ]
+
+}
+

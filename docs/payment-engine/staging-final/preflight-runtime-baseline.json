@@ -1,0 +1,64 @@
+{
+
+  "gate": "PE.2M.2",
+
+  "date": "2026-07-14",
+
+  "captured_via": "HTTPS WebFetch read-only",
+
+  "staging": {
+
+    "app": "goldeouro-backend-staging",
+
+    "health_status": "ok",
+
+    "database": "connected",
+
+    "environment": "staging",
+
+    "productionRuntime": false,
+
+    "gitCommit": "b29d847",
+
+    "gitTag": "payment-engine-v1-runtime-baseline",
+
+    "paymentProvider": "mercadopago",
+
+    "payoutProvider": "mercadopago",
+
+    "paymentLegacyFallbackActive": true,
+
+    "asaasProductionEnabled": false,
+
+    "mercadoPago_health": "disconnected"
+
+  },
+
+  "production": {
+
+    "app": "goldeouro-backend-v2",
+
+    "role": "read_only_reference_only",
+
+    "health_status": "ok",
+
+    "database": "connected",
+
+    "environment": "production",
+
+    "productionRuntime": true,
+
+    "gitCommit": "f21f310-p5pixout",
+
+    "paymentProvider": "asaas",
+
+    "payoutProvider": "asaas",
+
+    "asaasProductionEnabled": true,
+
+    "mercadoPago_health": "connected"
+
+  }
+
+}
+

@@ -1,0 +1,32 @@
+{
+
+  "gate": "PE.2M.1A",
+
+  "date": "2026-07-14",
+
+  "pe2g_preserved": true,
+
+  "idempotency_store_file_untouched": true,
+
+  "goldeouro_adapter_untouched": true,
+
+  "compat_bridge_untouched": true,
+
+  "flag_default_false": true,
+
+  "legacy_behavior_untouched": true,
+
+  "duplicate_port_created": false,
+
+  "renames_performed": false,
+
+  "production_altered": false,
+
+  "staging_altered": false,
+
+  "financial_rules_altered": false,
+
+  "inventory_aligned": true
+
+}
+

@@ -1,0 +1,166 @@
+{
+
+  "gate": "PE.2B.2-RELEASE",
+
+  "compared_at": "2026-07-09",
+
+  "base": {
+
+    "ref": "pe2b-adapter-boundary-safe",
+
+    "sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+    "role": "tag_tecnica_PE2B"
+
+  },
+
+  "head": {
+
+    "ref": "pe/pe2b-staging-deploy",
+
+    "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "role": "branch_release_candidate"
+
+  },
+
+  "commits_between": [
+
+    {
+
+      "sha": "bd38019f9bece28bfe4dac9b37f3874574f9c323",
+
+      "message": "docs: add PE.2B.2 FIXPRE git clean report",
+
+      "parent": "73bca758789ad6ba23561f9f5695abb2b20a3a9d"
+
+    },
+
+    {
+
+      "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+      "message": "ci(staging): publish PE.2B.2 staging pipeline and governance docs",
+
+      "parent": "bd38019f9bece28bfe4dac9b37f3874574f9c323"
+
+    }
+
+  ],
+
+  "ahead_by_commits": 2,
+
+  "behind_by_commits": 0,
+
+  "linear_history": true,
+
+  "tag_contains": {
+
+    "adapter_boundary_code": true,
+
+    "workflow_staging": false,
+
+    "fly_staging_toml": false,
+
+    "deployment_governance": false,
+
+    "git_clean_report": false,
+
+    "pipeline_audit_json": false,
+
+    "workflow_validation_json": false,
+
+    "fly_config_validation_json": false,
+
+    "rollback_plan": true,
+
+    "smoke_script": true,
+
+    "pe2b_snapshots": true,
+
+    "adapter_boundary_docs": true
+
+  },
+
+  "branch_contains_additional": [
+
+    "fly.staging.toml",
+
+    ".github/workflows/backend-deploy-staging.yml",
+
+    "docs/payment-engine/staging/deployment-governance.md",
+
+    "docs/payment-engine/staging/git-clean-report.json",
+
+    "docs/payment-engine/staging/pipeline-audit.json",
+
+    "docs/payment-engine/staging/workflow-validation.json",
+
+    "docs/payment-engine/staging/fly-config-validation.json"
+
+  ],
+
+  "tag_exclusive": [],
+
+  "modified_between_refs": [],
+
+  "critical_missing_on_tag": [
+
+    {
+
+      "path": "fly.staging.toml",
+
+      "severity": "BLOQUEADOR_DEPLOY",
+
+      "note": "Workflow exige test -f fly.staging.toml no checkout"
+
+    },
+
+    {
+
+      "path": ".github/workflows/backend-deploy-staging.yml",
+
+      "severity": "ALTO",
+
+      "note": "Pipeline staging ausente na tag"
+
+    }
+
+  ],
+
+  "critical_present_on_both": [
+
+    "src/payment-engine/boundary/**",
+
+    "src/payment-engine/ports/**",
+
+    "src/payment-engine/compat/**",
+
+    "scripts/pe2b-adapter-boundary-smoke.mjs",
+
+    "docs/payment-engine/adapter-boundary/rollback-plan.md"
+
+  ],
+
+  "github_api_evidence": {
+
+    "fly_staging_toml_tag": "404",
+
+    "fly_staging_toml_branch": "200",
+
+    "workflow_staging_tag": "404",
+
+    "workflow_staging_branch": "200",
+
+    "smoke_tag": "200",
+
+    "rollback_tag": "200",
+
+    "git_clean_report_tag": "404",
+
+    "git_clean_report_branch": "200"
+
+  }
+
+}
+

@@ -1,0 +1,458 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.1",
+
+  "title": "Auditoria Suprema Read-Only do Pipeline Oficial",
+
+  "project": "Gol de Ouro V1",
+
+  "engine": "Indesconectavel Payment Engine",
+
+  "date": "2026-07-10",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "repo": "indesconectavel/gol-de-ouro",
+
+  "verdict": "NO_GO",
+
+  "pipeline_certified": false,
+
+  "audit_integrity": {
+
+    "deploy_executed": false,
+
+    "code_altered": false,
+
+    "git_altered": false,
+
+    "fly_altered": false,
+
+    "github_altered": false,
+
+    "database_altered": false,
+
+    "secrets_altered": false,
+
+    "actions_executed": false,
+
+    "shell_available": false,
+
+    "shell_error": "PowerShell LanguagePrimitives initialization failure"
+
+  },
+
+  "git": {
+
+    "branch": {
+
+      "name": "pe/pe2b-staging-deploy",
+
+      "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+      "message": "ci(staging): publish PE.2B.2 staging pipeline and governance docs",
+
+      "exists_remote": true,
+
+      "status": "VALIDADO"
+
+    },
+
+    "tag": {
+
+      "name": "pe2b-adapter-boundary-safe",
+
+      "sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+      "message": "PE.2B: adapter boundary shadow layer (SAFE, flag default false)",
+
+      "exists_remote": true,
+
+      "status": "VALIDADO"
+
+    },
+
+    "documental_commit": {
+
+      "sha": "bd38019f9bece28bfe4dac9b37f3874574f9c323",
+
+      "message": "docs: add PE.2B.2 FIXPRE git clean report",
+
+      "parent": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+      "status": "VALIDADO"
+
+    },
+
+    "pipeline_commit": {
+
+      "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+      "parent": "bd38019f9bece28bfe4dac9b37f3874574f9c323",
+
+      "status": "VALIDADO"
+
+    },
+
+    "main": {
+
+      "sha": "22f75f71ce60b60474de8470a4fee7ddfcc5d88f",
+
+      "merged_pe_branch": false,
+
+      "status": "VALIDADO"
+
+    },
+
+    "ancestry": {
+
+      "linear": true,
+
+      "chain": "73bca75 -> bd38019 -> a651de6",
+
+      "tag_to_branch_ahead_by": 2,
+
+      "tag_to_branch_behind_by": 0,
+
+      "status": "VALIDADO"
+
+    },
+
+    "local_head": {
+
+      "branch": "pe/pe2b-staging-deploy",
+
+      "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+      "status": "VALIDADO"
+
+    },
+
+    "working_tree_clean": "INDETERMINADO"
+
+  },
+
+  "release": {
+
+    "certified_reference": "pe/pe2b-staging-deploy@a651de6",
+
+    "technical_anchor": "pe2b-adapter-boundary-safe@73bca75",
+
+    "tag_complete_for_deploy": false,
+
+    "branch_complete_for_deploy": true,
+
+    "tag_missing_critical": [
+
+      "fly.staging.toml",
+
+      ".github/workflows/backend-deploy-staging.yml"
+
+    ],
+
+    "certified_dispatch_params": {
+
+      "confirm": "STAGING",
+
+      "release_ref": "pe/pe2b-staging-deploy",
+
+      "git_tag": "pe2b-adapter-boundary-safe"
+
+    },
+
+    "status": "VALIDADO"
+
+  },
+
+  "workflow": {
+
+    "file": ".github/workflows/backend-deploy-staging.yml",
+
+    "published_on_branch": true,
+
+    "published_on_main": false,
+
+    "in_github_workflows_api_list": false,
+
+    "github_workflows_total_count": 13,
+
+    "trigger": "workflow_dispatch_only",
+
+    "confirm_staging_guard": true,
+
+    "default_release_ref": "pe2b-adapter-boundary-safe",
+
+    "default_release_ref_safe": false,
+
+    "fly_app_name": "goldeouro-backend-staging",
+
+    "prod_app_name": "goldeouro-backend-v2",
+
+    "fly_config": "fly.staging.toml",
+
+    "permissions": "contents: read",
+
+    "timeout_minutes": 35,
+
+    "concurrency_group": "fly-staging-deploy-goldeouro-backend-staging",
+
+    "anti_production_guards": true,
+
+    "production_readonly_gate": true,
+
+    "migrations_in_pipeline": false,
+
+    "production_path_in_code": false,
+
+    "status": "VALIDADO_ESTRUTURAL_COM_RESSALVAS"
+
+  },
+
+  "fly_staging": {
+
+    "file": "fly.staging.toml",
+
+    "published_on_branch": true,
+
+    "published_on_main": false,
+
+    "app": "goldeouro-backend-staging",
+
+    "node_env": "staging",
+
+    "database_env": "staging",
+
+    "processes": ["app"],
+
+    "payout_worker": false,
+
+    "memory_mb": 512,
+
+    "health_path": "/health",
+
+    "production_references": false,
+
+    "status": "VALIDADO"
+
+  },
+
+  "runtime": {
+
+    "probe_timestamp": "2026-07-10T17:57:12Z",
+
+    "staging": {
+
+      "url": "https://goldeouro-backend-staging.fly.dev",
+
+      "health": "ok",
+
+      "database": "connected",
+
+      "environment": "staging",
+
+      "gitCommit": "b29d847",
+
+      "gitTag": "payment-engine-v1-runtime-baseline",
+
+      "productionRuntime": false,
+
+      "asaasEnv": "sandbox",
+
+      "paymentProvider": "mercadopago",
+
+      "payoutWorker_enabledByEnv": false,
+
+      "pe2b_deployed": false,
+
+      "status": "VALIDADO"
+
+    },
+
+    "production": {
+
+      "url": "https://goldeouro-backend-v2.fly.dev",
+
+      "health": "ok",
+
+      "database": "connected",
+
+      "environment": "production",
+
+      "gitCommit": "f21f310-p5pixout",
+
+      "productionRuntime": true,
+
+      "asaasEnv": "production",
+
+      "paymentProvider": "asaas",
+
+      "intact": true,
+
+      "status": "VALIDADO"
+
+    }
+
+  },
+
+  "database": {
+
+    "staging_ref_documented": "uatszaqzdqcwnfbipoxg",
+
+    "production_ref_documented": "gayopagjdrkcmkirmfvy",
+
+    "database_env_staging_manifest": "staging",
+
+    "database_url_in_manifest": false,
+
+    "database_url_staging_verified": "INDETERMINADO",
+
+    "cross_contamination_evidence": "NONE_OBSERVED",
+
+    "migrations_in_pe2b": false,
+
+    "status": "PARCIALMENTE_VALIDADO"
+
+  },
+
+  "secrets": {
+
+    "FLY_API_TOKEN_github": "INDETERMINADO",
+
+    "PE_ADAPTER_BOUNDARY_ENABLED_staging_exists": "INDETERMINADO",
+
+    "PE_ADAPTER_BOUNDARY_ENABLED_staging_value_false": "INDETERMINADO",
+
+    "GIT_TAG_set_by_workflow": "VALIDADO",
+
+    "NODE_ENV_staging": "VALIDADO",
+
+    "DATABASE_ENV_staging": "VALIDADO",
+
+    "production_secrets_touched": false,
+
+    "status": "INDETERMINADO_CRITICO"
+
+  },
+
+  "rollback": {
+
+    "fly_command": "flyctl releases rollback -a goldeouro-backend-staging",
+
+    "baseline_commit": "b29d847",
+
+    "baseline_tag": "payment-engine-v1-runtime-baseline",
+
+    "flag_rollback": "PE_ADAPTER_BOUNDARY_ENABLED=false",
+
+    "git_technical_tag": "pe2b-adapter-boundary-safe",
+
+    "rollback_plan_documented": true,
+
+    "fly_releases_consulted": false,
+
+    "estimated_minutes": "2-5",
+
+    "status": "PARCIALMENTE_VALIDADO"
+
+  },
+
+  "shadow_layer": {
+
+    "flag_name": "PE_ADAPTER_BOUNDARY_ENABLED",
+
+    "default_false_in_code": true,
+
+    "code_path": "src/payment-engine/boundary/adapter-boundary-config.js",
+
+    "smoke_script": "scripts/pe2b-adapter-boundary-smoke.mjs",
+
+    "rollback_plan": "docs/payment-engine/adapter-boundary/rollback-plan.md",
+
+    "production_runtime_altered": false,
+
+    "status": "VALIDADO"
+
+  },
+
+  "blockers": [
+
+    {
+
+      "id": "B-01",
+
+      "title": "PE_ADAPTER_BOUNDARY_ENABLED=false nao confirmado live",
+
+      "severity": "BLOQUEADOR"
+
+    },
+
+    {
+
+      "id": "B-02",
+
+      "title": "Default release_ref aponta tag sem fly.staging.toml",
+
+      "severity": "BLOQUEADOR_OPERACIONAL"
+
+    },
+
+    {
+
+      "id": "B-03",
+
+      "title": "Workflow staging ausente em main e na API de workflows",
+
+      "severity": "BLOQUEADOR_OPERACIONAL"
+
+    },
+
+    {
+
+      "id": "B-04",
+
+      "title": "FLY_API_TOKEN e DATABASE_URL staging nao verificados",
+
+      "severity": "INDETERMINADO_CRITICO"
+
+    }
+
+  ],
+
+  "security_scenarios": {
+
+    "alter_production_via_pipeline": { "probability": "MUITO_BAIXA", "impact": "CRITICO", "mitigated_by_code": true },
+
+    "use_fly_toml_prod": { "probability": "NULA", "impact": "CRITICO", "mitigated_by_code": true },
+
+    "use_production_app": { "probability": "NULA", "impact": "CRITICO", "mitigated_by_code": true },
+
+    "use_production_database": { "probability": "BAIXA", "impact": "CRITICO", "mitigated_by_code": "PARCIAL" },
+
+    "alter_production_secrets": { "probability": "NULA", "impact": "ALTO", "mitigated_by_code": true },
+
+    "run_production_worker": { "probability": "NULA", "impact": "ALTO", "mitigated_by_code": true },
+
+    "activate_flag_indevida": { "probability": "MEDIA", "impact": "ALTO", "mitigated_by_code": "PARCIAL" },
+
+    "run_migrations": { "probability": "NULA", "impact": "ALTO", "mitigated_by_code": true }
+
+  },
+
+  "mandatory_decision": {
+
+    "pipeline_certified": "NAO",
+
+    "blocker_exists": "SIM",
+
+    "known_risk_exists": "SIM",
+
+    "production_risk_exists": "SIM",
+
+    "unproven_risk_exists": "SIM",
+
+    "pe2b2_apt": "NO_GO"
+
+  }
+
+}
+

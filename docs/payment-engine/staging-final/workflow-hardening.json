@@ -1,0 +1,29 @@
+{
+  "gate": "PE.2M.2A",
+  "date": "2026-07-14",
+  "file": ".github/workflows/backend-deploy-staging.yml",
+  "verdict": "PASS",
+  "changes": [
+    "RELEASE_REF/GIT_TAG → pe2m-shadow-staging-ready",
+    "manifest tag/frozen/sha guards updated",
+    "artifact checks PE.2E–PE.2M surfaces",
+    "pré-deploy flyctl secrets set all eight PE flags=false",
+    "ssh verify all eight false (or empty)",
+    "pós-deploy secrets set all eight=false again",
+    "inputs still only confirm=STAGING"
+  ],
+  "cannot_override_via_input": {
+    "app": true,
+    "config": true,
+    "release": true,
+    "sha": true,
+    "environment": true
+  },
+  "guards": {
+    "confirm_STAGING": true,
+    "app_staging_only": true,
+    "fly_staging_toml_only": true,
+    "prod_meta_readonly": true,
+    "db_isolation": true
+  }
+}

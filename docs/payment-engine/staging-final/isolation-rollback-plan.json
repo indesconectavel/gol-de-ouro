@@ -1,0 +1,50 @@
+{
+
+  "gate": "PE.2M.2A-HITL.2",
+
+  "date": "2026-07-14",
+
+  "principle": "Nenhuma mutação neste gate — rollback documental para HITL.3",
+
+  "worktree": {
+
+    "undo": "git worktree remove \"E:\\Chute de Ouro\\goldeouro-backend-pe2m-rc\"",
+
+    "if_locked": "git worktree remove --force \"E:\\Chute de Ouro\\goldeouro-backend-pe2m-rc\"",
+
+    "preserves_main_tree": true
+
+  },
+
+  "selective_stash": {
+
+    "undo_preferred": "git stash apply stash@{N}",
+
+    "avoid_until_verified": "git stash pop",
+
+    "list": "git stash list"
+
+  },
+
+  "preserve_branch": {
+
+    "undo": "permanece como arquivo de preservação; não merge automático para pe/pe2b-staging-deploy"
+
+  },
+
+  "forbidden_undo": [
+
+    "git reset --hard",
+
+    "git clean -fd",
+
+    "checkout main / produção"
+
+  ],
+
+  "production_impact": false,
+
+  "staging_runtime_impact": false
+
+}
+

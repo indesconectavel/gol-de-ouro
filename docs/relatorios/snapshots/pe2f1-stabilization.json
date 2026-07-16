@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2F.1-STABILIZATION",
+
+  "title": "Stabilization & Smoke Fix",
+
+  "date": "2026-07-14",
+
+  "verdict": "BLOCKED_SHELL",
+
+  "blocker_targeted": ["F1", "F2"],
+
+  "f1_fixed": true,
+
+  "f2_fixed": true,
+
+  "smoke_executed": false,
+
+  "smoke_pass": null,
+
+  "verify_pass": null,
+
+  "production_preserved": true,
+
+  "financial_rules_altered": false,
+
+  "flags_default_unchanged": true,
+
+  "pe2g_authorized": false,
+
+  "b8_reassessment": "DEFERRED_UNTIL_SMOKE_PASS",
+
+  "artifacts": {
+
+    "report": "docs/relatorios/PE.2F.1-STABILIZATION.md",
+
+    "stabilization": "docs/payment-engine/deposit-claim/stabilization-report.json",
+
+    "smoke": "docs/payment-engine/deposit-claim/smoke-validation.json",
+
+    "adapter": "docs/payment-engine/deposit-claim/adapter-validation.json",
+
+    "core_audit": "docs/payment-engine/deposit-claim/core-dependency-audit.json"
+
+  },
+
+  "files_touched": [
+
+    "src/payment-engine/core/claimApprovedDeposit.js",
+
+    "src/payment-engine/adapters/goldeouro/GolDeOuroDepositClaimAdapter.js",
+
+    "scripts/verify-pe2f-deposit-claim-port.mjs"
+
+  ]
+
+}
+

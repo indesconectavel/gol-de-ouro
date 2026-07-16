@@ -1,0 +1,70 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2A",
+
+  "date": "2026-07-10",
+
+  "tag": {
+
+    "name": "pe2b-staging-ready",
+
+    "created": false,
+
+    "points_to": "PENDING_COMMIT",
+
+    "annotated": true,
+
+    "message": "PE.2B staging ready — frozen release PIPELINE.2A"
+
+  },
+
+  "comparison": {
+
+    "pe2b_adapter_boundary_safe": {
+
+      "sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+      "contains": ["PE.2B code", "smoke", "rollback"],
+
+      "missing": ["fly.staging.toml hardened workflow", "release-manifest", "pipeline validate scripts"]
+
+    },
+
+    "pe2b_staging_ready": {
+
+      "sha": "PENDING_COMMIT",
+
+      "contains": [
+
+        "PE.2B code (via ancestry)",
+
+        "fly.staging.toml",
+
+        "backend-deploy-staging.yml hardened",
+
+        "release-manifest.json frozen",
+
+        "pipeline governance PIPELINE.2/2A"
+
+      ],
+
+      "purpose": "Release completa e deterministica para deploy staging"
+
+    }
+
+  },
+
+  "certification": {
+
+    "tag_exists_remote": false,
+
+    "sha_matches_manifest": false,
+
+    "workflow_checks_tag": true
+
+  },
+
+  "status": "PENDING_PUBLISH"
+
+}
+

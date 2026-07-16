@@ -1,0 +1,64 @@
+{
+
+  "gate": "PE.2H.1",
+
+  "title": "Timeout Semantics Stabilization",
+
+  "date": "2026-07-14",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "decision": "OPTION_B",
+
+  "semantics": {
+
+    "status": "failed",
+
+    "lastErrorCode": "TIMEOUT"
+
+  },
+
+  "root_cause": "errorCode stripped by normalizeWebhookStoreInput",
+
+  "integrity": {
+
+    "production_altered": false,
+
+    "deploy_executed": false,
+
+    "database_altered": false,
+
+    "financial_rules_altered": false,
+
+    "shell_smoke_executed": false
+
+  },
+
+  "b10_certified": false,
+
+  "pe2h_fully_approved": false,
+
+  "b7_authorized": false,
+
+  "artifacts": [
+
+    "src/payment-engine/ports/WebhookStorePort.js",
+
+    "src/payment-engine/types/WebhookStoreRecord.js",
+
+    "src/payment-engine/core/webhookStore.js",
+
+    "src/payment-engine/adapters/memory/InMemoryWebhookStore.js",
+
+    "src/payment-engine/adapters/goldeouro/GolDeOuroWebhookStore.js",
+
+    "scripts/pe2h-webhook-store-smoke.mjs",
+
+    "scripts/verify-pe2h-webhook-store-port.mjs"
+
+  ],
+
+  "report": "docs/relatorios/PE.2H.1-TIMEOUT-SEMANTICS-STABILIZATION.md"
+
+}
+

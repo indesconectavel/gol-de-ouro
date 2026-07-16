@@ -1,0 +1,112 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2",
+
+  "date": "2026-07-10",
+
+  "title": "Pipeline Hardening Summary",
+
+  "blockers_addressed": {
+
+    "B-01": {
+
+      "title": "PE_ADAPTER_BOUNDARY_ENABLED indeterminado",
+
+      "status": "RESOLVED_IN_WORKFLOW",
+
+      "solution": "flyctl secrets set PE_ADAPTER_BOUNDARY_ENABLED=false antes do deploy + verificacao ssh exit-code",
+
+      "depends_on_inference": false,
+
+      "files": [".github/workflows/backend-deploy-staging.yml"]
+
+    },
+
+    "B-02": {
+
+      "title": "Divergencia release_ref tag branch",
+
+      "status": "RESOLVED",
+
+      "solution": "Release unica pe2b-staging-ready; inputs release_ref/git_tag removidos; manifest como fonte de SHA",
+
+      "files": [
+
+        "docs/payment-engine/staging/release-manifest.json",
+
+        ".github/workflows/backend-deploy-staging.yml"
+
+      ]
+
+    },
+
+    "B-03": {
+
+      "title": "Workflow nao publicado para dispatch manual",
+
+      "status": "PARTIAL_PENDING_PUBLISH",
+
+      "solution": "Workflow endurecido; cherry-pick para main documentado em deployment-governance.md secao 8",
+
+      "pending": [
+
+        "Commit e push pe/pe2b-staging-deploy",
+
+        "Criar tag pe2b-staging-ready no commit PIPELINE.2",
+
+        "Cherry-pick workflow + manifest para main"
+
+      ]
+
+    },
+
+    "B-04": {
+
+      "title": "FLY_API_TOKEN e DATABASE_URL indeterminados",
+
+      "status": "RESOLVED_IN_WORKFLOW",
+
+      "solution": "Gates pre-deploy: token presente, secrets list staging, DATABASE_URL existe, ref staging via ssh sem revelar valor",
+
+      "local_audit_script": "scripts/pe2b-staging-secrets-audit.mjs",
+
+      "files": [".github/workflows/backend-deploy-staging.yml", "scripts/pe2b-staging-secrets-audit.mjs"]
+
+    }
+
+  },
+
+  "new_artifacts": [
+
+    "docs/payment-engine/staging/release-manifest.json",
+
+    "scripts/pe2b-staging-pipeline-validate.mjs",
+
+    "scripts/pe2b-staging-secrets-audit.mjs"
+
+  ],
+
+  "modified_artifacts": [
+
+    ".github/workflows/backend-deploy-staging.yml",
+
+    "docs/payment-engine/staging/deployment-governance.md"
+
+  ],
+
+  "validation": {
+
+    "local_script": "node scripts/pe2b-staging-pipeline-validate.mjs",
+
+    "deploy_executed": false,
+
+    "github_actions_executed": false
+
+  },
+
+  "verdict": "HARDENED_PARTIAL",
+
+  "pipeline3_ready": "NO_GO"
+
+}
+

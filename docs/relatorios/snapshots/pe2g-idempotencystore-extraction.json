@@ -1,0 +1,54 @@
+{
+  "gate": "PE.2G",
+  "title": "IdempotencyStore Extraction",
+  "date": "2026-07-14",
+  "mode": "HITL",
+  "blocker_targeted": "B2",
+  "verdict": "PASS_COM_RESSALVAS",
+  "flag": {
+    "name": "PE_IDEMPOTENCY_PORT_ENABLED",
+    "default": false,
+    "production_activation": false
+  },
+  "integrity": {
+    "deploy_executed": false,
+    "git_push": false,
+    "git_merge": false,
+    "database_altered": false,
+    "schema_altered": false,
+    "secrets_altered": false,
+    "fly_touched": false,
+    "production_preserved": true,
+    "financial_rules_altered": false,
+    "shell_smoke_executed": false,
+    "shell_blocker": "PowerShell LanguagePrimitives"
+  },
+  "architecture": {
+    "flag_false": "processPaymentWebhook → checkDepositIdempotencyCompat → checkSupabaseDepositIdempotency",
+    "flag_true": "compat → core.idempotency → IdempotencyStore → GolDeOuroIdempotencyStore → legado"
+  },
+  "artifacts": {
+    "port": "src/payment-engine/ports/IdempotencyStore.js",
+    "core": "src/payment-engine/core/idempotency.js",
+    "adapter": "src/payment-engine/adapters/goldeouro/GolDeOuroIdempotencyStore.js",
+    "bridge": "src/payment-engine/compat/idempotencyPortBridge.js",
+    "smoke": "scripts/pe2g-idempotency-smoke.mjs",
+    "verify": "scripts/verify-pe2g-idempotency-port.mjs",
+    "audit_dir": "docs/payment-engine/idempotency/",
+    "report": "docs/relatorios/PE.2G-IDEMPOTENCYSTORE-EXTRACTION.md"
+  },
+  "static_audit": {
+    "core_no_supabase": true,
+    "core_no_gdo_schema": true,
+    "legacy_file_untouched": true
+  },
+  "b2_eliminated": true,
+  "b2_residual": "payout_withdraw_formal_store_pending",
+  "package_readiness": {
+    "ports_score": 6.5,
+    "overall_estimate": 6.0,
+    "pe2c_authorized": false
+  },
+  "pe2h_authorized": "NO-GO",
+  "next_blockers": ["B7", "B10", "PB-01", "PB-02"]
+}

@@ -1,0 +1,272 @@
+{
+
+  "gate": "PE.2B.2-GO",
+
+  "title": "Autorizacao Final de Deploy",
+
+  "project": "Gol de Ouro V1",
+
+  "engine": "Indesconectavel Payment Engine",
+
+  "date": "2026-07-09",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "verdict": "NO_GO",
+
+  "decision": {
+
+    "producao_sera_afetada": "NAO",
+
+    "existe_risco_conhecido": "SIM",
+
+    "existe_bloqueador": "SIM",
+
+    "deploy_autorizado": "NO_GO"
+
+  },
+
+  "blockers": [
+
+    {
+
+      "id": "B-01",
+
+      "title": "PE_ADAPTER_BOUNDARY_ENABLED=false nao confirmado no Fly staging",
+
+      "severity": "BLOQUEADOR",
+
+      "resolution": "fly secrets list -a goldeouro-backend-staging; set false se ausente"
+
+    },
+
+    {
+
+      "id": "B-02",
+
+      "title": "Tag pe2b-adapter-boundary-safe nao contem fly.staging.toml",
+
+      "severity": "BLOQUEADOR_OPERACIONAL",
+
+      "resolution": "Usar release_ref=pe/pe2b-staging-deploy no workflow dispatch"
+
+    }
+
+  ],
+
+  "git": {
+
+    "branch": {
+
+      "name": "pe/pe2b-staging-deploy",
+
+      "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+      "message": "ci(staging): publish PE.2B.2 staging pipeline and governance docs"
+
+    },
+
+    "tag": {
+
+      "name": "pe2b-adapter-boundary-safe",
+
+      "sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+      "message": "PE.2B: adapter boundary shadow layer (SAFE, flag default false)"
+
+    },
+
+    "documental_commit": {
+
+      "sha": "bd38019f9bece28bfe4dac9b37f3874574f9c323",
+
+      "parent": "73bca758789ad6ba23561f9f5695abb2b20a3a9d"
+
+    },
+
+    "ancestry": "73bca75 -> bd38019 -> a651de6",
+
+    "main_sha": "22f75f71ce60b60474de8470a4fee7ddfcc5d88f",
+
+    "merged_to_main": false
+
+  },
+
+  "workflow": {
+
+    "file": ".github/workflows/backend-deploy-staging.yml",
+
+    "published_github": true,
+
+    "workflow_dispatch_only": true,
+
+    "confirm_staging_required": true,
+
+    "default_release_ref": "pe2b-adapter-boundary-safe",
+
+    "fly_app_name": "goldeouro-backend-staging",
+
+    "fly_config": "fly.staging.toml",
+
+    "production_deploy_possible": false,
+
+    "anti_production_guards": true
+
+  },
+
+  "fly_config": {
+
+    "file": "fly.staging.toml",
+
+    "published_github": true,
+
+    "app": "goldeouro-backend-staging",
+
+    "node_env": "staging",
+
+    "database_env": "staging",
+
+    "payout_worker": false,
+
+    "production_refs": false
+
+  },
+
+  "runtime_readonly": {
+
+    "staging": {
+
+      "app": "goldeouro-backend-staging",
+
+      "health": "ok",
+
+      "database": "connected",
+
+      "gitCommit": "b29d847",
+
+      "gitTag": "payment-engine-v1-runtime-baseline",
+
+      "environment": "staging",
+
+      "productionRuntime": false,
+
+      "paymentProvider": "mercadopago",
+
+      "asaasEnv": "sandbox",
+
+      "payoutWorker": false,
+
+      "pe2b_deployed": false
+
+    },
+
+    "production": {
+
+      "app": "goldeouro-backend-v2",
+
+      "health": "ok",
+
+      "database": "connected",
+
+      "gitCommit": "f21f310-p5pixout",
+
+      "environment": "production",
+
+      "productionRuntime": true,
+
+      "paymentProvider": "asaas",
+
+      "intact": true
+
+    }
+
+  },
+
+  "shadow_layer": {
+
+    "mode": "SHADOW_COMPATIBILITY_FIRST",
+
+    "flag_default_false": true,
+
+    "flag_code_path": "src/payment-engine/boundary/adapter-boundary-config.js",
+
+    "ports_null_when_flag_off": true,
+
+    "production_runtime_altered": false,
+
+    "rollback_documented": true
+
+  },
+
+  "rollback": {
+
+    "fly_command": "flyctl releases rollback -a goldeouro-backend-staging",
+
+    "baseline_commit": "b29d847",
+
+    "baseline_tag": "payment-engine-v1-runtime-baseline",
+
+    "flag_rollback": "PE_ADAPTER_BOUNDARY_ENABLED=false",
+
+    "git_tag_technical": "pe2b-adapter-boundary-safe",
+
+    "complete": true
+
+  },
+
+  "risk_matrix": {
+
+    "producao": "BAIXO",
+
+    "staging": "MEDIO",
+
+    "rollback": "BAIXO",
+
+    "runtime": "BAIXO_MEDIO",
+
+    "banco": "BAIXO",
+
+    "payment_engine": "MEDIO"
+
+  },
+
+  "conditions_for_go": [
+
+    "Confirmar PE_ADAPTER_BOUNDARY_ENABLED=false via fly secrets list staging",
+
+    "Workflow dispatch com release_ref=pe/pe2b-staging-deploy",
+
+    "confirm=STAGING, git_tag=pe2b-adapter-boundary-safe",
+
+    "Pos-deploy: health, meta, smoke PASS",
+
+    "Producao meta inalterada"
+
+  ],
+
+  "audit_integrity": {
+
+    "deploy_executed": false,
+
+    "fly_altered": false,
+
+    "github_altered": false,
+
+    "code_altered": false,
+
+    "runtime_altered": false,
+
+    "docs_only_output": true
+
+  },
+
+  "artifacts": {
+
+    "report": "docs/relatorios/PE.2B.2-GO-AUTHORIZATION.md",
+
+    "snapshot": "docs/relatorios/snapshots/pe2b2-go-authorization.json"
+
+  }
+
+}
+

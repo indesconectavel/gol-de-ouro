@@ -1,0 +1,62 @@
+{
+
+  "gate": "PE.2M.2",
+
+  "title": "Preflight Final Deploy Shadow Staging",
+
+  "date": "2026-07-14",
+
+  "mode": "READ_ONLY_ABSOLUTE",
+
+  "verdict": "NO-GO",
+
+  "deploy_authorized": false,
+
+  "integrity": {
+
+    "code_altered": false,
+
+    "workflow_altered": false,
+
+    "fly_altered": false,
+
+    "deploy_executed": false,
+
+    "production_altered": false,
+
+    "staging_altered": false,
+
+    "secrets_altered": false,
+
+    "only_documentation": true
+
+  },
+
+  "blockers": [
+
+    "PENDING_PIPELINE2A_COMMIT in release-manifest",
+
+    "pe2b-staging-ready tag not published",
+
+    "PE.2B release incomplete for PE.2E-L series",
+
+    "eight flags not fully explicit in workflow",
+
+    "shell-blocked git remote validation"
+
+  ],
+
+  "baseline": {
+
+    "staging_commit": "b29d847",
+
+    "production_commit": "f21f310-p5pixout"
+
+  },
+
+  "pb05_open": true,
+
+  "report": "docs/relatorios/PE.2M.2-PREFLIGHT-STAGING-SHADOW-DEPLOY.md"
+
+}
+

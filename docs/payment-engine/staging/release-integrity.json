@@ -1,0 +1,92 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2A",
+
+  "date": "2026-07-10",
+
+  "integrity_checks": {
+
+    "working_tree_scope": {
+
+      "status": "PENDING",
+
+      "note": "Verificacao git status bloqueada por shell"
+
+    },
+
+    "branch_correct": {
+
+      "status": "VALIDADO",
+
+      "value": "pe/pe2b-staging-deploy",
+
+      "evidence": ".git/HEAD"
+
+    },
+
+    "head_before_freeze": {
+
+      "status": "VALIDADO",
+
+      "value": "a651de6563b09025adec91ceb84dfa7933088a48"
+
+    },
+
+    "release_manifest_present": {
+
+      "status": "VALIDADO",
+
+      "path": "docs/payment-engine/staging/release-manifest.json"
+
+    },
+
+    "workflow_hardened": {
+
+      "status": "VALIDADO",
+
+      "path": ".github/workflows/backend-deploy-staging.yml",
+
+      "release_ref": "pe2b-staging-ready"
+
+    },
+
+    "rollback_preserved": {
+
+      "status": "VALIDADO",
+
+      "docs": ["docs/payment-engine/staging/rollback-hardening.json", "docs/payment-engine/staging/deployment-governance.md"]
+
+    },
+
+    "production_intact": {
+
+      "status": "VALIDADO",
+
+      "note": "Nenhuma operacao de deploy ou alteracao Fly executada neste gate"
+
+    },
+
+    "staging_runtime_intact": {
+
+      "status": "VALIDADO",
+
+      "baseline_gitCommit": "b29d847"
+
+    },
+
+    "no_pe_functional_changes_in_scope": {
+
+      "status": "VALIDADO",
+
+      "note": "Arquivos no escopo sao pipeline/governanca/docs apenas"
+
+    }
+
+  },
+
+  "frozen": false,
+
+  "verdict": "INTEGRITY_PREPARED_NOT_FROZEN"
+
+}
+

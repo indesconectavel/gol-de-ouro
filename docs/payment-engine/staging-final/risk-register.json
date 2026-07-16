@@ -1,0 +1,108 @@
+{
+
+  "gate": "PE.2M",
+
+  "date": "2026-07-14",
+
+  "risks": [
+
+    {
+
+      "id": "R-PE2M-01",
+
+      "title": "PB-05 staging shadow never deployed",
+
+      "severity": "high",
+
+      "impact": "high",
+
+      "status": "OPEN",
+
+      "mitigation": "HITL workflow_dispatch backend-deploy-staging.yml with confirm=STAGING"
+
+    },
+
+    {
+
+      "id": "R-PE2M-02",
+
+      "title": "Shared FLY_API_TOKEN staging/prod",
+
+      "severity": "low",
+
+      "impact": "high",
+
+      "status": "ACCEPTED_WITH_GUARDS",
+
+      "mitigation": "workflow guards app/config/confirm"
+
+    },
+
+    {
+
+      "id": "R-PE2M-03",
+
+      "title": "Agent shell blocked — smokes not executed in Cursor",
+
+      "severity": "high",
+
+      "impact": "medium",
+
+      "status": "OPEN",
+
+      "mitigation": "operator runs pe2m + pe2l1 scripts locally"
+
+    },
+
+    {
+
+      "id": "R-PE2M-04",
+
+      "title": "PB-03 residual mpDepositReconcile HTTP MP",
+
+      "severity": "medium",
+
+      "impact": "medium",
+
+      "status": "OPEN_PRODUCT_RESIDUAL",
+
+      "mitigation": "outside ProviderResolver; track for PE.2C-FINAL"
+
+    },
+
+    {
+
+      "id": "R-PE2M-05",
+
+      "title": "Accidental flag ON in production",
+
+      "severity": "low",
+
+      "impact": "high",
+
+      "status": "MITIGATED",
+
+      "mitigation": "all PE_* default false; no prod secret changes in this gate"
+
+    },
+
+    {
+
+      "id": "R-PE2M-06",
+
+      "title": "Legacy scripts flyctl deploy prod",
+
+      "severity": "low",
+
+      "impact": "high",
+
+      "status": "OPEN_OPERATIONAL",
+
+      "mitigation": "HITL discipline; do not run outside authorized deploy workflows"
+
+    }
+
+  ]
+
+}
+

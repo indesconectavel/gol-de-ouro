@@ -1,0 +1,53 @@
+{
+  "gate": "PE.2M",
+  "date": "2026-07-14",
+  "overall": "NO-GO",
+  "reason": "PB-05 — staging shadow deploy nunca executado; runtime shadow NOT_VERIFIED; produção intacta mas certificação operacional incompleta",
+  "matrix": [
+    {
+      "topic": "PE.2M Shadow/Staging Final Certification",
+      "verdict": "NO-GO",
+      "reason": "deploy_executed=false; health/meta pós-deploy nulos"
+    },
+    {
+      "topic": "PE.2C-FINAL Architectural Certification",
+      "verdict": "NO-GO",
+      "reason": "depende de PE.2M PASS operacional; não autorizado"
+    },
+    {
+      "topic": "Package físico",
+      "verdict": "NO-GO",
+      "reason": "score métrico 7.0 mas physical_zero_gdo=NAO + PB-05"
+    },
+    {
+      "topic": "Productization",
+      "verdict": "NO-GO",
+      "reason": "sem 2º cliente / SDK / onboarding"
+    },
+    {
+      "topic": "Segundo cliente",
+      "verdict": "NO-GO",
+      "reason": "sem adapter de produto secundário"
+    },
+    {
+      "topic": "Licenciamento (fechamento)",
+      "verdict": "NO-GO",
+      "reason": "commercial readiness insuficiente"
+    },
+    {
+      "topic": "Venda IPE isolada",
+      "verdict": "NO-GO",
+      "reason": "package físico NO-GO"
+    },
+    {
+      "topic": "Venda pacote Gol de Ouro™",
+      "verdict": "GO_COM_RESSALVAS",
+      "reason": "produção homologada; IPE embutida; DD possível"
+    },
+    {
+      "topic": "HITL staging deploy (fechar PB-05)",
+      "verdict": "GO",
+      "reason": "workflow + guards prontos; operador deve executar"
+    }
+  ]
+}

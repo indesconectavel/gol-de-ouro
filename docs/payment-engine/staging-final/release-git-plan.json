@@ -1,0 +1,122 @@
+{
+
+  "gate": "PE.2M.2A-HITL.1",
+
+  "date": "2026-07-14",
+
+  "rule": "one_mutable_step_at_a_time",
+
+  "execute_now": false,
+
+  "steps": [
+
+    {
+
+      "id": "A",
+
+      "title": "Preservar itens fora do escopo (D/E)",
+
+      "mutable": true,
+
+      "action": "Mover/listar paths classe D (e E até reclassificar) para fora do staging area — preferir cópia externa ou deixar untracked sem git add. NÃO usar stash nesta fase se evitar complexidade; se necessário, stash push -- pathspec só D.",
+
+      "forbidden": ["git add -A", "git commit", "freeze script", "tag", "push"]
+
+    },
+
+    {
+
+      "id": "B",
+
+      "title": "Preparar somente arquivos A+B+C",
+
+      "mutable": true,
+
+      "action": "git add -- path1 path2 … (lista explícita A/B/C). Zero globs perigosos.",
+
+      "forbidden": ["git add .", "git add -A", "git commit -a"]
+
+    },
+
+    {
+
+      "id": "C",
+
+      "title": "Revisar índice",
+
+      "mutable": false,
+
+      "action": "git diff --cached --stat && git diff --cached --name-only — abortar se qualquer D/E aparecer"
+
+    },
+
+    {
+
+      "id": "D",
+
+      "title": "Criar commit técnico (payload)",
+
+      "mutable": true,
+
+      "action": "git commit -m \"feat(pe): PE.2E-PE.2M.2A shadow staging payload\" — manifests ainda com PENDING_HITL_FREEZE_COMMIT / frozen:false",
+
+      "notes": "payload_sha futuro = este commit"
+
+    },
+
+    {
+
+      "id": "E",
+
+      "title": "Validar commit payload",
+
+      "mutable": false,
+
+      "action": "git show --stat HEAD; confirmar paths; árvore limpa; branch pe/pe2b-staging-deploy"
+
+    },
+
+    {
+
+      "id": "F",
+
+      "title": "Freeze manifests + commit pin",
+
+      "mutable": true,
+
+      "action": "node scripts/pe2m2a-release-freeze.mjs → revisar → git add só os 2 manifests → commit pin. Ajustar release_commit=SHA do pin e payload_sha=SHA do payload se script igualar ambos.",
+
+      "forbidden": ["tag antes do pin correto"]
+
+    },
+
+    {
+
+      "id": "G",
+
+      "title": "Criar tag anotada",
+
+      "mutable": true,
+
+      "action": "git tag -a pe2m-shadow-staging-ready -m \"PE.2M shadow staging ready\" <release_commit>"
+
+    },
+
+    {
+
+      "id": "H",
+
+      "title": "Publicar e verificar remoto",
+
+      "mutable": true,
+
+      "action": "git push origin pe/pe2b-staging-deploy pe2m-shadow-staging-ready; git ls-remote --tags origin pe2m-shadow-staging-ready"
+
+    }
+
+  ],
+
+  "first_recommended_step": "A"
+
+}
+

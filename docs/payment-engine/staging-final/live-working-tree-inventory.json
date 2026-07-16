@@ -1,0 +1,62 @@
+{
+
+  "gate": "PE.2M.2A-HITL.2",
+
+  "date": "2026-07-14",
+
+  "live_inventory_complete": false,
+
+  "blocker": "Cursor agent shell fails to start (PowerShell LanguagePrimitives / exit -65536); cmd.exe also blocked in harness",
+
+  "commands_required": [
+
+    "git status --short",
+
+    "git status --porcelain=v1 -uall",
+
+    "git diff --name-only",
+
+    "git diff --cached --name-only",
+
+    "git ls-files --others --exclude-standard",
+
+    "git stash list"
+
+  ],
+
+  "captured": {
+
+    "branch": null,
+
+    "head": null,
+
+    "porcelain_v1_uall": null,
+
+    "diff_name_only": null,
+
+    "diff_cached_name_only": null,
+
+    "ls_files_others": null,
+
+    "stash_list": null,
+
+    "upstream": null
+
+  },
+
+  "static_refs_only_not_live": {
+
+    "branch_from_git_HEAD": "pe/pe2b-staging-deploy",
+
+    "head_from_refs": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "note": "NÃO substitui inventário live de pendências"
+
+  },
+
+  "operator_capture_script": "cd /d \"E:\\Chute de Ouro\\goldeouro-backend\" && git status --porcelain=v1 -uall > \"%TEMP%\\pe2m-hitl2-porcelain.txt\" && git ls-files --others --exclude-standard > \"%TEMP%\\pe2m-hitl2-untracked.txt\" && git stash list > \"%TEMP%\\pe2m-hitl2-stash.txt\"",
+
+  "policy": "PASS criteria require complete live inventory — FAIL until operator pastes or shell restored"
+
+}
+

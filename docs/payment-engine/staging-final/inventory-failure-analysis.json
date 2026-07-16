@@ -1,0 +1,48 @@
+{
+
+  "gate": "PE.2M.1A",
+
+  "date": "2026-07-14",
+
+  "symptom": {
+
+    "smoke": "missing src/payment-engine/ports/IdempotencyStorePort.js",
+
+    "verify": "FAIL ports and adapters inventory: ports/IdempotencyStorePort.js"
+
+  },
+
+  "expected_by_pe2m": "IdempotencyStorePort.js",
+
+  "actual_canonical_pe2g": "IdempotencyStore.js",
+
+  "classification": "nome_incorreto_no_teste",
+
+  "also": "caminho_incorreto_no_teste",
+
+  "not": [
+
+    "contrato_ausente",
+
+    "export_ausente",
+
+    "duplicidade_preexistente",
+
+    "bug_de_implementacao_pe2g"
+
+  ],
+
+  "root_cause": "Inventário PE.2M extrapolou o sufixo Port de WebhookStorePort/DepositClaimPort para IdempotencyStore, cujo nome canônico PE.2G omite o sufixo Port.",
+
+  "fix": {
+
+    "smoke": "assert IdempotencyStore.js + require loadable + barrel",
+
+    "verify": "same + GolDeOuroIdempotencyStore + compat bridge; assert IdempotencyStorePort.js does not exist",
+
+    "docs": "architecture-final / PE.2M report / feature-flags-validation alinhados"
+
+  }
+
+}
+

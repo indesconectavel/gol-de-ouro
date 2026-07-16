@@ -1,0 +1,52 @@
+{
+
+  "gate": "PE.2B.2-RELEASE",
+
+  "date": "2026-07-09",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "certified_release_ref": "pe/pe2b-staging-deploy",
+
+  "certified_release_sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+  "technical_sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+  "technical_tag": "pe2b-adapter-boundary-safe",
+
+  "release_candidate_option": "B",
+
+  "release_certificada": "SIM",
+
+  "inconsistencia": "SIM",
+
+  "bloqueador": "SIM",
+
+  "deploy_pe2b2": "NO_GO",
+
+  "recommended_new_tag": {
+
+    "name": "pe2b-staging-ready",
+
+    "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "create": false
+
+  },
+
+  "audit_integrity": {
+
+    "code_changed": false,
+
+    "git_mutated": false,
+
+    "deploy_executed": false,
+
+    "docs_only": true
+
+  }
+
+}
+

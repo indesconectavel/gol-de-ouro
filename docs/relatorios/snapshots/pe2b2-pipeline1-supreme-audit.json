@@ -1,0 +1,118 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.1",
+
+  "title": "Auditoria Suprema Read-Only do Pipeline Oficial",
+
+  "project": "Gol de Ouro V1",
+
+  "engine": "Indesconectavel Payment Engine",
+
+  "date": "2026-07-10",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "verdict": "NO_GO",
+
+  "pipeline_certified": false,
+
+  "mandatory_answers": {
+
+    "pipeline_certificado": "NAO",
+
+    "existe_bloqueador": "SIM",
+
+    "existe_risco_conhecido": "SIM",
+
+    "existe_risco_producao": "SIM",
+
+    "existe_risco_nao_comprovado": "SIM",
+
+    "pe2b2_apt": "NO_GO",
+
+    "producao_alterada": "NAO",
+
+    "staging_alterado": "NAO",
+
+    "deploy_executado": "NAO"
+
+  },
+
+  "release": {
+
+    "certified_ref": "pe/pe2b-staging-deploy@a651de6",
+
+    "technical_tag": "pe2b-adapter-boundary-safe@73bca75",
+
+    "tag_complete": false,
+
+    "branch_complete": true
+
+  },
+
+  "blockers": [
+
+    "B-01 PE_ADAPTER_BOUNDARY_ENABLED nao confirmado live",
+
+    "B-02 default release_ref tag sem fly.staging.toml",
+
+    "B-03 workflow staging ausente em main",
+
+    "B-04 FLY_API_TOKEN e DATABASE_URL indeterminados"
+
+  ],
+
+  "production_isolation": {
+
+    "workflow_path_to_prod": false,
+
+    "runtime_intact": true,
+
+    "gitCommit": "f21f310-p5pixout",
+
+    "risk_level": "BAIXO"
+
+  },
+
+  "runtime_snapshot": {
+
+    "timestamp": "2026-07-10T17:57:12Z",
+
+    "staging_gitCommit": "b29d847",
+
+    "staging_productionRuntime": false,
+
+    "production_gitCommit": "f21f310-p5pixout",
+
+    "production_productionRuntime": true
+
+  },
+
+  "risk_index": 2.2,
+
+  "evidence_summary": {
+
+    "VALIDADO": 24,
+
+    "INDETERMINADO": 7,
+
+    "NAO_VALIDADO": 1
+
+  },
+
+  "artifacts": [
+
+    "docs/relatorios/PE.2B.2-PIPELINE.1-AUDITORIA-SUPREMA.md",
+
+    "docs/payment-engine/staging/pipeline-supreme-audit.json",
+
+    "docs/payment-engine/staging/pipeline-risk-matrix.json",
+
+    "docs/payment-engine/staging/pipeline-evidence-map.json",
+
+    "docs/payment-engine/staging/pipeline-certification.json"
+
+  ]
+
+}
+

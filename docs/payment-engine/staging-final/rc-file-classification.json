@@ -1,0 +1,200 @@
+{
+
+  "gate": "PE.2M.2A-HITL.1",
+
+  "date": "2026-07-14",
+
+  "source": "STATIC_EVIDENCE_PLUS_CONVERSATION_SNAPSHOT — live porcelain INDETERMINADO (shell LanguagePrimitives)",
+
+  "git_refs_static": {
+
+    "branch": "pe/pe2b-staging-deploy",
+
+    "head_local_ref": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "tag_pe2m_shadow_local": false,
+
+    "tag_pe2b_adapter_boundary_safe": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+    "remote_head": "INDETERMINADO",
+
+    "staged": "INDETERMINADO",
+
+    "stash": "INDETERMINADO",
+
+    "working_tree_clean": false
+
+  },
+
+  "classification": {
+
+    "A": {
+
+      "patterns": [
+
+        "src/payment-engine/** (ports/adapters/boundary/runtime/providers/core/compat PE.2E–L)",
+
+        "scripts/pe2e-*.mjs",
+
+        "scripts/pe2f-*.mjs",
+
+        "scripts/pe2g-*.mjs",
+
+        "scripts/pe2h-*.mjs",
+
+        "scripts/pe2i-*.mjs",
+
+        "scripts/pe2j-*.mjs",
+
+        "scripts/pe2k-*.mjs",
+
+        "scripts/pe2l-*.mjs",
+
+        "scripts/pe2m-*.mjs",
+
+        "scripts/verify-pe2*.mjs",
+
+        "controllers/adminWithdrawController.js (se diff = RuntimeBoundary PE.2K)"
+
+      ],
+
+      "note": "HITL deve confirmar diff de adminWithdrawController.js; se mudança não-PE.2K → D"
+
+    },
+
+    "B": {
+
+      "patterns": [
+
+        ".github/workflows/backend-deploy-staging.yml",
+
+        "fly.staging.toml",
+
+        "scripts/pe2m2a-release-freeze.mjs",
+
+        "scripts/pe2b-staging-pipeline-validate.mjs",
+
+        "docs/payment-engine/staging/release-manifest.json",
+
+        "docs/payment-engine/staging/*.json (governança deploy)",
+
+        ".github/workflows/pe2f1-automated-certification.yml (CI-only, anti-fly)"
+
+      ]
+
+    },
+
+    "C": {
+
+      "patterns": [
+
+        "docs/relatorios/PE.2E-*.md",
+
+        "docs/relatorios/PE.2F*.md",
+
+        "docs/relatorios/PE.2G*.md",
+
+        "docs/relatorios/PE.2H*.md",
+
+        "docs/relatorios/PE.2I*.md",
+
+        "docs/relatorios/PE.2J*.md",
+
+        "docs/relatorios/PE.2K*.md",
+
+        "docs/relatorios/PE.2L*.md",
+
+        "docs/relatorios/PE.2M*.md",
+
+        "docs/relatorios/snapshots/pe2e*.json … pe2m*.json",
+
+        "docs/payment-engine/{webhook-payload,deposit-claim,idempotency,webhook-store,core-isolation,payout-boundary,runtime-boundary,provider-boundary,staging-final}/**",
+
+        "docs/relatorios/PIPELINE.3-OPERACAO-ASSISTIDA.md"
+
+      ]
+
+    },
+
+    "D": {
+
+      "patterns": [
+
+        ".env.example",
+
+        ".cursor/**",
+
+        "docs/relatorios/H*.md",
+
+        "docs/relatorios/P0*.md",
+
+        "docs/relatorios/snapshots/h*.json",
+
+        "docs/relatorios/snapshots/p0*.json",
+
+        "docs/patrimonio/**",
+
+        "docs/governanca/** (salvo release staging estrito)",
+
+        "goldeouro-player/**",
+
+        "scripts legados f2-/v1-/s2- não PE.2*",
+
+        "PDF históricos P1.* não PE.2"
+
+      ],
+
+      "known_from_conversation_snapshot": [
+
+        ".env.example",
+
+        ".cursor/commands/*",
+
+        "docs/patrimonio/*",
+
+        "docs/relatorios/H2.5*",
+
+        "docs/relatorios/H3*",
+
+        "docs/relatorios/P0*"
+
+      ]
+
+    },
+
+    "E": {
+
+      "reason": "porcelain live incompleto — qualquer arquivo pendente não listado/classificado aqui",
+
+      "policy": "tratado como proibido até HITL reclassificar com git status --porcelain completo",
+
+      "examples_requiring_human_review": [
+
+        "qualquer path novo após última edição PE.2M.2A",
+
+        "controllers/adminWithdrawController.js sem diff lido ao vivo",
+
+        "docs/governanca/* vs staging-final overlap"
+
+      ]
+
+    }
+
+  },
+
+  "counts": {
+
+    "live_modified": "INDETERMINADO",
+
+    "live_untracked": "INDETERMINADO",
+
+    "live_staged": "INDETERMINADO",
+
+    "class_E_residual": "PRESENT_BY_POLICY"
+
+  },
+
+  "rc_eligible_now": false
+
+}
+

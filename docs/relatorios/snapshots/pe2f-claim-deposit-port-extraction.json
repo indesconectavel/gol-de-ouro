@@ -1,0 +1,138 @@
+{
+
+  "gate": "PE.2F",
+
+  "title": "Claim Deposit Port Extraction",
+
+  "project": "Gol de Ouro V1",
+
+  "engine": "Indesconectavel Payment Engine",
+
+  "date": "2026-07-14",
+
+  "mode": "CONTROLLED_REVERSIBLE",
+
+  "phase": "B_to_C",
+
+  "blocker_targeted": "B8",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "flag": {
+
+    "name": "PE_DEPOSIT_CLAIM_PORT_ENABLED",
+
+    "default": false,
+
+    "production_activation": false,
+
+    "decoupled_from": "PE_ADAPTER_BOUNDARY_ENABLED"
+
+  },
+
+  "integrity": {
+
+    "deploy_executed": false,
+
+    "database_altered": false,
+
+    "schema_altered": false,
+
+    "financial_rules_altered": false,
+
+    "legacy_claim_removed": false,
+
+    "legacy_claim_modified": false,
+
+    "production_preserved": true,
+
+    "shell_smoke_executed": false,
+
+    "shell_blocker": "PowerShell LanguagePrimitives"
+
+  },
+
+  "architecture": {
+
+    "before": "PaymentEngine → claimApprovedPixDeposit → Supabase → pagamentos_pix/usuarios/ledger",
+
+    "after_flag_false": "PaymentEngine → compat → claimApprovedPixDeposit legado (identico)",
+
+    "after_flag_true": "PaymentEngine → core claimApprovedDeposit → DepositClaimPort → GolDeOuroDepositClaimAdapter → legado"
+
+  },
+
+  "contracts": {
+
+    "DepositClaimPort": "src/payment-engine/ports/DepositClaimPort.js",
+
+    "DepositClaimInput": "src/payment-engine/types/DepositClaimInput.js",
+
+    "WalletPort": "preserved PE.2B",
+
+    "LedgerPort": "preserved PE.2B"
+
+  },
+
+  "artifacts": {
+
+    "adapter": "src/payment-engine/adapters/goldeouro/GolDeOuroDepositClaimAdapter.js",
+
+    "core": "src/payment-engine/core/claimApprovedDeposit.js",
+
+    "bridge": "src/payment-engine/compat/depositClaimPortBridge.js",
+
+    "memory_fakes": "src/payment-engine/adapters/memory/InMemoryDepositClaimPorts.js",
+
+    "smoke": "scripts/pe2f-claim-deposit-port-smoke.mjs",
+
+    "verify": "scripts/verify-pe2f-deposit-claim-port.mjs",
+
+    "report": "docs/relatorios/PE.2F-CLAIM-DEPOSIT-PORT-EXTRACTION.md",
+
+    "deposit_claim_docs": "docs/payment-engine/deposit-claim/"
+
+  },
+
+  "static_audit": {
+
+    "core_no_supabase": true,
+
+    "core_no_gdo_schema": true,
+
+    "b8_eliminated_for_pe_core": true
+
+  },
+
+  "package_readiness_post": {
+
+    "overall_estimate": 5.9,
+
+    "pe2c_authorized": false,
+
+    "b8_status": "ELIMINATED",
+
+    "remaining_blockers": [
+
+      "B2_IdempotencyStore_formal",
+
+      "B7_payment-engine_core_finance_imports",
+
+      "B10_persistence_webhook_store",
+
+      "PB-01_payout_boundary",
+
+      "PB-02_runtime_bypass_facade"
+
+    ]
+
+  },
+
+  "next_gate": "B2 IdempotencyStore formal",
+
+  "go_no_go_next_elimination": "GO_WITH_HITL",
+
+  "production_activation": "NO-GO"
+
+}
+

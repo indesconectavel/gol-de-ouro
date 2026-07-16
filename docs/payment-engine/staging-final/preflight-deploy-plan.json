@@ -1,0 +1,68 @@
+{
+
+  "gate": "PE.2M.2",
+
+  "date": "2026-07-14",
+
+  "status": "NO-GO_INTENT_ONLY",
+
+  "do_not_execute": true,
+
+  "plan": {
+
+    "workflow": "backend-deploy-staging.yml",
+
+    "confirm": "STAGING",
+
+    "app": "goldeouro-backend-staging",
+
+    "config": "fly.staging.toml",
+
+    "all_pe_flags": false,
+
+    "release_ref": "BLOCKED_UNTIL_FREEZE",
+
+    "git_tag": "BLOCKED_UNTIL_FREEZE",
+
+    "git_commit": "BLOCKED_UNTIL_FREEZE",
+
+    "health": "https://goldeouro-backend-staging.fly.dev/health",
+
+    "meta": "https://goldeouro-backend-staging.fly.dev/meta",
+
+    "smoke": "node scripts/pe2m-shadow-final-smoke.mjs",
+
+    "verify": "node scripts/verify-pe2m-shadow-final.mjs",
+
+    "rollback": "flyctl releases rollback -a goldeouro-backend-staging"
+
+  },
+
+  "historical_pe2b_intent_not_authorized": {
+
+    "release_ref": "pe2b-staging-ready",
+
+    "manifest_sha": "PENDING_PIPELINE2A_COMMIT",
+
+    "note": "Insufficient for PE.2E–PE.2L shadow series"
+
+  },
+
+  "hitl_before_reassess": [
+
+    "freeze commit containing PE.2E through PE.2L.1 + PE.2M structural",
+
+    "publish immutable tag + real SHA in release-manifest.json",
+
+    "align workflow RELEASE_REF to that release",
+
+    "ensure all eight PE flags false on staging app",
+
+    "clean working tree on release SHA",
+
+    "local smoke/verify PASS on release SHA"
+
+  ]
+
+}
+

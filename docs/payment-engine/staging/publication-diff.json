@@ -1,0 +1,78 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "base_commit": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+  "target_tag": "pe2m-shadow-staging-ready",
+
+  "target_sha": "PENDING_HITL_FREEZE_COMMIT",
+
+  "intended_scope": [
+
+    "PE.2E WebhookPayload",
+
+    "PE.2F DepositClaimPort",
+
+    "PE.2G IdempotencyStore",
+
+    "PE.2H WebhookStorePort",
+
+    "PE.2I Core finance boundary",
+
+    "PE.2J Payout boundary",
+
+    "PE.2K RuntimeBoundary",
+
+    "PE.2L ProviderResolver",
+
+    "PE.2L.1 fallback semantics",
+
+    "PE.2M structural scripts/docs",
+
+    "PE.2M.1A inventory fix",
+
+    "PE.2M.2 preflight docs",
+
+    "PE.2M.2A workflow eight-flag + release pin"
+
+  ],
+
+  "files_touched_this_gate": [
+
+    ".github/workflows/backend-deploy-staging.yml",
+
+    "scripts/pe2m2a-release-freeze.mjs",
+
+    "docs/payment-engine/staging/release-manifest.json",
+
+    "docs/payment-engine/staging/publication-diff.json",
+
+    "docs/payment-engine/staging/release-publication.json",
+
+    "docs/payment-engine/staging/release-certification.json",
+
+    "docs/payment-engine/staging-final/*",
+
+    "docs/relatorios/PE.2M.2A-RELEASE-FREEZE-EIGHT-FLAG-HARDENING.md",
+
+    "docs/relatorios/snapshots/pe2m2a-release-freeze.json"
+
+  ],
+
+  "exclude_from_rc": [
+
+    "unrelated .env.example product churn",
+
+    "unrelated admin controller changes unless PE.2K RuntimeBoundary required",
+
+    "patrimonial H*/P0 bulk if not required for deploy"
+
+  ],
+
+  "status": "DIFF_PREPARED_COMMIT_PENDING"
+
+}
+

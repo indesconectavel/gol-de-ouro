@@ -1,0 +1,36 @@
+{
+
+  "gate": "PE.2M.2A-HITL.2",
+
+  "title": "Isolamento Seguro dos Arquivos Fora da Release",
+
+  "date": "2026-07-14",
+
+  "verdict": "NO-GO",
+
+  "live_inventory_complete": false,
+
+  "class_E_zeroed": false,
+
+  "strategy_chosen": "OPTION_2_DEDICATED_WORKTREE",
+
+  "etapa_A_authorized": false,
+
+  "mutations_executed": false,
+
+  "production_altered": false,
+
+  "staging_altered": false,
+
+  "git_altered": false,
+
+  "first_command": "git status --porcelain=v1 -uall",
+
+  "blocker": "agent_shell_LanguagePrimitives",
+
+  "next_gate": "PE.2M.2A-HITL.3 (blocked until PASS)",
+
+  "report": "docs/relatorios/PE.2M.2A-HITL.2-ISOLAMENTO-FORA-RC.md"
+
+}
+

@@ -1,0 +1,44 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "release": {
+
+    "name": "pe2m-shadow-staging-ready",
+
+    "target_sha": "PENDING_HITL_FREEZE_COMMIT",
+
+    "frozen": false
+
+  },
+
+  "workflow": {
+
+    "eight_flags_explicit": true,
+
+    "release_pin": "pe2m-shadow-staging-ready",
+
+    "app": "goldeouro-backend-staging",
+
+    "config": "fly.staging.toml"
+
+  },
+
+  "deploy_go": "NO-GO",
+
+  "supersedes_pe2b": {
+
+    "old_tag": "pe2b-staging-ready",
+
+    "old_checkout_sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "technical_sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d"
+
+  }
+
+}
+

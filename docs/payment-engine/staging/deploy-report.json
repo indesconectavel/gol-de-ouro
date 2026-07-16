@@ -1,0 +1,138 @@
+{
+
+  "gate": "PE.2B.2",
+
+  "title": "Deploy Controlado Shadow Staging",
+
+  "date": "2026-07-09",
+
+  "mode": "DEPLOY_CONTROLADO",
+
+  "verdict": "BLOCKED",
+
+  "deploy_executed": false,
+
+  "rollback_executed": false,
+
+  "abort_reason": "Terminal do agente indisponível (PowerShell LanguagePrimitives); fly deploy não executado. PE_ADAPTER_BOUNDARY_ENABLED não confirmado via fly secrets list.",
+
+  "authorized_target": {
+
+    "app": "goldeouro-backend-staging",
+
+    "config": "fly.staging.toml",
+
+    "branch": "pe/pe2b-staging-deploy",
+
+    "tag": "pe2b-adapter-boundary-safe",
+
+    "technical_commit": "73bca758789ad6ba23561f9f5695abb2b20a3a9d"
+
+  },
+
+  "pre_check": {
+
+    "branch_remote": {
+
+      "name": "pe/pe2b-staging-deploy",
+
+      "sha": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+      "pass": true
+
+    },
+
+    "tag_remote": {
+
+      "name": "pe2b-adapter-boundary-safe",
+
+      "sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+      "pass": true
+
+    },
+
+    "working_tree_clean": "INDETERMINADO",
+
+    "workflow_github_published": true,
+
+    "fly_staging_toml_github_published": true,
+
+    "production_intact_pre": true,
+
+    "flag_pe_adapter_boundary_enabled_false": "INDETERMINADO",
+
+    "all_pre_checks_pass": false
+
+  },
+
+  "pre_deploy_runtime": {
+
+    "staging": {
+
+      "gitCommit": "b29d847",
+
+      "gitTag": "payment-engine-v1-runtime-baseline",
+
+      "environment": "staging",
+
+      "productionRuntime": false
+
+    },
+
+    "production": {
+
+      "gitCommit": "f21f310-p5pixout",
+
+      "environment": "production",
+
+      "productionRuntime": true
+
+    }
+
+  },
+
+  "post_deploy_runtime": null,
+
+  "deploy_command_planned": "fly deploy --config fly.staging.toml --app goldeouro-backend-staging --build-arg GIT_COMMIT=73bca758789ad6ba23561f9f5695abb2b20a3a9d --remote-only",
+
+  "mandatory_answers": {
+
+    "producao_alterada": "NAO",
+
+    "staging_alterado": "NAO",
+
+    "deploy_executado": "NAO",
+
+    "rollback_executado": "NAO",
+
+    "health_ok": "NAO_APLICAVEL",
+
+    "meta_ok": "NAO_APLICAVEL",
+
+    "smoke_pass": "NAO_APLICAVEL",
+
+    "shadow_carregada": "NAO_APLICAVEL",
+
+    "flag_permanece_false": "INDETERMINADO",
+
+    "producao_preservada": "SIM",
+
+    "pronto_para_pe2c": "NO_GO"
+
+  },
+
+  "rollback": {
+
+    "baseline_pre_deploy": "b29d847",
+
+    "command": "flyctl releases rollback -a goldeouro-backend-staging",
+
+    "required": false
+
+  },
+
+  "operator_script": "Ver docs/relatorios/PE.2B.2-STAGING-DEPLOY.md"
+
+}
+

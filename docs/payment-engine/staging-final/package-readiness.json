@@ -1,0 +1,56 @@
+{
+
+  "gate": "PE.2M",
+
+  "date": "2026-07-14",
+
+  "scale": "0-10",
+
+  "overall_score": 7.0,
+
+  "compared_to": {
+
+    "PE.2C-FINAL-PRE": 6.8,
+
+    "PE.2L_package_boundary": 7.0,
+
+    "delta_vs_final_pre": 0.2
+
+  },
+
+  "threshold_package_7_0": true,
+
+  "physical_package_ready": false,
+
+  "dimensions": {
+
+    "architecture": 7.9,
+
+    "runtime": 7.5,
+
+    "provider": 7.5,
+
+    "ports": 7.6,
+
+    "technology": 7.5,
+
+    "package": 7.0
+
+  },
+
+  "blockers_preventing_physical_go": [
+
+    "PB-05 staging shadow deploy not executed",
+
+    "physical_zero_gdo=NAO",
+
+    "PB-03 residual product MP reconcile",
+
+    "PE.2L.1 agent smokes not executed"
+
+  ],
+
+  "verdict": "METRIC_AT_7_0_OPERATIONAL_STAGING_BLOCKED"
+
+}
+

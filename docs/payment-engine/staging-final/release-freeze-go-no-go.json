@@ -1,0 +1,46 @@
+{
+
+  "gate": "PE.2M.2A-HITL.1",
+
+  "date": "2026-07-14",
+
+  "verdict": "NO-GO",
+
+  "release_freeze_authorized": false,
+
+  "tag_creation_authorized": false,
+
+  "reasons": [
+
+    "live_git_porcelain_INDETERMINADO",
+
+    "class_E_residual_present_by_policy",
+
+    "known_class_D_files_in_tree (.env.example, .cursor, H/P0 docs)",
+
+    "working_tree_not_proven_clean",
+
+    "freeze_script_not_safe_to_run_on_contaminated_tree",
+
+    "sha_not_pinned_frozen_false",
+
+    "circular_pin_procedure_must_be_two_commit_HITL"
+
+  ],
+
+  "positives": [
+
+    "freeze_script_does_not_use_git_add_wide",
+
+    "workflow_pins_pe2m-shadow-staging-ready",
+
+    "eight_flags_explicit_false",
+
+    "manifest_sha_still_placeholder_not_fake_hash"
+
+  ],
+
+  "next_gate_after_clear": "PE.2M.2A-HITL.2 (Etapa A then B) ou execution of Etapa A only"
+
+}
+

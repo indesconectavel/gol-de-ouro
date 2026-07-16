@@ -1,0 +1,148 @@
+{
+
+  "gate": "PE.2M.2",
+
+  "date": "2026-07-14",
+
+  "rule_first_deploy": "all eight explicitly false",
+
+  "workflow_explicit_control": {
+
+    "PE_ADAPTER_BOUNDARY_ENABLED": true,
+
+    "others": false
+
+  },
+
+  "matrix": [
+
+    {
+
+      "flag": "PE_ADAPTER_BOUNDARY_ENABLED",
+
+      "default": false,
+
+      "staging_predeploy": "false",
+
+      "shadow_phase1": "false",
+
+      "rollback": "false"
+
+    },
+
+    {
+
+      "flag": "PE_DEPOSIT_CLAIM_PORT_ENABLED",
+
+      "default": false,
+
+      "staging_predeploy": "false_REQUIRED_HITL",
+
+      "shadow_phase1": "false",
+
+      "rollback": "false",
+
+      "runtime_fly": "INDETERMINADO"
+
+    },
+
+    {
+
+      "flag": "PE_IDEMPOTENCY_PORT_ENABLED",
+
+      "default": false,
+
+      "staging_predeploy": "false_REQUIRED_HITL",
+
+      "shadow_phase1": "false",
+
+      "rollback": "false",
+
+      "runtime_fly": "INDETERMINADO"
+
+    },
+
+    {
+
+      "flag": "PE_WEBHOOK_STORE_PORT_ENABLED",
+
+      "default": false,
+
+      "staging_predeploy": "false_REQUIRED_HITL",
+
+      "shadow_phase1": "false",
+
+      "rollback": "false",
+
+      "runtime_fly": "INDETERMINADO"
+
+    },
+
+    {
+
+      "flag": "PE_CORE_FINANCE_BOUNDARY_ENABLED",
+
+      "default": false,
+
+      "staging_predeploy": "false_REQUIRED_HITL",
+
+      "shadow_phase1": "false",
+
+      "rollback": "false",
+
+      "runtime_fly": "INDETERMINADO"
+
+    },
+
+    {
+
+      "flag": "PE_PAYOUT_BOUNDARY_ENABLED",
+
+      "default": false,
+
+      "staging_predeploy": "false_REQUIRED_HITL",
+
+      "shadow_phase1": "false",
+
+      "rollback": "false",
+
+      "runtime_fly": "INDETERMINADO"
+
+    },
+
+    {
+
+      "flag": "PE_RUNTIME_BOUNDARY_ENABLED",
+
+      "default": false,
+
+      "staging_predeploy": "false_REQUIRED_HITL",
+
+      "shadow_phase1": "false",
+
+      "rollback": "false",
+
+      "runtime_fly": "INDETERMINADO"
+
+    },
+
+    {
+
+      "flag": "PE_PROVIDER_BOUNDARY_ENABLED",
+
+      "default": false,
+
+      "staging_predeploy": "false_REQUIRED_HITL",
+
+      "shadow_phase1": "false",
+
+      "rollback": "false",
+
+      "runtime_fly": "INDETERMINADO"
+
+    }
+
+  ]
+
+}
+

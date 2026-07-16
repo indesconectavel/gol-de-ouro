@@ -1,0 +1,66 @@
+{
+
+  "gate": "PE.2M.2A-HITL.1",
+
+  "title": "Baseline e Escopo Final da Release Candidate",
+
+  "date": "2026-07-14",
+
+  "mode": "READ_ONLY_ABSOLUTE",
+
+  "verdict": "NO-GO",
+
+  "mutations": {
+
+    "git": false,
+
+    "freeze_script": false,
+
+    "commit": false,
+
+    "tag": false,
+
+    "push": false,
+
+    "deploy": false,
+
+    "production": false,
+
+    "staging_runtime": false,
+
+    "documentation_deliverables_only": true
+
+  },
+
+  "git": {
+
+    "branch": "pe/pe2b-staging-deploy",
+
+    "head_local": "a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "remote": "INDETERMINADO",
+
+    "working_tree_clean": false,
+
+    "porcelain_live": "INDETERMINADO"
+
+  },
+
+  "freeze_script": {
+
+    "wide_git_add": false,
+
+    "safe_now": false
+
+  },
+
+  "release_freeze_authorized": false,
+
+  "tag_safe_now": false,
+
+  "first_hitl_step": "A",
+
+  "report": "docs/relatorios/PE.2M.2A-HITL.1-BASELINE-RC.md"
+
+}
+

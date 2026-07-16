@@ -1,0 +1,144 @@
+{
+
+  "gate": "PE.2M.2A-HITL.2",
+
+  "date": "2026-07-14",
+
+  "execute_mutable_now": false,
+
+  "etapa": "A",
+
+  "one_step_rule": true,
+
+  "steps": [
+
+    {
+
+      "id": "A0",
+
+      "mutable": false,
+
+      "title": "Capturar inventário live (OBRIGATÓRIO antes de qualquer mutação)",
+
+      "commands": [
+
+        "cd /d \"E:\\Chute de Ouro\\goldeouro-backend\"",
+
+        "git status --porcelain=v1 -uall",
+
+        "git diff --name-only",
+
+        "git diff --cached --name-only",
+
+        "git ls-files --others --exclude-standard",
+
+        "git stash list"
+
+      ],
+
+      "objetivo": "Lista integral para classificar A–E sem E residual",
+
+      "arquivos_afetados": "nenhum",
+
+      "risco": "nenhum",
+
+      "rollback": "n/a",
+
+      "evidencia_esperada": "porcelain completo sem truncamento"
+
+    },
+
+    {
+
+      "id": "A1",
+
+      "mutable": false,
+
+      "title": "Classificar linha a linha até E=0",
+
+      "commands": [],
+
+      "objetivo": "Preencher rc-final-classification.json sem classe E",
+
+      "arquivos_afetados": "apenas docs de classificação (próximo microgate se docs)",
+
+      "risco": "classificar D como A contaminaria RC",
+
+      "rollback": "n/a",
+
+      "evidencia_esperada": "class_E_zeroed=true"
+
+    },
+
+    {
+
+      "id": "A2",
+
+      "mutable": true,
+
+      "title": "PRIMEIRO comando mutável autorizado só após E=0 (worktree)",
+
+      "authorized_now": false,
+
+      "objetivo": "Criar worktree limpa para montar RC sem tocar untracked da árvore principal",
+
+      "arquivos_afetados": "novo diretório sibling (fora ou ao lado do repo) — ZERO alteração nos pathspecs A/B/C/D/E da árvore atual",
+
+      "risco": "baixo se path da worktree não sobrescrever o cwd do operador",
+
+      "rollback": "git worktree remove <path> --force (só a worktree; principal intacta)",
+
+      "evidencia_esperada": "git -C <worktree> status limpo em HEAD; principal ainda com D/E",
+
+      "command_template": "git worktree add \"E:\\Chute de Ouro\\goldeouro-backend-pe2m-rc\" pe/pe2b-staging-deploy",
+
+      "verify_before": [
+
+        "class_E_zeroed=true",
+
+        "path worktree não existe",
+
+        "branch pe/pe2b-staging-deploy"
+
+      ],
+
+      "verify_after": [
+
+        "git worktree list",
+
+        "git -C \"E:\\Chute de Ouro\\goldeouro-backend-pe2m-rc\" status --porcelain",
+
+        "git status --porcelain=v1 -uall  (na árvore principal — D/E ainda presentes)"
+
+      ],
+
+      "note": "NÃO executar neste gate PE.2M.2A-HITL.2 — reservado a HITL.3 após PASS"
+
+    },
+
+    {
+
+      "id": "A2-fallback",
+
+      "mutable": true,
+
+      "title": "Fallback: stash seletivo pathspec-only (só se worktree impossível)",
+
+      "authorized_now": false,
+
+      "command_template": "git stash push -m \"PE.2M.2A-HITL isolate D/E\" -- <explicit D/E paths...>",
+
+      "forbidden": ["git stash -u", "git stash --include-untracked sem lista"],
+
+      "risco": "alto se pathspec incompleto ou incluir A/B/C",
+
+      "rollback": "git stash apply stash@{0} (não pop até validar)"
+
+    }
+
+  ],
+
+  "first_hitl_command_recommended": "A0: git status --porcelain=v1 -uall (read-only)"
+
+}
+

@@ -1,0 +1,70 @@
+{
+
+  "gate": "PE.2M",
+
+  "date": "2026-07-14",
+
+  "title": "Architecture final snapshot pre-PE.2C-FINAL",
+
+  "layers": {
+
+    "facade": "PaymentEngine",
+
+    "runtime": "RuntimeBoundary",
+
+    "providers": "ProviderResolver",
+
+    "ports": [
+
+      "DepositClaimPort",
+
+      "IdempotencyStore",
+
+      "WebhookStorePort",
+
+      "PaymentProviderPort",
+
+      "TransferProviderPort",
+
+      "Ledger/Wallet/Withdraw (shadow)"
+
+    ],
+
+    "adapters": ["goldeouro", "psp Asaas/MP/Celcoin/Efi", "memory"],
+
+    "legacy": "finance/* + domain/payout (flags OFF)"
+
+  },
+
+  "boundaries_pe2e_to_pe2l": {
+
+    "PE.2E": "WebhookPayload",
+
+    "PE.2F": "DepositClaimPort",
+
+    "PE.2G": "IdempotencyStore",
+
+    "PE.2H": "WebhookStore",
+
+    "PE.2I": "Core finance surface",
+
+    "PE.2J": "Payout boundary",
+
+    "PE.2K": "RuntimeBoundary",
+
+    "PE.2L": "ProviderResolver + PSP ports",
+
+    "PE.2L.1": "Fallback semantics"
+
+  },
+
+  "production_mode": "all flags false — legado homologado",
+
+  "staging_mode_target": "same defaults until HITL enables selective shadow",
+
+  "freeze_refactors": true,
+
+  "next_gate": "PE.2C-FINAL — only after PE.2M operational PASS"
+
+}
+

@@ -1,0 +1,44 @@
+{
+  "gate": "PE.2M",
+  "title": "Shadow/Staging Final Certification",
+  "date": "2026-07-14",
+  "verdict": "NO-GO",
+  "reason": "PB-05 staging shadow deploy not executed; runtime shadow NOT_VERIFIED",
+  "integrity": {
+    "production_altered": false,
+    "deploy_production": false,
+    "deploy_staging": false,
+    "database_production": false,
+    "database_staging": false,
+    "schema_altered": false,
+    "secrets_altered": false,
+    "financial_mutation": false
+  },
+  "scores": {
+    "package_readiness": 7.0,
+    "technology_readiness": 7.5,
+    "architecture": 7.9,
+    "pe2c_final_pre_package": 6.8,
+    "delta_package": 0.2
+  },
+  "flags_default_false": true,
+  "rollback_structural": true,
+  "staging_runtime_certified": false,
+  "pb05_open": true,
+  "pe2c_final_authorized": false,
+  "smoke": "NOT_EXECUTED_SHELL_PENDING",
+  "verify": "NOT_EXECUTED_SHELL_PENDING",
+  "code_changed": [
+    "scripts/pe2m-shadow-final-smoke.mjs",
+    "scripts/verify-pe2m-shadow-final.mjs",
+    "docs/payment-engine/staging-final/*",
+    "docs/relatorios/PE.2M-SHADOW-STAGING-FINAL-CERTIFICATION.md",
+    "docs/relatorios/snapshots/pe2m-shadow-final.json"
+  ],
+  "local_commands": [
+    "node scripts/pe2m-shadow-final-smoke.mjs",
+    "node scripts/verify-pe2m-shadow-final.mjs"
+  ],
+  "report": "docs/relatorios/PE.2M-SHADOW-STAGING-FINAL-CERTIFICATION.md",
+  "next_gate": "PE.2C-FINAL (blocked until PE.2M operational PASS)"
+}

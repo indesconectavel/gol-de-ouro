@@ -1,0 +1,70 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.2",
+
+  "date": "2026-07-10",
+
+  "determinism": {
+
+    "release_tag": "pe2b-staging-ready",
+
+    "release_ref_mutable": false,
+
+    "git_tag_meta": "pe2b-staging-ready",
+
+    "sha_source": "docs/payment-engine/staging/release-manifest.json",
+
+    "checkout_ref": "pe2b-staging-ready",
+
+    "operator_override_allowed": false
+
+  },
+
+  "removed_human_error_vectors": [
+
+    "release_ref input removido do workflow_dispatch",
+
+    "git_tag input removido do workflow_dispatch",
+
+    "default tag incompleta pe2b-adapter-boundary-safe eliminada"
+
+  ],
+
+  "immutable_checks": [
+
+    "RELEASE_REF == pe2b-staging-ready",
+
+    "GIT_TAG == pe2b-staging-ready",
+
+    "HEAD_SHA == manifest.release.sha",
+
+    "fly.staging.toml presente no checkout",
+
+    "release-manifest.json presente no checkout"
+
+  ],
+
+  "reproducibility": {
+
+    "same_inputs_every_dispatch": true,
+
+    "inputs_required": ["confirm=STAGING"],
+
+    "manifest_versioned": true
+
+  },
+
+  "tag_creation": {
+
+    "name": "pe2b-staging-ready",
+
+    "target": "commit pos-PIPELINE.2 com manifest SHA atualizado",
+
+    "command": "git tag -a pe2b-staging-ready -m \"PE.2B staging ready (PIPELINE.2)\" <SHA> && git push origin pe2b-staging-ready"
+
+  },
+
+  "status": "DETERMINISTIC_IN_REPO"
+
+}
+

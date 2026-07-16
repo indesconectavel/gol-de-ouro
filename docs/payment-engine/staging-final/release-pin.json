@@ -1,0 +1,54 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "pin": {
+
+    "release_ref": "pe2m-shadow-staging-ready",
+
+    "git_tag": "pe2m-shadow-staging-ready",
+
+    "branch": "pe/pe2b-staging-deploy",
+
+    "sha": "PENDING_HITL_FREEZE_COMMIT",
+
+    "frozen": false
+
+  },
+
+  "workflow_env": {
+
+    "RELEASE_REF": "pe2m-shadow-staging-ready",
+
+    "GIT_TAG": "pe2m-shadow-staging-ready",
+
+    "FLY_APP_NAME": "goldeouro-backend-staging",
+
+    "FLY_CONFIG": "fly.staging.toml"
+
+  },
+
+  "how_to_pin": [
+
+    "1. Limpar working tree — incluir só PE.2E–PE.2M (+ workflow + docs staging)",
+
+    "2. git commit na branch pe/pe2b-staging-deploy",
+
+    "3. node scripts/pe2m2a-release-freeze.mjs",
+
+    "4. commit dos manifests pinados (frozen:true + sha)",
+
+    "5. re-run freeze no commit final OU ajustar sha manualmente para o commit dos manifests",
+
+    "6. git tag -a pe2m-shadow-staging-ready -m \"PE.2M shadow staging ready\" <FINAL_SHA>",
+
+    "7. git push origin pe/pe2b-staging-deploy pe2m-shadow-staging-ready",
+
+    "8. PE.2M.2-RECHECK read-only"
+
+  ]
+
+}
+

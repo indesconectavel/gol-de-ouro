@@ -1,0 +1,38 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "ready_for_pe2m2_recheck": "CONDITIONAL",
+
+  "blockers_cleared_by_this_gate": [
+
+    "workflow_only_adapter_flag",
+
+    "release_name_still_pe2b",
+
+    "manifest_structure_for_pe2m_series"
+
+  ],
+
+  "blockers_remaining": [
+
+    "sha_PENDING_HITL_FREEZE_COMMIT",
+
+    "frozen_false",
+
+    "tag_not_created",
+
+    "tag_not_pushed",
+
+    "working_tree_scope_mix_risk"
+
+  ],
+
+  "pe2m2_recheck": "NO-GO_UNTIL_HITL_FREEZE",
+
+  "pe2m3": "NO-GO"
+
+}
+

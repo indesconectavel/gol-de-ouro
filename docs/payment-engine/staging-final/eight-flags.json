@@ -1,0 +1,50 @@
+{
+  "gate": "PE.2M.2A",
+  "date": "2026-07-14",
+  "verdict": "PASS_WORKFLOW_EXPLICIT",
+  "rule": "first_shadow_deploy_all_false",
+  "flags": [
+    {
+      "name": "PE_ADAPTER_BOUNDARY_ENABLED",
+      "explicit_false_pre": true,
+      "explicit_false_post": true
+    },
+    {
+      "name": "PE_DEPOSIT_CLAIM_PORT_ENABLED",
+      "explicit_false_pre": true,
+      "explicit_false_post": true
+    },
+    {
+      "name": "PE_IDEMPOTENCY_PORT_ENABLED",
+      "explicit_false_pre": true,
+      "explicit_false_post": true
+    },
+    {
+      "name": "PE_WEBHOOK_STORE_PORT_ENABLED",
+      "explicit_false_pre": true,
+      "explicit_false_post": true
+    },
+    {
+      "name": "PE_CORE_FINANCE_BOUNDARY_ENABLED",
+      "explicit_false_pre": true,
+      "explicit_false_post": true
+    },
+    {
+      "name": "PE_PAYOUT_BOUNDARY_ENABLED",
+      "explicit_false_pre": true,
+      "explicit_false_post": true
+    },
+    {
+      "name": "PE_RUNTIME_BOUNDARY_ENABLED",
+      "explicit_false_pre": true,
+      "explicit_false_post": true
+    },
+    {
+      "name": "PE_PROVIDER_BOUNDARY_ENABLED",
+      "explicit_false_pre": true,
+      "explicit_false_post": true
+    }
+  ],
+  "no_implicit_default_dependency": true,
+  "runtime_secrets_set_this_gate": false
+}

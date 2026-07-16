@@ -1,0 +1,58 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "verdict": "PASS_DOCUMENTED",
+
+  "layers": {
+
+    "fly": {
+
+      "command": "flyctl releases rollback -a goldeouro-backend-staging",
+
+      "baseline_pre_any_pe2m_deploy": {
+
+        "commit": "b29d847",
+
+        "tag": "payment-engine-v1-runtime-baseline"
+
+      }
+
+    },
+
+    "git": {
+
+      "restore_tag": "pe2m-shadow-staging-ready",
+
+      "prior_anchor": "pe2b-adapter-boundary-safe@73bca758789ad6ba23561f9f5695abb2b20a3a9d"
+
+    },
+
+    "workflow": {
+
+      "note": "revert YAML to previous commit if needed; never use production workflow"
+
+    },
+
+    "flags": {
+
+      "command": "flyctl secrets set PE_ADAPTER_BOUNDARY_ENABLED=false PE_DEPOSIT_CLAIM_PORT_ENABLED=false PE_IDEMPOTENCY_PORT_ENABLED=false PE_WEBHOOK_STORE_PORT_ENABLED=false PE_CORE_FINANCE_BOUNDARY_ENABLED=false PE_PAYOUT_BOUNDARY_ENABLED=false PE_RUNTIME_BOUNDARY_ENABLED=false PE_PROVIDER_BOUNDARY_ENABLED=false -a goldeouro-backend-staging"
+
+    },
+
+    "release": {
+
+      "manifest": "docs/payment-engine/staging/release-manifest.json"
+
+    }
+
+  },
+
+  "touches_production": false,
+
+  "requires_migration": false
+
+}
+

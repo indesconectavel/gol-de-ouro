@@ -1,0 +1,480 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.1",
+
+  "date": "2026-07-10",
+
+  "legend": {
+
+    "VALIDADO": "Evidencia objetiva obtida nesta auditoria",
+
+    "INDETERMINADO": "Nao verificavel no ambiente read-only atual",
+
+    "NAO_VALIDADO": "Verificacao falhou ou evidencia contraditoria"
+
+  },
+
+  "evidence": [
+
+    {
+
+      "id": "E-GIT-01",
+
+      "claim": "Branch pe/pe2b-staging-deploy existe no GitHub",
+
+      "status": "VALIDADO",
+
+      "source": "GET api.github.com/.../refs/heads/pe/pe2b-staging-deploy",
+
+      "value": "a651de6563b09025adec91ceb84dfa7933088a48"
+
+    },
+
+    {
+
+      "id": "E-GIT-02",
+
+      "claim": "Tag pe2b-adapter-boundary-safe existe e aponta para commit tecnico",
+
+      "status": "VALIDADO",
+
+      "source": "GET api.github.com/.../refs/tags/pe2b-adapter-boundary-safe",
+
+      "value": "73bca758789ad6ba23561f9f5695abb2b20a3a9d"
+
+    },
+
+    {
+
+      "id": "E-GIT-03",
+
+      "claim": "Ancestry linear 73bca75 -> bd38019 -> a651de6",
+
+      "status": "VALIDADO",
+
+      "source": "GitHub compare pe2b-adapter-boundary-safe...pe/pe2b-staging-deploy",
+
+      "value": "ahead_by=2, behind_by=0"
+
+    },
+
+    {
+
+      "id": "E-GIT-04",
+
+      "claim": "main nao contem merge da branch PE",
+
+      "status": "VALIDADO",
+
+      "source": "main@22f75f7 vs branch@a651de6",
+
+      "value": "merged=false"
+
+    },
+
+    {
+
+      "id": "E-GIT-05",
+
+      "claim": "Working tree local limpa",
+
+      "status": "INDETERMINADO",
+
+      "source": "Shell indisponivel; git status nao executado",
+
+      "value": null
+
+    },
+
+    {
+
+      "id": "E-REL-01",
+
+      "claim": "Tag nao contem fly.staging.toml",
+
+      "status": "VALIDADO",
+
+      "source": "GET contents/fly.staging.toml?ref=pe2b-adapter-boundary-safe",
+
+      "value": "HTTP 404"
+
+    },
+
+    {
+
+      "id": "E-REL-02",
+
+      "claim": "Branch contem fly.staging.toml e workflow staging",
+
+      "status": "VALIDADO",
+
+      "source": "GET contents?ref=pe/pe2b-staging-deploy",
+
+      "value": "HTTP 200"
+
+    },
+
+    {
+
+      "id": "E-REL-03",
+
+      "claim": "Release completa e a branch pe/pe2b-staging-deploy@a651de6",
+
+      "status": "VALIDADO",
+
+      "source": "Comparacao artefatos tag vs branch",
+
+      "value": "branch certificada"
+
+    },
+
+    {
+
+      "id": "E-WF-01",
+
+      "claim": "Workflow somente workflow_dispatch",
+
+      "status": "VALIDADO",
+
+      "source": "Analise estatica backend-deploy-staging.yml",
+
+      "value": "dispatch only"
+
+    },
+
+    {
+
+      "id": "E-WF-02",
+
+      "claim": "Guard confirmacao STAGING obrigatoria",
+
+      "status": "VALIDADO",
+
+      "source": "backend-deploy-staging.yml linhas 48-55",
+
+      "value": "exit 1 se != STAGING"
+
+    },
+
+    {
+
+      "id": "E-WF-03",
+
+      "claim": "Deploy usa exclusivamente goldeouro-backend-staging",
+
+      "status": "VALIDADO",
+
+      "source": "env.FLY_APP_NAME hardcoded",
+
+      "value": "goldeouro-backend-staging"
+
+    },
+
+    {
+
+      "id": "E-WF-04",
+
+      "claim": "Deploy usa exclusivamente fly.staging.toml",
+
+      "status": "VALIDADO",
+
+      "source": "Guards + flyctl deploy --config",
+
+      "value": "fly.staging.toml"
+
+    },
+
+    {
+
+      "id": "E-WF-05",
+
+      "claim": "Nenhum caminho no workflow para goldeouro-backend-v2",
+
+      "status": "VALIDADO",
+
+      "source": "Analise estatica completa do YAML",
+
+      "value": "PROD_APP_NAME apenas read-only gate"
+
+    },
+
+    {
+
+      "id": "E-WF-06",
+
+      "claim": "Default release_ref falha sem override",
+
+      "status": "VALIDADO",
+
+      "source": "Tag sem fly.staging.toml + step Validar artefatos",
+
+      "value": "abort em test -f fly.staging.toml"
+
+    },
+
+    {
+
+      "id": "E-WF-07",
+
+      "claim": "Workflow registrado na API de workflows do GitHub",
+
+      "status": "NAO_VALIDADO",
+
+      "source": "GET actions/workflows total_count=13, staging ausente",
+
+      "value": "nao em main"
+
+    },
+
+    {
+
+      "id": "E-WF-08",
+
+      "claim": "FLY_API_TOKEN presente no repositorio",
+
+      "status": "INDETERMINADO",
+
+      "source": "Secrets GitHub nao listaveis via API publica",
+
+      "value": null
+
+    },
+
+    {
+
+      "id": "E-FLY-01",
+
+      "claim": "fly.staging.toml app=goldeouro-backend-staging",
+
+      "status": "VALIDADO",
+
+      "source": "Arquivo publicado branch a651de6",
+
+      "value": "goldeouro-backend-staging"
+
+    },
+
+    {
+
+      "id": "E-FLY-02",
+
+      "claim": "Sem payout_worker em staging manifest",
+
+      "status": "VALIDADO",
+
+      "source": "fly.staging.toml [processes]",
+
+      "value": "app only"
+
+    },
+
+    {
+
+      "id": "E-FLY-03",
+
+      "claim": "NODE_ENV e DATABASE_ENV staging",
+
+      "status": "VALIDADO",
+
+      "source": "fly.staging.toml [env]",
+
+      "value": "staging"
+
+    },
+
+    {
+
+      "id": "E-RT-01",
+
+      "claim": "Staging /health ok pre-deploy",
+
+      "status": "VALIDADO",
+
+      "source": "GET goldeouro-backend-staging.fly.dev/health",
+
+      "value": "status=ok, database=connected"
+
+    },
+
+    {
+
+      "id": "E-RT-02",
+
+      "claim": "Staging productionRuntime=false",
+
+      "status": "VALIDADO",
+
+      "source": "GET /meta e /health staging",
+
+      "value": false
+
+    },
+
+    {
+
+      "id": "E-RT-03",
+
+      "claim": "Staging gitCommit baseline b29d847 (PE.2B nao deployado)",
+
+      "status": "VALIDADO",
+
+      "source": "GET /meta staging",
+
+      "value": "b29d847"
+
+    },
+
+    {
+
+      "id": "E-RT-04",
+
+      "claim": "Producao intacta f21f310-p5pixout",
+
+      "status": "VALIDADO",
+
+      "source": "GET goldeouro-backend-v2.fly.dev/meta",
+
+      "value": "f21f310-p5pixout, productionRuntime=true"
+
+    },
+
+    {
+
+      "id": "E-RT-05",
+
+      "claim": "Payout worker staging OFF",
+
+      "status": "VALIDADO",
+
+      "source": "GET /health/workers staging",
+
+      "value": "enabledByEnv=false"
+
+    },
+
+    {
+
+      "id": "E-DB-01",
+
+      "claim": "Refs Supabase staging e producao documentadas separadas",
+
+      "status": "VALIDADO",
+
+      "source": "deployment-governance.md",
+
+      "value": "uatszaqzdqcwnfbipoxg vs gayopagjdrkcmkirmfvy"
+
+    },
+
+    {
+
+      "id": "E-DB-02",
+
+      "claim": "DATABASE_URL staging aponta para banco staging",
+
+      "status": "INDETERMINADO",
+
+      "source": "Fly secrets nao inspecionaveis",
+
+      "value": null
+
+    },
+
+    {
+
+      "id": "E-SEC-01",
+
+      "claim": "PE_ADAPTER_BOUNDARY_ENABLED existe em staging",
+
+      "status": "INDETERMINADO",
+
+      "source": "fly secrets list indisponivel",
+
+      "value": null
+
+    },
+
+    {
+
+      "id": "E-SEC-02",
+
+      "claim": "PE_ADAPTER_BOUNDARY_ENABLED=false em staging",
+
+      "status": "INDETERMINADO",
+
+      "source": "Valor de secret nao exposto; FIXPRE documental apenas",
+
+      "value": null
+
+    },
+
+    {
+
+      "id": "E-SEC-03",
+
+      "claim": "Flag default false no codigo PE.2B",
+
+      "status": "VALIDADO",
+
+      "source": "adapter-boundary-config.js DEFAULT_VALUE=false",
+
+      "value": false
+
+    },
+
+    {
+
+      "id": "E-RB-01",
+
+      "claim": "Rollback Fly documentado",
+
+      "status": "VALIDADO",
+
+      "source": "deployment-governance.md + workflow gate message",
+
+      "value": "flyctl releases rollback"
+
+    },
+
+    {
+
+      "id": "E-RB-02",
+
+      "claim": "Baseline rollback b29d847 conhecida",
+
+      "status": "VALIDADO",
+
+      "source": "Runtime /meta staging live",
+
+      "value": "b29d847"
+
+    },
+
+    {
+
+      "id": "E-RB-03",
+
+      "claim": "Historico releases Fly consultado",
+
+      "status": "INDETERMINADO",
+
+      "source": "fly releases indisponivel",
+
+      "value": null
+
+    }
+
+  ],
+
+  "summary": {
+
+    "VALIDADO": 24,
+
+    "INDETERMINADO": 7,
+
+    "NAO_VALIDADO": 1
+
+  }
+
+}
+

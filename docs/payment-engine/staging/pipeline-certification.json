@@ -1,0 +1,184 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.1",
+
+  "title": "Certificacao do Pipeline Oficial Staging PE.2B",
+
+  "date": "2026-07-10",
+
+  "certifier": "PE.2B.2-PIPELINE.1 Auditoria Suprema Read-Only",
+
+  "mode": "READ_ONLY_ABSOLUTO",
+
+  "verdict": "NO_CERTIFIED",
+
+  "pass_criteria_evaluation": {
+
+    "critical_evidence_objectively_verified": {
+
+      "required": true,
+
+      "met": false,
+
+      "gaps": [
+
+        "PE_ADAPTER_BOUNDARY_ENABLED valor false nao verificado",
+
+        "FLY_API_TOKEN presenca nao verificada",
+
+        "DATABASE_URL staging nao verificada"
+
+      ]
+
+    },
+
+    "no_known_path_to_production": {
+
+      "required": true,
+
+      "met": true,
+
+      "note": "Analise estatica do workflow e fly.staging.toml confirma isolamento"
+
+    },
+
+    "rollback_documented": {
+
+      "required": true,
+
+      "met": true,
+
+      "note": "flyctl releases rollback + baseline b29d847 + rollback-plan.md"
+
+    },
+
+    "release_candidate_certified": {
+
+      "required": true,
+
+      "met": true,
+
+      "note": "Branch pe/pe2b-staging-deploy@a651de6 certificada; tag sozinha insuficiente"
+
+    },
+
+    "pipeline_reproducible": {
+
+      "required": true,
+
+      "met": false,
+
+      "gaps": [
+
+        "Default release_ref causa falha previsivel",
+
+        "Workflow nao em main — dispatch operacional incerto"
+
+      ]
+
+    },
+
+    "verification_limitations_explicit": {
+
+      "required": true,
+
+      "met": true,
+
+      "note": "Todas as limitacoes registradas em pipeline-evidence-map.json"
+
+    }
+
+  },
+
+  "certification": {
+
+    "pipeline_certified": false,
+
+    "release_certified": true,
+
+    "release_ref": "pe/pe2b-staging-deploy@a651de6563b09025adec91ceb84dfa7933088a48",
+
+    "technical_tag": "pe2b-adapter-boundary-safe@73bca758789ad6ba23561f9f5695abb2b20a3a9d",
+
+    "production_isolation_certified": true,
+
+    "deploy_authorization": "DENIED"
+
+  },
+
+  "mandatory_answers": {
+
+    "pipeline_certificado": "NAO",
+
+    "existe_bloqueador": "SIM",
+
+    "existe_risco_conhecido": "SIM",
+
+    "existe_risco_producao": "SIM",
+
+    "existe_risco_nao_comprovado": "SIM",
+
+    "pe2b2_apt": "NO_GO"
+
+  },
+
+  "blockers_preventing_pass": [
+
+    "B-01 PE_ADAPTER_BOUNDARY_ENABLED nao confirmado",
+
+    "B-02 Default release_ref incompativel",
+
+    "B-03 Workflow nao registrado em main",
+
+    "B-04 Secrets criticos indeterminados"
+
+  ],
+
+  "conditions_for_certification": [
+
+    "Confirmar PE_ADAPTER_BOUNDARY_ENABLED=false via fly secrets list staging",
+
+    "Confirmar FLY_API_TOKEN no repositorio GitHub",
+
+    "Dispatch com release_ref=pe/pe2b-staging-deploy na branch correta",
+
+    "Verificar DATABASE_URL staging aponta para uatszaqzdqcwnfbipoxg",
+
+    "Re-executar PE.2B.2-PIPELINE.1 ou PE.2B.2-GO apos desbloqueio"
+
+  ],
+
+  "authorized_dispatch_when_unblocked": {
+
+    "workflow": "Backend Deploy Staging (Fly.io)",
+
+    "branch": "pe/pe2b-staging-deploy",
+
+    "inputs": {
+
+      "confirm": "STAGING",
+
+      "release_ref": "pe/pe2b-staging-deploy",
+
+      "git_tag": "pe2b-adapter-boundary-safe"
+
+    }
+
+  },
+
+  "integrity": {
+
+    "deploy_executed": false,
+
+    "production_touched": false,
+
+    "staging_touched": false,
+
+    "code_altered": false,
+
+    "git_altered": false
+
+  }
+
+}
+

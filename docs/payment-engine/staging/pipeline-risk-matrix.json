@@ -1,0 +1,254 @@
+{
+
+  "gate": "PE.2B.2-PIPELINE.1",
+
+  "date": "2026-07-10",
+
+  "scale": "1=baixo, 5=critico",
+
+  "dimensions": {
+
+    "git": {
+
+      "score": 2.0,
+
+      "level": "MEDIO_BAIXO",
+
+      "drivers": [
+
+        "Ancestry linear validada tag->branch",
+
+        "Tag incompleta para deploy (by design)",
+
+        "Working tree local indeterminada",
+
+        "Branch PE nao mergeada em main"
+
+      ],
+
+      "mitigations": [
+
+        "Usar release_ref=pe/pe2b-staging-deploy",
+
+        "Confirmar git status antes do dispatch"
+
+      ]
+
+    },
+
+    "workflow": {
+
+      "score": 2.5,
+
+      "level": "MEDIO",
+
+      "drivers": [
+
+        "Default release_ref incompativel com artefatos",
+
+        "Workflow nao registrado em main (13 workflows API)",
+
+        "FLY_API_TOKEN nao verificado"
+
+      ],
+
+      "mitigations": [
+
+        "Override obrigatorio de release_ref",
+
+        "Dispatch na branch pe/pe2b-staging-deploy",
+
+        "Confirmar token antes do dispatch"
+
+      ]
+
+    },
+
+    "fly": {
+
+      "score": 1.5,
+
+      "level": "BAIXO",
+
+      "drivers": [
+
+        "Config staging isolada e validada estaticamente"
+
+      ],
+
+      "mitigations": [
+
+        "fly.staging.toml exclusivo",
+
+        "Sem payout_worker em staging"
+
+      ]
+
+    },
+
+    "runtime": {
+
+      "score": 2.0,
+
+      "level": "MEDIO_BAIXO",
+
+      "drivers": [
+
+        "Primeiro deploy PE.2B ainda nao realizado",
+
+        "Baseline b29d847 conhecida"
+
+      ],
+
+      "mitigations": [
+
+        "Gates /health e /meta pos-deploy",
+
+        "Smoke obrigatorio"
+
+      ]
+
+    },
+
+    "database": {
+
+      "score": 2.0,
+
+      "level": "MEDIO_BAIXO",
+
+      "drivers": [
+
+        "DATABASE_URL Fly nao inspecionavel remotamente"
+
+      ],
+
+      "mitigations": [
+
+        "DATABASE_ENV=staging no manifest",
+
+        "Refs Supabase documentadas separadas"
+
+      ]
+
+    },
+
+    "secrets": {
+
+      "score": 3.5,
+
+      "level": "ALTO",
+
+      "drivers": [
+
+        "PE_ADAPTER_BOUNDARY_ENABLED valor nao confirmado",
+
+        "fly secrets list indisponivel nesta auditoria"
+
+      ],
+
+      "mitigations": [
+
+        "Verificacao manual pre-dispatch",
+
+        "Workflow valida existencia do secret"
+
+      ]
+
+    },
+
+    "rollback": {
+
+      "score": 2.0,
+
+      "level": "MEDIO_BAIXO",
+
+      "drivers": [
+
+        "Lista de releases Fly nao consultada"
+
+      ],
+
+      "mitigations": [
+
+        "flyctl releases rollback documentado",
+
+        "Baseline b29d847 conhecida"
+
+      ]
+
+    },
+
+    "production": {
+
+      "score": 1.5,
+
+      "level": "BAIXO",
+
+      "drivers": [
+
+        "Risco residual de erro operacional manual fora do pipeline"
+
+      ],
+
+      "mitigations": [
+
+        "Guards anti-producao no workflow",
+
+        "Gate read-only pos-deploy em producao",
+
+        "App e config hardcoded staging"
+
+      ]
+
+    },
+
+    "payment_engine": {
+
+      "score": 2.5,
+
+      "level": "MEDIO",
+
+      "drivers": [
+
+        "Shadow layer no bundle com flag default false",
+
+        "Flag runtime indeterminada"
+
+      ],
+
+      "mitigations": [
+
+        "PE_ADAPTER_BOUNDARY_ENABLED=false obrigatorio",
+
+        "Smoke pe2b-adapter-boundary-smoke.mjs"
+
+      ]
+
+    }
+
+  },
+
+  "index": {
+
+    "general": 2.2,
+
+    "formula": "media ponderada das 9 dimensoes",
+
+    "interpretation": "Aceitavel estruturalmente com ressalvas; bloqueadores operacionais impedem certificacao"
+
+  },
+
+  "blockers": [
+
+    "B-01 PE_ADAPTER_BOUNDARY_ENABLED",
+
+    "B-02 default release_ref tag incompleta",
+
+    "B-03 workflow nao em main",
+
+    "B-04 secrets nao verificados"
+
+  ]
+
+}
+

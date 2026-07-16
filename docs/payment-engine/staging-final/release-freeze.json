@@ -1,0 +1,76 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "status": "PREPARED_PENDING_HITL_COMMIT_TAG",
+
+  "release_candidate": {
+
+    "tag": "pe2m-shadow-staging-ready",
+
+    "branch": "pe/pe2b-staging-deploy",
+
+    "sha": "PENDING_HITL_FREEZE_COMMIT",
+
+    "frozen": false,
+
+    "unique": true
+
+  },
+
+  "series_included": [
+
+    "PE.2E",
+
+    "PE.2F",
+
+    "PE.2G",
+
+    "PE.2H",
+
+    "PE.2I",
+
+    "PE.2J",
+
+    "PE.2K",
+
+    "PE.2L",
+
+    "PE.2L.1",
+
+    "PE.2M"
+
+  ],
+
+  "workflow_hardened": true,
+
+  "eight_flags_explicit_false": true,
+
+  "freeze_script": "scripts/pe2m2a-release-freeze.mjs",
+
+  "blockers_remaining": [
+
+    "HITL commit of RC scope only",
+
+    "HITL run freeze script to pin SHA",
+
+    "HITL annotated tag pe2m-shadow-staging-ready",
+
+    "HITL push branch+tag",
+
+    "working_tree_clean (agent shell unavailable to verify live)"
+
+  ],
+
+  "supersedes": {
+
+    "tag": "pe2b-staging-ready",
+
+    "reason": "PE.2B-era incomplete for PE.2E–PE.2M shadow series"
+
+  }
+
+}
+

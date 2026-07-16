@@ -1,0 +1,62 @@
+{
+
+  "gate": "PE.2M.2A",
+
+  "date": "2026-07-14",
+
+  "verdict": "PASS_COM_RESSALVAS",
+
+  "integrity": {
+
+    "production_altered": false,
+
+    "deploy_executed": false,
+
+    "database_altered": false,
+
+    "schema_altered": false,
+
+    "secrets_runtime_altered": false,
+
+    "workflow_altered": true,
+
+    "manifest_prepared": true
+
+  },
+
+  "release": {
+
+    "tag": "pe2m-shadow-staging-ready",
+
+    "sha": "PENDING_HITL_FREEZE_COMMIT",
+
+    "frozen": false,
+
+    "unique_candidate": true
+
+  },
+
+  "workflow": {
+
+    "eight_flags_explicit_false": true,
+
+    "release_ref": "pe2m-shadow-staging-ready"
+
+  },
+
+  "tag_created": false,
+
+  "sha_pinned": false,
+
+  "pb05_open": true,
+
+  "pe2m2_recheck": "NO-GO",
+
+  "pe2m3": "NO-GO",
+
+  "freeze_script": "scripts/pe2m2a-release-freeze.mjs",
+
+  "report": "docs/relatorios/PE.2M.2A-RELEASE-FREEZE-EIGHT-FLAG-HARDENING.md"
+
+}
+
