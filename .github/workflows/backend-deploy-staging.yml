@@ -1,212 +1,576 @@
-# PE.2B.2 — Deploy controlado STAGING (Indesconectável Payment Engine™)
+# PE.2M.2A — Deploy controlado STAGING (Indesconectável Payment Engine™)
+
 # NUNCA toca produção (goldeouro-backend-v2). Somente workflow_dispatch.
+
+# Release determinística: tag pe2m-shadow-staging-ready (SHA em release-manifest.json)
+
 # Config exclusiva: fly.staging.toml — proibido fly.toml de produção.
+
 # Secrets repositório: FLY_API_TOKEN
-# Secrets app staging (Fly): PE_ADAPTER_BOUNDARY_ENABLED=false obrigatório antes do deploy PE.2B
+
+# Dispatch: Actions → Backend Deploy Staging → branch pe/pe2b-staging-deploy (ou main após publish)
+
+# Oito flags PE forçadas explicitamente false no pré e pós deploy.
+
 name: 🧪 Backend Deploy Staging (Fly.io)
 
+
+
 on:
+
   workflow_dispatch:
+
     inputs:
+
       confirm:
+
         description: 'Digite STAGING para confirmar (guarda anti-produção)'
+
         required: true
+
         default: ''
+
         type: string
-      release_ref:
-        description: 'Ref Git (tag/branch/SHA) — default pe2b-adapter-boundary-safe'
-        required: false
-        default: 'pe2b-adapter-boundary-safe'
-        type: string
-      git_tag:
-        description: 'Tag para /meta.gitTag (opcional; default = release_ref se for tag)'
-        required: false
-        default: 'pe2b-adapter-boundary-safe'
-        type: string
+
+
+
+run-name: "staging-deploy pe2m-shadow-staging-ready @ ${{ github.sha }}"
+
+
 
 permissions:
+
   contents: read
 
+
+
 env:
+
   NODE_VERSION: '20'
+
   FLY_APP_NAME: goldeouro-backend-staging
+
   PROD_APP_NAME: goldeouro-backend-v2
+
   FLY_CONFIG: fly.staging.toml
-  RELEASE_REF: ${{ github.event.inputs.release_ref || 'pe2b-adapter-boundary-safe' }}
-  GIT_TAG: ${{ github.event.inputs.git_tag || github.event.inputs.release_ref || 'pe2b-adapter-boundary-safe' }}
+
+  # B-02 / PE.2M.2A: release única, imutável, auditável
+
+  RELEASE_REF: pe2m-shadow-staging-ready
+
+  GIT_TAG: pe2m-shadow-staging-ready
+
+  STAGING_DB_REF: uatszaqzdqcwnfbipoxg
+
+  PROD_DB_REF: gayopagjdrkcmkirmfvy
+
+
 
 jobs:
+
   deploy-staging:
+
     name: 🧪 Deploy Backend Staging
+
     runs-on: ubuntu-latest
+
     timeout-minutes: 35
+
     concurrency:
+
       group: fly-staging-deploy-goldeouro-backend-staging
+
       cancel-in-progress: false
 
+
+
     steps:
+
       - name: Guard — confirmação STAGING
+
         run: |
+
           set -euo pipefail
+
           if [ "${{ github.event.inputs.confirm }}" != "STAGING" ]; then
+
             echo "Confirmação inválida — digite STAGING. Abortado."
+
             exit 1
+
           fi
+
           echo "Guard OK — confirmação STAGING"
 
-      - name: Guard — app alvo exclusivamente staging
+
+
+      - name: Guard — release determinística (PE.2M.2A)
+
         run: |
+
           set -euo pipefail
+
+          echo "RELEASE_REF=${{ env.RELEASE_REF }} (imutável)"
+
+          echo "GIT_TAG=${{ env.GIT_TAG }}"
+
+          test "${{ env.RELEASE_REF }}" = "pe2m-shadow-staging-ready"
+
+          test "${{ env.GIT_TAG }}" = "pe2m-shadow-staging-ready"
+
+
+
+      - name: Guard — app alvo exclusivamente staging
+
+        run: |
+
+          set -euo pipefail
+
           if [ "${{ env.FLY_APP_NAME }}" = "${{ env.PROD_APP_NAME }}" ]; then
+
             echo "App alvo == produção — ABORTADO."
+
             exit 1
+
           fi
+
           case "${{ env.FLY_APP_NAME }}" in
+
             *v2*|*prod*) echo "Nome de app suspeito de produção — ABORTADO."; exit 1 ;;
+
           esac
+
           echo "App alvo: ${{ env.FLY_APP_NAME }}"
 
+
+
       - name: Guard — config exclusivamente fly.staging.toml
+
         run: |
+
           set -euo pipefail
+
           if [ "${{ env.FLY_CONFIG }}" = "fly.toml" ]; then
+
             echo "fly.toml de produção proibido neste workflow — ABORTADO."
+
             exit 1
+
           fi
+
           if [ "${{ env.FLY_CONFIG }}" != "fly.staging.toml" ]; then
+
             echo "Config deve ser fly.staging.toml — ABORTADO."
+
             exit 1
+
           fi
+
           echo "Config OK: ${{ env.FLY_CONFIG }}"
 
-      - name: Guard — refs autorizadas PE.2B.2
-        run: |
-          set -euo pipefail
-          REF="${{ env.RELEASE_REF }}"
-          case "$REF" in
-            pe2b-adapter-boundary-safe|pe/pe2b-staging-deploy|73bca758789ad6ba23561f9f5695abb2b20a3a9d|bd38019*)
-              echo "Ref autorizada: $REF"
-              ;;
-            *)
-              echo "::warning::Ref fora da lista explícita PE.2B.2 — operador deve validar manualmente: $REF"
-              ;;
-          esac
 
-      - name: Guard — FLY_API_TOKEN presente
+
+      - name: Guard — FLY_API_TOKEN presente (B-04)
+
         run: |
+
           set -euo pipefail
+
           if [ -z "${{ secrets.FLY_API_TOKEN }}" ]; then
-            echo "FLY_API_TOKEN ausente — abortado"
+
+            echo "FLY_API_TOKEN ausente no repositório — ABORTADO"
+
             exit 1
+
           fi
+
           echo "FLY_API_TOKEN presente (valor não exibido)"
 
-      - name: Checkout
+
+
+      - name: Checkout release determinística
+
         uses: actions/checkout@v4
+
         with:
+
           ref: ${{ env.RELEASE_REF }}
+
           fetch-depth: 0
 
-      - name: Validar artefatos staging no checkout
-        run: |
-          set -euo pipefail
-          test -f fly.staging.toml || { echo "fly.staging.toml ausente no ref — ABORTADO"; exit 1; }
-          test ! -f fly.toml && echo "fly.toml presente (ignorado; deploy usa fly.staging.toml)" || true
-          grep -q 'goldeouro-backend-staging' fly.staging.toml
-          ! grep -q 'goldeouro-backend-v2' fly.staging.toml
-          node -c server-fly.js
-          echo "Artefatos staging validados"
 
-      - name: Resolver RELEASE_SHA
-        id: sha
+
+      - name: Guard — SHA da release via manifest (B-02)
+
+        id: release
+
         run: |
+
           set -euo pipefail
-          SHA=$(git rev-parse HEAD)
-          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-          echo "RELEASE_SHA=$SHA"
+
+          MANIFEST_TAG=$(jq -r '.release.tag' docs/payment-engine/staging/release-manifest.json)
+
+          EXPECTED_SHA=$(jq -r '.release.sha' docs/payment-engine/staging/release-manifest.json)
+
+          HEAD_SHA=$(git rev-parse HEAD)
+
+          FROZEN=$(jq -r '.release.frozen' docs/payment-engine/staging/release-manifest.json)
+
+          test "$MANIFEST_TAG" = "pe2m-shadow-staging-ready"
+
+          test "$FROZEN" = "true" || { echo "release.frozen != true — ABORTADO (PE.2M.2A)"; exit 1; }
+
+          if [ -z "$EXPECTED_SHA" ] || [ "$EXPECTED_SHA" = "null" ] || [ "$EXPECTED_SHA" = "PENDING_HITL_FREEZE_COMMIT" ]; then
+
+            echo "release-manifest.json sem SHA pinado — ABORTADO"
+
+            exit 1
+
+          fi
+
+          if [ "$HEAD_SHA" != "$EXPECTED_SHA" ]; then
+
+            echo "SHA divergente — manifest $EXPECTED_SHA, checkout $HEAD_SHA — ABORTADO"
+
+            exit 1
+
+          fi
+
+          echo "sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
           git log -1 --oneline
 
+          echo "Release certificada: $MANIFEST_TAG @ $HEAD_SHA"
+
+
+
+      - name: Validar artefatos PE.2E–PE.2M no checkout
+
+        run: |
+
+          set -euo pipefail
+
+          test -f fly.staging.toml || { echo "fly.staging.toml ausente — ABORTADO"; exit 1; }
+
+          test -f docs/payment-engine/staging/release-manifest.json || { echo "release-manifest.json ausente — ABORTADO"; exit 1; }
+
+          grep -q 'goldeouro-backend-staging' fly.staging.toml
+
+          ! grep -q 'goldeouro-backend-v2' fly.staging.toml
+
+          test -f src/payment-engine/ports/IdempotencyStore.js
+
+          test -f src/payment-engine/ports/DepositClaimPort.js
+
+          test -f src/payment-engine/ports/WebhookStorePort.js
+
+          test -f src/payment-engine/providers/ProviderResolver.js
+
+          test -f src/payment-engine/runtime/RuntimeBoundary.js
+
+          test -f scripts/pe2m-shadow-final-smoke.mjs
+
+          test -f scripts/verify-pe2m-shadow-final.mjs
+
+          node -c server-fly.js
+
+          if [ -f scripts/pe2b-staging-pipeline-validate.mjs ]; then
+
+            node scripts/pe2b-staging-pipeline-validate.mjs
+
+          fi
+
+          echo "Artefatos PE.2E–PE.2M staging validados"
+
+
+
       - name: Setup Node.js
+
         uses: actions/setup-node@v4
+
         with:
+
           node-version: ${{ env.NODE_VERSION }}
+
           cache: npm
 
+
+
       - name: Instalar dependências
+
         run: npm ci
 
+
+
       - name: Setup flyctl
+
         uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Gate pré-deploy — PE_ADAPTER_BOUNDARY_ENABLED=false (staging)
+
+
+      - name: Gate B-04 — FLY_API_TOKEN escopo staging (read-only)
+
+        env:
+
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
         run: |
+
           set -euo pipefail
-          LIST=$(flyctl secrets list -a "${{ env.FLY_APP_NAME }}" 2>/dev/null || true)
-          echo "$LIST" | grep -q 'PE_ADAPTER_BOUNDARY_ENABLED' || {
-            echo "PE_ADAPTER_BOUNDARY_ENABLED ausente em staging — ABORTADO"
+
+          flyctl secrets list -a "${{ env.FLY_APP_NAME }}" >/dev/null \
+
+            || { echo "FLY_API_TOKEN sem acesso read-only a staging — ABORTADO"; exit 1; }
+
+          echo "Token validado — secrets list staging OK (valores não exibidos)"
+
+
+
+      - name: Gate B-04 — DATABASE_URL existe em staging
+
+        env:
+
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+        run: |
+
+          set -euo pipefail
+
+          LIST=$(flyctl secrets list -a "${{ env.FLY_APP_NAME }}")
+
+          echo "$LIST" | grep -q 'DATABASE_URL' || {
+
+            echo "DATABASE_URL ausente em staging — ABORTADO"
+
             exit 1
+
           }
-          # fly secrets list não expõe valores; verificação de valor=false via deploy gate pós-set documentado
-          echo "PE_ADAPTER_BOUNDARY_ENABLED presente em staging (nome confirmado; valor=false é pré-requisito operacional)"
+
+          echo "DATABASE_URL presente (valor não exibido)"
+
+
+
+      - name: Gate B-04 — DATABASE_URL não aponta para produção
+
+        env:
+
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+        run: |
+
+          set -euo pipefail
+
+          flyctl ssh console -a "${{ env.FLY_APP_NAME }}" -C \
+
+            "node -e \"const u=process.env.DATABASE_URL||''; if(u.includes('${{ env.PROD_DB_REF }}')) process.exit(2); if(!u.includes('${{ env.STAGING_DB_REF }}')) process.exit(1); process.exit(0);\"" \
+
+            || {
+
+              CODE=$?
+
+              if [ "$CODE" -eq 2 ]; then
+
+                echo "DATABASE_URL contém ref PRODUÇÃO — ABORTADO"
+
+              else
+
+                echo "DATABASE_URL não confirmou ref staging — ABORTADO"
+
+              fi
+
+              exit 1
+
+            }
+
+          echo "DATABASE_URL isolado — ref staging confirmada (valor não exibido)"
+
+
+
+      - name: Gate B-01 — Eight PE flags explicitly false (pré-deploy)
+
+        env:
+
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+        run: |
+
+          set -euo pipefail
+
+          flyctl secrets set \
+
+            PE_ADAPTER_BOUNDARY_ENABLED=false \
+
+            PE_DEPOSIT_CLAIM_PORT_ENABLED=false \
+
+            PE_IDEMPOTENCY_PORT_ENABLED=false \
+
+            PE_WEBHOOK_STORE_PORT_ENABLED=false \
+
+            PE_CORE_FINANCE_BOUNDARY_ENABLED=false \
+
+            PE_PAYOUT_BOUNDARY_ENABLED=false \
+
+            PE_RUNTIME_BOUNDARY_ENABLED=false \
+
+            PE_PROVIDER_BOUNDARY_ENABLED=false \
+
+            -a "${{ env.FLY_APP_NAME }}"
+
+          flyctl ssh console -a "${{ env.FLY_APP_NAME }}" -C \
+
+            'node -e "const keys=[\"PE_ADAPTER_BOUNDARY_ENABLED\",\"PE_DEPOSIT_CLAIM_PORT_ENABLED\",\"PE_IDEMPOTENCY_PORT_ENABLED\",\"PE_WEBHOOK_STORE_PORT_ENABLED\",\"PE_CORE_FINANCE_BOUNDARY_ENABLED\",\"PE_PAYOUT_BOUNDARY_ENABLED\",\"PE_RUNTIME_BOUNDARY_ENABLED\",\"PE_PROVIDER_BOUNDARY_ENABLED\"]; for (const k of keys){ const v=String(process.env[k]||\"\").toLowerCase(); if(v!==\"false\"&&v!==\"\") { console.error(k+\"=\"+v); process.exit(1);} } console.log(\"eight_flags_ok\");"' \
+
+            || { echo "Uma ou mais PE flags != false após set — ABORTADO"; exit 1; }
+
+          echo "Oito PE flags=false confirmadas (valores não exibidos)"
+
+
 
       - name: Deploy Fly staging
+
         run: |
+
           set -euo pipefail
+
           flyctl deploy --remote-only --no-cache \
+
             --config "${{ env.FLY_CONFIG }}" \
+
             --app "${{ env.FLY_APP_NAME }}" \
-            --build-arg GIT_COMMIT="${{ steps.sha.outputs.sha }}"
+
+            --build-arg GIT_COMMIT="${{ steps.release.outputs.sha }}"
+
         env:
+
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
-      - name: Metadata secrets staging
+
+
+      - name: Metadata + eight PE flags staging (pós-deploy)
+
         run: |
+
           set -euo pipefail
+
           flyctl secrets set \
+
             GIT_TAG="${{ env.GIT_TAG }}" \
+
             NODE_ENV=staging \
+
             DATABASE_ENV=staging \
+
+            PE_ADAPTER_BOUNDARY_ENABLED=false \
+
+            PE_DEPOSIT_CLAIM_PORT_ENABLED=false \
+
+            PE_IDEMPOTENCY_PORT_ENABLED=false \
+
+            PE_WEBHOOK_STORE_PORT_ENABLED=false \
+
+            PE_CORE_FINANCE_BOUNDARY_ENABLED=false \
+
+            PE_PAYOUT_BOUNDARY_ENABLED=false \
+
+            PE_RUNTIME_BOUNDARY_ENABLED=false \
+
+            PE_PROVIDER_BOUNDARY_ENABLED=false \
+
             -a "${{ env.FLY_APP_NAME }}"
+
         env:
+
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+
 
       - name: Gate — /health staging
+
         run: |
+
           set -euo pipefail
+
           URL="https://${{ env.FLY_APP_NAME }}.fly.dev/health"
+
           for i in 1 2 3 4 5; do
+
             echo "Tentativa $i → $URL"
+
             if curl -fsS --max-time 30 "$URL"; then exit 0; fi
+
             sleep $((i * 5))
+
           done
-          echo "/health falhou — rollback recomendado: flyctl releases rollback -a ${{ env.FLY_APP_NAME }}"
+
+          echo "/health falhou — rollback: flyctl releases rollback -a ${{ env.FLY_APP_NAME }}"
+
           exit 1
 
+
+
       - name: Gate — /meta staging
+
         run: |
+
           set -euo pipefail
+
           META="https://${{ env.FLY_APP_NAME }}.fly.dev/meta"
+
           BODY=$(curl -fsS --max-time 30 "$META")
+
           echo "$BODY" | jq .
+
           test "$(echo "$BODY" | jq -r '.data.environment')" = "staging" || { echo "environment != staging"; exit 1; }
+
           PRUNTIME=$(echo "$BODY" | jq -r '.data.paymentEngine.productionRuntime')
+
           test "$PRUNTIME" = "false" || { echo "productionRuntime deve ser false"; exit 1; }
 
+          META_SHA=$(echo "$BODY" | jq -r '.data.gitCommit')
+
+          test "$META_SHA" = "${{ steps.release.outputs.sha }}" \
+
+            || echo "::warning::meta.gitCommit ($META_SHA) diverge do RELEASE_SHA — validar manualmente"
+
+
+
       - name: Gate — produção intocada (read-only)
+
         run: |
+
           set -euo pipefail
+
           META="https://${{ env.PROD_APP_NAME }}.fly.dev/meta"
+
           BODY=$(curl -fsS --max-time 30 "$META")
+
           ENV=$(echo "$BODY" | jq -r '.data.environment')
+
           PRUNTIME=$(echo "$BODY" | jq -r '.data.paymentEngine.productionRuntime')
+
           test "$ENV" = "production" || { echo "produção environment inesperado"; exit 1; }
+
           test "$PRUNTIME" = "true" || { echo "produção productionRuntime deve permanecer true"; exit 1; }
+
           echo "Produção verificada read-only — intocada por este workflow"
 
+
+
       - name: Resumo
+
         run: |
+
           echo "Deploy staging concluído"
+
           echo "  App:    ${{ env.FLY_APP_NAME }}"
+
           echo "  Config: ${{ env.FLY_CONFIG }}"
+
           echo "  Ref:    ${{ env.RELEASE_REF }}"
-          echo "  SHA:    ${{ steps.sha.outputs.sha }}"
+
+          echo "  Tag:    ${{ env.GIT_TAG }}"
+
+          echo "  SHA:    ${{ steps.release.outputs.sha }}"
+
+          echo "  Flags:  eight PE_* = false (explicit)"
+

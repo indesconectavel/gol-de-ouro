@@ -1,0 +1,462 @@
+# PE.2F.1 — Automated Certification (CI only)
+
+# Validação exclusiva — sem deploy, sem Fly, sem banco, sem produção.
+
+name: PE.2F.1 — Automated Certification
+
+
+
+on:
+
+  workflow_dispatch:
+
+    inputs:
+
+      certify_note:
+
+        description: 'Nota livre (opcional)'
+
+        required: false
+
+        default: 'PE.2F.1 stabilization smoke+verify'
+
+
+
+permissions:
+
+  contents: read
+
+  actions: write
+
+
+
+concurrency:
+
+  group: pe2f1-certification-${{ github.ref }}
+
+  cancel-in-progress: true
+
+
+
+jobs:
+
+  certify:
+
+    name: PE.2F.1 Smoke + Verify
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    env:
+
+      PE_DEPOSIT_CLAIM_PORT_ENABLED: 'false'
+
+      PE_ADAPTER_BOUNDARY_ENABLED: 'false'
+
+      NODE_ENV: test
+
+
+
+    steps:
+
+      - name: Checkout
+
+        uses: actions/checkout@v4
+
+
+
+      - name: Guard — no deploy / no prod app / scripts present
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          WF=".github/workflows/pe2f1-automated-certification.yml"
+
+          test -f "$WF"
+
+          if grep -Eiq 'fly[[:space:]]+deploy|goldeouro-backend-v2' "$WF"; then
+
+            echo "ABORT: deploy or prod app reference in workflow"
+
+            exit 1
+
+          fi
+
+          if grep -Eiq 'fly[[:space:]]+deploy|supabase.*(service_role|prod)|DATABASE_URL' "$WF"; then
+
+            echo "ABORT: forbidden productive reference"
+
+            exit 1
+
+          fi
+
+          test -f scripts/pe2f-claim-deposit-port-smoke.mjs
+
+          test -f scripts/verify-pe2f-deposit-claim-port.mjs
+
+          test -f src/payment-engine/core/claimApprovedDeposit.js
+
+          echo "Guards OK"
+
+
+
+      - name: Setup Node.js 20
+
+        uses: actions/setup-node@v4
+
+        with:
+
+          node-version: '20'
+
+          cache: npm
+
+
+
+      - name: Install dependencies (deterministic, no lifecycle scripts)
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          if [[ -f package-lock.json ]]; then
+
+            npm ci --ignore-scripts
+
+          else
+
+            npm install --ignore-scripts --no-audit --no-fund
+
+          fi
+
+
+
+      - name: Structural validation — core must not mention supabase
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          CORE=src/payment-engine/core/claimApprovedDeposit.js
+
+          if grep -Eiq 'supabase|pagamentos_pix|ledger_financeiro' "$CORE"; then
+
+            echo "FAIL: core still mentions forbidden tokens"
+
+            grep -Ein 'supabase|pagamentos_pix|ledger_financeiro|usuarios' "$CORE" || true
+
+            exit 1
+
+          fi
+
+          # usuarios as table access — allow word only if not schema access patterns; hard fail on .from('usuarios')
+
+          if grep -Eq "\.from\(['\"]usuarios['\"]\)" "$CORE"; then
+
+            echo "FAIL: core accesses usuarios table"
+
+            exit 1
+
+          fi
+
+          echo "Structural core audit PASS"
+
+
+
+      - name: Prepare artifact directory
+
+        run: mkdir -p artifacts/pe2f1-certification
+
+
+
+      - name: Environment report
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          cat > artifacts/pe2f1-certification/environment-report.json <<EOF
+
+          {
+
+            "gate": "PE.2F.1-AUTO",
+
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+
+            "sha": "${{ github.sha }}",
+
+            "ref": "${{ github.ref }}",
+
+            "ref_name": "${{ github.ref_name }}",
+
+            "run_id": "${{ github.run_id }}",
+
+            "run_attempt": "${{ github.run_attempt }}",
+
+            "actor": "${{ github.actor }}",
+
+            "node": "$(node -v)",
+
+            "npm": "$(npm -v)",
+
+            "flags": {
+
+              "PE_DEPOSIT_CLAIM_PORT_ENABLED": "${PE_DEPOSIT_CLAIM_PORT_ENABLED}",
+
+              "PE_ADAPTER_BOUNDARY_ENABLED": "${PE_ADAPTER_BOUNDARY_ENABLED}"
+
+            },
+
+            "deploy_executed": false,
+
+            "database_accessed": false,
+
+            "production_touched": false,
+
+            "staging_touched": false
+
+          }
+
+          EOF
+
+
+
+      - name: Dependency / import audit
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          CORE=src/payment-engine/core/claimApprovedDeposit.js
+
+          ADAPTER=src/payment-engine/adapters/goldeouro/GolDeOuroDepositClaimAdapter.js
+
+          node -e "
+
+            const fs=require('fs');
+
+            const core=fs.readFileSync('$CORE','utf8');
+
+            const adapter=fs.existsSync('$ADAPTER');
+
+            const report={
+
+              gate:'PE.2F.1-AUTO',
+
+              core:{
+
+                path:'$CORE',
+
+                mentions_supabase:/supabase/i.test(core),
+
+                mentions_pagamentos_pix:/pagamentos_pix/.test(core),
+
+                mentions_usuarios_table:/\.from\(['\"]usuarios['\"]\)/.test(core),
+
+                has_from:/\.from\(/.test(core),
+
+                has_rpc:/\.rpc\(/.test(core)
+
+              },
+
+              adapter_present:adapter,
+
+              scripts:{
+
+                smoke:fs.existsSync('scripts/pe2f-claim-deposit-port-smoke.mjs'),
+
+                verify:fs.existsSync('scripts/verify-pe2f-deposit-claim-port.mjs')
+
+              }
+
+            };
+
+            if(report.core.mentions_supabase||report.core.mentions_pagamentos_pix||report.core.has_from||report.core.has_rpc){
+
+              console.error(JSON.stringify(report,null,2));
+
+              process.exit(1);
+
+            }
+
+            fs.writeFileSync('artifacts/pe2f1-certification/dependency-audit.json', JSON.stringify(report,null,2));
+
+            console.log('dependency-audit PASS');
+
+          "
+
+
+
+      - name: Smoke PE.2F.1
+
+        id: smoke
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          set +e
+
+          START=$(date +%s)
+
+          node scripts/pe2f-claim-deposit-port-smoke.mjs > artifacts/pe2f1-certification/smoke-output.txt 2>&1
+
+          CODE=$?
+
+          END=$(date +%s)
+
+          set -e
+
+          echo "exit_code=$CODE" >> "$GITHUB_OUTPUT"
+
+          echo "duration_sec=$((END-START))" >> "$GITHUB_OUTPUT"
+
+          echo "SMOKE exit=$CODE duration=$((END-START))s" | tee -a artifacts/pe2f1-certification/smoke-output.txt
+
+          exit $CODE
+
+
+
+      - name: Verify PE.2F.1
+
+        id: verify
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          set +e
+
+          START=$(date +%s)
+
+          node scripts/verify-pe2f-deposit-claim-port.mjs > artifacts/pe2f1-certification/verify-output.txt 2>&1
+
+          CODE=$?
+
+          END=$(date +%s)
+
+          set -e
+
+          echo "exit_code=$CODE" >> "$GITHUB_OUTPUT"
+
+          echo "duration_sec=$((END-START))" >> "$GITHUB_OUTPUT"
+
+          echo "VERIFY exit=$CODE duration=$((END-START))s" | tee -a artifacts/pe2f1-certification/verify-output.txt
+
+          exit $CODE
+
+
+
+      - name: Write certification-result.json
+
+        if: always()
+
+        shell: bash
+
+        run: |
+
+          set -euo pipefail
+
+          SMOKE_CODE="${{ steps.smoke.outputs.exit_code }}"
+
+          VERIFY_CODE="${{ steps.verify.outputs.exit_code }}"
+
+          SMOKE_CODE="${SMOKE_CODE:-unknown}"
+
+          VERIFY_CODE="${VERIFY_CODE:-unknown}"
+
+          VERDICT="FAIL"
+
+          if [[ "$SMOKE_CODE" == "0" && "$VERIFY_CODE" == "0" ]]; then
+
+            VERDICT="PASS"
+
+          fi
+
+          cat > artifacts/pe2f1-certification/certification-result.json <<EOF
+
+          {
+
+            "gate": "PE.2F.1-AUTO",
+
+            "verdict": "$VERDICT",
+
+            "smoke": {
+
+              "exit_code": "$SMOKE_CODE",
+
+              "duration_sec": "${{ steps.smoke.outputs.duration_sec }}",
+
+              "pass": $([ "$SMOKE_CODE" = "0" ] && echo true || echo false)
+
+            },
+
+            "verify": {
+
+              "exit_code": "$VERIFY_CODE",
+
+              "duration_sec": "${{ steps.verify.outputs.duration_sec }}",
+
+              "pass": $([ "$VERIFY_CODE" = "0" ] && echo true || echo false)
+
+            },
+
+            "sha": "${{ github.sha }}",
+
+            "ref": "${{ github.ref }}",
+
+            "run_id": "${{ github.run_id }}",
+
+            "run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+
+            "deploy_executed": false,
+
+            "production_altered": false,
+
+            "staging_altered": false,
+
+            "database_accessed": false,
+
+            "pe2g_authorized": "NO-GO"
+
+          }
+
+          EOF
+
+          cat artifacts/pe2f1-certification/certification-result.json
+
+
+
+      - name: Upload PE.2F.1 certification artifacts
+
+        if: always()
+
+        uses: actions/upload-artifact@v4
+
+        with:
+
+          name: pe2f1-certification
+
+          path: artifacts/pe2f1-certification/
+
+          if-no-files-found: error
+
+          retention-days: 30
+
