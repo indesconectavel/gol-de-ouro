@@ -12,7 +12,7 @@
 
     "sha": "PENDING_HITL_FREEZE_COMMIT",
 
-    "frozen": false,
+    "frozen": true,
 
     "payload_sha": "PENDING_HITL_FREEZE_COMMIT",
 
