@@ -10,6 +10,18 @@ primary_region = "gru"
 [env]
   NODE_ENV = "staging"
   DATABASE_ENV = "staging"
+  APP_NAME = "goldeouro-backend-staging"
+  PE_ADAPTER_BOUNDARY_ENABLED = "false"
+  PE_DEPOSIT_CLAIM_PORT_ENABLED = "false"
+  PE_IDEMPOTENCY_PORT_ENABLED = "false"
+  PE_WEBHOOK_STORE_PORT_ENABLED = "false"
+  PE_CORE_FINANCE_BOUNDARY_ENABLED = "false"
+  PE_PAYOUT_BOUNDARY_ENABLED = "false"
+  PE_RUNTIME_BOUNDARY_ENABLED = "false"
+  PE_PROVIDER_BOUNDARY_ENABLED = "false"
+  MP_RECONCILE_ENABLED = "false"
+  ASAAS_PAYOUT_RECOVERY_ENABLED = "false"
+  ENABLE_PIX_PAYOUT_WORKER = "false"
 
 # Staging: somente processo HTTP — sem payout_worker (design G2/H2A)
 [processes]

@@ -1,0 +1,77 @@
+{
+  "gate": "RE.9B.2R.4",
+  "requested_scope": ["R7", "R8"],
+  "verdict": "ABORT",
+  "abort_phase": "pre_implementation",
+  "branch": "re/9b-staging-deployment-contract",
+  "baseline_sha": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+  "blocking_conflict": {
+    "r8_requires": [
+      "engineering_commit",
+      "new_release_candidate",
+      "new_revisioned_tag"
+    ],
+    "gate_forbids": [
+      "canonical_manifest_change"
+    ],
+    "contract_requires_equality": [
+      "input_expected_sha",
+      "manifest_release_sha",
+      "manifest_release_commit",
+      "manifest_artifact_identity",
+      "peeled_tag_sha",
+      "checkout_head_sha"
+    ],
+    "reason": "A new RC/tag necessarily has a new SHA, but the gate forbids updating the canonical source that must contain and validate that identity."
+  },
+  "identity_model_blocker": {
+    "self_referential_commit_sha": true,
+    "decision_required": true,
+    "allowed_solutions": [
+      "payload_sha plus peeled tag as release identity",
+      "post-commit external attestation",
+      "another explicitly approved non-self-referential model"
+    ]
+  },
+  "commit_authorization": {
+    "required_phrase": "CONFIRMO RE.9B COMMIT",
+    "received": false,
+    "commit_allowed": false
+  },
+  "execution": {
+    "r7_started": false,
+    "r7_completed": false,
+    "r8_started": false,
+    "r8_completed": false,
+    "technical_files_modified": [],
+    "evidence_files_created": [
+      "docs/relatorios/RE.9B.2R.4-CONTROLLED-REMEDIATION.md",
+      "docs/relatorios/snapshots/re9b2r4-controlled-remediation.json"
+    ]
+  },
+  "preservation": {
+    "canonical_manifest_changed": false,
+    "src_changed": false,
+    "workflow_changed": false,
+    "dockerfile_changed": false,
+    "runtime_changed": false,
+    "payment_engine_changed": false,
+    "production_changed": false,
+    "staging_changed": false,
+    "database_changed": false,
+    "deploy_executed": false,
+    "rollback_executed": false,
+    "commit_created": false,
+    "push_executed": false,
+    "tag_created_or_moved": false,
+    "unexpected_drift": false
+  },
+  "remaining_remediations": ["R7", "R8", "R9"],
+  "r9_authorized": false,
+  "recommended_next_gates": [
+    "RE.9B.2R.4A — Artifact Reproducibility (R7)",
+    "RE.9B.2R.4B — Release Identity Model",
+    "RE.9B commit authorization",
+    "new RC and revisioned tag"
+  ]
+}

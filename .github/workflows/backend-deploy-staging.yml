@@ -22,7 +22,23 @@ on:
 
     inputs:
 
-      confirm:
+      release_tag:
+
+        description: 'Tag imutável autorizada para staging'
+
+        required: true
+
+        type: string
+
+      expected_sha:
+
+        description: 'SHA completo esperado (40 caracteres)'
+
+        required: true
+
+        type: string
+
+      confirm_staging:
 
         description: 'Digite STAGING para confirmar (guarda anti-produção)'
 
@@ -32,9 +48,18 @@ on:
 
         type: string
 
+      dry_run:
+
+        description: 'Executar somente validações read-only, sem build/deploy'
+
+        required: true
+
+        default: true
+
+        type: boolean
 
 
-run-name: "staging-deploy pe2m-shadow-staging-ready @ ${{ github.sha }}"
+run-name: "staging-${{ inputs.dry_run && 'dry-run' || 'deploy' }} ${{ inputs.release_tag }} @ ${{ inputs.expected_sha }}"
 
 
 
@@ -46,7 +71,7 @@ permissions:
 
 env:
 
-  NODE_VERSION: '20'
+  NODE_VERSION: '20.20.2'
 
   FLY_APP_NAME: goldeouro-backend-staging
 
@@ -54,11 +79,15 @@ env:
 
   FLY_CONFIG: fly.staging.toml
 
-  # B-02 / PE.2M.2A: release única, imutável, auditável
+  # R6: referência e SHA explícitos, sem fallback para branch/HEAD.
 
-  RELEASE_REF: pe2m-shadow-staging-ready
+  RELEASE_REF: ${{ inputs.release_tag }}
 
-  GIT_TAG: pe2m-shadow-staging-ready
+  GIT_TAG: ${{ inputs.release_tag }}
+
+  EXPECTED_SHA: ${{ inputs.expected_sha }}
+
+  DRY_RUN: ${{ inputs.dry_run }}
 
   STAGING_DB_REF: uatszaqzdqcwnfbipoxg
 
@@ -72,13 +101,13 @@ jobs:
 
     name: 🧪 Deploy Backend Staging
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     timeout-minutes: 35
 
     concurrency:
 
-      group: fly-staging-deploy-goldeouro-backend-staging
+      group: fly-staging-deployment-contract-goldeouro-backend-staging
 
       cancel-in-progress: false
 
@@ -92,7 +121,7 @@ jobs:
 
           set -euo pipefail
 
-          if [ "${{ github.event.inputs.confirm }}" != "STAGING" ]; then
+          if [ "${{ inputs.confirm_staging }}" != "STAGING" ]; then
 
             echo "Confirmação inválida — digite STAGING. Abortado."
 
@@ -114,9 +143,25 @@ jobs:
 
           echo "GIT_TAG=${{ env.GIT_TAG }}"
 
-          test "${{ env.RELEASE_REF }}" = "pe2m-shadow-staging-ready"
+          test -n "${{ env.RELEASE_REF }}" || { echo "release_tag vazio — ABORTADO"; exit 1; }
 
-          test "${{ env.GIT_TAG }}" = "pe2m-shadow-staging-ready"
+          test "${{ env.RELEASE_REF }}" = "${{ env.GIT_TAG }}" || { echo "tag/ref divergentes — ABORTADO"; exit 1; }
+
+          echo "${{ env.RELEASE_REF }}" | grep -Eq '^pe2m-shadow-staging-ready(-r[0-9]+)?$' || {
+            echo "Tag não autorizada para staging — ABORTADO"
+            exit 1
+          }
+
+          case "${{ env.RELEASE_REF }}" in
+            main|dev|master|latest|HEAD) echo "Ref mutável proibida — ABORTADO"; exit 1 ;;
+          esac
+
+          echo "${{ env.EXPECTED_SHA }}" | grep -Eq '^[0-9a-f]{40}$' || {
+            echo "expected_sha deve possuir 40 caracteres hexadecimais — ABORTADO"
+            exit 1
+          }
+
+          echo "DRY_RUN=${{ env.DRY_RUN }}"
 
 
 
@@ -190,13 +235,24 @@ jobs:
 
       - name: Checkout release determinística
 
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
 
         with:
 
           ref: ${{ env.RELEASE_REF }}
 
           fetch-depth: 0
+
+
+      - name: Setup Node.js
+
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+
+        with:
+
+          node-version: ${{ env.NODE_VERSION }}
+
+          cache: npm
 
 
 
@@ -214,11 +270,30 @@ jobs:
 
           HEAD_SHA=$(git rev-parse HEAD)
 
+          TAG_SHA=$(git rev-parse "refs/tags/${{ env.RELEASE_REF }}^{commit}")
+
           FROZEN=$(jq -r '.release.frozen' docs/payment-engine/staging/release-manifest.json)
 
-          test "$MANIFEST_TAG" = "pe2m-shadow-staging-ready"
+          CONTRACT_VERSION=$(jq -r '.contract_version' docs/payment-engine/staging/release-manifest.json)
+
+          MANIFEST_COMMIT=$(jq -r '.release.commit' docs/payment-engine/staging/release-manifest.json)
+
+          ARTIFACT_IDENTITY=$(jq -r '.artifact.identity' docs/payment-engine/staging/release-manifest.json)
+
+          TARGET_ENV=$(jq -r '.target.environment' docs/payment-engine/staging/release-manifest.json)
+
+          TARGET_APP=$(jq -r '.target.app' docs/payment-engine/staging/release-manifest.json)
+
+          BUILD_TIMESTAMP=$(git show -s --format=%cI HEAD)
+
+          test "$MANIFEST_TAG" = "${{ env.RELEASE_REF }}" || { echo "manifest tag diverge do input — ABORTADO"; exit 1; }
 
           test "$FROZEN" = "true" || { echo "release.frozen != true — ABORTADO (PE.2M.2A)"; exit 1; }
+
+          test -n "$CONTRACT_VERSION" && test "$CONTRACT_VERSION" != "null" || {
+            echo "contract_version ausente no manifest — ABORTADO"
+            exit 1
+          }
 
           if [ -z "$EXPECTED_SHA" ] || [ "$EXPECTED_SHA" = "null" ] || [ "$EXPECTED_SHA" = "PENDING_HITL_FREEZE_COMMIT" ]; then
 
@@ -228,15 +303,31 @@ jobs:
 
           fi
 
-          if [ "$HEAD_SHA" != "$EXPECTED_SHA" ]; then
+          test "$EXPECTED_SHA" = "${{ env.EXPECTED_SHA }}" || { echo "manifest SHA diverge do input — ABORTADO"; exit 1; }
 
-            echo "SHA divergente — manifest $EXPECTED_SHA, checkout $HEAD_SHA — ABORTADO"
+          test "$MANIFEST_COMMIT" = "${{ env.EXPECTED_SHA }}" || { echo "release.commit diverge do input — ABORTADO"; exit 1; }
+
+          test "$ARTIFACT_IDENTITY" = "${{ env.EXPECTED_SHA }}" || { echo "artifact.identity diverge do input — ABORTADO"; exit 1; }
+
+          test "$TARGET_ENV" = "staging" || { echo "target.environment != staging — ABORTADO"; exit 1; }
+
+          test "$TARGET_APP" = "${{ env.FLY_APP_NAME }}" || { echo "target.app diverge do app fixo — ABORTADO"; exit 1; }
+
+          if [ "$HEAD_SHA" != "$EXPECTED_SHA" ] || [ "$TAG_SHA" != "$EXPECTED_SHA" ]; then
+
+            echo "SHA divergente — input/manifest=$EXPECTED_SHA tag=$TAG_SHA checkout=$HEAD_SHA — ABORTADO"
 
             exit 1
 
           fi
 
           echo "sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+          echo "tag=$MANIFEST_TAG" >> "$GITHUB_OUTPUT"
+
+          echo "contract_version=$CONTRACT_VERSION" >> "$GITHUB_OUTPUT"
+
+          echo "build_timestamp=$BUILD_TIMESTAMP" >> "$GITHUB_OUTPUT"
 
           git log -1 --oneline
 
@@ -274,25 +365,7 @@ jobs:
 
           node -c server-fly.js
 
-          if [ -f scripts/pe2b-staging-pipeline-validate.mjs ]; then
-
-            node scripts/pe2b-staging-pipeline-validate.mjs
-
-          fi
-
           echo "Artefatos PE.2E–PE.2M staging validados"
-
-
-
-      - name: Setup Node.js
-
-        uses: actions/setup-node@v4
-
-        with:
-
-          node-version: ${{ env.NODE_VERSION }}
-
-          cache: npm
 
 
 
@@ -302,9 +375,90 @@ jobs:
 
 
 
+      - name: Validações estruturais e smoke read-only obrigatórios
+
+        run: |
+
+          set -euo pipefail
+
+          node scripts/validate-staging-deployment-contract.mjs
+          node scripts/pe2b-staging-pipeline-validate.mjs
+          node scripts/pe2m-shadow-final-smoke.mjs
+          node scripts/verify-pe2m-shadow-final.mjs
+
+
+
       - name: Setup flyctl
 
-        uses: superfly/flyctl-actions/setup-flyctl@master
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1
+
+        with:
+
+          version: '0.4.71'
+
+
+
+      - name: Capturar baseline e alvo exato de rollback (read-only)
+
+        id: baseline
+
+        env:
+
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+        run: |
+
+          set -euo pipefail
+
+          EVIDENCE_DIR="evidence/re9b-deployment"
+          mkdir -p "$EVIDENCE_DIR"
+
+          flyctl status --app "${{ env.FLY_APP_NAME }}" --json > "$EVIDENCE_DIR/preflight-status.json"
+          flyctl releases --app "${{ env.FLY_APP_NAME }}" --json > "$EVIDENCE_DIR/preflight-releases.json"
+          flyctl machine list --app "${{ env.FLY_APP_NAME }}" --json > "$EVIDENCE_DIR/preflight-machines.json"
+          flyctl image show --app "${{ env.FLY_APP_NAME }}" --json > "$EVIDENCE_DIR/preflight-image.json"
+
+          curl -fsS --max-time 30 "https://${{ env.FLY_APP_NAME }}.fly.dev/health" \
+            > "$EVIDENCE_DIR/preflight-health.json" || true
+          curl -fsS --max-time 30 "https://${{ env.FLY_APP_NAME }}.fly.dev/meta" \
+            > "$EVIDENCE_DIR/preflight-meta.json" || true
+
+          ROLLBACK_VERSION=$(jq -r 'if type == "array" then (sort_by(((.version // .Version // 0) | tonumber)) | last) else . end | (.version // .Version // empty)' "$EVIDENCE_DIR/preflight-releases.json")
+          CURRENT_IMAGE=$(jq -r 'if type == "array" then .[0] else . end | (.config.image // .Config.Image // .image_ref // .ImageRef // empty)' "$EVIDENCE_DIR/preflight-machines.json")
+          CURRENT_IMAGE_DIGEST=$(jq -r '.digest // .Digest // empty' "$EVIDENCE_DIR/preflight-image.json")
+          CAPTURED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          test -n "$ROLLBACK_VERSION" || {
+            echo "Não foi possível determinar a release exata para rollback — ABORTADO"
+            exit 1
+          }
+          echo "$CURRENT_IMAGE_DIGEST" | grep -Eq '^sha256:[0-9a-f]{64}$' || {
+            echo "Digest OCI atual ausente ou inválido — ABORTADO"
+            exit 1
+          }
+
+          {
+            echo "rollback_version=$ROLLBACK_VERSION"
+            echo "current_image=$CURRENT_IMAGE"
+            echo "current_image_digest=$CURRENT_IMAGE_DIGEST"
+            echo "captured_at=$CAPTURED_AT"
+          } >> "$GITHUB_OUTPUT"
+
+          jq -n \
+            --arg app "${{ env.FLY_APP_NAME }}" \
+            --arg rollbackVersion "$ROLLBACK_VERSION" \
+            --arg currentImage "$CURRENT_IMAGE" \
+            --arg currentImageDigest "$CURRENT_IMAGE_DIGEST" \
+            --arg capturedAt "$CAPTURED_AT" \
+            --arg releaseTag "${{ steps.release.outputs.tag }}" \
+            --arg releaseSha "${{ steps.release.outputs.sha }}" \
+            '{app:$app,rollback_version:$rollbackVersion,current_image:$currentImage,current_image_digest:$currentImageDigest,captured_at:$capturedAt,target_tag:$releaseTag,target_sha:$releaseSha}' \
+            > "$EVIDENCE_DIR/baseline-summary.json"
+
+          printf 'flyctl releases rollback %s --app %s\n' "$ROLLBACK_VERSION" "${{ env.FLY_APP_NAME }}" \
+            > "$EVIDENCE_DIR/rollback-command.txt"
+
+          echo "Baseline staging capturada; rollback exato=$ROLLBACK_VERSION"
 
 
 
@@ -318,9 +472,10 @@ jobs:
 
           set -euo pipefail
 
-          flyctl secrets list -a "${{ env.FLY_APP_NAME }}" >/dev/null \
-
-            || { echo "FLY_API_TOKEN sem acesso read-only a staging — ABORTADO"; exit 1; }
+          flyctl secrets list -a "${{ env.FLY_APP_NAME }}" >/dev/null || {
+            echo "FLY_API_TOKEN sem acesso read-only a staging — ABORTADO"
+            exit 1
+          }
 
           echo "Token validado — secrets list staging OK (valores não exibidos)"
 
@@ -360,33 +515,25 @@ jobs:
 
           set -euo pipefail
 
-          flyctl ssh console -a "${{ env.FLY_APP_NAME }}" -C \
+          set +e
+          flyctl ssh console -a "${{ env.FLY_APP_NAME }}" -C "node -e \"const u=process.env.DATABASE_URL||''; if(u.includes('${{ env.PROD_DB_REF }}')) process.exit(2); if(!u.includes('${{ env.STAGING_DB_REF }}')) process.exit(1); process.exit(0);\""
+          CODE=$?
+          set -e
 
-            "node -e \"const u=process.env.DATABASE_URL||''; if(u.includes('${{ env.PROD_DB_REF }}')) process.exit(2); if(!u.includes('${{ env.STAGING_DB_REF }}')) process.exit(1); process.exit(0);\"" \
-
-            || {
-
-              CODE=$?
-
-              if [ "$CODE" -eq 2 ]; then
-
-                echo "DATABASE_URL contém ref PRODUÇÃO — ABORTADO"
-
-              else
-
-                echo "DATABASE_URL não confirmou ref staging — ABORTADO"
-
-              fi
-
-              exit 1
-
-            }
+          if [ "$CODE" -eq 2 ]; then
+            echo "DATABASE_URL contém ref PRODUÇÃO — ABORTADO"
+            exit 1
+          fi
+          if [ "$CODE" -ne 0 ]; then
+            echo "DATABASE_URL não confirmou ref staging — ABORTADO"
+            exit 1
+          fi
 
           echo "DATABASE_URL isolado — ref staging confirmada (valor não exibido)"
 
 
 
-      - name: Gate B-01 — Eight PE flags explicitly false (pré-deploy)
+      - name: Gate B-01 — configuração versionada e sem override por secret
 
         env:
 
@@ -396,87 +543,68 @@ jobs:
 
           set -euo pipefail
 
-          flyctl secrets set \
+          FLAGS=(
+            PE_ADAPTER_BOUNDARY_ENABLED
+            PE_DEPOSIT_CLAIM_PORT_ENABLED
+            PE_IDEMPOTENCY_PORT_ENABLED
+            PE_WEBHOOK_STORE_PORT_ENABLED
+            PE_CORE_FINANCE_BOUNDARY_ENABLED
+            PE_PAYOUT_BOUNDARY_ENABLED
+            PE_RUNTIME_BOUNDARY_ENABLED
+            PE_PROVIDER_BOUNDARY_ENABLED
+          )
 
-            PE_ADAPTER_BOUNDARY_ENABLED=false \
+          RUNTIME_GUARDS=(
+            MP_RECONCILE_ENABLED
+            ASAAS_PAYOUT_RECOVERY_ENABLED
+            ENABLE_PIX_PAYOUT_WORKER
+          )
 
-            PE_DEPOSIT_CLAIM_PORT_ENABLED=false \
+          for KEY in "${FLAGS[@]}" "${RUNTIME_GUARDS[@]}"; do
+            grep -Eq "^[[:space:]]*${KEY}[[:space:]]*=[[:space:]]*\"false\"[[:space:]]*$" \
+              "${{ env.FLY_CONFIG }}" || {
+                echo "${KEY} não está explicitamente false em ${{ env.FLY_CONFIG }} — ABORTADO"
+                exit 1
+              }
+          done
 
-            PE_IDEMPOTENCY_PORT_ENABLED=false \
+          grep -Eq '^[[:space:]]*NODE_ENV[[:space:]]*=[[:space:]]*"staging"[[:space:]]*$' "${{ env.FLY_CONFIG }}"
+          grep -Eq '^[[:space:]]*DATABASE_ENV[[:space:]]*=[[:space:]]*"staging"[[:space:]]*$' "${{ env.FLY_CONFIG }}"
+          grep -Eq '^[[:space:]]*APP_NAME[[:space:]]*=[[:space:]]*"goldeouro-backend-staging"[[:space:]]*$' "${{ env.FLY_CONFIG }}"
 
-            PE_WEBHOOK_STORE_PORT_ENABLED=false \
+          SECRET_NAMES=$(flyctl secrets list -a "${{ env.FLY_APP_NAME }}")
+          FORBIDDEN_SECRET_KEYS=(
+            GIT_TAG
+            NODE_ENV
+            DATABASE_ENV
+            APP_NAME
+            "${FLAGS[@]}"
+            "${RUNTIME_GUARDS[@]}"
+          )
 
-            PE_CORE_FINANCE_BOUNDARY_ENABLED=false \
+          for KEY in "${FORBIDDEN_SECRET_KEYS[@]}"; do
+            if echo "$SECRET_NAMES" | grep -Eq "(^|[[:space:]])${KEY}([[:space:]]|$)"; then
+              echo "${KEY} está persistida como secret e pode sobrescrever a configuração versionada — ABORTADO"
+              echo "Correção exige gate específico de configuração; este deploy não altera secrets."
+              exit 1
+            fi
+          done
 
-            PE_PAYOUT_BOUNDARY_ENABLED=false \
-
-            PE_RUNTIME_BOUNDARY_ENABLED=false \
-
-            PE_PROVIDER_BOUNDARY_ENABLED=false \
-
-            -a "${{ env.FLY_APP_NAME }}"
-
-          flyctl ssh console -a "${{ env.FLY_APP_NAME }}" -C \
-
-            'node -e "const keys=[\"PE_ADAPTER_BOUNDARY_ENABLED\",\"PE_DEPOSIT_CLAIM_PORT_ENABLED\",\"PE_IDEMPOTENCY_PORT_ENABLED\",\"PE_WEBHOOK_STORE_PORT_ENABLED\",\"PE_CORE_FINANCE_BOUNDARY_ENABLED\",\"PE_PAYOUT_BOUNDARY_ENABLED\",\"PE_RUNTIME_BOUNDARY_ENABLED\",\"PE_PROVIDER_BOUNDARY_ENABLED\"]; for (const k of keys){ const v=String(process.env[k]||\"\").toLowerCase(); if(v!==\"false\"&&v!==\"\") { console.error(k+\"=\"+v); process.exit(1);} } console.log(\"eight_flags_ok\");"' \
-
-            || { echo "Uma ou mais PE flags != false após set — ABORTADO"; exit 1; }
-
-          echo "Oito PE flags=false confirmadas (valores não exibidos)"
+          echo "Flags PE e guards de runtime=false no TOML, sem override por Fly secret."
 
 
 
       - name: Deploy Fly staging
 
-        run: |
+        id: deploy
 
-          set -euo pipefail
-
-          flyctl deploy --remote-only --no-cache \
-
-            --config "${{ env.FLY_CONFIG }}" \
-
-            --app "${{ env.FLY_APP_NAME }}" \
-
-            --build-arg GIT_COMMIT="${{ steps.release.outputs.sha }}"
-
-        env:
-
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-
-
-
-      - name: Metadata + eight PE flags staging (pós-deploy)
+        if: ${{ inputs.dry_run == false }}
 
         run: |
 
           set -euo pipefail
 
-          flyctl secrets set \
-
-            GIT_TAG="${{ env.GIT_TAG }}" \
-
-            NODE_ENV=staging \
-
-            DATABASE_ENV=staging \
-
-            PE_ADAPTER_BOUNDARY_ENABLED=false \
-
-            PE_DEPOSIT_CLAIM_PORT_ENABLED=false \
-
-            PE_IDEMPOTENCY_PORT_ENABLED=false \
-
-            PE_WEBHOOK_STORE_PORT_ENABLED=false \
-
-            PE_CORE_FINANCE_BOUNDARY_ENABLED=false \
-
-            PE_PAYOUT_BOUNDARY_ENABLED=false \
-
-            PE_RUNTIME_BOUNDARY_ENABLED=false \
-
-            PE_PROVIDER_BOUNDARY_ENABLED=false \
-
-            -a "${{ env.FLY_APP_NAME }}"
+          flyctl deploy --remote-only --no-cache --config "${{ env.FLY_CONFIG }}" --app "${{ env.FLY_APP_NAME }}" --build-arg GIT_COMMIT="${{ steps.release.outputs.sha }}" --build-arg GIT_TAG="${{ steps.release.outputs.tag }}" --build-arg RELEASE_CONTRACT_VERSION="${{ steps.release.outputs.contract_version }}" --build-arg BUILD_TIMESTAMP="${{ steps.release.outputs.build_timestamp }}"
 
         env:
 
@@ -486,29 +614,52 @@ jobs:
 
       - name: Gate — /health staging
 
+        id: health
+
+        if: ${{ inputs.dry_run == false }}
+
         run: |
 
           set -euo pipefail
 
           URL="https://${{ env.FLY_APP_NAME }}.fly.dev/health"
 
+          BODY=""
+
           for i in 1 2 3 4 5; do
 
             echo "Tentativa $i → $URL"
 
-            if curl -fsS --max-time 30 "$URL"; then exit 0; fi
+            if BODY=$(curl -fsS --max-time 30 "$URL"); then break; fi
 
             sleep $((i * 5))
 
           done
 
-          echo "/health falhou — rollback: flyctl releases rollback -a ${{ env.FLY_APP_NAME }}"
+          test -n "$BODY" || {
+            echo "/health falhou — rollback: flyctl releases rollback -a ${{ env.FLY_APP_NAME }}"
+            exit 1
+          }
 
-          exit 1
+          echo "$BODY" | jq .
+          test "$(echo "$BODY" | jq -r '.status')" = "ok" || {
+            echo "health.status != ok"
+            exit 1
+          }
+          test "$(echo "$BODY" | jq -r '.database')" = "connected" || {
+            echo "health.database != connected"
+            exit 1
+          }
+
+          echo "Health staging: aplicação viva, banco conectado."
 
 
 
       - name: Gate — /meta staging
+
+        id: meta
+
+        if: ${{ inputs.dry_run == false }}
 
         run: |
 
@@ -522,19 +673,60 @@ jobs:
 
           test "$(echo "$BODY" | jq -r '.data.environment')" = "staging" || { echo "environment != staging"; exit 1; }
 
+          test "$(echo "$BODY" | jq -r '.data.app')" = "${{ env.FLY_APP_NAME }}" || { echo "app != staging target"; exit 1; }
+
+          test "$(echo "$BODY" | jq -r '.data.shadowMode')" = "true" || { echo "shadowMode != true"; exit 1; }
+
           PRUNTIME=$(echo "$BODY" | jq -r '.data.paymentEngine.productionRuntime')
 
           test "$PRUNTIME" = "false" || { echo "productionRuntime deve ser false"; exit 1; }
 
           META_SHA=$(echo "$BODY" | jq -r '.data.gitCommit')
 
-          test "$META_SHA" = "${{ steps.release.outputs.sha }}" \
+          test "$META_SHA" = "${{ steps.release.outputs.sha }}" || { echo "meta.gitCommit ($META_SHA) diverge do RELEASE_SHA — ABORTADO"; exit 1; }
 
-            || echo "::warning::meta.gitCommit ($META_SHA) diverge do RELEASE_SHA — validar manualmente"
+          test "$(echo "$BODY" | jq -r '.data.gitTag')" = "${{ steps.release.outputs.tag }}" || { echo "meta.gitTag diverge da release — ABORTADO"; exit 1; }
+
+          test "$(echo "$BODY" | jq -r '.data.releaseContractVersion')" = "${{ steps.release.outputs.contract_version }}" || { echo "releaseContractVersion diverge do manifest — ABORTADO"; exit 1; }
+
+          test "$(echo "$BODY" | jq -r '.data.buildTimestamp')" = "${{ steps.release.outputs.build_timestamp }}" || { echo "buildTimestamp diverge do commit — ABORTADO"; exit 1; }
+
+          test "$(echo "$BODY" | jq -r '[.data.runtime.paymentEngineFlags[]] | all(. == false)')" = "true" || { echo "Uma ou mais PE flags estão habilitadas — ABORTADO"; exit 1; }
+
+          test "$(echo "$BODY" | jq -r '[.data.runtime.financialSchedulers[]] | all(. == false)')" = "true" || { echo "Scheduler financeiro habilitado — ABORTADO"; exit 1; }
+
+          test "$(echo "$BODY" | jq -r '[.data.runtime.workers[]] | all(. == false)')" = "true" || { echo "Worker financeiro habilitado — ABORTADO"; exit 1; }
+
+          echo "Metadata staging: SHA/tag/app/ambiente/flags/schedulers/workers certificados."
+
+
+
+      - name: Rollback staging para baseline capturada
+
+        if: ${{ always() && inputs.dry_run == false && (steps.deploy.outcome == 'failure' || steps.health.outcome == 'failure' || steps.meta.outcome == 'failure') }}
+
+        env:
+
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+        run: |
+
+          set -euo pipefail
+
+          VERSION="${{ steps.baseline.outputs.rollback_version }}"
+          test -n "$VERSION" || { echo "Versão de rollback ausente — ABORTADO"; exit 1; }
+
+          flyctl releases rollback "$VERSION" --app "${{ env.FLY_APP_NAME }}"
+          curl -fsS --max-time 30 "https://${{ env.FLY_APP_NAME }}.fly.dev/health" \
+            > evidence/re9b-deployment/rollback-health.json
+
+          echo "Rollback staging concluído para release $VERSION"
 
 
 
       - name: Gate — produção intocada (read-only)
+
+        if: ${{ inputs.dry_run == false }}
 
         run: |
 
@@ -556,7 +748,80 @@ jobs:
 
 
 
+      - name: Capturar evidência pós-deploy
+
+        if: ${{ inputs.dry_run == false && success() }}
+
+        env:
+
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+        run: |
+
+          set -euo pipefail
+
+          EVIDENCE_DIR="evidence/re9b-deployment"
+          flyctl status --app "${{ env.FLY_APP_NAME }}" --json > "$EVIDENCE_DIR/postflight-status.json"
+          flyctl releases --app "${{ env.FLY_APP_NAME }}" --json > "$EVIDENCE_DIR/postflight-releases.json"
+          flyctl machine list --app "${{ env.FLY_APP_NAME }}" --json > "$EVIDENCE_DIR/postflight-machines.json"
+          flyctl image show --app "${{ env.FLY_APP_NAME }}" --json > "$EVIDENCE_DIR/postflight-image.json"
+          curl -fsS --max-time 30 "https://${{ env.FLY_APP_NAME }}.fly.dev/health" > "$EVIDENCE_DIR/postflight-health.json"
+          curl -fsS --max-time 30 "https://${{ env.FLY_APP_NAME }}.fly.dev/meta" > "$EVIDENCE_DIR/postflight-meta.json"
+
+          DEPLOYED_DIGEST=$(jq -r '.digest // .Digest // empty' "$EVIDENCE_DIR/postflight-image.json")
+          echo "$DEPLOYED_DIGEST" | grep -Eq '^sha256:[0-9a-f]{64}$' || {
+            echo "Digest OCI implantado ausente ou inválido — ABORTADO"
+            exit 1
+          }
+
+          jq -n \
+            --arg app "${{ env.FLY_APP_NAME }}" \
+            --arg tag "${{ steps.release.outputs.tag }}" \
+            --arg sha "${{ steps.release.outputs.sha }}" \
+            --arg imageDigest "$DEPLOYED_DIGEST" \
+            --arg baseImage "node:20.20.2-alpine3.22@sha256:8f47899606d000b0704e992f927fe7335adcd0d6c98851600072fb6e14a13e60" \
+            '{app:$app,tag:$tag,sha:$sha,image_digest:$imageDigest,base_image:$baseImage}' \
+            > "$EVIDENCE_DIR/deployed-artifact.json"
+
+          echo "Digest OCI implantado: $DEPLOYED_DIGEST"
+
+
+
+      - name: Publicar evidências do contrato
+
+        if: ${{ always() }}
+
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+
+        with:
+
+          name: re9b-staging-${{ inputs.dry_run && 'dry-run' || 'deploy' }}-${{ inputs.expected_sha }}
+
+          path: evidence/re9b-deployment
+
+          if-no-files-found: error
+
+          retention-days: 30
+
+
+
+      - name: Resumo dry-run
+
+        if: ${{ inputs.dry_run == true }}
+
+        run: |
+
+          echo "Dry-run staging concluído sem build, deploy, rollback ou mutação."
+          echo "  App: ${{ env.FLY_APP_NAME }}"
+          echo "  Tag: ${{ steps.release.outputs.tag }}"
+          echo "  SHA: ${{ steps.release.outputs.sha }}"
+          echo "  Rollback baseline: ${{ steps.baseline.outputs.rollback_version }}"
+
+
+
       - name: Resumo
+
+        if: ${{ inputs.dry_run == false && success() }}
 
         run: |
 

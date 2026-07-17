@@ -1,98 +1,18 @@
 {
-
-  "gate": "PE.2M.2A",
-
-  "title": "Release determinística — shadow staging PE.2E–PE.2M",
-
-  "date": "2026-07-14",
-
-  "release": {
-
-    "tag": "pe2m-shadow-staging-ready",
-
-    "sha": "PENDING_HITL_FREEZE_COMMIT",
-
-    "frozen": true,
-
-    "payload_sha": "PENDING_HITL_FREEZE_COMMIT",
-
-    "release_commit": "PENDING_HITL_FREEZE_COMMIT",
-
-    "release_branch": "pe/pe2b-staging-deploy",
-
-    "release_version": "pe2m-shadow-staging-ready",
-
-    "release_date": "2026-07-14",
-
-    "git_tag": "pe2m-shadow-staging-ready",
-
-    "branch_source": "pe/pe2b-staging-deploy",
-
-    "series": [
-
-      "PE.2E",
-
-      "PE.2F",
-
-      "PE.2G",
-
-      "PE.2H",
-
-      "PE.2I",
-
-      "PE.2J",
-
-      "PE.2K",
-
-      "PE.2L",
-
-      "PE.2L.1",
-
-      "PE.2M"
-
-    ],
-
-    "technical_anchor_tag": "pe2b-adapter-boundary-safe",
-
-    "technical_anchor_sha": "73bca758789ad6ba23561f9f5695abb2b20a3a9d",
-
-    "supersedes_branch_head": "a651de6563b09025adec91ceb84dfa7933088a48",
-
-    "supersedes_tag": "pe2b-staging-ready",
-
-    "freeze_note": "HITL: node scripts/pe2m2a-release-freeze.mjs após commit RC limpo"
-
+  "schema_version": "1.0.0",
+  "status": "LEGACY_NON_OPERATIONAL",
+  "authority": {
+    "canonical": false,
+    "operational": false,
+    "consumed_by_deploy": false
   },
-
-  "deploy": {
-
-    "release_ref": "pe2m-shadow-staging-ready",
-
-    "git_tag_meta": "pe2m-shadow-staging-ready",
-
-    "fly_app": "goldeouro-backend-staging",
-
-    "fly_config": "fly.staging.toml",
-
-    "confirm_token": "STAGING",
-
-    "eight_pe_flags": false
-
-  },
-
-  "canonical_workflow_manifest": "docs/payment-engine/staging/release-manifest.json",
-
-  "immutability": {
-
-    "override_release_ref_allowed": false,
-
-    "override_git_tag_allowed": false,
-
-    "checkout_must_match_manifest_sha": true,
-
-    "require_frozen_true": true
-
+  "canonical_manifest": "docs/payment-engine/staging/release-manifest.json",
+  "deprecated_at_gate": "RE.9B.1",
+  "reason": "Legacy certification mirror retained only for historical path compatibility. Release, tag, SHA, target and freeze authority belong exclusively to the canonical manifest.",
+  "rules": {
+    "must_not_be_consumed_by_workflow": true,
+    "must_not_duplicate_release_metadata": true,
+    "must_not_govern_deploy": true
   }
-
 }
 

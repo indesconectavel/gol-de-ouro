@@ -1,0 +1,116 @@
+{
+  "gate": "RE.9B.2R.4A",
+  "remediation": "R7",
+  "status": "PASS",
+  "generated_at": "2026-07-17T15:49:07Z",
+  "scope": {
+    "r7_executed": true,
+    "r8_executed": false,
+    "r9_executed": false,
+    "deploy_executed": false,
+    "commit_created": false,
+    "tag_created": false
+  },
+  "release_identity": {
+    "manifest_changed": false,
+    "tag": "pe2m-shadow-staging-ready",
+    "sha": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+    "commit": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+    "frozen": true,
+    "preserved": true
+  },
+  "pins": {
+    "runner": "ubuntu-24.04",
+    "node_ci": "20.20.2",
+    "node_base_image": "node:20.20.2-alpine3.22@sha256:8f47899606d000b0704e992f927fe7335adcd0d6c98851600072fb6e14a13e60",
+    "flyctl": "0.4.71",
+    "actions_checkout": "34e114876b0b11c390a56381ad16ebd13914f8d5",
+    "actions_setup_node": "49933ea5288caeca8642d1e84afbd3f7d6820020",
+    "actions_upload_artifact": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+    "flyctl_action": "ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1"
+  },
+  "artifact_reproducibility": {
+    "dependency_install": "npm ci --omit=dev",
+    "preflight_digest_capture": true,
+    "postflight_digest_capture": true,
+    "digest_validation": "^sha256:[0-9a-f]{64}$",
+    "future_evidence_file": "evidence/re9b-deployment/deployed-artifact.json",
+    "manifest_destination_used": false
+  },
+  "files": {
+    "existing_modified": [
+      "Dockerfile",
+      ".github/workflows/backend-deploy-staging.yml",
+      ".github/workflows/a2r-staging-asaas-sandbox.yml",
+      "scripts/validate-staging-deployment-contract.mjs"
+    ],
+    "created": [
+      "docs/relatorios/RE.9B.2R.4A-R7-CONTROLLED-REMEDIATION.md",
+      "docs/relatorios/snapshots/re9b2r4a-r7-controlled-remediation.json"
+    ],
+    "total_touched": 6,
+    "src_changed": false
+  },
+  "runtime": {
+    "production_mutated": false,
+    "staging_mutated": false,
+    "database_mutated": false,
+    "payment_engine_mutated": false,
+    "functional_change": false,
+    "production_health": "ok",
+    "production_database": "connected",
+    "production_environment": "production",
+    "staging_health": "ok",
+    "staging_database": "connected",
+    "staging_production_runtime": false
+  },
+  "validation": {
+    "editor_lints": {
+      "status": "PASS",
+      "diagnostics": 0
+    },
+    "static_searches": {
+      "status": "PASS",
+      "mutable_action_refs_found": 0,
+      "src_r7_matches": 0,
+      "unexpected_drift_found": false
+    },
+    "node_validators": {
+      "status": "BLOCKED_BY_LOCAL_SHELL",
+      "exit_code": -65536,
+      "error": "System.Management.Automation.LanguagePrimitives",
+      "scripts": [
+        "scripts/validate-staging-deployment-contract.mjs",
+        "scripts/pe2b-staging-pipeline-validate.mjs",
+        "scripts/pe2m-shadow-final-smoke.mjs",
+        "scripts/verify-pe2m-shadow-final.mjs"
+      ]
+    },
+    "yaml_parser": {
+      "status": "BLOCKED_BY_LOCAL_SHELL",
+      "exit_code": -65536
+    }
+  },
+  "compatibility": {
+    "RE.9A": true,
+    "RE.9B.1": true,
+    "RE.9B.2": true,
+    "RE.9B.2R": true,
+    "RE.9B.2R.1": true,
+    "RE.9B.2R.2": true,
+    "RE.9B.2R.3": true
+  },
+  "residual_risk": [
+    "ubuntu-24.04 is a rolling hosted runner image",
+    "external registries and GitHub Actions remain availability dependencies",
+    "flyctl image show JSON schema requires future authorized dry-run certification",
+    "final OCI digest exists only after an authorized Fly build",
+    "R8 remains required to publish a new Git identity containing R1-R7"
+  ],
+  "next_gate": {
+    "name": "RE.9B.2R.4B",
+    "authorized": false,
+    "requires_explicit_authorization": true
+  },
+  "abort_required": false
+}

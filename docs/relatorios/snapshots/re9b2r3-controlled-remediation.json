@@ -1,0 +1,134 @@
+{
+  "gate": "RE.9B.2R.3",
+  "scope": ["R5", "R6"],
+  "branch": "re/9b-staging-deployment-contract",
+  "baseline_sha": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+  "r5": {
+    "completed": true,
+    "baseline_capture": {
+      "app_status": true,
+      "releases": true,
+      "machines": true,
+      "current_image": true,
+      "health": true,
+      "meta": true,
+      "timestamp": true,
+      "target_tag": true,
+      "target_sha": true
+    },
+    "rollback": {
+      "target": "goldeouro-backend-staging",
+      "uses_captured_version": true,
+      "ambiguous_latest_forbidden": true,
+      "trigger_conditions": ["deploy_failure", "health_failure", "meta_failure"],
+      "production_target_possible": false,
+      "executed_this_gate": false
+    },
+    "artifact": {
+      "path": "evidence/re9b-deployment",
+      "retention_days": 30,
+      "uploaded_always": true
+    }
+  },
+  "r6": {
+    "completed": true,
+    "required_inputs": [
+      "release_tag",
+      "expected_sha",
+      "confirm_staging",
+      "dry_run"
+    ],
+    "forbidden_ref_fallbacks": ["main", "dev", "master", "latest", "HEAD"],
+    "equality_chain": [
+      "input_expected_sha",
+      "manifest_release_sha",
+      "manifest_release_commit",
+      "manifest_artifact_identity",
+      "peeled_tag_sha",
+      "checkout_head_sha"
+    ],
+    "mandatory_validators": [
+      "scripts/validate-staging-deployment-contract.mjs",
+      "scripts/pe2b-staging-pipeline-validate.mjs",
+      "scripts/pe2m-shadow-final-smoke.mjs",
+      "scripts/verify-pe2m-shadow-final.mjs"
+    ],
+    "dry_run": {
+      "implemented": true,
+      "deploy_possible": false,
+      "rollback_possible": false,
+      "post_deploy_gates_run": false,
+      "read_only_preflight_run": true,
+      "evidence_generated": true,
+      "executed_this_gate": false
+    },
+    "freeze_helper_read_only": true,
+    "verifier_defaults_from_manifest": true,
+    "optional_validator_removed": true
+  },
+  "files": {
+    "modified": [
+      ".github/workflows/backend-deploy-staging.yml",
+      "scripts/pe2m2a-release-freeze.mjs",
+      "scripts/verify-release-candidate.mjs",
+      "scripts/pe2b-staging-pipeline-validate.mjs"
+    ],
+    "created": [
+      "scripts/validate-staging-deployment-contract.mjs",
+      "docs/relatorios/RE.9B.2R.3-CONTROLLED-REMEDIATION.md",
+      "docs/relatorios/snapshots/re9b2r3-controlled-remediation.json"
+    ],
+    "src_modified": []
+  },
+  "preservation": {
+    "canonical_manifest_changed": false,
+    "r1_a2r_audit_only": true,
+    "r2_secrets_mutation_absent": true,
+    "r3_shadow_fail_closed": true,
+    "r4_metadata_fatal_gates": true,
+    "runtime_current_changed": false,
+    "payment_engine_changed": false,
+    "unexpected_drift": false
+  },
+  "validation": {
+    "required_inputs_found": 4,
+    "sha_equality_markers_found": true,
+    "rollback_version_output_found": true,
+    "artifact_upload_found": true,
+    "deploy_conditioned_to_dry_run_false": true,
+    "legacy_script_defaults_found": 0,
+    "src_files_changed_by_gate": 0,
+    "editor_diagnostics": 0,
+    "external_tests_executed": false,
+    "limitation": "Local PowerShell host unavailable"
+  },
+  "remaining_environment_dependencies": [
+    "Fly live releases and machines",
+    "Pre-provisioned real secrets",
+    "Staging database availability",
+    "Mutable GitHub Actions and runner references",
+    "Mutable flyctl action",
+    "Mutable Docker base image"
+  ],
+  "impact": {
+    "functional_behavior_changed": false,
+    "runtime_current_changed": false,
+    "deployment_contract_changed": true,
+    "workflow_changed": true,
+    "manifest_changed": false,
+    "production_changed": false,
+    "staging_changed": false,
+    "database_changed": false,
+    "deploy_executed": false,
+    "rollback_executed": false,
+    "commit_created": false,
+    "push_executed": false,
+    "tag_created_or_moved": false
+  },
+  "remaining_remediations": ["R7", "R8", "R9"],
+  "next_scope": {
+    "authorized": true,
+    "constraint": "Engineering changes only; no deploy or external mutation"
+  },
+  "verdict": "PASS"
+}

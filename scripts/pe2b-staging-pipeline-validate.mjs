@@ -80,27 +80,41 @@ assert.ok(sha && sha.length === 40, 'manifest deve conter SHA completo');
 
 // B-02: release unificada
 
-assert.ok(workflow.includes(`RELEASE_REF: ${tag}`) || workflow.includes(`'${tag}'`),
+for (const input of ['release_tag:', 'expected_sha:', 'confirm_staging:', 'dry_run:']) {
+  assert.ok(workflow.includes(input), `workflow deve declarar input ${input}`);
+}
 
-  'workflow deve usar release tag unificada');
-
-assert.ok(workflow.includes(tag), 'workflow deve referenciar pe2b-staging-ready');
+assert.ok(workflow.includes('RELEASE_REF: ${{ inputs.release_tag }}'),
+  'workflow deve derivar RELEASE_REF exclusivamente do input release_tag');
 
 pass(`Release unificada: ${tag} @ ${sha}`);
 
 
 
-// B-01: set deterministico da flag
+// B-01: configuração versionada e determinística das oito flags
 
-assert.ok(
+for (const flag of [
+  'PE_ADAPTER_BOUNDARY_ENABLED',
+  'PE_DEPOSIT_CLAIM_PORT_ENABLED',
+  'PE_IDEMPOTENCY_PORT_ENABLED',
+  'PE_WEBHOOK_STORE_PORT_ENABLED',
+  'PE_CORE_FINANCE_BOUNDARY_ENABLED',
+  'PE_PAYOUT_BOUNDARY_ENABLED',
+  'PE_RUNTIME_BOUNDARY_ENABLED',
+  'PE_PROVIDER_BOUNDARY_ENABLED',
+  'MP_RECONCILE_ENABLED',
+  'ASAAS_PAYOUT_RECOVERY_ENABLED',
+  'ENABLE_PIX_PAYOUT_WORKER'
+]) {
+  assert.ok(
+    flyStaging.includes(`${flag} = "false"`),
+    `fly.staging.toml deve declarar ${flag} = "false"`
+  );
+}
 
-  workflow.includes('PE_ADAPTER_BOUNDARY_ENABLED=false'),
+assert.ok(!workflow.includes('flyctl secrets set'), 'workflow não deve mutar Fly secrets');
 
-  'workflow deve setar PE_ADAPTER_BOUNDARY_ENABLED=false explicitamente'
-
-);
-
-pass('B-01: flag setada deterministicamente no workflow');
+pass('B-01: flags PE e guards de runtime versionados; workflow sem secrets set');
 
 
 

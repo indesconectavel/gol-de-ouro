@@ -1,0 +1,104 @@
+{
+  "gate": "RE.9B.2R.1",
+  "scope": ["R1", "R2"],
+  "branch": "re/9b-staging-deployment-contract",
+  "baseline_sha": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+  "preconditions": {
+    "remediation_plan_present": true,
+    "canonical_manifest_preserved": true,
+    "baseline_ref_preserved": true,
+    "production_operation_executed": false,
+    "staging_operation_executed": false,
+    "deploy_started_by_gate": false,
+    "remote_pending_deploy_state_checked": false
+  },
+  "r1": {
+    "completed": true,
+    "a2r_deploy_capability": false,
+    "a2r_secret_mutation_capability": false,
+    "a2r_fly_access": false,
+    "a2r_release_override_inputs": false,
+    "a2r_mode": "static_contract_audit",
+    "canonical_deployer": ".github/workflows/backend-deploy-staging.yml",
+    "shared_concurrency_group": "fly-staging-deployment-contract-goldeouro-backend-staging"
+  },
+  "r2": {
+    "completed": true,
+    "canonical_workflow_secrets_set_count": 0,
+    "pe_flags_source": "fly.staging.toml",
+    "pe_flags_explicit_false": 8,
+    "forbidden_secret_overrides": [
+      "GIT_TAG",
+      "NODE_ENV",
+      "DATABASE_ENV",
+      "PE_ADAPTER_BOUNDARY_ENABLED",
+      "PE_DEPOSIT_CLAIM_PORT_ENABLED",
+      "PE_IDEMPOTENCY_PORT_ENABLED",
+      "PE_WEBHOOK_STORE_PORT_ENABLED",
+      "PE_CORE_FINANCE_BOUNDARY_ENABLED",
+      "PE_PAYOUT_BOUNDARY_ENABLED",
+      "PE_RUNTIME_BOUNDARY_ENABLED",
+      "PE_PROVIDER_BOUNDARY_ENABLED"
+    ],
+    "real_secrets_preserved": [
+      "FLY_API_TOKEN",
+      "DATABASE_URL"
+    ],
+    "drift_behavior": "abort_without_mutation"
+  },
+  "files": {
+    "modified": [
+      ".github/workflows/a2r-staging-asaas-sandbox.yml",
+      ".github/workflows/backend-deploy-staging.yml",
+      "fly.staging.toml",
+      "scripts/pe2m2a-release-freeze.mjs",
+      "scripts/pe2b-staging-pipeline-validate.mjs"
+    ],
+    "created": [
+      "docs/relatorios/RE.9B.2R.1-CONTROLLED-REMEDIATION.md",
+      "docs/relatorios/snapshots/re9b2r1-controlled-remediation.json"
+    ],
+    "removed": []
+  },
+  "integrity": {
+    "canonical_manifest_changed": false,
+    "release_freeze_gate_preserved": true,
+    "anti_production_guards_preserved": true,
+    "application_runtime_code_changed": false,
+    "payment_engine_changed": false,
+    "financial_rules_changed": false,
+    "unexpected_drift": false
+  },
+  "validation": {
+    "a2r_fly_commands_found": 0,
+    "canonical_secrets_set_commands_found": 0,
+    "toml_false_flags_found": 8,
+    "src_files_changed_by_gate": 0,
+    "editor_diagnostics": 0,
+    "external_tests_executed": false,
+    "external_tests_limitation": "Local PowerShell host unavailable"
+  },
+  "impact": {
+    "functional_behavior_changed": false,
+    "current_runtime_changed": false,
+    "deployment_contract_changed": true,
+    "production_changed": false,
+    "staging_changed": false,
+    "database_changed": false,
+    "deploy_executed": false,
+    "commit_created": false,
+    "push_executed": false,
+    "tag_created_or_moved": false
+  },
+  "residual_risks": [
+    "Existing Fly secrets with non-secret configuration names will cause a fail-closed abort until remediated by a dedicated gate",
+    "Mutable action and image references remain for R7",
+    "R3-R9 remain unimplemented"
+  ],
+  "next_scope": {
+    "authorized": true,
+    "name": "R3 + R4",
+    "constraint": "Engineering changes only; no deploy or external mutation"
+  },
+  "verdict": "PASS"
+}

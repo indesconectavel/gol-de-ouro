@@ -1,0 +1,113 @@
+{
+  "gate": "RE.9B.2R.2",
+  "scope": ["R3", "R4"],
+  "branch": "re/9b-staging-deployment-contract",
+  "baseline_sha": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+  "r3": {
+    "completed": true,
+    "shadow_fail_closed": true,
+    "production_guard_applied": false,
+    "versioned_runtime_guards": {
+      "MP_RECONCILE_ENABLED": false,
+      "ASAAS_PAYOUT_RECOVERY_ENABLED": false,
+      "ENABLE_PIX_PAYOUT_WORKER": false
+    },
+    "boot_requires_explicit_false_in_staging": true,
+    "payment_engine_source_changed": false
+  },
+  "r4": {
+    "completed": true,
+    "metadata": {
+      "environment_from_runtime": true,
+      "production_fallback_preserved": true,
+      "app_exposed": true,
+      "git_commit_exposed": true,
+      "git_tag_exposed": true,
+      "contract_version_exposed": true,
+      "deterministic_commit_timestamp_exposed": true,
+      "pe_flags_exposed": 8,
+      "scheduler_states_exposed": 2,
+      "worker_states_exposed": 1,
+      "secrets_exposed": false
+    },
+    "fatal_gates": [
+      "health.status",
+      "health.database",
+      "meta.environment",
+      "meta.app",
+      "meta.shadowMode",
+      "meta.productionRuntime",
+      "meta.gitCommit",
+      "meta.gitTag",
+      "meta.releaseContractVersion",
+      "meta.buildTimestamp",
+      "meta.paymentEngineFlags",
+      "meta.financialSchedulers",
+      "meta.workers"
+    ],
+    "git_commit_warning_replaced_by_abort": true
+  },
+  "files": {
+    "modified": [
+      "fly.staging.toml",
+      "server-fly.js",
+      "Dockerfile",
+      ".github/workflows/backend-deploy-staging.yml",
+      "scripts/pe2m2a-release-freeze.mjs",
+      "scripts/pe2b-staging-pipeline-validate.mjs"
+    ],
+    "created": [
+      "docs/relatorios/RE.9B.2R.2-CONTROLLED-REMEDIATION.md",
+      "docs/relatorios/snapshots/re9b2r2-controlled-remediation.json"
+    ],
+    "src_modified": []
+  },
+  "preservation": {
+    "canonical_manifest_changed": false,
+    "release_freeze_preserved": true,
+    "deterministic_contract_preserved": true,
+    "anti_production_guards_preserved": true,
+    "r1_a2r_remains_audit_only": true,
+    "r2_secrets_mutation_remains_absent": true,
+    "payment_engine_source_changed": false,
+    "business_rules_changed": false,
+    "pix_flow_changed": false,
+    "unexpected_drift": false
+  },
+  "validation": {
+    "toml_false_flags_and_guards": 11,
+    "hardcoded_meta_production_literal_found": 0,
+    "canonical_workflow_secrets_set_found": 0,
+    "a2r_fly_or_secrets_commands_found": 0,
+    "src_files_changed_by_gate": 0,
+    "editor_diagnostics": 0,
+    "external_tests_executed": false,
+    "limitation": "Local PowerShell host unavailable"
+  },
+  "impact": {
+    "functional_business_behavior_changed": false,
+    "current_runtime_changed": false,
+    "future_staging_runtime_contract_changed": true,
+    "workflow_changed": true,
+    "manifest_changed": false,
+    "production_changed": false,
+    "staging_changed": false,
+    "database_changed": false,
+    "deploy_executed": false,
+    "commit_created": false,
+    "push_executed": false,
+    "tag_created_or_moved": false
+  },
+  "residual_risks": [
+    "Live certification requires a future HITL staging deploy",
+    "Actions and base image remain mutable for R7",
+    "Rollback baseline capture remains for R5",
+    "Legacy Fly secret overrides may cause a fail-closed preflight abort"
+  ],
+  "next_scope": {
+    "authorized": true,
+    "name": "R5 + R6",
+    "constraint": "Engineering changes only; no deploy or external mutation"
+  },
+  "verdict": "PASS"
+}

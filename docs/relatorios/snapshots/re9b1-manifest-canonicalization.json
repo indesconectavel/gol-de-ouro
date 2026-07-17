@@ -1,0 +1,76 @@
+{
+  "gate": "RE.9B.1",
+  "title": "Manifest Canonicalization",
+  "branch": "re/9b-staging-deployment-contract",
+  "base_sha": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+  "original_release": {
+    "tag": "pe2m-shadow-staging-ready",
+    "sha": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+    "preserved": true
+  },
+  "inventory": {
+    "release_manifests": 2,
+    "operational_before": 2,
+    "operational_after": 1,
+    "audit_snapshots": 1
+  },
+  "canonical_manifest": {
+    "path": "docs/payment-engine/staging/release-manifest.json",
+    "authority": "operational",
+    "frozen": true,
+    "tag": "pe2m-shadow-staging-ready",
+    "commit": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+    "branch": "pe/rc-pe2m-shadow",
+    "environment": "staging",
+    "app": "goldeouro-backend-staging",
+    "contract_version": "RE.9B.1",
+    "placeholder_present": false
+  },
+  "legacy_manifest": {
+    "path": "docs/payment-engine/staging-final/release-manifest.json",
+    "status": "LEGACY_NON_OPERATIONAL",
+    "operational_authority": false,
+    "duplicates_release_metadata": false,
+    "points_to": "docs/payment-engine/staging/release-manifest.json"
+  },
+  "consumers": {
+    "workflow": [
+      ".github/workflows/backend-deploy-staging.yml"
+    ],
+    "scripts": [
+      "scripts/pe2b-staging-pipeline-validate.mjs",
+      "scripts/pe2m2a-release-freeze.mjs",
+      "scripts/verify-release-candidate.mjs"
+    ],
+    "all_use_canonical_manifest": true
+  },
+  "validation": {
+    "single_operational_manifest": true,
+    "workflow_uses_only_canonical": true,
+    "operational_drift_eliminated": true,
+    "placeholder_absent_from_release_manifests": true,
+    "release_frozen_consistent": true,
+    "tag_consistent": true,
+    "sha_consistent": true,
+    "application_code_changed": false,
+    "financial_behavior_changed": false
+  },
+  "external_actions": {
+    "production_changed": false,
+    "staging_changed": false,
+    "deploy_executed": false,
+    "workflow_dispatched": false,
+    "secrets_changed": false,
+    "database_changed": false,
+    "commit_created": false,
+    "push_executed": false,
+    "tag_created": false
+  },
+  "limitations": [
+    "Dynamic tag/SHA/checkout/manifest equality belongs to RE.9B.2",
+    "Shell-based parser and Git diff were unavailable because the local PowerShell host could not initialize",
+    "Historical reports retain prior-state evidence without operational authority"
+  ],
+  "next_gate": "RE.9B.2 — Deterministic Deployment Contract",
+  "verdict": "PASS"
+}

@@ -3797,6 +3797,30 @@ async function saveGlobalCounter() {
   }
 }
 
+// RE.9B.2R.2 / R3 — staging shadow só inicia com runtime financeiro explicitamente OFF.
+// Produção mantém o contrato atual; este guard é exclusivo de NODE_ENV=staging.
+function assertShadowRuntimeFailClosed() {
+  const environment = String(process.env.NODE_ENV || '').trim().toLowerCase();
+  if (environment !== 'staging') return;
+
+  const requiredFalse = [
+    'MP_RECONCILE_ENABLED',
+    'ASAAS_PAYOUT_RECOVERY_ENABLED',
+    'ENABLE_PIX_PAYOUT_WORKER'
+  ];
+  const invalid = requiredFalse.filter(
+    (name) => String(process.env[name] || '').trim().toLowerCase() !== 'false'
+  );
+
+  if (invalid.length > 0) {
+    throw new Error(
+      `[SHADOW][FAIL_CLOSED] Configuração ausente ou insegura: ${invalid.join(', ')}`
+    );
+  }
+}
+
+assertShadowRuntimeFailClosed();
+
 // P2.2 — Schedulers financeiros via PaymentEngine (MP reconcile + Asaas recovery)
 PaymentEngine.start();
 
@@ -4073,16 +4097,51 @@ app.get('/api/monitoring/health', (req, res) => {
 // Endpoint /meta para compatibilidade com frontend
 app.get('/meta', (req, res) => {
   try {
+    const readBoolean = (name) =>
+      String(process.env[name] || '').trim().toLowerCase() === 'true';
+    const runtimeEnvironment = String(process.env.NODE_ENV || 'production')
+      .trim()
+      .toLowerCase();
     const gitCommitRaw = process.env.GIT_COMMIT;
     const gitCommit =
       typeof gitCommitRaw === 'string' && gitCommitRaw.trim() ? gitCommitRaw.trim() : null;
+    const gitTag = String(process.env.GIT_TAG || '').trim() || null;
+    const contractVersion =
+      String(process.env.RELEASE_CONTRACT_VERSION || '').trim() || null;
+    const buildTimestamp = String(process.env.BUILD_TIMESTAMP || '').trim() || null;
+    const appName =
+      String(process.env.FLY_APP_NAME || process.env.APP_NAME || '').trim() || null;
     res.json({
       success: true,
       data: {
         version: '1.2.1',
-        build: '2025-10-21',
+        build: buildTimestamp,
+        buildTimestamp,
         gitCommit,
-        environment: 'production',
+        gitTag,
+        releaseContractVersion: contractVersion,
+        environment: runtimeEnvironment,
+        app: appName,
+        shadowMode: runtimeEnvironment === 'staging',
+        runtime: {
+          paymentEngineFlags: {
+            adapterBoundary: readBoolean('PE_ADAPTER_BOUNDARY_ENABLED'),
+            depositClaimPort: readBoolean('PE_DEPOSIT_CLAIM_PORT_ENABLED'),
+            idempotencyPort: readBoolean('PE_IDEMPOTENCY_PORT_ENABLED'),
+            webhookStorePort: readBoolean('PE_WEBHOOK_STORE_PORT_ENABLED'),
+            coreFinanceBoundary: readBoolean('PE_CORE_FINANCE_BOUNDARY_ENABLED'),
+            payoutBoundary: readBoolean('PE_PAYOUT_BOUNDARY_ENABLED'),
+            runtimeBoundary: readBoolean('PE_RUNTIME_BOUNDARY_ENABLED'),
+            providerBoundary: readBoolean('PE_PROVIDER_BOUNDARY_ENABLED')
+          },
+          financialSchedulers: {
+            mpReconcileEnabled: readBoolean('MP_RECONCILE_ENABLED'),
+            asaasPayoutRecoveryEnabled: readBoolean('ASAAS_PAYOUT_RECOVERY_ENABLED')
+          },
+          workers: {
+            payoutWorkerEnabled: readBoolean('ENABLE_PIX_PAYOUT_WORKER')
+          }
+        },
         paymentEngine: getPublicPspSnapshot(),
         compatibility: {
           minVersion: '1.0.0',

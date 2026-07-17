@@ -1,0 +1,98 @@
+{
+  "gate": "RE.9B.2R",
+  "title": "Deterministic Deployment Remediation Plan",
+  "mode": "READ_ONLY_REMEDIATION_ENGINEERING",
+  "base_gate": "RE.9B.2",
+  "base_verdict": "FAIL",
+  "engineering_branch": "re/9b-staging-deployment-contract",
+  "original_release": {
+    "tag": "pe2m-shadow-staging-ready",
+    "sha": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
+    "must_not_move": true
+  },
+  "nonconformities": {
+    "total": 28,
+    "p0": ["NC-01", "NC-02", "NC-03", "NC-04", "NC-05", "NC-06", "NC-07", "NC-25", "NC-28"],
+    "p1": ["NC-08", "NC-09", "NC-10", "NC-11", "NC-12", "NC-13", "NC-14", "NC-15", "NC-16", "NC-17", "NC-18", "NC-19", "NC-22", "NC-23", "NC-24", "NC-26", "NC-27"],
+    "p2": ["NC-20", "NC-21"],
+    "require_code_changes": 8,
+    "require_workflow_changes": 14,
+    "require_documentation_changes": 4
+  },
+  "remediation_order": [
+    "R1_disable_a2r_deploy_bypass",
+    "R2_remove_fly_secrets_set_from_canonical_deploy",
+    "R3_fail_closed_schedulers_workers_shadow",
+    "R4_fix_meta_and_fatal_gates",
+    "R5_capture_baseline_and_deterministic_rollback",
+    "R6_complete_contract_dry_run_scripts_smoke",
+    "R7_pin_toolchain_base_image_npm_ci_digest",
+    "R8_new_rc_and_revised_tag",
+    "R9_legacy_docs_pointers",
+    "static_validation",
+    "hitl_dry_run",
+    "RE.9C_shadow_certification",
+    "new_RE.9_staging_hitl",
+    "production_out_of_scope"
+  ],
+  "risk_matrix": {
+    "disable_a2r_deploy": "medium",
+    "remove_secrets_set": "medium",
+    "schedulers_fail_closed": "high",
+    "meta_dynamic": "low_medium",
+    "rollback_by_release_id": "low",
+    "contract_dry_run_scripts": "low",
+    "pin_image_actions_npm_ci": "medium",
+    "tag_protection_new_rc": "medium",
+    "legacy_docs": "very_low"
+  },
+  "v1_preservation": {
+    "production_untouched_this_gate": true,
+    "staging_untouched_this_gate": true,
+    "payment_engine_ports_remain_false": true,
+    "pix_must_remain_off": true,
+    "runtime_changes_must_be_environment_scoped": true,
+    "historical_tag_must_not_move": true
+  },
+  "compatibility": {
+    "payment_engine": true,
+    "gol_de_ouro_v1": true,
+    "canonical_manifest": true,
+    "prior_certifications": true,
+    "baselines": true,
+    "history": true,
+    "snapshots": true,
+    "audits": true
+  },
+  "external_actions": {
+    "production_changed": false,
+    "staging_changed": false,
+    "database_changed": false,
+    "deploy_executed": false,
+    "commit_created": false,
+    "push_executed": false,
+    "tag_created": false,
+    "workflows_modified": false,
+    "code_modified": false,
+    "existing_docs_modified": false,
+    "new_report_created": true,
+    "new_snapshot_created": true
+  },
+  "mandatory_answers": {
+    "nonconformity_count": 28,
+    "code_change_count": 8,
+    "workflow_change_count": 14,
+    "documentation_change_count": 4,
+    "impacts_production_now": false,
+    "impacts_staging_now": false,
+    "impacts_payment_engine": "defaults_more_closed_only",
+    "impacts_pix": false,
+    "impacts_runtime_future": true,
+    "mandatory_order_exists": true,
+    "can_execute_without_production_risk": true,
+    "new_certification_required": true,
+    "plan_complete": true
+  },
+  "next_gate": "RE.9B.2R.1 — Controlled Remediation Execution",
+  "verdict": "PASS"
+}
