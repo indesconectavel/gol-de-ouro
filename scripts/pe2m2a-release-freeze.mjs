@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * RE.9B.2R.3 / R6 — verificador determinístico do freeze.
+ * RE.9B.2R.4B.2A — verificador determinístico da Release Identity schema 2.0.
  * Somente leitura: não escreve manifest, não cria tag, não faz push/deploy.
  */
 
@@ -21,23 +21,31 @@ const git = (...args) =>
 
 const branch = git('branch', '--show-current');
 const head = git('rev-parse', 'HEAD');
+const parent = git('rev-parse', 'HEAD^');
 const status = git('status', '--porcelain');
 const tag = manifest.release?.tag;
-const expectedSha = manifest.release?.sha;
+const payloadSha = manifest.release?.payload_sha;
 const expectedBranch = manifest.release?.branch;
+const historicalTag = 'pe2m-shadow-staging-ready';
+const historicalSha = '8cb00e9a576b6a5b2c784615cc5a55b26492c112';
 
 assert.equal(manifest.authority?.canonical, true, 'manifest não canônico');
 assert.equal(manifest.authority?.operational, true, 'manifest sem autoridade operacional');
+assert.equal(manifest.schema_version, '2.0.0', 'schema_version deve ser 2.0.0');
 assert.equal(manifest.release?.frozen, true, 'release.frozen deve ser true');
-assert.match(tag || '', /^pe2m-shadow-staging-ready(-r\d+)?$/, 'tag staging inválida');
-assert.match(expectedSha || '', /^[0-9a-f]{40}$/, 'release.sha inválido');
-assert.equal(manifest.release?.commit, expectedSha, 'release.commit != release.sha');
-assert.equal(manifest.artifact?.identity, expectedSha, 'artifact.identity != release.sha');
+assert.equal(tag, 'pe2m-shadow-staging-ready-r1', 'tag revisionada inválida');
+assert.match(payloadSha || '', /^[0-9a-f]{40}$/, 'release.payload_sha inválido');
+assert.equal(payloadSha, '8c7076356b4b968f40c6bfb6241364176021fb07');
+assert.equal(manifest.release?.identity_resolver, 'git_tag_peeled');
+assert.equal(Object.hasOwn(manifest.release, 'sha'), false, 'release.sha legado proibido');
+assert.equal(Object.hasOwn(manifest.release, 'commit'), false, 'release.commit legado proibido');
+assert.equal(Object.hasOwn(manifest.artifact, 'identity'), false, 'artifact.identity legado proibido');
+assert.equal(manifest.artifact?.source_payload_sha, payloadSha);
 assert.equal(manifest.target?.environment, 'staging');
 assert.equal(manifest.target?.app, 'goldeouro-backend-staging');
 assert.equal(manifest.target?.fly_config, 'fly.staging.toml');
 assert.equal(branch, expectedBranch, `branch deve ser ${expectedBranch}`);
-assert.equal(head, expectedSha, 'HEAD diverge do manifest');
+assert.equal(parent, payloadSha, 'parent(HEAD) diverge do payload técnico');
 assert.equal(status, '', 'working tree deve estar limpa');
 
 const required = [
@@ -76,10 +84,18 @@ const workflow = fs.readFileSync(
   path.join(root, '.github/workflows/backend-deploy-staging.yml'),
   'utf8'
 );
-for (const input of ['release_tag:', 'expected_sha:', 'confirm_staging:', 'dry_run:']) {
+for (const input of [
+  'release_tag:',
+  'expected_payload_sha:',
+  'expected_identity_sha:',
+  'confirm_environment:',
+  'dry_run:'
+]) {
   assert.ok(workflow.includes(input), `workflow missing ${input}`);
 }
 assert.equal(workflow.includes('flyctl secrets set'), false, 'workflow muta secrets');
+assert.equal(workflow.includes('expected_sha:'), false, 'workflow contém expected_sha legado');
+assert.equal(workflow.includes('steps.release.outputs.sha'), false, 'workflow contém output sha genérico');
 
 let localTagSha = null;
 try {
@@ -88,17 +104,21 @@ try {
   // A ausência local é permitida antes da publicação HITL.
 }
 if (localTagSha !== null) {
-  assert.equal(localTagSha, expectedSha, 'tag local diverge do manifest');
+  assert.equal(localTagSha, head, 'peeled tag local diverge do identity commit');
+  const tagObjectType = git('cat-file', '-t', `refs/tags/${tag}`);
+  assert.equal(tagObjectType, 'tag', 'tag candidata deve ser anotada (não lightweight)');
 }
 
+const historicalTagSha = git('rev-parse', `refs/tags/${historicalTag}^{commit}`);
+assert.equal(historicalTagSha, historicalSha, 'tag histórica foi movida');
+
 console.log(`branch=${branch}`);
-console.log(`sha=${head}`);
-console.log(`tag=${tag}`);
+console.log(`identity_commit=${head}`);
+console.log(`payload_sha=${payloadSha}`);
+console.log(`parent=${parent}`);
+console.log(`release_tag=${tag}`);
 console.log(`tag_local=${localTagSha === null ? 'ABSENT_PENDING_HITL' : localTagSha}`);
-console.log('RE.9B deterministic release freeze contract: PASS');
-console.log('NEXT HITL (não executado):');
-if (localTagSha === null) {
-  console.log(`  git tag -a ${tag} -m "Deterministic shadow staging release" ${expectedSha}`);
-}
-console.log(`  git push origin ${expectedBranch}`);
-console.log(`  git push origin refs/tags/${tag}`);
+console.log(`historical_tag=${historicalTag}@${historicalTagSha}`);
+console.log(
+  `RE.9B Release Identity schema 2.0: ${localTagSha === null ? 'PRE_TAG PASS' : 'POST_TAG PASS'}`
+);

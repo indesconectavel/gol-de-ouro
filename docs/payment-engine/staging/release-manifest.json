@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0.0",
-  "contract_version": "RE.9B.1",
+  "schema_version": "2.0.0",
+  "contract_version": "RE.9B.2R.4B.2A",
   "authority": {
     "canonical": true,
     "operational": true,
@@ -8,11 +8,10 @@
   },
   "release": {
     "frozen": true,
-    "tag": "pe2m-shadow-staging-ready",
-    "commit": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
-    "sha": "8cb00e9a576b6a5b2c784615cc5a55b26492c112",
-    "branch": "pe/rc-pe2m-shadow",
-    "published": true
+    "tag": "pe2m-shadow-staging-ready-r1",
+    "branch": "re/9b-staging-deployment-contract",
+    "payload_sha": "8c7076356b4b968f40c6bfb6241364176021fb07",
+    "identity_resolver": "git_tag_peeled"
   },
   "target": {
     "environment": "staging",
@@ -20,12 +19,14 @@
     "fly_config": "fly.staging.toml"
   },
   "artifact": {
-    "identity_type": "git_commit",
-    "identity": "8cb00e9a576b6a5b2c784615cc5a55b26492c112"
+    "source_identity_type": "git_payload_commit",
+    "source_payload_sha": "8c7076356b4b968f40c6bfb6241364176021fb07",
+    "runtime_identity_type": "oci_digest",
+    "runtime_identity_resolver": "post_deploy_evidence"
   },
   "deploy": {
-    "release_ref": "pe2m-shadow-staging-ready",
-    "git_tag_meta": "pe2m-shadow-staging-ready",
+    "release_ref": "pe2m-shadow-staging-ready-r1",
+    "git_tag_meta": "pe2m-shadow-staging-ready-r1",
     "fly_app": "goldeouro-backend-staging",
     "fly_config": "fly.staging.toml",
     "confirm_token": "STAGING",
@@ -34,7 +35,8 @@
   "immutability": {
     "override_release_ref_allowed": false,
     "override_git_tag_allowed": false,
-    "checkout_must_match_manifest_sha": true,
+    "checkout_must_match_peeled_tag": true,
+    "identity_parent_must_match_payload_sha": true,
     "require_frozen_true": true
   },
   "provenance": {

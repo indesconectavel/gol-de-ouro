@@ -4,7 +4,7 @@
 
 /**
 
- * PE.2B.2-PIPELINE.2 — validacao local do pipeline staging (sem deploy, sem Fly write).
+ * RE.9B.2R.4B.2A — validação local da Release Identity schema 2.0.
 
  * Executar: node scripts/pe2b-staging-pipeline-validate.mjs
 
@@ -72,22 +72,39 @@ const flyStaging = readFileSync(FLY_STAGING, 'utf8');
 
 const tag = MANIFEST.release.tag;
 
-const sha = MANIFEST.release.sha;
+const payloadSha = MANIFEST.release.payload_sha;
 
-assert.ok(sha && sha.length === 40, 'manifest deve conter SHA completo');
+assert.equal(MANIFEST.schema_version, '2.0.0', 'manifest deve usar schema 2.0.0');
+assert.match(payloadSha || '', /^[0-9a-f]{40}$/, 'manifest deve conter payload SHA completo');
+assert.equal(payloadSha, '8c7076356b4b968f40c6bfb6241364176021fb07');
+assert.equal(MANIFEST.release.identity_resolver, 'git_tag_peeled');
+assert.equal(Object.hasOwn(MANIFEST.release, 'sha'), false, 'release.sha legado proibido');
+assert.equal(Object.hasOwn(MANIFEST.release, 'commit'), false, 'release.commit legado proibido');
+assert.equal(Object.hasOwn(MANIFEST.artifact, 'identity'), false, 'artifact.identity legado proibido');
 
 
 
 // B-02: release unificada
 
-for (const input of ['release_tag:', 'expected_sha:', 'confirm_staging:', 'dry_run:']) {
+for (const input of [
+  'release_tag:',
+  'expected_payload_sha:',
+  'expected_identity_sha:',
+  'confirm_environment:',
+  'dry_run:'
+]) {
   assert.ok(workflow.includes(input), `workflow deve declarar input ${input}`);
 }
 
 assert.ok(workflow.includes('RELEASE_REF: ${{ inputs.release_tag }}'),
   'workflow deve derivar RELEASE_REF exclusivamente do input release_tag');
+assert.ok(workflow.includes('PARENT_SHA=$(git rev-parse HEAD^)'), 'workflow deve resolver parent');
+assert.ok(workflow.includes('test "$HEAD_SHA" = "$TAG_SHA"'), 'HEAD deve igualar peeled tag');
+assert.ok(workflow.includes('test "$PARENT_SHA" = "$PAYLOAD_SHA"'), 'parent deve igualar payload');
+assert.ok(!workflow.includes('expected_sha:'), 'expected_sha legado proibido');
+assert.ok(!workflow.includes('steps.release.outputs.sha'), 'output sha genérico proibido');
 
-pass(`Release unificada: ${tag} @ ${sha}`);
+pass(`Release Identity: tag=${tag} payload=${payloadSha} identity=peeled-tag`);
 
 
 
@@ -166,11 +183,11 @@ pass('fly.staging.toml validado');
 
 
 
-// SHA guard — manifest é fonte única
+// Release Identity guard — manifest governa payload; tag peeled governa identidade
 
 assert.ok(workflow.includes('release-manifest.json'), 'workflow valida via manifest');
 
-pass(`SHA via manifest: ${sha}`);
+pass(`Payload via manifest: ${payloadSha}`);
 
 
 

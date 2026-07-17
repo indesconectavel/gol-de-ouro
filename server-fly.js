@@ -4105,6 +4105,9 @@ app.get('/meta', (req, res) => {
     const gitCommitRaw = process.env.GIT_COMMIT;
     const gitCommit =
       typeof gitCommitRaw === 'string' && gitCommitRaw.trim() ? gitCommitRaw.trim() : null;
+    const payloadShaRaw = process.env.PAYLOAD_SHA;
+    const payloadSha =
+      typeof payloadShaRaw === 'string' && payloadShaRaw.trim() ? payloadShaRaw.trim() : null;
     const gitTag = String(process.env.GIT_TAG || '').trim() || null;
     const contractVersion =
       String(process.env.RELEASE_CONTRACT_VERSION || '').trim() || null;
@@ -4118,6 +4121,7 @@ app.get('/meta', (req, res) => {
         build: buildTimestamp,
         buildTimestamp,
         gitCommit,
+        payloadSha,
         gitTag,
         releaseContractVersion: contractVersion,
         environment: runtimeEnvironment,

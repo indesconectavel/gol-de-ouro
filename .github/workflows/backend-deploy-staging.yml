@@ -1,14 +1,14 @@
-# PE.2M.2A — Deploy controlado STAGING (Indesconectável Payment Engine™)
+# RE.9B.2R.4B.2A — Deploy controlado STAGING com Release Identity schema 2.0
 
 # NUNCA toca produção (goldeouro-backend-v2). Somente workflow_dispatch.
 
-# Release determinística: tag pe2m-shadow-staging-ready (SHA em release-manifest.json)
+# Release determinística schema 2.0: payload técnico + identidade pela tag peeled.
 
 # Config exclusiva: fly.staging.toml — proibido fly.toml de produção.
 
 # Secrets repositório: FLY_API_TOKEN
 
-# Dispatch: Actions → Backend Deploy Staging → branch pe/pe2b-staging-deploy (ou main após publish)
+# Dispatch: executar exclusivamente a partir da tag revisionada autorizada.
 
 # Oito flags PE forçadas explicitamente false no pré e pós deploy.
 
@@ -30,15 +30,23 @@ on:
 
         type: string
 
-      expected_sha:
+      expected_payload_sha:
 
-        description: 'SHA completo esperado (40 caracteres)'
+        description: 'SHA completo do commit técnico/payload'
 
         required: true
 
         type: string
 
-      confirm_staging:
+      expected_identity_sha:
+
+        description: 'SHA completo do commit de identidade apontado pela tag'
+
+        required: true
+
+        type: string
+
+      confirm_environment:
 
         description: 'Digite STAGING para confirmar (guarda anti-produção)'
 
@@ -59,7 +67,7 @@ on:
         type: boolean
 
 
-run-name: "staging-${{ inputs.dry_run && 'dry-run' || 'deploy' }} ${{ inputs.release_tag }} @ ${{ inputs.expected_sha }}"
+run-name: "staging-${{ inputs.dry_run && 'dry-run' || 'deploy' }} ${{ inputs.release_tag }} identity=${{ inputs.expected_identity_sha }} payload=${{ inputs.expected_payload_sha }}"
 
 
 
@@ -79,13 +87,15 @@ env:
 
   FLY_CONFIG: fly.staging.toml
 
-  # R6: referência e SHA explícitos, sem fallback para branch/HEAD.
+  # Schema 2.0: payload e identidade explícitos, sem fallback para branch/HEAD.
 
   RELEASE_REF: ${{ inputs.release_tag }}
 
   GIT_TAG: ${{ inputs.release_tag }}
 
-  EXPECTED_SHA: ${{ inputs.expected_sha }}
+  EXPECTED_PAYLOAD_SHA: ${{ inputs.expected_payload_sha }}
+
+  EXPECTED_IDENTITY_SHA: ${{ inputs.expected_identity_sha }}
 
   DRY_RUN: ${{ inputs.dry_run }}
 
@@ -121,7 +131,7 @@ jobs:
 
           set -euo pipefail
 
-          if [ "${{ inputs.confirm_staging }}" != "STAGING" ]; then
+          if [ "${{ inputs.confirm_environment }}" != "STAGING" ]; then
 
             echo "Confirmação inválida — digite STAGING. Abortado."
 
@@ -133,7 +143,7 @@ jobs:
 
 
 
-      - name: Guard — release determinística (PE.2M.2A)
+      - name: Guard — release determinística schema 2.0
 
         run: |
 
@@ -156,8 +166,18 @@ jobs:
             main|dev|master|latest|HEAD) echo "Ref mutável proibida — ABORTADO"; exit 1 ;;
           esac
 
-          echo "${{ env.EXPECTED_SHA }}" | grep -Eq '^[0-9a-f]{40}$' || {
-            echo "expected_sha deve possuir 40 caracteres hexadecimais — ABORTADO"
+          echo "${{ env.EXPECTED_PAYLOAD_SHA }}" | grep -Eq '^[0-9a-f]{40}$' || {
+            echo "expected_payload_sha deve possuir 40 caracteres hexadecimais — ABORTADO"
+            exit 1
+          }
+
+          echo "${{ env.EXPECTED_IDENTITY_SHA }}" | grep -Eq '^[0-9a-f]{40}$' || {
+            echo "expected_identity_sha deve possuir 40 caracteres hexadecimais — ABORTADO"
+            exit 1
+          }
+
+          test "${{ github.ref }}" = "refs/tags/${{ env.RELEASE_REF }}" || {
+            echo "workflow deve ser executado a partir da própria tag autorizada — ABORTADO"
             exit 1
           }
 
@@ -256,7 +276,7 @@ jobs:
 
 
 
-      - name: Guard — SHA da release via manifest (B-02)
+      - name: Guard — Release Identity schema 2.0 (B-02)
 
         id: release
 
@@ -264,66 +284,63 @@ jobs:
 
           set -euo pipefail
 
-          MANIFEST_TAG=$(jq -r '.release.tag' docs/payment-engine/staging/release-manifest.json)
-
-          EXPECTED_SHA=$(jq -r '.release.sha' docs/payment-engine/staging/release-manifest.json)
-
+          MANIFEST="docs/payment-engine/staging/release-manifest.json"
+          SCHEMA_VERSION=$(jq -r '.schema_version' "$MANIFEST")
+          MANIFEST_TAG=$(jq -r '.release.tag' "$MANIFEST")
+          MANIFEST_BRANCH=$(jq -r '.release.branch' "$MANIFEST")
+          PAYLOAD_SHA=$(jq -r '.release.payload_sha' "$MANIFEST")
+          IDENTITY_RESOLVER=$(jq -r '.release.identity_resolver' "$MANIFEST")
           HEAD_SHA=$(git rev-parse HEAD)
-
+          PARENT_SHA=$(git rev-parse HEAD^)
           TAG_SHA=$(git rev-parse "refs/tags/${{ env.RELEASE_REF }}^{commit}")
-
-          FROZEN=$(jq -r '.release.frozen' docs/payment-engine/staging/release-manifest.json)
-
-          CONTRACT_VERSION=$(jq -r '.contract_version' docs/payment-engine/staging/release-manifest.json)
-
-          MANIFEST_COMMIT=$(jq -r '.release.commit' docs/payment-engine/staging/release-manifest.json)
-
-          ARTIFACT_IDENTITY=$(jq -r '.artifact.identity' docs/payment-engine/staging/release-manifest.json)
-
-          TARGET_ENV=$(jq -r '.target.environment' docs/payment-engine/staging/release-manifest.json)
-
-          TARGET_APP=$(jq -r '.target.app' docs/payment-engine/staging/release-manifest.json)
-
+          FROZEN=$(jq -r '.release.frozen' "$MANIFEST")
+          CONTRACT_VERSION=$(jq -r '.contract_version' "$MANIFEST")
+          TARGET_ENV=$(jq -r '.target.environment' "$MANIFEST")
+          TARGET_APP=$(jq -r '.target.app' "$MANIFEST")
           BUILD_TIMESTAMP=$(git show -s --format=%cI HEAD)
 
+          test "$SCHEMA_VERSION" = "2.0.0" || { echo "schema_version != 2.0.0 — ABORTADO"; exit 1; }
           test "$MANIFEST_TAG" = "${{ env.RELEASE_REF }}" || { echo "manifest tag diverge do input — ABORTADO"; exit 1; }
+          test "$MANIFEST_BRANCH" = "re/9b-staging-deployment-contract" || { echo "release.branch inesperada — ABORTADO"; exit 1; }
+          test "$IDENTITY_RESOLVER" = "git_tag_peeled" || { echo "identity_resolver inválido — ABORTADO"; exit 1; }
+          test "$FROZEN" = "true" || { echo "release.frozen != true — ABORTADO"; exit 1; }
 
-          test "$FROZEN" = "true" || { echo "release.frozen != true — ABORTADO (PE.2M.2A)"; exit 1; }
+          echo "$PAYLOAD_SHA" | grep -Eq '^[0-9a-f]{40}$' || {
+            echo "release.payload_sha inválido — ABORTADO"
+            exit 1
+          }
 
+          test "$PAYLOAD_SHA" = "${{ env.EXPECTED_PAYLOAD_SHA }}" || { echo "payload diverge do input — ABORTADO"; exit 1; }
+          test "$HEAD_SHA" = "${{ env.EXPECTED_IDENTITY_SHA }}" || { echo "HEAD diverge da identidade esperada — ABORTADO"; exit 1; }
+          test "$TAG_SHA" = "${{ env.EXPECTED_IDENTITY_SHA }}" || { echo "peeled tag diverge da identidade esperada — ABORTADO"; exit 1; }
+          test "$HEAD_SHA" = "$TAG_SHA" || { echo "HEAD diverge da peeled tag — ABORTADO"; exit 1; }
+          test "$PARENT_SHA" = "$PAYLOAD_SHA" || { echo "parent(HEAD) diverge do payload — ABORTADO"; exit 1; }
+          test "$TARGET_ENV" = "staging" || { echo "target.environment != staging — ABORTADO"; exit 1; }
+          test "$TARGET_APP" = "${{ env.FLY_APP_NAME }}" || { echo "target.app diverge do app fixo — ABORTADO"; exit 1; }
           test -n "$CONTRACT_VERSION" && test "$CONTRACT_VERSION" != "null" || {
             echo "contract_version ausente no manifest — ABORTADO"
             exit 1
           }
 
-          if [ -z "$EXPECTED_SHA" ] || [ "$EXPECTED_SHA" = "null" ] || [ "$EXPECTED_SHA" = "PENDING_HITL_FREEZE_COMMIT" ]; then
-
-            echo "release-manifest.json sem SHA pinado — ABORTADO"
-
+          HISTORICAL_TAG="pe2m-shadow-staging-ready"
+          HISTORICAL_SHA="8cb00e9a576b6a5b2c784615cc5a55b26492c112"
+          HISTORICAL_TAG_SHA=$(git rev-parse "refs/tags/${HISTORICAL_TAG}^{commit}" 2>/dev/null || true)
+          test -n "$HISTORICAL_TAG_SHA" || {
+            echo "tag histórica ${HISTORICAL_TAG} ausente — ABORTADO"
             exit 1
-
-          fi
-
-          test "$EXPECTED_SHA" = "${{ env.EXPECTED_SHA }}" || { echo "manifest SHA diverge do input — ABORTADO"; exit 1; }
-
-          test "$MANIFEST_COMMIT" = "${{ env.EXPECTED_SHA }}" || { echo "release.commit diverge do input — ABORTADO"; exit 1; }
-
-          test "$ARTIFACT_IDENTITY" = "${{ env.EXPECTED_SHA }}" || { echo "artifact.identity diverge do input — ABORTADO"; exit 1; }
-
-          test "$TARGET_ENV" = "staging" || { echo "target.environment != staging — ABORTADO"; exit 1; }
-
-          test "$TARGET_APP" = "${{ env.FLY_APP_NAME }}" || { echo "target.app diverge do app fixo — ABORTADO"; exit 1; }
-
-          if [ "$HEAD_SHA" != "$EXPECTED_SHA" ] || [ "$TAG_SHA" != "$EXPECTED_SHA" ]; then
-
-            echo "SHA divergente — input/manifest=$EXPECTED_SHA tag=$TAG_SHA checkout=$HEAD_SHA — ABORTADO"
-
+          }
+          test "$HISTORICAL_TAG_SHA" = "$HISTORICAL_SHA" || {
+            echo "tag histórica ${HISTORICAL_TAG} diverge (${HISTORICAL_TAG_SHA}) — ABORTADO"
             exit 1
+          }
 
-          fi
+          test "$(jq '.release | has("sha")' "$MANIFEST")" = "false" || { echo "release.sha legado proibido — ABORTADO"; exit 1; }
+          test "$(jq '.release | has("commit")' "$MANIFEST")" = "false" || { echo "release.commit legado proibido — ABORTADO"; exit 1; }
+          test "$(jq '.artifact | has("identity")' "$MANIFEST")" = "false" || { echo "artifact.identity legado proibido — ABORTADO"; exit 1; }
 
-          echo "sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
-
-          echo "tag=$MANIFEST_TAG" >> "$GITHUB_OUTPUT"
+          echo "payload_sha=$PAYLOAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "release_commit=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+          echo "release_tag=$MANIFEST_TAG" >> "$GITHUB_OUTPUT"
 
           echo "contract_version=$CONTRACT_VERSION" >> "$GITHUB_OUTPUT"
 
@@ -331,7 +348,7 @@ jobs:
 
           git log -1 --oneline
 
-          echo "Release certificada: $MANIFEST_TAG @ $HEAD_SHA"
+          echo "Release certificada: tag=$MANIFEST_TAG identity=$HEAD_SHA payload=$PAYLOAD_SHA"
 
 
 
@@ -450,9 +467,10 @@ jobs:
             --arg currentImage "$CURRENT_IMAGE" \
             --arg currentImageDigest "$CURRENT_IMAGE_DIGEST" \
             --arg capturedAt "$CAPTURED_AT" \
-            --arg releaseTag "${{ steps.release.outputs.tag }}" \
-            --arg releaseSha "${{ steps.release.outputs.sha }}" \
-            '{app:$app,rollback_version:$rollbackVersion,current_image:$currentImage,current_image_digest:$currentImageDigest,captured_at:$capturedAt,target_tag:$releaseTag,target_sha:$releaseSha}' \
+            --arg releaseTag "${{ steps.release.outputs.release_tag }}" \
+            --arg releaseCommit "${{ steps.release.outputs.release_commit }}" \
+            --arg payloadSha "${{ steps.release.outputs.payload_sha }}" \
+            '{app:$app,rollback_version:$rollbackVersion,current_image:$currentImage,current_image_digest:$currentImageDigest,captured_at:$capturedAt,target_tag:$releaseTag,target_release_commit:$releaseCommit,target_payload_sha:$payloadSha}' \
             > "$EVIDENCE_DIR/baseline-summary.json"
 
           printf 'flyctl releases rollback %s --app %s\n' "$ROLLBACK_VERSION" "${{ env.FLY_APP_NAME }}" \
@@ -574,7 +592,11 @@ jobs:
 
           SECRET_NAMES=$(flyctl secrets list -a "${{ env.FLY_APP_NAME }}")
           FORBIDDEN_SECRET_KEYS=(
+            GIT_COMMIT
             GIT_TAG
+            PAYLOAD_SHA
+            RELEASE_CONTRACT_VERSION
+            BUILD_TIMESTAMP
             NODE_ENV
             DATABASE_ENV
             APP_NAME
@@ -604,7 +626,7 @@ jobs:
 
           set -euo pipefail
 
-          flyctl deploy --remote-only --no-cache --config "${{ env.FLY_CONFIG }}" --app "${{ env.FLY_APP_NAME }}" --build-arg GIT_COMMIT="${{ steps.release.outputs.sha }}" --build-arg GIT_TAG="${{ steps.release.outputs.tag }}" --build-arg RELEASE_CONTRACT_VERSION="${{ steps.release.outputs.contract_version }}" --build-arg BUILD_TIMESTAMP="${{ steps.release.outputs.build_timestamp }}"
+          flyctl deploy --remote-only --no-cache --config "${{ env.FLY_CONFIG }}" --app "${{ env.FLY_APP_NAME }}" --build-arg GIT_COMMIT="${{ steps.release.outputs.release_commit }}" --build-arg PAYLOAD_SHA="${{ steps.release.outputs.payload_sha }}" --build-arg GIT_TAG="${{ steps.release.outputs.release_tag }}" --build-arg RELEASE_CONTRACT_VERSION="${{ steps.release.outputs.contract_version }}" --build-arg BUILD_TIMESTAMP="${{ steps.release.outputs.build_timestamp }}"
 
         env:
 
@@ -681,11 +703,13 @@ jobs:
 
           test "$PRUNTIME" = "false" || { echo "productionRuntime deve ser false"; exit 1; }
 
-          META_SHA=$(echo "$BODY" | jq -r '.data.gitCommit')
+          META_RELEASE_COMMIT=$(echo "$BODY" | jq -r '.data.gitCommit')
+          META_PAYLOAD_SHA=$(echo "$BODY" | jq -r '.data.payloadSha')
 
-          test "$META_SHA" = "${{ steps.release.outputs.sha }}" || { echo "meta.gitCommit ($META_SHA) diverge do RELEASE_SHA — ABORTADO"; exit 1; }
+          test "$META_RELEASE_COMMIT" = "${{ steps.release.outputs.release_commit }}" || { echo "meta.gitCommit diverge do release commit — ABORTADO"; exit 1; }
+          test "$META_PAYLOAD_SHA" = "${{ steps.release.outputs.payload_sha }}" || { echo "meta.payloadSha diverge do payload — ABORTADO"; exit 1; }
 
-          test "$(echo "$BODY" | jq -r '.data.gitTag')" = "${{ steps.release.outputs.tag }}" || { echo "meta.gitTag diverge da release — ABORTADO"; exit 1; }
+          test "$(echo "$BODY" | jq -r '.data.gitTag')" = "${{ steps.release.outputs.release_tag }}" || { echo "meta.gitTag diverge da release — ABORTADO"; exit 1; }
 
           test "$(echo "$BODY" | jq -r '.data.releaseContractVersion')" = "${{ steps.release.outputs.contract_version }}" || { echo "releaseContractVersion diverge do manifest — ABORTADO"; exit 1; }
 
@@ -697,7 +721,7 @@ jobs:
 
           test "$(echo "$BODY" | jq -r '[.data.runtime.workers[]] | all(. == false)')" = "true" || { echo "Worker financeiro habilitado — ABORTADO"; exit 1; }
 
-          echo "Metadata staging: SHA/tag/app/ambiente/flags/schedulers/workers certificados."
+          echo "Metadata staging: release commit/payload/tag/app/ambiente/flags/schedulers/workers certificados."
 
 
 
@@ -776,11 +800,12 @@ jobs:
 
           jq -n \
             --arg app "${{ env.FLY_APP_NAME }}" \
-            --arg tag "${{ steps.release.outputs.tag }}" \
-            --arg sha "${{ steps.release.outputs.sha }}" \
+            --arg tag "${{ steps.release.outputs.release_tag }}" \
+            --arg releaseCommit "${{ steps.release.outputs.release_commit }}" \
+            --arg payloadSha "${{ steps.release.outputs.payload_sha }}" \
             --arg imageDigest "$DEPLOYED_DIGEST" \
             --arg baseImage "node:20.20.2-alpine3.22@sha256:8f47899606d000b0704e992f927fe7335adcd0d6c98851600072fb6e14a13e60" \
-            '{app:$app,tag:$tag,sha:$sha,image_digest:$imageDigest,base_image:$baseImage}' \
+            '{app:$app,tag:$tag,release_commit:$releaseCommit,payload_sha:$payloadSha,image_digest:$imageDigest,base_image:$baseImage}' \
             > "$EVIDENCE_DIR/deployed-artifact.json"
 
           echo "Digest OCI implantado: $DEPLOYED_DIGEST"
@@ -795,7 +820,7 @@ jobs:
 
         with:
 
-          name: re9b-staging-${{ inputs.dry_run && 'dry-run' || 'deploy' }}-${{ inputs.expected_sha }}
+          name: re9b-staging-${{ inputs.dry_run && 'dry-run' || 'deploy' }}-${{ inputs.release_tag }}-${{ inputs.expected_identity_sha }}
 
           path: evidence/re9b-deployment
 
@@ -813,8 +838,9 @@ jobs:
 
           echo "Dry-run staging concluído sem build, deploy, rollback ou mutação."
           echo "  App: ${{ env.FLY_APP_NAME }}"
-          echo "  Tag: ${{ steps.release.outputs.tag }}"
-          echo "  SHA: ${{ steps.release.outputs.sha }}"
+          echo "  Tag: ${{ steps.release.outputs.release_tag }}"
+          echo "  Release commit: ${{ steps.release.outputs.release_commit }}"
+          echo "  Payload SHA: ${{ steps.release.outputs.payload_sha }}"
           echo "  Rollback baseline: ${{ steps.baseline.outputs.rollback_version }}"
 
 
@@ -835,7 +861,8 @@ jobs:
 
           echo "  Tag:    ${{ env.GIT_TAG }}"
 
-          echo "  SHA:    ${{ steps.release.outputs.sha }}"
+          echo "  Release commit: ${{ steps.release.outputs.release_commit }}"
+          echo "  Payload SHA:    ${{ steps.release.outputs.payload_sha }}"
 
           echo "  Flags:  eight PE_* = false (explicit)"
 

@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * RE.9B.2R.4A / R7 — validação estática do contrato de deployment staging.
+ * RE.9B.2R.4B.2A — validação estática da Release Identity schema 2.0.
  * Somente leitura: não acessa Fly, banco, rede ou Git remoto.
  */
 
@@ -24,11 +24,19 @@ const dockerfile = read('Dockerfile');
 
 assert.equal(manifest.authority?.canonical, true, 'manifest deve ser canônico');
 assert.equal(manifest.authority?.operational, true, 'manifest deve ser operacional');
+assert.equal(manifest.schema_version, '2.0.0', 'schema_version deve ser 2.0.0');
 assert.equal(manifest.release?.frozen, true, 'release deve estar frozen');
-assert.match(manifest.release?.tag || '', /^pe2m-shadow-staging-ready(-r\d+)?$/);
-assert.match(manifest.release?.sha || '', /^[0-9a-f]{40}$/);
-assert.equal(manifest.release.commit, manifest.release.sha, 'release.commit != release.sha');
-assert.equal(manifest.artifact?.identity, manifest.release.sha, 'artifact.identity != release.sha');
+assert.equal(manifest.release?.tag, 'pe2m-shadow-staging-ready-r1');
+assert.equal(manifest.release?.branch, 're/9b-staging-deployment-contract');
+assert.match(manifest.release?.payload_sha || '', /^[0-9a-f]{40}$/);
+assert.equal(manifest.release?.payload_sha, '8c7076356b4b968f40c6bfb6241364176021fb07');
+assert.equal(manifest.release?.identity_resolver, 'git_tag_peeled');
+assert.equal(Object.hasOwn(manifest.release, 'sha'), false, 'release.sha legado proibido');
+assert.equal(Object.hasOwn(manifest.release, 'commit'), false, 'release.commit legado proibido');
+assert.equal(Object.hasOwn(manifest.artifact, 'identity'), false, 'artifact.identity legado proibido');
+assert.equal(manifest.artifact?.source_payload_sha, manifest.release.payload_sha);
+assert.equal(manifest.provenance?.original_release_preserved, true);
+assert.equal(manifest.provenance?.original_tag_must_not_move, true);
 assert.equal(manifest.target?.environment, 'staging');
 assert.equal(manifest.target?.app, 'goldeouro-backend-staging');
 assert.equal(manifest.target?.fly_config, 'fly.staging.toml');
@@ -36,12 +44,22 @@ assert.equal(manifest.target?.fly_config, 'fly.staging.toml');
 for (const required of [
   'workflow_dispatch:',
   'release_tag:',
-  'expected_sha:',
-  'confirm_staging:',
+  'expected_payload_sha:',
+  'expected_identity_sha:',
+  'confirm_environment:',
   'dry_run:',
   'refs/tags/',
   'TAG_SHA',
-  'EXPECTED_SHA',
+  'PARENT_SHA',
+  'EXPECTED_PAYLOAD_SHA',
+  'EXPECTED_IDENTITY_SHA',
+  'refs/tags/${{ env.RELEASE_REF }}',
+  're/9b-staging-deployment-contract',
+  'test "$HEAD_SHA" = "$TAG_SHA"',
+  'test "$PARENT_SHA" = "$PAYLOAD_SHA"',
+  'payload_sha=$PAYLOAD_SHA',
+  'release_commit=$HEAD_SHA',
+  'release_tag=$MANIFEST_TAG',
   'steps.baseline.outputs.rollback_version',
   'actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5',
   'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020',
@@ -55,6 +73,9 @@ for (const required of [
 }
 
 assert.equal(/^\s+push:/m.test(workflow), false, 'workflow não pode ter trigger push');
+assert.equal(workflow.includes('expected_sha:'), false, 'expected_sha legado proibido');
+assert.equal(workflow.includes('steps.release.outputs.sha'), false, 'output sha genérico proibido');
+assert.equal(workflow.includes('echo "sha='), false, 'output sha genérico proibido');
 assert.equal(workflow.includes('flyctl secrets set'), false, 'workflow não pode mutar secrets');
 assert.ok(workflow.includes('goldeouro-backend-staging'), 'app staging ausente');
 assert.ok(workflow.includes('fly.staging.toml'), 'config staging ausente');
@@ -75,6 +96,12 @@ assert.ok(
     'FROM node:20.20.2-alpine3.22@sha256:8f47899606d000b0704e992f927fe7335adcd0d6c98851600072fb6e14a13e60'
   ),
   'imagem base deve estar fixada por digest OCI'
+);
+assert.ok(dockerfile.includes('ARG PAYLOAD_SHA='), 'Dockerfile deve aceitar PAYLOAD_SHA');
+assert.ok(dockerfile.includes('ENV PAYLOAD_SHA=${PAYLOAD_SHA}'), 'Dockerfile deve propagar PAYLOAD_SHA');
+assert.ok(
+  dockerfile.includes('LABEL io.goldeouro.release.payload-revision="${PAYLOAD_SHA}"'),
+  'Dockerfile deve rotular payload'
 );
 assert.ok(dockerfile.includes('RUN npm ci --omit=dev'), 'dependências devem usar npm ci');
 assert.equal(/\bRUN npm install\b/.test(dockerfile), false, 'npm install não determinístico no Dockerfile');
@@ -105,5 +132,8 @@ assert.ok(server.includes('assertShadowRuntimeFailClosed()'));
 assert.equal(/environment:\s*'production'/.test(server), false);
 assert.ok(server.includes('financialSchedulers'));
 assert.ok(server.includes('payoutWorkerEnabled'));
+assert.ok(server.includes('process.env.PAYLOAD_SHA'));
+assert.ok(server.includes('payloadSha'));
+assert.ok(workflow.includes('.data.payloadSha'), 'gate /meta deve validar payloadSha');
 
-console.log('RE.9B.2R.4A deterministic staging artifact contract: STATIC PASS');
+console.log('RE.9B.2R.4B.2A Release Identity schema 2.0: STATIC PASS');

@@ -15,6 +15,9 @@
  *
  * Exit: 0 = PASS · 1 = FAIL
  * Git: somente leitura. Zero commit/tag/push/deploy.
+ *
+ * Schema 2.0: valida payload técnico, parent do identity commit, tag peeled
+ * opcional no pré-tag e obrigatória/coincidente no pós-tag.
  */
 'use strict';
 
@@ -34,7 +37,11 @@ const MANIFEST_DEFAULTS = JSON.parse(fs.readFileSync(path.join(ROOT, MANIFEST), 
 const EXPECTED_BRANCH =
   process.env.RC_EXPECTED_BRANCH || MANIFEST_DEFAULTS.release?.branch || '';
 const EXPECTED_HEAD =
-  process.env.RC_EXPECTED_HEAD || MANIFEST_DEFAULTS.release?.sha || '';
+  process.env.RC_EXPECTED_IDENTITY_SHA || '';
+const EXPECTED_PAYLOAD_SHA = MANIFEST_DEFAULTS.release?.payload_sha || '';
+const RELEASE_TAG = MANIFEST_DEFAULTS.release?.tag || '';
+const HISTORICAL_TAG = 'pe2m-shadow-staging-ready';
+const HISTORICAL_TAG_SHA = '8cb00e9a576b6a5b2c784615cc5a55b26492c112';
 
 const PE_FLAGS = [
   'PE_ADAPTER_BOUNDARY_ENABLED',
@@ -521,8 +528,80 @@ function lotRows(lots, L_delta, L_baseline, MissingReal) {
   return rows;
 }
 
+function verifySchema2ReleaseIdentity() {
+  const manifest = MANIFEST_DEFAULTS;
+  const branch = git('branch', '--show-current').trim();
+  const head = git('rev-parse', 'HEAD').trim();
+  const parent = git('rev-parse', 'HEAD^').trim();
+  const porcelain = git('status', '--porcelain=v1', '-uall');
+  const releaseTagResult = gitOk('rev-parse', `refs/tags/${RELEASE_TAG}^{commit}`);
+  const historicalTagResult = gitOk('rev-parse', `refs/tags/${HISTORICAL_TAG}^{commit}`);
+  const releaseTagCommit = releaseTagResult.ok ? releaseTagResult.out.trim() : null;
+  const historicalTagCommit = historicalTagResult.ok ? historicalTagResult.out.trim() : null;
+  const phase = releaseTagCommit === null ? 'PRE_TAG' : 'POST_TAG';
+  const annotatedTagResult =
+    releaseTagCommit === null ? { ok: false, out: '' } : gitOk('cat-file', '-t', `refs/tags/${RELEASE_TAG}`);
+  const releaseTagObjectType = annotatedTagResult.ok ? annotatedTagResult.out.trim() : null;
+
+  const checks = {
+    schema: manifest.schema_version === '2.0.0',
+    canonical: manifest.authority?.canonical === true,
+    operational: manifest.authority?.operational === true,
+    frozen: manifest.release?.frozen === true,
+    branch: branch === EXPECTED_BRANCH,
+    clean_tree: porcelain.trim() === '',
+    payload_format: /^[0-9a-f]{40}$/.test(EXPECTED_PAYLOAD_SHA),
+    payload_parent: parent === EXPECTED_PAYLOAD_SHA,
+    release_tag: RELEASE_TAG === 'pe2m-shadow-staging-ready-r1',
+    identity_resolver: manifest.release?.identity_resolver === 'git_tag_peeled',
+    no_release_sha: !Object.hasOwn(manifest.release || {}, 'sha'),
+    no_release_commit: !Object.hasOwn(manifest.release || {}, 'commit'),
+    no_artifact_identity: !Object.hasOwn(manifest.artifact || {}, 'identity'),
+    expected_identity:
+      EXPECTED_HEAD === '' || (/^[0-9a-f]{40}$/.test(EXPECTED_HEAD) && head === EXPECTED_HEAD),
+    tag_matches_head: releaseTagCommit === null || releaseTagCommit === head,
+    tag_annotated: releaseTagCommit === null || releaseTagObjectType === 'tag',
+    historical_tag_preserved: historicalTagCommit === HISTORICAL_TAG_SHA
+  };
+
+  const pass = Object.values(checks).every(Boolean);
+  const report = {
+    gate: 'RE.9B.2R.4B.2A',
+    verifier: SELF,
+    schema_version: manifest.schema_version,
+    phase,
+    identity: {
+      branch,
+      head,
+      release_commit: head,
+      parent,
+      payload_sha: EXPECTED_PAYLOAD_SHA,
+      release_tag: RELEASE_TAG,
+      release_tag_commit: releaseTagCommit,
+      release_tag_object_type: releaseTagObjectType,
+      identity_resolver: manifest.release?.identity_resolver,
+      expected_identity_sha: EXPECTED_HEAD || null
+    },
+    historical_release: {
+      tag: HISTORICAL_TAG,
+      expected_commit: HISTORICAL_TAG_SHA,
+      observed_commit: historicalTagCommit
+    },
+    checks,
+    verdict: pass ? 'PASS' : 'FAIL',
+    exit_code: pass ? 0 : 1
+  };
+
+  process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+  process.exit(pass ? 0 : 1);
+}
+
 function main() {
   process.chdir(ROOT);
+
+  if (MANIFEST_DEFAULTS.schema_version === '2.0.0') {
+    verifySchema2ReleaseIdentity();
+  }
 
   const branch = git('branch', '--show-current').trim();
   const head = git('rev-parse', 'HEAD').trim();
