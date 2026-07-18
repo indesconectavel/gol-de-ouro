@@ -51,3 +51,11 @@ gh run watch
 - Sem secrets de finance/db
 - Sem deploy
 - Certificação é evidência estrutural + smoke/verify; não altera runtime produtivo
+
+### Status da sessão 2026-07-14
+
+Ver relatório completo: [`PE.2F.1-CERTIFICATION-RESULT.md`](./PE.2F.1-CERTIFICATION-RESULT.md).
+
+- Workflow **publicado em `main`** (PR #104 merged).
+- `gh workflow run` **BLOCKED** com `HTTP 403: Resource not accessible by integration`.
+- Fontes PE.2F.1 (core + scripts) **ausentes** no tree → mesmo com dispatch, o run falharia no gate de presença.
