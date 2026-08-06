@@ -10,7 +10,7 @@
     "report": "node scripts/generate-integrity-report-pdf.cjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.38.4",
+    "@supabase/supabase-js": "^2.84.0",
     "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
     "chalk": "^5.6.2",
